@@ -77,26 +77,15 @@ class TemplateController extends Controller
 
     public function show(Request $request)
     {
-        $id = $request->route('id');
+        $template = ProcessTemplates::findOrFail($request->route('id'));
 
-        $template = ProcessTemplates::find($id);
-
-        if (!$template) {
-            // id might be a process id
-            $editingProcess = Process::where('id', $id)->where('is_template', 1)->first();
-            if ($editingProcess && $editingProcess->uuid) {
-                $template = ProcessTemplates::where('editing_process_uuid', $editingProcess->uuid)->first();
-                if ($template) {
-                    return redirect()->route('modeler.template.show', ['id' => $template->id]);
-                }
+        if ($template->editing_process_uuid) {
+            $editingProcess = Process::where('uuid', $template->editing_process_uuid)
+                ->where('is_template', 1)
+                ->first();
+            if ($editingProcess) {
+                return view('processes.modeler.showTemplate')->with('id', $editingProcess->id);
             }
-            abort(404);
-        }
-
-        // If template has an editing process, show template modeler with that process id (resuming existing session)
-        $editingProcess = $template->editingProcess;
-        if ($editingProcess) {
-            return view('processes.modeler.showTemplate')->with('id', $editingProcess->id);
         }
 
         $templateApiController = new TemplateApiController(new Template);
