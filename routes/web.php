@@ -8,6 +8,7 @@ use ProcessMaker\Http\Controllers\Admin\CssOverrideController;
 use ProcessMaker\Http\Controllers\Admin\DevLinkController;
 use ProcessMaker\Http\Controllers\Admin\GroupController;
 use ProcessMaker\Http\Controllers\Admin\LdapLogsController;
+use ProcessMaker\Http\Controllers\Admin\PluginController;
 use ProcessMaker\Http\Controllers\Admin\QueuesController;
 use ProcessMaker\Http\Controllers\Admin\ScriptExecutorController;
 use ProcessMaker\Http\Controllers\Admin\SettingsController;
@@ -68,6 +69,8 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         Route::get('customize-ui/{tab?}', [CssOverrideController::class, 'edit'])->name('customize-ui.edit');
 
         Route::get('script-executors', [ScriptExecutorController::class, 'index'])->name('script-executors.index');
+
+        Route::get('plugins', [PluginController::class, 'index'])->name('plugins.index')->middleware('can:manage-plugins');
 
         // Tenant Jobs Dashboard
         Route::get('tenant-queues', [TenantQueueController::class, 'index'])->name('tenant-queue.index');

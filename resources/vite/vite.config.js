@@ -7,10 +7,14 @@ export default defineConfig({
     plugins: [
         laravel([
             '../../resources/js/admin/script-executors/index.js',
+            '../../resources/js/admin/plugins/index.js',
         ], {
         }),
         vue({
             template: {
+                compilerOptions: {
+                    whitespace: 'condense',
+                },
                 transformAssetUrls: {
                     base: null,
                     includeAbsolute: false,
@@ -18,6 +22,11 @@ export default defineConfig({
             },
         }),
     ],
+    define: {
+        __VUE_OPTIONS_API__: true,
+        __VUE_PROD_DEVTOOLS__: false,
+        __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
+    },
     build: {
         outDir: 'public/vite-builds',
         rollupOptions: {

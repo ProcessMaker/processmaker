@@ -1,21 +1,14 @@
-import { createApp } from 'vue';
+import { createApp, configureCompat } from 'vue';
 import ScriptExecutorsNew from "./ScriptExecutorsNew";
 import I18NextVue from "i18next-vue";
-// import {BApp} from 'bootstrap-vue-next'
+
+configureCompat({
+  MODE: 3,
+});
 
 const App = {
-  data() {
-    return {
-    }
-  },
-  components: {
-    BApp,
-    ScriptExecutorsNew
-  },
-  template: `
-    <div>
-      <script-executors-new/>
-    </div>
-  `
-}
+  components: { ScriptExecutorsNew },
+  template: `<script-executors-new />`,
+};
+
 createApp(App).use(I18NextVue, { i18next: window.ProcessMaker.i18n }).mount('#script-executors');
