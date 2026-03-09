@@ -128,6 +128,70 @@ class MakeHttpRequestTest extends TestCase
         $this->assertEquals('json', $bodyType);
     }
 
+    public function testRequestConstructionAddsDynamicParamsWhenEndpointParamsAreEmpty()
+    {
+        $testStub = new class {
+            use MakeHttpRequests;
+        };
+        $testStub->endpoints = json_decode('{"records":{"url":"https://example.test/api/1.0/collections/4/records","body":"","view":false,"method":"GET","params":[],"headers":[],"purpose":"records","body_type":"raw","outboundConfig":[]}}', true);
+        $testStub->credentials = ['verify_certificate' => true];
+        $testStub->authtype = 'NONE';
+
+        $endpointConfig = [
+            'dataSource' => 1,
+            'endpoint' => 'records',
+            'outboundConfig' => [
+                ['value' => '{{pmqlValue}}', 'type' => 'PARAM', 'key' => 'pmql', 'format' => 'mustache'],
+            ],
+        ];
+        $requestData = [
+            'pmqlValue' => 'data.form_input_1=Lorem',
+        ];
+
+        $request = $this->callMethod(
+            $testStub,
+            'prepareRequestWithOutboundConfig',
+            [$requestData, &$endpointConfig]
+        );
+        [$method, $url] = array_values($request);
+
+        $this->assertEquals('GET', $method);
+        parse_str(parse_url($url, PHP_URL_QUERY), $query);
+        $this->assertArrayHasKey('pmql', $query);
+        $this->assertEquals('data.form_input_1=Lorem', $query['pmql']);
+    }
+
+    public function testRequestConstructionWithEmptyEndpointParamsDoesNotOverwriteExistingQueryParams()
+    {
+        $testStub = new class {
+            use MakeHttpRequests;
+        };
+        $testStub->endpoints = json_decode('{"records":{"url":"https://example.test/api/1.0/collections/4/records?pmql=data.form_input_1%3D%22Original%22","body":"","view":false,"method":"GET","params":[],"headers":[],"purpose":"records","body_type":"raw","outboundConfig":[]}}', true);
+        $testStub->credentials = ['verify_certificate' => true];
+        $testStub->authtype = 'NONE';
+
+        $endpointConfig = [
+            'dataSource' => 1,
+            'endpoint' => 'records',
+            'outboundConfig' => [
+                ['value' => '{{pmqlValue}}', 'type' => 'PARAM', 'key' => 'pmql', 'format' => 'mustache'],
+            ],
+        ];
+        $requestData = [
+            'pmqlValue' => 'data.form_input_1=Lorem',
+        ];
+
+        $request = $this->callMethod(
+            $testStub,
+            'prepareRequestWithOutboundConfig',
+            [$requestData, &$endpointConfig]
+        );
+        [, $url] = array_values($request);
+
+        parse_str(parse_url($url, PHP_URL_QUERY), $query);
+        $this->assertEquals('data.form_input_1="Original"', html_entity_decode($query['pmql']));
+    }
+
     /**
      * Verifies that different Guzzle Http Responses are mapped correctly calling the function responseWithHeaderData
      */
