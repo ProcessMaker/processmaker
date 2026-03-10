@@ -124,7 +124,7 @@ class GenerateMenus
                 }
 
                 if (config('app.case_retention_policy_enabled')) {
-                    $submenu->add(__('Case Retention'), [
+                    $submenu->add(__('Cases Retention Logs'), [
                         'route' => 'cases-retention.index',
                         'icon' => 'fa-clock',
                     ]);
