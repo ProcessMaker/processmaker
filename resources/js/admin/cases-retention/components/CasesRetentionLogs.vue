@@ -14,6 +14,7 @@
       >
         <vuetable
           :data-manager="dataManager"
+          :sort-order="sortOrder"
           :css="css"
           :api-mode="false"
           :fields="fields"
@@ -24,10 +25,10 @@
           @vuetable:pagination-data="onPaginationData"
         >
           <template
-            slot="process_name"
+            slot="process_id"
             slot-scope="props"
           >
-            <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.name }}</span>
+            <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.process_id }}</span>
           </template>
           <template
             slot="case_id"
@@ -56,8 +57,11 @@
 </template>
 
 <script>
+import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+
+const uniqIdsMixin = createUniqIdsMixin();
 
 /**
  * Fake data matching retention_policy_logs schema until the table/API exists.
@@ -81,7 +85,7 @@ const FAKE_RETENTION_LOGS = [
   {
     id: 3,
     process_id: 204,
-    case_id: "[7001, 7002, 7003]",
+    case_id: 7003,
     deleted_at: "2025-03-03T16:45:00.000000Z",
     created_at: "2025-03-03T16:45:10.000000Z",
   },
@@ -103,7 +107,7 @@ const FAKE_RETENTION_LOGS = [
 
 export default {
   name: "CasesRetentionLogs",
-  mixins: [datatableMixin, dataLoadingMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: {
     filter: {
       type: String,
@@ -112,22 +116,28 @@ export default {
   },
   data() {
     return {
-      orderBy: "name",
+      orderBy: "created_at",
       data: [],
+      sortOrder: [
+        { field: "created_at", sortField: "created_at", direction: "desc" },
+      ],
       fields: [
         {
-          title: () => this.$t("Process"),
-          name: "__slot:process_name",
+          title: () => this.$t("Process ID"),
+          name: "__slot:process_id",
+          sortField: "process_id",
           width: "33%",
         },
         {
           title: () => this.$t("Case ID"),
           name: "__slot:case_id",
+          sortField: "case_id",
           width: "33%",
         },
         {
           title: () => this.$t("Deleted At"),
           name: "__slot:deleted_at",
+          sortField: "deleted_at",
           callback: "formatDate",
           width: "33%",
         },
@@ -143,9 +153,6 @@ export default {
   methods: {
     fetch() {
       // TODO: replace with API call when retention_policy_logs table and endpoint exist
-      // e.g. ProcessMaker.apiClient.get('/retention-policy-logs').then(r => {
-      //   this.data = r.data; // expect { data: [...], meta: { total, per_page, current_page, ... } }
-      // }).finally(() => { this.apiDataLoading = false; });
       const total = FAKE_RETENTION_LOGS.length;
       this.data = {
         data: FAKE_RETENTION_LOGS,
