@@ -3,6 +3,8 @@
 namespace Database\Factories\ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use ProcessMaker\Models\CaseNumber;
+use ProcessMaker\Models\Process;
 
 /**
  * Model factory for a settings.
