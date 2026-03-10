@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use ProcessMaker\Http\Controllers\Api\Actions\Cases\DeletesCaseRecords;
 use ProcessMaker\Models\CaseNumber;
 use ProcessMaker\Models\CaseParticipated;
+use ProcessMaker\Models\CaseRetentionPolicyLog;
 use ProcessMaker\Models\CaseStarted;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -139,6 +140,8 @@ class EvaluateProcessRetentionJob implements ShouldQueue
         CaseNumber::whereIn('process_request_id', $processRequestSubquery)
             ->where($this->buildRetentionQuery($retentionUpdatedAt, $oldCasesCutoff, $newCasesCutoff))
             ->chunkById(100, function ($cases) use (&$processRequestIdsToDelete, &$totalDeleted, &$chunkCount) {
+                $chunkStartTime = microtime(true);
+
                 $caseIds = $cases->pluck('id')->all();
                 $processRequestIds = $cases->pluck('process_request_id')->unique()->all();
 
@@ -170,10 +173,21 @@ class EvaluateProcessRetentionJob implements ShouldQueue
                 $chunkSize = count($caseIds);
                 $totalDeleted += $chunkSize;
 
+                $chunkTimeMs = round((microtime(true) - $chunkStartTime) * 1000, 2);
+
                 Log::info('EvaluateProcessRetentionJob: Deleted chunk of cases', [
                     'process_id' => $this->processId,
                     'chunk_number' => $chunkCount,
                     'cases_deleted' => $chunkSize,
+                    'deletion_time_ms' => $chunkTimeMs,
+                ]);
+
+                CaseRetentionPolicyLog::create([
+                    'process_id' => $this->processId,
+                    'case_ids' => json_encode($caseIds),
+                    'deleted_count' => $chunkSize,
+                    'total_time_taken' => $chunkTimeMs,
+                    'deleted_at' => Carbon::now(),
                 ]);
             });
 
