@@ -5,7 +5,7 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\ProcessMakerModel;
 
-class CaseRetentionPolicyLogs extends ProcessMakerModel
+class CaseRetentionPolicyLog extends ProcessMakerModel
 {
     use HasFactory;
 
