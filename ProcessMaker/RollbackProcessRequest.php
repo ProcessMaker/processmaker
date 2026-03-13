@@ -127,6 +127,7 @@ class RollbackProcessRequest
                 break;
         }
 
+        // update the process request status to active
         $processRequest = $this->newTask->processRequest;
         $processRequest->status = 'ACTIVE';
         $process = $processRequest->process;
@@ -135,8 +136,11 @@ class RollbackProcessRequest
         )->id;
         $processRequest->saveOrFail();
 
+        // update the current task status to closed
         $currentTask->status = 'CLOSED';
         $currentTask->saveOrFail();
+
+        $this->syncParentProcessStatus($processRequest);
 
         return $this->newTask;
     }
@@ -208,5 +212,26 @@ class RollbackProcessRequest
             ]),
             'case_number' => isset($this->currentTask->case_number) ? $this->currentTask->case_number : null,
         ]);
+    }
+
+    /**
+     * When the rolled-back request is a subprocess, reactivate the parent request
+     * and the parent's call activity tokens that were in error.
+     */
+    private function syncParentProcessStatus(ProcessRequest $processRequest): void
+    {
+        $parentRequest = $processRequest->parentRequest;
+        if (!$parentRequest) {
+            return;
+        }
+
+        if (in_array($parentRequest->status, ['ERROR', 'FAILING'])) {
+            $parentRequest->status = 'ACTIVE';
+            $parentRequest->saveOrFail();
+        }
+
+        ProcessRequestToken::where('subprocess_request_id', $processRequest->id)
+            ->whereIn('status', ['ERROR', 'FAILING'])
+            ->update(['status' => 'ACTIVE']);
     }
 }
