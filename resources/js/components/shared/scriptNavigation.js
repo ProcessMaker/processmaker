@@ -21,7 +21,7 @@ export default {
         onScriptNavigate(action, data) {
             switch (action.value) {
               case "duplicate-item":
-                this.dupScript.title = data.title + " Copy";
+                this.dupScript.title = (data.title || data.name || "") + " Copy";
                 this.dupScript.language = data.language;
                 this.dupScript.code = data.code;
                 this.dupScript.description = data.description;
@@ -36,7 +36,7 @@ export default {
                 ProcessMaker.confirmModal(
                   this.$t("Caution!"),
                    this.$t("Are you sure you want to delete the script {{item}}? Deleting this asset will break any active tasks that are assigned.", {
-                      item: data.title,
+                      item: data.title || data.name,
                     }),
                     "",
                   function() {
@@ -53,7 +53,7 @@ export default {
                 );
                 break;
               case 'add-to-project':
-                this.showAddToProjectModal(data.title, data.id);
+                this.showAddToProjectModal(data.title || data.name, data.id);
                 break;
             }
         },
