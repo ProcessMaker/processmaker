@@ -31,16 +31,34 @@
             <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.process_id }}</span>
           </template>
           <template
-            slot="case_id"
+            slot="case_ids"
             slot-scope="props"
           >
-            <span v-uni-id="`case-id-${props.rowData.id}`">{{ props.rowData.case_id }}</span>
+            <span v-uni-id="`case-id-${props.rowData.id}`">{{ props.rowData.case_ids.join(', ') }}</span>
+          </template>
+          <template
+            slot="deleted_count"
+            slot-scope="props"
+          >
+            {{ props.rowData.deleted_count }}
+          </template>
+          <template
+            slot="total_time_taken"
+            slot-scope="props"
+          >
+            {{ props.rowData.total_time_taken }}
           </template>
           <template
             slot="deleted_at"
             slot-scope="props"
           >
             {{ formatDate(props.rowData.deleted_at) }}
+          </template>
+          <template
+            slot="created_at"
+            slot-scope="props"
+          >
+            {{ formatDate(props.rowData.created_at) }}
           </template>
         </vuetable>
         <pagination
@@ -65,41 +83,51 @@ const uniqIdsMixin = createUniqIdsMixin();
 
 /**
  * Fake data matching retention_policy_logs schema until the table/API exists.
- * - id, process_id, case_id (single or serialized list), deleted_at, created_at
+ * - id, process_id, case_ids (array of case IDs), deleted_at, created_at
  */
 const FAKE_RETENTION_LOGS = [
   {
     id: 1,
     process_id: 101,
-    case_id: 5001,
+    case_ids: [5001],
+    deleted_count: 1,
+    total_time_taken: 1000,
     deleted_at: "2025-03-01T14:30:00.000000Z",
     created_at: "2025-03-01T14:30:05.000000Z",
   },
   {
     id: 2,
     process_id: 101,
-    case_id: 5002,
+    case_ids: [500, 501, 502],
+    deleted_count: 3,
+    total_time_taken: 1000,
     deleted_at: "2025-03-02T09:15:00.000000Z",
     created_at: "2025-03-02T09:15:02.000000Z",
   },
   {
     id: 3,
     process_id: 204,
-    case_id: 7003,
+    case_ids: [7003],
+    deleted_count: 1,
+    total_time_taken: 1000,
     deleted_at: "2025-03-03T16:45:00.000000Z",
     created_at: "2025-03-03T16:45:10.000000Z",
   },
   {
     id: 4,
     process_id: 305,
-    case_id: 8010,
+    case_ids: [8010],
+    deleted_count: 1,
+    total_time_taken: 1000,
     deleted_at: "2025-03-04T11:00:00.000000Z",
     created_at: "2025-03-04T11:00:01.000000Z",
   },
   {
     id: 5,
     process_id: 204,
-    case_id: 7005,
+    case_ids: [7005],
+    deleted_count: 1,
+    total_time_taken: 1000,
     deleted_at: "2025-03-05T08:22:00.000000Z",
     created_at: "2025-03-05T08:22:03.000000Z",
   },
@@ -126,20 +154,39 @@ export default {
           title: () => this.$t("Process ID"),
           name: "__slot:process_id",
           sortField: "process_id",
-          width: "33%",
+          width: "16.66%",
         },
         {
-          title: () => this.$t("Case ID"),
-          name: "__slot:case_id",
-          sortField: "case_id",
-          width: "33%",
+          title: () => this.$t("Case IDs"),
+          name: "__slot:case_ids",
+          sortField: "case_ids",
+          width: "16.66%",
+        },
+        {
+          title: () => this.$t("Deleted Count"),
+          name: "__slot:deleted_count",
+          sortField: "deleted_count",
+          width: "16.66%",
+        },
+        {
+          title: () => this.$t("Total Time Taken (ms)"),
+          name: "__slot:total_time_taken",
+          sortField: "total_time_taken",
+          width: "16.66%",
         },
         {
           title: () => this.$t("Deleted At"),
           name: "__slot:deleted_at",
           sortField: "deleted_at",
           callback: "formatDate",
-          width: "33%",
+          width: "16.66%",
+        },
+        {
+          title: () => this.$t("Created At"),
+          name: "__slot:created_at",
+          sortField: "created_at",
+          callback: "formatDate",
+          width: "16.66%",
         },
       ],
     };
@@ -170,6 +217,30 @@ export default {
       this.apiDataLoading = false;
     },
     reload() {
+      this.fetch();
+    },
+    changePerPage(value) {
+        this.perPage = value;
+        if (this.page * value > this.$refs.pagination.tablePagination.total) {
+            this.page = Math.floor(this.$refs.pagination.tablePagination.total / value) + 1;
+        }
+        this.fetch();
+    },
+    onPageChange(page) {
+      if (page == "next") {
+        this.page = this.page + 1;
+      } else if (page == "prev") {
+        this.page = this.page - 1;
+      } else {
+        this.page = page;
+      }
+      if (this.page <= 0) {
+        this.page = 1;
+      }
+      let meta = this.$refs.pagination.tablePagination;
+      if (this.page > meta.last_page) {
+        this.page = meta.last_page;
+      }
       this.fetch();
     },
   },
