@@ -16,6 +16,10 @@ class PermissionCacheService implements PermissionCacheInterface
 
     private const GROUP_PERMISSIONS_KEY = 'group_permissions';
 
+    private const LEGACY_USER_PERMISSIONS_KEY = 'user';
+
+    private const TRACKED_PERMISSION_KEYS = 'permission_cache_keys';
+
     /**
      * Get cached permissions for a user
      */
@@ -41,6 +45,7 @@ class PermissionCacheService implements PermissionCacheInterface
 
         try {
             Cache::put($key, $permissions, self::USER_PERMISSIONS_TTL);
+            $this->trackPermissionKey($key);
         } catch (\Exception $e) {
             Log::warning("Failed to cache user permissions for user {$userId}: " . $e->getMessage());
         }
@@ -71,6 +76,7 @@ class PermissionCacheService implements PermissionCacheInterface
 
         try {
             Cache::put($key, $permissions, self::GROUP_PERMISSIONS_TTL);
+            $this->trackPermissionKey($key);
         } catch (\Exception $e) {
             Log::warning("Failed to cache group permissions for group {$groupId}: " . $e->getMessage());
         }
@@ -81,10 +87,16 @@ class PermissionCacheService implements PermissionCacheInterface
      */
     public function invalidateUserPermissions(int $userId): void
     {
-        $key = $this->getUserPermissionsKey($userId);
+        $keys = [
+            $this->getUserPermissionsKey($userId),
+            $this->getLegacyUserPermissionsKey($userId),
+        ];
 
         try {
-            Cache::forget($key);
+            foreach ($keys as $key) {
+                Cache::forget($key);
+                $this->untrackPermissionKey($key);
+            }
         } catch (\Exception $e) {
             Log::warning("Failed to invalidate user permissions cache for user {$userId}: " . $e->getMessage());
         }
@@ -99,6 +111,7 @@ class PermissionCacheService implements PermissionCacheInterface
 
         try {
             Cache::forget($key);
+            $this->untrackPermissionKey($key);
         } catch (\Exception $e) {
             Log::warning("Failed to invalidate group permissions cache for group {$groupId}: " . $e->getMessage());
         }
@@ -110,8 +123,11 @@ class PermissionCacheService implements PermissionCacheInterface
     public function clearAll(): void
     {
         try {
-            // Clear all permission-related caches
-            Cache::flush();
+            foreach ($this->getTrackedPermissionKeys() as $key) {
+                Cache::forget($key);
+            }
+
+            Cache::forget(self::TRACKED_PERMISSION_KEYS);
         } catch (\Exception $e) {
             Log::warning('Failed to clear all permission caches: ' . $e->getMessage());
         }
@@ -131,6 +147,14 @@ class PermissionCacheService implements PermissionCacheInterface
     private function getGroupPermissionsKey(int $groupId): string
     {
         return self::GROUP_PERMISSIONS_KEY . ":{$groupId}";
+    }
+
+    /**
+     * Get cache key for legacy user permissions.
+     */
+    private function getLegacyUserPermissionsKey(int $userId): string
+    {
+        return self::LEGACY_USER_PERMISSIONS_KEY . "_{$userId}_permissions";
     }
 
     /**
@@ -159,5 +183,46 @@ class PermissionCacheService implements PermissionCacheInterface
             'group_permissions_ttl' => self::GROUP_PERMISSIONS_TTL,
             'cache_driver' => config('cache.default'),
         ];
+    }
+
+    /**
+     * Track service-managed permission keys so clearAll() can stay scoped.
+     */
+    private function trackPermissionKey(string $key): void
+    {
+        $keys = $this->getTrackedPermissionKeys();
+        if (!in_array($key, $keys, true)) {
+            $keys[] = $key;
+            Cache::forever(self::TRACKED_PERMISSION_KEYS, $keys);
+        }
+    }
+
+    /**
+     * Stop tracking a permission key after explicit invalidation.
+     */
+    private function untrackPermissionKey(string $key): void
+    {
+        $keys = array_values(array_filter(
+            $this->getTrackedPermissionKeys(),
+            fn ($trackedKey) => $trackedKey !== $key
+        ));
+
+        if (empty($keys)) {
+            Cache::forget(self::TRACKED_PERMISSION_KEYS);
+
+            return;
+        }
+
+        Cache::forever(self::TRACKED_PERMISSION_KEYS, $keys);
+    }
+
+    /**
+     * Read the tracked permission keys index.
+     */
+    private function getTrackedPermissionKeys(): array
+    {
+        $keys = Cache::get(self::TRACKED_PERMISSION_KEYS, []);
+
+        return is_array($keys) ? $keys : [];
     }
 }

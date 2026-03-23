@@ -126,15 +126,18 @@ class PermissionCacheServiceTest extends TestCase
     {
         // Cache user permissions
         $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
+        Cache::put("user_{$this->userId}_permissions", $this->userPermissions, 3600);
 
         // Verify cache exists
         $this->assertNotNull(Cache::get("user_permissions:{$this->userId}"));
+        $this->assertNotNull(Cache::get("user_{$this->userId}_permissions"));
 
         // Invalidate cache
         $this->cacheService->invalidateUserPermissions($this->userId);
 
         // Verify cache was cleared
         $this->assertNull(Cache::get("user_permissions:{$this->userId}"));
+        $this->assertNull(Cache::get("user_{$this->userId}_permissions"));
     }
 
     /**
@@ -163,6 +166,7 @@ class PermissionCacheServiceTest extends TestCase
         // Cache both user and group permissions
         $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
         $this->cacheService->cacheGroupPermissions($this->groupId, $this->groupPermissions);
+        Cache::put('unrelated-cache-key', 'keep-me', 3600);
 
         // Verify both caches exist
         $this->assertNotNull(Cache::get("user_permissions:{$this->userId}"));
@@ -174,6 +178,7 @@ class PermissionCacheServiceTest extends TestCase
         // Verify both caches were cleared
         $this->assertNull(Cache::get("user_permissions:{$this->userId}"));
         $this->assertNull(Cache::get("group_permissions:{$this->groupId}"));
+        $this->assertSame('keep-me', Cache::get('unrelated-cache-key'));
     }
 
     /**
