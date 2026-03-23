@@ -126,7 +126,7 @@ class PermissionCacheServiceTest extends TestCase
     {
         // Cache user permissions
         $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
-        Cache::put("user_{$this->userId}_permissions", $this->userPermissions, 3600);
+        $this->cacheService->putLegacyUserPermissions($this->userId, $this->userPermissions, 3600);
 
         // Verify cache exists
         $this->assertNotNull(Cache::get("user_permissions:{$this->userId}"));
@@ -165,11 +165,13 @@ class PermissionCacheServiceTest extends TestCase
     {
         // Cache both user and group permissions
         $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
+        $this->cacheService->putLegacyUserPermissions($this->userId, $this->userPermissions, 3600);
         $this->cacheService->cacheGroupPermissions($this->groupId, $this->groupPermissions);
         Cache::put('unrelated-cache-key', 'keep-me', 3600);
 
         // Verify both caches exist
         $this->assertNotNull(Cache::get("user_permissions:{$this->userId}"));
+        $this->assertNotNull(Cache::get("user_{$this->userId}_permissions"));
         $this->assertNotNull(Cache::get("group_permissions:{$this->groupId}"));
 
         // Clear all caches
@@ -177,7 +179,27 @@ class PermissionCacheServiceTest extends TestCase
 
         // Verify both caches were cleared
         $this->assertNull(Cache::get("user_permissions:{$this->userId}"));
+        $this->assertNull(Cache::get("user_{$this->userId}_permissions"));
         $this->assertNull(Cache::get("group_permissions:{$this->groupId}"));
+        $this->assertSame('keep-me', Cache::get('unrelated-cache-key'));
+    }
+
+    /**
+     * Test that clearAll clears tracked legacy permission caches without touching unrelated cache.
+     */
+    public function test_clear_all_clears_legacy_user_permission_cache_only_when_tracked()
+    {
+        $permissions = $this->cacheService->rememberLegacyUserPermissions($this->userId, 3600, function () {
+            return $this->userPermissions;
+        });
+        Cache::put('unrelated-cache-key', 'keep-me', 3600);
+
+        $this->assertEquals($this->userPermissions, $permissions);
+        $this->assertNotNull(Cache::get("user_{$this->userId}_permissions"));
+
+        $this->cacheService->clearAll();
+
+        $this->assertNull(Cache::get("user_{$this->userId}_permissions"));
         $this->assertSame('keep-me', Cache::get('unrelated-cache-key'));
     }
 

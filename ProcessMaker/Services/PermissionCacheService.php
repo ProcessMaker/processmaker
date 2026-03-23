@@ -103,6 +103,57 @@ class PermissionCacheService implements PermissionCacheInterface
     }
 
     /**
+     * Remember legacy user permissions and track the key for scoped clearAll().
+     */
+    public function rememberLegacyUserPermissions(int $userId, int $ttl, callable $callback): array
+    {
+        $key = $this->getLegacyUserPermissionsKey($userId);
+
+        try {
+            $permissions = Cache::remember($key, $ttl, $callback);
+            $this->trackPermissionKey($key);
+
+            return is_array($permissions) ? $permissions : [];
+        } catch (\Exception $e) {
+            Log::warning("Failed to remember legacy user permissions for user {$userId}: " . $e->getMessage());
+
+            $permissions = $callback();
+
+            return is_array($permissions) ? $permissions : [];
+        }
+    }
+
+    /**
+     * Cache legacy user permissions and track the key for scoped clearAll().
+     */
+    public function putLegacyUserPermissions(int $userId, array $permissions, int $ttl): void
+    {
+        $key = $this->getLegacyUserPermissionsKey($userId);
+
+        try {
+            Cache::put($key, $permissions, $ttl);
+            $this->trackPermissionKey($key);
+        } catch (\Exception $e) {
+            Log::warning("Failed to cache legacy user permissions for user {$userId}: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Forget the legacy user permission cache and remove it from the tracked index.
+     */
+    public function forgetLegacyUserPermissions(int $userId): void
+    {
+        $key = $this->getLegacyUserPermissionsKey($userId);
+
+        try {
+            Cache::forget($key);
+            $this->untrackPermissionKey($key);
+        } catch (\Exception $e) {
+            Log::warning("Failed to forget legacy user permissions for user {$userId}: " . $e->getMessage());
+        }
+    }
+
+    /**
      * Invalidate group permissions cache
      */
     public function invalidateGroupPermissions(int $groupId): void
