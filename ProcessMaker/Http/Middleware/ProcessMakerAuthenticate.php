@@ -2,11 +2,29 @@
 
 namespace ProcessMaker\Http\Middleware;
 
+use Closure;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Str;
 
 class ProcessMakerAuthenticate extends Authenticate
 {
+    /**
+     * {@inheritdoc}
+     *
+     * After a successful authenticate(), reject BLOCKED/INACTIVE users so every auth:api route
+     * (core and packages) is covered without listing middleware per route file.
+     */
+    public function handle($request, Closure $next, ...$guards)
+    {
+        $this->authenticate($request, $guards);
+
+        if ($blocked = EnsureAccountAllowsAccess::blockingResponseForRequest($request)) {
+            return $blocked;
+        }
+
+        return $next($request);
+    }
+
     protected function authenticate($request, array $guards)
     {
         $this->addAcceptJsonHeaderIfApiCall($request, $guards);
