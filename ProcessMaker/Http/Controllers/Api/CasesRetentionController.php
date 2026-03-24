@@ -3,9 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\CaseRetentionPolicyLog;
@@ -22,13 +20,39 @@ class CasesRetentionController extends Controller
         'created_at',
     ];
 
+    /**
+     * Search log id, process_id, numeric columns, and JSON case_ids — not date columns.
+     */
+    private function applyLogsFilter($query, string $term): void
+    {
+        $term = trim($term);
+        if ($term === '') {
+            return;
+        }
+
+        $like = '%' . $term . '%';
+        $driver = $query->getConnection()->getDriverName();
+
+        $query->where(function ($q) use ($like, $driver) {
+            $q->where('id', 'like', $like)
+                ->orWhere('process_id', 'like', $like)
+                ->orWhere('deleted_count', 'like', $like)
+                ->orWhere('total_time_taken', 'like', $like);
+
+            if ($driver === 'pgsql') {
+                $q->orWhereRaw('case_ids::text ILIKE ?', [$like]);
+            } else {
+                $q->orWhereRaw('CAST(case_ids AS CHAR) LIKE ?', [$like]);
+            }
+        });
+    }
+
     public function logs(Request $request): ApiCollection
     {
         $query = CaseRetentionPolicyLog::query();
 
-        if ($filter = $request->input('filter')) {
-            $filter = '%' . mb_strtolower($filter) . '%';
-            $query->where('process_id', 'like', $filter);
+        if ($request->filled('filter')) {
+            $this->applyLogsFilter($query, (string) $request->input('filter'));
         }
 
         $orderBy = $request->input('order_by');
