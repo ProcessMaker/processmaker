@@ -1546,6 +1546,8 @@
   "passwords.sent": "We have e-mailed your password reset link!",
   "passwords.token": "This password reset token is invalid.",
   "passwords.user": "We can't find a user with that e-mail address.",
+  "passwords.blocked": "Your account has been blocked. Please contact your administrator.",
+  "passwords.inactive": "Your account is inactive. Please contact your administrator.",
   "Pause Start Timer Events": "Pause Start Timer Events",
   "Pause Timer Start Events": "Pause Timer Start Events",
   "per page": "per page",
