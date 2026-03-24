@@ -22,7 +22,7 @@ class CaseRetentionPolicyLogFactory extends Factory
             'process_id' => function () {
                 return Process::factory()->create()->id;
             },
-            'case_ids' => json_encode(CaseNumber::factory()->count($this->faker->numberBetween(1, 1000))->create()->pluck('id')->toArray()),
+            'case_ids' => CaseNumber::factory()->count($this->faker->numberBetween(1, 1000))->create()->pluck('id')->toArray(),
             'deleted_count' => $this->faker->numberBetween(1, 1000),
             'total_time_taken' => $this->faker->numberBetween(1, 1000000),
             'deleted_at' => $this->faker->dateTimeBetween('-1 year', 'now'),

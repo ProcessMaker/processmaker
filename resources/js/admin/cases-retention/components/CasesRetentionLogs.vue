@@ -34,7 +34,11 @@
             slot="case_ids"
             slot-scope="props"
           >
-            <span v-uni-id="`case-id-${props.rowData.id}`">{{ props.rowData.case_ids.join(', ') }}</span>
+            <case-ids-table-cell
+              :case-ids="props.rowData.case_ids"
+              :row-id="props.rowData.id"
+              :preview-limit="caseIdsPreviewLimit"
+            />
           </template>
           <template
             slot="deleted_count"
@@ -78,63 +82,15 @@
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+import CaseIdsTableCell from "./CaseIdsTableCell.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
-/**
- * Fake data matching retention_policy_logs schema until the table/API exists.
- * - id, process_id, case_ids (array of case IDs), deleted_at, created_at
- */
-const FAKE_RETENTION_LOGS = [
-  {
-    id: 1,
-    process_id: 101,
-    case_ids: [5001],
-    deleted_count: 1,
-    total_time_taken: 1000,
-    deleted_at: "2025-03-01T14:30:00.000000Z",
-    created_at: "2025-03-01T14:30:05.000000Z",
-  },
-  {
-    id: 2,
-    process_id: 101,
-    case_ids: [500, 501, 502],
-    deleted_count: 3,
-    total_time_taken: 1000,
-    deleted_at: "2025-03-02T09:15:00.000000Z",
-    created_at: "2025-03-02T09:15:02.000000Z",
-  },
-  {
-    id: 3,
-    process_id: 204,
-    case_ids: [7003],
-    deleted_count: 1,
-    total_time_taken: 1000,
-    deleted_at: "2025-03-03T16:45:00.000000Z",
-    created_at: "2025-03-03T16:45:10.000000Z",
-  },
-  {
-    id: 4,
-    process_id: 305,
-    case_ids: [8010],
-    deleted_count: 1,
-    total_time_taken: 1000,
-    deleted_at: "2025-03-04T11:00:00.000000Z",
-    created_at: "2025-03-04T11:00:01.000000Z",
-  },
-  {
-    id: 5,
-    process_id: 204,
-    case_ids: [7005],
-    deleted_count: 1,
-    total_time_taken: 1000,
-    deleted_at: "2025-03-05T08:22:00.000000Z",
-    created_at: "2025-03-05T08:22:03.000000Z",
-  },
-];
-
 export default {
   name: "CasesRetentionLogs",
+  components: {
+    CaseIdsTableCell,
+  },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: {
     filter: {
@@ -145,9 +101,12 @@ export default {
   data() {
     return {
       orderBy: "created_at",
+      orderDirection: "desc",
+      // Object { data, meta } after fetch — not a bare array — so vuetable calls dataManager on sort
+      // (see vuetable-2 callDataManager: Array.isArray short-circuits and skips fetch).
       data: [],
       sortOrder: [
-        { field: "created_at", sortField: "created_at", direction: "desc" },
+        { field: "__slot:created_at", sortField: "created_at", direction: "desc" },
       ],
       fields: [
         {
@@ -159,7 +118,6 @@ export default {
         {
           title: () => this.$t("Case IDs"),
           name: "__slot:case_ids",
-          sortField: "case_ids",
           width: "16.66%",
         },
         {
@@ -189,32 +147,32 @@ export default {
           width: "16.66%",
         },
       ],
+      caseIdsPreviewLimit: 5,
     };
   },
   watch: {
     filter() {
-      this.page = 1;
+      // this.page = 1;
       this.fetch();
     },
+
   },
   methods: {
     fetch() {
-      // TODO: replace with API call when retention_policy_logs table and endpoint exist
-      const total = FAKE_RETENTION_LOGS.length;
-      this.data = {
-        data: FAKE_RETENTION_LOGS,
-        meta: {
-          total,
-          per_page: 15,
-          current_page: 1,
-          last_page: 1,
-          from: 1,
-          to: total,
-          total_pages: 1,
-          count: total,
+      ProcessMaker.apiClient.get('cases-retention/logs', {
+        params: {
+          filter: this.filter,
+          order_by: this.orderBy,
+          order_direction: this.orderDirection,
+          page: this.page,
+          per_page: this.perPage,
         },
-      };
-      this.apiDataLoading = false;
+      }).then(response => {
+        this.data = this.transform(response.data);
+        this.apiDataLoading = false;
+      }).catch(error => {
+        this.apiDataLoading = false;
+      });
     },
     reload() {
       this.fetch();
