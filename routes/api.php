@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use ProcessMaker\Http\Controllers\Admin\TenantQueueController;
 use ProcessMaker\Http\Controllers\Api\BookmarkController;
 use ProcessMaker\Http\Controllers\Api\CaseController;
+use ProcessMaker\Http\Controllers\Api\CasesRetentionController;
 use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
@@ -450,5 +451,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->p
 
     // Slack Connector Validation
     Route::post('connector-slack/validate-token', [ProcessMaker\Packages\Connectors\Slack\Controllers\SlackController::class, 'validateToken'])->name('connector-slack.validate-token');
+
+    // Cases Retention
+    Route::get('cases-retention/logs', [CasesRetentionController::class, 'logs'])->name('cases-retention.logs');
 });
 Route::post('devlink/bundle-updated/{bundle}/{token}', [DevLinkController::class, 'bundleUpdated'])->name('devlink.bundle-updated');
