@@ -35,7 +35,7 @@ class ForgotPasswordController extends Controller
 
     /**
      * Send a reset link to the given user.
-     * Blocked users will not receive the reset email for security reasons.
+     * Blocked or inactive users will not receive the reset email for security reasons.
      *
      * @param  Request  $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
@@ -46,7 +46,7 @@ class ForgotPasswordController extends Controller
 
         $user = User::where('email', $request->input('email'))->first();
 
-        if ($user && $user->status === 'BLOCKED') {
+        if ($user && ($user->status === 'BLOCKED' || $user->status === 'INACTIVE')) {
             return $this->sendResetLinkResponse($request, Password::RESET_LINK_SENT);
         }
 

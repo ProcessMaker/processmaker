@@ -29,6 +29,23 @@ class PasswordResetTest extends TestCase
         Notification::assertNothingSent();
     }
 
+    public function testForgotPasswordDoesNotNotifyInactiveUser(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create([
+            'email' => 'inactive-forgot@example.com',
+            'status' => 'INACTIVE',
+        ]);
+
+        $response = $this->post(route('password.email'), [
+            'email' => $user->email,
+        ]);
+
+        $response->assertSessionHas('status');
+        Notification::assertNothingSent();
+    }
+
     public function testForgotPasswordSendsNotificationToActiveUser(): void
     {
         Notification::fake();
@@ -57,7 +74,25 @@ class PasswordResetTest extends TestCase
         $response = $this->get($url . '?email=' . urlencode($user->email));
 
         $response->assertRedirect(route('password.request'));
-        $response->assertSessionHasErrors('email');
+        $response->assertSessionHasErrors([
+            'email' => __('passwords.blocked'),
+        ]);
+    }
+
+    public function testShowResetFormRedirectsInactiveUserToRequestForm(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'inactive-reset-form@example.com',
+            'status' => 'INACTIVE',
+        ]);
+
+        $url = route('password.reset', ['token' => 'unused-token']);
+        $response = $this->get($url . '?email=' . urlencode($user->email));
+
+        $response->assertRedirect(route('password.request'));
+        $response->assertSessionHasErrors([
+            'email' => __('passwords.inactive'),
+        ]);
     }
 
     public function testShowResetFormDisplaysForActiveUser(): void
@@ -94,6 +129,25 @@ class PasswordResetTest extends TestCase
 
         $response->assertSessionHasErrors([
             'email' => __('passwords.blocked'),
+        ]);
+    }
+
+    public function testResetPasswordRejectsInactiveUser(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'inactive-reset-post@example.com',
+            'status' => 'INACTIVE',
+        ]);
+
+        $response = $this->from(route('password.request'))->post('/password/reset', [
+            'token' => 'will-not-be-used',
+            'email' => $user->email,
+            'password' => 'NewPassword123!',
+            'password_confirmation' => 'NewPassword123!',
+        ]);
+
+        $response->assertSessionHasErrors([
+            'email' => __('passwords.inactive'),
         ]);
     }
 

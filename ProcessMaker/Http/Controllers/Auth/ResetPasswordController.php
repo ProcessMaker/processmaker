@@ -55,6 +55,11 @@ class ResetPasswordController extends Controller
                 ->withErrors(['email' => __('passwords.blocked')]);
         }
 
+        if ($user->status === 'INACTIVE') {
+            return redirect()->route('password.request')
+                ->withErrors(['email' => __('passwords.inactive')]);
+        }
+
         return view('auth.passwords.reset', [
             'username' => $user->username,
             'token' => $token,
@@ -64,7 +69,7 @@ class ResetPasswordController extends Controller
 
     /**
      * Reset the given user's password.
-     * Blocked users cannot reset their password.
+     * Blocked or inactive users cannot reset their password.
      *
      * @param  Request  $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
@@ -75,6 +80,10 @@ class ResetPasswordController extends Controller
 
         if ($user && $user->status === 'BLOCKED') {
             return $this->sendResetFailedResponse($request, 'passwords.blocked');
+        }
+
+        if ($user && $user->status === 'INACTIVE') {
+            return $this->sendResetFailedResponse($request, 'passwords.inactive');
         }
 
         return $this->performPasswordReset($request);
