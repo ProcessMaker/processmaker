@@ -568,6 +568,24 @@ export const initSessionSync = ({
         } else {
           alert(e.message, "warning");
         }
+      })
+      .listen(".CaseRetentionLogExportReady", (e) => {
+        if (typeof alert !== "function") {
+          return;
+        }
+        if (e.success) {
+          const { link } = e;
+          const { message } = e;
+          alert(message, "success", 0, false, false, link);
+        } else {
+          alert(e.message, "warning");
+        }
+      })
+      .listen(".CaseRetentionLogExportFailed", (e) => {
+        if (typeof alert !== "function") {
+          return;
+        }
+        alert(e.message, "warning");
       });
   }
 

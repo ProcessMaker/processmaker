@@ -12,7 +12,28 @@ const casesRetentionApp = new window.Vue({
   },
   methods: {
     downloadRetentionLogs() {
-      console.log("downloadRetentionLogs");
+      const params = new URLSearchParams();
+      if (this.filter) {
+        params.set("filter", this.filter);
+      }
+      const qs = params.toString();
+      const path = qs ? `cases-retention/logs/export?${qs}` : "cases-retention/logs/export";
+
+      ProcessMaker.apiClient
+        .get(path)
+        .then((response) => {
+          if (response.data.success) {
+            ProcessMaker.alert(response.data.message, "success");
+          } else {
+            ProcessMaker.alert(
+              response.data.message || "Unable to start export.",
+              "danger",
+            );
+          }
+        })
+        .catch(() => {
+          ProcessMaker.alert("Unable to download logs.", "danger");
+        });
     },
     reload() {
       this.$refs.casesRetentionLogs.reload();
