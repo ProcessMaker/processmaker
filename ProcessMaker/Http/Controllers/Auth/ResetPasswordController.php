@@ -20,7 +20,9 @@ class ResetPasswordController extends Controller
     |
     */
 
-    use ResetsPasswords;
+    use ResetsPasswords {
+        reset as protected performPasswordReset;
+    }
 
     /**
      * Where to redirect users after resetting their password.
@@ -46,8 +48,44 @@ class ResetPasswordController extends Controller
      */
     public function showResetForm(Request $request, $token)
     {
-        $username = User::where('email', $request->input('email'))->firstOrFail()->username;
+        $user = User::where('email', $request->input('email'))->firstOrFail();
 
-        return view('auth.passwords.reset', compact('username', 'token'));
+        if ($user->status === 'BLOCKED') {
+            return redirect()->route('password.request')
+                ->withErrors(['email' => __('passwords.blocked')]);
+        }
+
+        if ($user->status === 'INACTIVE') {
+            return redirect()->route('password.request')
+                ->withErrors(['email' => __('passwords.inactive')]);
+        }
+
+        return view('auth.passwords.reset', [
+            'username' => $user->username,
+            'token' => $token,
+            'email' => $request->input('email'),
+        ]);
+    }
+
+    /**
+     * Reset the given user's password.
+     * Blocked or inactive users cannot reset their password.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    public function reset(Request $request)
+    {
+        $user = User::where('email', $request->input('email'))->first();
+
+        if ($user && $user->status === 'BLOCKED') {
+            return $this->sendResetFailedResponse($request, 'passwords.blocked');
+        }
+
+        if ($user && $user->status === 'INACTIVE') {
+            return $this->sendResetFailedResponse($request, 'passwords.inactive');
+        }
+
+        return $this->performPasswordReset($request);
     }
 }

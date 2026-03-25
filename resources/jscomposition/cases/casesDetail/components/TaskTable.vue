@@ -17,6 +17,7 @@
       :total="dataPagination.total"
       :page="dataPagination.page"
       :pages="dataPagination.pages"
+      :per-page="dataPagination.perPage"
       @perPage="onPerPage"
       @go="onGo" />
   </div>
@@ -97,6 +98,7 @@ const onGo = async (page) => {
 
 const onPerPage = async (perPage) => {
   dataPagination.value.perPage = perPage;
+  dataPagination.value.page = 1;
 
   await hookGetData();
 };

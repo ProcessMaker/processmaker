@@ -342,6 +342,53 @@ class ProcessTemplateTest extends TestCase
         $this->assertEquals('Description of the process', $newProcess->description);
     }
 
+    public function testProcessCreatedFromTemplateUsesAuthenticatedUserAsOwner()
+    {
+        $this->addGlobalSignalProcess();
+        $templateOwner = User::factory()->create(['is_administrator' => true]);
+        $this->user = User::factory()->create(['is_administrator' => false]);
+
+        $processCategory = ProcessCategory::factory()->create(['status' => 'ACTIVE']);
+
+        $process = $this->createProcess('process-with-task-screen', [
+            'name' => 'Template Owned Process',
+            'description' => 'Template Owned Description',
+            'user_id' => $templateOwner->getKey(),
+            'process_category_id' => $processCategory->getKey(),
+        ]);
+
+        $manifest = $this->getManifest('process', $process->id);
+
+        $template = ProcessTemplates::factory()->create([
+            'name' => 'Owner Override Template',
+            'description' => 'Owner Override Template Description',
+            'process_id' => $process->id,
+            'process_category_id' => $processCategory->getKey(),
+            'manifest' => json_encode($manifest),
+            'user_id' => $templateOwner->getKey(),
+            'version' => '1.0.0',
+        ]);
+
+        $route = route('api.template.create', ['type' => 'process', 'id' => $template->id]);
+        $response = $this->apiCall('POST', $route, [
+            'user_id' => $this->user->getKey(),
+            'name' => 'New Process From Template',
+            'description' => 'New Process Description',
+            'process_category_id' => $processCategory->getKey(),
+            'mode' => 'copy',
+            'version' => $template->version,
+            'saveAssetMode' => 'saveAllAssets',
+        ]);
+
+        $response->assertStatus(200);
+
+        $processId = $response->json('processId');
+        $newProcess = Process::findOrFail($processId);
+
+        $this->assertEquals($this->user->getKey(), $newProcess->user_id);
+        $this->assertNotEquals($templateOwner->getKey(), $newProcess->user_id);
+    }
+
     /**
      * Tests the fixtures of the private PHP function.
      *

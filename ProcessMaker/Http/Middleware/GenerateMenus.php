@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Lavary\Menu\Facade as Menu;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Setting;
@@ -50,7 +51,7 @@ class GenerateMenus
                     ['route' => 'tasks.index', 'id' => 'tasks']
                 )->active('tasks/*');
             });
-            if (\Auth::check() && \Auth::user()->canAny('view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables|view-projects')) {
+            if (Gate::allows('view-designer')) {
                 $menu->group(['prefix' => 'designer'], function ($request_items) {
                     $request_items->add(
                         __('Designer'),

@@ -353,6 +353,12 @@ export default {
     openRequest(data, index) {
       return `/requests/${data.id}`;
     },
+    openCase(data) {
+      if (data && data.case_number) {
+        return `/cases/${data.case_number}`;
+      }
+      return this.openRequest(data, 1);
+    },
     openTask(task) {
       return `/tasks/${task.id}/edit`;
     },
@@ -406,14 +412,14 @@ export default {
     },
     formatCaseNumber(value) {
       return `
-      <a href="${this.openRequest(value, 1)}"
+      <a href="${this.openCase(value)}"
          class="text-nowrap">
          # ${value.case_number}
       </a>`;
     },
     formatCaseTitle(value) {
       return `
-      <a href="${this.openRequest(value, 1)}"
+      <a href="${this.openCase(value)}"
          class="text-nowrap">
          ${value.case_title_formatted || value.case_title || value.name}
       </a>`;
@@ -457,8 +463,8 @@ export default {
       data.data = this.jsonRows(data.data);
       for (let record of data.data) {
         //format Status
-        record["case_number"] = this.formatCaseNumber(record);
         record["case_title"] = this.formatCaseTitle(record);
+        record["case_number"] = this.formatCaseNumber(record);
         if (record["active_tasks"]) {
           record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
         }
