@@ -123,6 +123,7 @@ class PasswordResetTest extends TestCase
         $response = $this->from(route('password.request'))->post('/password/reset', [
             'token' => 'will-not-be-used',
             'email' => $user->email,
+            'username' => $user->username,
             'password' => 'NewPassword123!',
             'password_confirmation' => 'NewPassword123!',
         ]);
@@ -142,6 +143,7 @@ class PasswordResetTest extends TestCase
         $response = $this->from(route('password.request'))->post('/password/reset', [
             'token' => 'will-not-be-used',
             'email' => $user->email,
+            'username' => $user->username,
             'password' => 'NewPassword123!',
             'password_confirmation' => 'NewPassword123!',
         ]);
@@ -149,6 +151,35 @@ class PasswordResetTest extends TestCase
         $response->assertSessionHasErrors([
             'email' => __('passwords.inactive'),
         ]);
+    }
+
+    public function testResetPasswordRejectsWrongUsername(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create([
+            'email' => 'wrong-username-reset@example.com',
+            'username' => 'correct_username',
+            'status' => 'ACTIVE',
+        ]);
+
+        /** @var ConcretePasswordBroker $broker */
+        $broker = Password::broker();
+        $token = $broker->createToken($user);
+
+        $response = $this->from(route('password.reset', ['token' => $token]))->post('/password/reset', [
+            'token' => $token,
+            'email' => $user->email,
+            'username' => 'some_other_username',
+            'password' => 'NewSecurePass123!',
+            'password_confirmation' => 'NewSecurePass123!',
+        ]);
+
+        $response->assertSessionHasErrors([
+            'email' => __('passwords.account_not_found'),
+        ]);
+
+        $user->refresh();
+        $this->assertTrue(Hash::check('oneOnlyPassword', $user->password));
     }
 
     public function testResetPasswordUpdatesPasswordForActiveUser(): void
@@ -167,6 +198,7 @@ class PasswordResetTest extends TestCase
         $response = $this->post('/password/reset', [
             'token' => $token,
             'email' => $user->email,
+            'username' => $user->username,
             'password' => $plaintextSecret,
             'password_confirmation' => $plaintextSecret,
         ]);
