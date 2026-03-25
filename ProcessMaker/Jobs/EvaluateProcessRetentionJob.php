@@ -184,7 +184,7 @@ class EvaluateProcessRetentionJob implements ShouldQueue
 
                 CaseRetentionPolicyLog::create([
                     'process_id' => $this->processId,
-                    'case_ids' => json_encode($caseIds),
+                    'case_ids' => $caseIds,
                     'deleted_count' => $chunkSize,
                     'total_time_taken' => $chunkTimeMs,
                     'deleted_at' => Carbon::now(),

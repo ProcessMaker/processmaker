@@ -57,7 +57,7 @@ class CaseRetentionPolicyLogTest extends TestCase
         $this->assertIsNumeric($log->total_time_taken);
         $this->assertNotNull($log->deleted_at);
 
-        $loggedCaseIds = json_decode($log->case_ids, true);
+        $loggedCaseIds = $log->case_ids;
         $this->assertIsArray($loggedCaseIds);
         $this->assertContains((int) $caseOld->id, array_map('intval', $loggedCaseIds));
 

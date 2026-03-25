@@ -25,4 +25,8 @@ class CaseRetentionPolicyLog extends ProcessMakerModel
         'total_time_taken',
         'deleted_at',
     ];
+
+    protected $casts = [
+        'case_ids' => 'array',
+    ];
 }
