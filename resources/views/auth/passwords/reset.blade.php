@@ -25,6 +25,10 @@
 
       </div>
       <div class="form-group">
+        <label for="username">{{__('Username')}}</label>
+        <input id="username" type="text" class="form-control" name="username" value="{{ old('username') }}" autocomplete="username" autocapitalize="none" spellcheck="false">
+      </div>
+      <div class="form-group">
         <label for="password">{{__('New Password')}}</label>
         <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password">
         @if ($errors->has('password'))

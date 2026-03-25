@@ -20,5 +20,6 @@ return [
     'user' => "We can't find a user with that email address.",
     'blocked' => 'Your account has been blocked. Please contact your administrator.',
     'inactive' => 'Your account is inactive. Please contact your administrator.',
+    'account_not_found' => 'We could not find an account with the data provided.',
 
 ];
