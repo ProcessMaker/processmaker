@@ -12,10 +12,9 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use ProcessMaker\CaseRetention\CaseRetentionLogCsvWriter;
 use ProcessMaker\CaseRetention\CaseRetentionLogQueryFilter;
-use ProcessMaker\Events\CaseRetentionLogExportFailed;
-use ProcessMaker\Events\CaseRetentionLogExportReady;
 use ProcessMaker\Models\CaseRetentionPolicyLog;
 use ProcessMaker\Models\User;
+use ProcessMaker\Notifications\CaseRetentionLogExportNotification;
 use Throwable;
 
 class DownloadCaseRetentionLogExport implements ShouldQueue
@@ -42,7 +41,9 @@ class DownloadCaseRetentionLogExport implements ShouldQueue
     public function handle(): void
     {
         if (!Str::isUuid($this->exportToken)) {
-            event(new CaseRetentionLogExportFailed($this->user, false, 'Invalid export token.'));
+            $this->user->notifyNow(
+                new CaseRetentionLogExportNotification(false, __('Invalid export token.'), null),
+            );
 
             return;
         }
@@ -75,10 +76,14 @@ class DownloadCaseRetentionLogExport implements ShouldQueue
 
             $message = __('Click on the link to download the log file. This link will be available until ' . $expires->toString());
 
-            event(new CaseRetentionLogExportReady($this->user, true, $message, $url));
+            $this->user->notifyNow(
+                new CaseRetentionLogExportNotification(true, $message, $url),
+            );
         } catch (Throwable $e) {
             Storage::disk('local')->delete($relativePath);
-            event(new CaseRetentionLogExportFailed($this->user, false, $e->getMessage()));
+            $this->user->notifyNow(
+                new CaseRetentionLogExportNotification(false, $e->getMessage(), null),
+            );
         }
     }
 }

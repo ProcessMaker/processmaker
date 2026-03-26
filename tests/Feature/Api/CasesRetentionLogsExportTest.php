@@ -4,11 +4,13 @@ namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use ProcessMaker\Jobs\DownloadCaseRetentionLogExport;
 use ProcessMaker\Models\User;
+use ProcessMaker\Notifications\CaseRetentionLogExportNotification;
 use Tests\TestCase;
 
 class CasesRetentionLogsExportTest extends TestCase
@@ -65,5 +67,23 @@ class CasesRetentionLogsExportTest extends TestCase
 
         $response->assertOk();
         $this->assertStringContainsString('text/csv', (string) $response->headers->get('content-type'));
+    }
+
+    public function testExportJobSendsNotificationWithDownloadUrl(): void
+    {
+        Notification::fake();
+        Storage::fake('local');
+
+        $user = User::factory()->create([
+            'is_administrator' => true,
+        ]);
+
+        $token = (string) Str::uuid();
+        $job = new DownloadCaseRetentionLogExport($user, null, $token);
+        $job->handle();
+
+        Notification::assertSentTo($user, CaseRetentionLogExportNotification::class, function (CaseRetentionLogExportNotification $n) {
+            return $n->broadcastWith()['url'] !== null;
+        });
     }
 }

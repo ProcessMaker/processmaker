@@ -52,7 +52,7 @@ class CasesRetentionController extends Controller
     }
 
     /**
-     * Queue a CSV export to disk; user receives a signed download link over the websocket when ready.
+     * Queue a CSV export to disk; user receives a database + broadcast notification with a signed download URL when ready.
      */
     public function queueExportCsv(Request $request): JsonResponse
     {
@@ -70,7 +70,7 @@ class CasesRetentionController extends Controller
     }
 
     /**
-     * Signed URL only (no API token). Link is broadcast to the requesting user when the job finishes.
+     * Signed URL only (no API token). Link is included in the export-ready notification when the job finishes.
      */
     public function downloadExportFile(Request $request, string $token): BinaryFileResponse
     {
