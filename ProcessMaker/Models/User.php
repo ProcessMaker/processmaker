@@ -591,7 +591,7 @@ class User extends Authenticatable implements HasMedia
 
         // Clear permissions and user_permissions
         Cache::forget('permissions');
-        app(\ProcessMaker\Services\PermissionCacheService::class)->forgetLegacyUserPermissions($this->id);
+        $this->invalidatePermissionCache();
 
         // return the refreshed user instance
         return $this;

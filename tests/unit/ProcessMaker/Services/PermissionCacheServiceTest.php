@@ -204,6 +204,42 @@ class PermissionCacheServiceTest extends TestCase
     }
 
     /**
+     * Test that tracked permission keys include every managed cache entry.
+     */
+    public function test_tracked_permission_keys_include_all_managed_cache_entries()
+    {
+        $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
+        $this->cacheService->putLegacyUserPermissions($this->userId, $this->userPermissions, 3600);
+        $this->cacheService->cacheGroupPermissions($this->groupId, $this->groupPermissions);
+
+        $trackedKeys = Cache::get('permission_cache_keys');
+
+        $this->assertIsArray($trackedKeys);
+        $this->assertContains("user_permissions:{$this->userId}", $trackedKeys);
+        $this->assertContains("user_{$this->userId}_permissions", $trackedKeys);
+        $this->assertContains("group_permissions:{$this->groupId}", $trackedKeys);
+    }
+
+    /**
+     * Test that tracked permission keys are pruned when a user cache is invalidated.
+     */
+    public function test_invalidate_user_permissions_removes_only_user_keys_from_tracked_index()
+    {
+        $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
+        $this->cacheService->putLegacyUserPermissions($this->userId, $this->userPermissions, 3600);
+        $this->cacheService->cacheGroupPermissions($this->groupId, $this->groupPermissions);
+
+        $this->cacheService->invalidateUserPermissions($this->userId);
+
+        $trackedKeys = Cache::get('permission_cache_keys');
+
+        $this->assertIsArray($trackedKeys);
+        $this->assertNotContains("user_permissions:{$this->userId}", $trackedKeys);
+        $this->assertNotContains("user_{$this->userId}_permissions", $trackedKeys);
+        $this->assertContains("group_permissions:{$this->groupId}", $trackedKeys);
+    }
+
+    /**
      * Test that cache keys are generated correctly
      */
     public function test_cache_keys_are_generated_correctly()

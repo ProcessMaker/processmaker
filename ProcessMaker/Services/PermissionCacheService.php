@@ -20,6 +20,12 @@ class PermissionCacheService implements PermissionCacheInterface
 
     private const TRACKED_PERMISSION_KEYS = 'permission_cache_keys';
 
+    private const TRACKED_PERMISSION_KEYS_LOCK = 'permission_cache_keys_lock';
+
+    private const TRACKED_PERMISSION_KEYS_LOCK_SECONDS = 10;
+
+    private const TRACKED_PERMISSION_KEYS_LOCK_WAIT_SECONDS = 5;
+
     /**
      * Get cached permissions for a user
      */
@@ -174,11 +180,13 @@ class PermissionCacheService implements PermissionCacheInterface
     public function clearAll(): void
     {
         try {
-            foreach ($this->getTrackedPermissionKeys() as $key) {
-                Cache::forget($key);
-            }
+            $this->withTrackedPermissionKeysLock(function (): void {
+                foreach ($this->getTrackedPermissionKeysFromCache() as $key) {
+                    Cache::forget($key);
+                }
 
-            Cache::forget(self::TRACKED_PERMISSION_KEYS);
+                Cache::forget(self::TRACKED_PERMISSION_KEYS);
+            });
         } catch (\Exception $e) {
             Log::warning('Failed to clear all permission caches: ' . $e->getMessage());
         }
@@ -241,11 +249,14 @@ class PermissionCacheService implements PermissionCacheInterface
      */
     private function trackPermissionKey(string $key): void
     {
-        $keys = $this->getTrackedPermissionKeys();
-        if (!in_array($key, $keys, true)) {
-            $keys[] = $key;
-            Cache::forever(self::TRACKED_PERMISSION_KEYS, $keys);
-        }
+        $this->withTrackedPermissionKeysLock(function () use ($key): void {
+            $keys = $this->getTrackedPermissionKeysFromCache();
+
+            if (!in_array($key, $keys, true)) {
+                $keys[] = $key;
+                Cache::forever(self::TRACKED_PERMISSION_KEYS, $keys);
+            }
+        });
     }
 
     /**
@@ -253,27 +264,40 @@ class PermissionCacheService implements PermissionCacheInterface
      */
     private function untrackPermissionKey(string $key): void
     {
-        $keys = array_values(array_filter(
-            $this->getTrackedPermissionKeys(),
-            fn ($trackedKey) => $trackedKey !== $key
-        ));
+        $this->withTrackedPermissionKeysLock(function () use ($key): void {
+            $keys = array_values(array_filter(
+                $this->getTrackedPermissionKeysFromCache(),
+                fn ($trackedKey) => $trackedKey !== $key
+            ));
 
-        if (empty($keys)) {
-            Cache::forget(self::TRACKED_PERMISSION_KEYS);
+            if (empty($keys)) {
+                Cache::forget(self::TRACKED_PERMISSION_KEYS);
 
-            return;
-        }
+                return;
+            }
 
-        Cache::forever(self::TRACKED_PERMISSION_KEYS, $keys);
+            Cache::forever(self::TRACKED_PERMISSION_KEYS, $keys);
+        });
     }
 
     /**
-     * Read the tracked permission keys index.
+     * Read the tracked permission keys index without locking.
      */
-    private function getTrackedPermissionKeys(): array
+    private function getTrackedPermissionKeysFromCache(): array
     {
         $keys = Cache::get(self::TRACKED_PERMISSION_KEYS, []);
 
         return is_array($keys) ? $keys : [];
+    }
+
+    /**
+     * Serialize tracked-key mutations so concurrent warmups do not drop entries.
+     */
+    private function withTrackedPermissionKeysLock(callable $callback): mixed
+    {
+        return Cache::lock(
+            self::TRACKED_PERMISSION_KEYS_LOCK,
+            self::TRACKED_PERMISSION_KEYS_LOCK_SECONDS
+        )->block(self::TRACKED_PERMISSION_KEYS_LOCK_WAIT_SECONDS, $callback);
     }
 }
