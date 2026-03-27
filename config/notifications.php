@@ -12,5 +12,7 @@ return [
         'ERROR_EXECUTION' => '{{- subject }} caused an error',
         'COMMENT' => '{{- user}} commented on {{- subject}}',
         'ProcessMaker\\Notifications\\ImportReady' => 'Imported {{- subject }}',
+        'CASE_RETENTION_LOG_EXPORT_READY' => 'Case retention log export is ready. Click to download.',
+        'CASE_RETENTION_LOG_EXPORT_FAILED' => '{{- subject }}',
     ],
 ];
