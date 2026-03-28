@@ -15,7 +15,7 @@
       <input type="hidden" name="token" value="{{ $token }}">
       <div class="form-group">
         <label for="email">{{__('Email Address')}}</label>
-        <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email">
+        <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ $email ?? old('email') }}">
         @if ($errors->has('email'))
         <span class="
         invalid-feedback" role="alert">
@@ -23,6 +23,10 @@
         </span>
         @endif
 
+      </div>
+      <div class="form-group">
+        <label for="username">{{__('Username')}}</label>
+        <input id="username" type="text" class="form-control" name="username" value="{{ old('username') }}" autocomplete="username" autocapitalize="none" spellcheck="false">
       </div>
       <div class="form-group">
         <label for="password">{{__('New Password')}}</label>

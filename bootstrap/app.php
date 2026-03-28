@@ -73,6 +73,7 @@ $app = Application::configure(basePath: realpath(__DIR__ . '/../'))
         // Web middleware group - custom middleware only
         $middleware->appendToGroup('web', [
             ProcessMakerMiddleware\SessionStarted::class,
+            ProcessMakerMiddleware\EnsureAccountAllowsAccess::class,
             ProcessMakerMiddleware\SessionControlKill::class,
             ProcessMakerMiddleware\SetLocale::class,
             ProcessMakerMiddleware\GenerateMenus::class,
