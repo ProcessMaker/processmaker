@@ -19,6 +19,7 @@
         "doctrine/dbal": "^4.2",
         "fakerphp/faker": "^1.24",
         "google/apiclient": "^2.18",
+        "google/protobuf": "^4.33.6",
         "guzzlehttp/guzzle": "^7.9",
         "igaster/laravel-theme": "^2.0",
         "jenssegers/agent": "^2.6",
@@ -32,7 +33,7 @@
         "laravel/ui": "^4.6",
         "lavary/laravel-menu": "^1.8",
         "lcobucci/jwt": "^5.6",
-        "league/commonmark": "^2.7",
+        "league/commonmark": "^2.8.1",
         "mateusjunges/laravel-kafka": "^2.10",
         "mittwald/vault-php": "^2.1",
         "mustache/mustache": "^2.14",
@@ -45,6 +46,7 @@
         "paragonie/sodium_compat": "^2.5",
         "php-amqplib/php-amqplib": "^3.7",
         "php-http/promise": "~1.2.0",
+        "phpseclib/phpseclib": "^3.0.50",
         "pion/laravel-chunk-upload": "^1.5",
         "predis/predis": "^2.3",
         "processmaker/docker-executor-lua": "^1.0",
@@ -60,7 +62,7 @@
         "psy/psysh": "^0.12.20",
         "pusher/pusher-php-server": "^7.2",
         "ralouphie/getallheaders": "^3.0",
-        "robrichards/xmlseclibs": "^3.1.4",
+        "robrichards/xmlseclibs": "^3.1.5",
         "simplesoftwareio/simple-qrcode": "*",
         "spatie/laravel-fractal": "^6.3",
         "spatie/laravel-html": "^3.11",
@@ -236,7 +238,6 @@
         },
         "audit": {
             "ignore": {
-                "PKSA-z3gr-8qht-p93v": "Vulnerability is only in isolated CI environment where tests are run"
             }
         }
     }
