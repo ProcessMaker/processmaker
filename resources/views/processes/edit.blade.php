@@ -347,7 +347,7 @@
                                 </div>
                             </div>
 
-                            @if(config('app.case_retention_policy_enabled'))
+                            @if(config('app.case_retention_policy_enabled') && auth()->user()->is_administrator)
                             <div class="card card-custom-info">
                               <div class="card-header"
                                    id="headingCasesRetention">
