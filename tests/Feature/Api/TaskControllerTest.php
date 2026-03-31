@@ -3,8 +3,10 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -261,5 +263,127 @@ class TaskControllerTest extends TestCase
         ]);
 
         $this->assertEquals($comments, $task->comments);
+    }
+
+    private function taskShowUrl(ProcessRequestToken $task): string
+    {
+        return route('api.tasks.show', $task);
+    }
+
+    /**
+     * When a task has no draft, the include=draft response key should be null.
+     */
+    public function testIncludeDraftReturnsNullWhenNoDraftExists()
+    {
+        $task = ProcessRequestToken::factory()->create(['user_id' => $this->user->id]);
+
+        $response = $this->apiCall('GET', $this->taskShowUrl($task), ['include' => 'draft']);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('draft', null);
+    }
+
+    /**
+     * When drafts are enabled and a draft exists, it is returned as-is and not deleted.
+     */
+    public function testIncludeDraftReturnsDraftWhenDraftsEnabled()
+    {
+        Config::set('app.task_drafts_enabled', true);
+
+        $task = ProcessRequestToken::factory()->create(['user_id' => $this->user->id]);
+        $draft = TaskDraft::factory()->create([
+            'task_id' => $task->id,
+            'data' => ['field' => 'value'],
+        ]);
+
+        $response = $this->apiCall('GET', $this->taskShowUrl($task), ['include' => 'draft']);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('draft.id', $draft->id);
+        $this->assertDatabaseHas('task_drafts', ['id' => $draft->id]);
+    }
+
+    /**
+     * When drafts are disabled and merge_draft_on_restore is true, the draft is
+     * deleted after being accessed and null is returned to the frontend.
+     * This is the quick-fill scenario: a draft was created to carry data into the
+     * screen, but since drafts are disabled it must be consumed exactly once.
+     */
+    public function testIncludeDraftDeletesDraftAndReturnsNullWhenDraftsDisabledAndMergeOnRestoreEnabled()
+    {
+        Config::set('app.task_drafts_enabled', false);
+        Config::set('app.screen.merge_draft_on_restore', true);
+
+        $task = ProcessRequestToken::factory()->create(['user_id' => $this->user->id]);
+        $draft = TaskDraft::factory()->create([
+            'task_id' => $task->id,
+            'data' => ['field' => 'value'],
+        ]);
+
+        $response = $this->apiCall('GET', $this->taskShowUrl($task), ['include' => 'draft']);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('draft', null);
+        $this->assertDatabaseMissing('task_drafts', ['id' => $draft->id]);
+    }
+
+    /**
+     * When drafts are disabled but merge_draft_on_restore is false, the draft is
+     * returned as-is and NOT deleted, preserving it for future accesses.
+     */
+    public function testIncludeDraftReturnsDraftWithoutDeletingWhenDraftsDisabledAndMergeOnRestoreDisabled()
+    {
+        Config::set('app.task_drafts_enabled', false);
+        Config::set('app.screen.merge_draft_on_restore', false);
+
+        $task = ProcessRequestToken::factory()->create(['user_id' => $this->user->id]);
+        $draft = TaskDraft::factory()->create([
+            'task_id' => $task->id,
+            'data' => ['field' => 'value'],
+        ]);
+
+        $response = $this->apiCall('GET', $this->taskShowUrl($task), ['include' => 'draft']);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('draft.id', $draft->id);
+        $this->assertDatabaseHas('task_drafts', ['id' => $draft->id]);
+    }
+
+    /**
+     * Quick-fill end-to-end: an inbox rule creates a draft to pre-populate the screen
+     * (task_drafts_enabled=false, merge_draft_on_restore=true).
+     *
+     * The draft must be consumed exactly once:
+     * - First request: draft data is present in the response (the frontend merges it)
+     *   and the record is immediately deleted.
+     * - Second request: no draft record exists, so null is returned cleanly without errors.
+     *
+     * This protects the quick-fill feature from regressions: if the draft were not deleted
+     * on the first access the data would be re-merged on every subsequent page load; if
+     * an error were thrown on the second access the task screen would break.
+     */
+    public function testQuickFillDraftIsConsumedExactlyOnce()
+    {
+        Config::set('app.task_drafts_enabled', false);
+        Config::set('app.screen.merge_draft_on_restore', true);
+
+        $task = ProcessRequestToken::factory()->create(['user_id' => $this->user->id]);
+        // Simulates the draft created by an inbox rule with make_draft=true
+        $draft = TaskDraft::factory()->create([
+            'task_id' => $task->id,
+            'data' => ['prefilled_field' => 'inbox rule value'],
+        ]);
+
+        // First access — frontend receives null so it knows to merge from the draft data
+        // that was embedded in the response before deletion
+        $firstResponse = $this->apiCall('GET', $this->taskShowUrl($task), ['include' => 'draft']);
+        $firstResponse->assertStatus(200);
+        $firstResponse->assertJsonPath('draft', null);
+        $this->assertDatabaseMissing('task_drafts', ['id' => $draft->id]);
+
+        // Second access — draft is already gone; must return null without errors
+        $secondResponse = $this->apiCall('GET', $this->taskShowUrl($task), ['include' => 'draft']);
+        $secondResponse->assertStatus(200);
+        $secondResponse->assertJsonPath('draft', null);
     }
 }
