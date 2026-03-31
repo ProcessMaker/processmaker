@@ -601,11 +601,9 @@ class ProcessController extends Controller
             }
         }
 
-        // Prevent non-administrators from updating the retention period
+        // Non-administrators cannot change retention metadata: persist pre-request values.
         if (!auth()->user()->is_administrator) {
-            unset($process->properties['retention_updated_by']);
-            unset($process->properties['retention_updated_at']);
-            unset($process->properties['retention_period']);
+            $this->restoreProcessRetentionPropertiesFromOriginal($process, $original);
         }
 
         // Catch errors to send more specific status
@@ -675,6 +673,40 @@ class ProcessController extends Controller
         }
 
         return $managerIds;
+    }
+
+    /**
+     * Re-apply retention-related keys on $process->properties from the model snapshot taken before fill().
+     * Non-admins cannot add these keys if absent originally, or change values if present.
+     *
+     * @param  array<string, mixed>  $original
+     */
+    private function restoreProcessRetentionPropertiesFromOriginal(Process $process, array $original): void
+    {
+        $originalProperties = $original['properties'] ?? null;
+        if (is_string($originalProperties)) {
+            $decoded = json_decode($originalProperties, true);
+            $originalProperties = is_array($decoded) ? $decoded : [];
+        }
+        if (!is_array($originalProperties)) {
+            $originalProperties = [];
+        }
+
+        $properties = $process->properties;
+        if (!is_array($properties)) {
+            $properties = [];
+        }
+
+        $keys = ['retention_updated_by', 'retention_updated_at', 'retention_period'];
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $originalProperties)) {
+                $properties[$key] = $originalProperties[$key];
+            } else {
+                unset($properties[$key]);
+            }
+        }
+
+        $process->properties = $properties;
     }
 
     /**
