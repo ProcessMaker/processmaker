@@ -59,10 +59,13 @@ trait TaskResourceIncludes
     private function includeDraft()
     {
         $draft = $this->draft;
-        if ($draft && !TaskDraft::draftsEnabled()) {
+        $mergeDraftOnRestore = filter_var(config('app.screen.merge_draft_on_restore'), FILTER_VALIDATE_BOOLEAN);
+
+        if ($draft && !TaskDraft::draftsEnabled() && $mergeDraftOnRestore) {
             // Drafts are used to get data from quick-fill to the screen,
             // but drafts are disabled so we need to delete it now that
             // it's been accessed.
+            // If merge_draft_on_restore is false, we don't delete the draft.
             $draft->delete();
 
             // Return null to prevent the frontend from trying to load
