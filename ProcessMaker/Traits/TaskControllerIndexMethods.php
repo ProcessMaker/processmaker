@@ -295,6 +295,14 @@ trait TaskControllerIndexMethods
     {
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
+            if ($this->advancedFilterHasStatus($request)) {
+                $pmql = $this->removeStatusFromPmql($pmql);
+            }
+
+            if (empty($pmql)) {
+                return;
+            }
+
             try {
                 $query->pmql($pmql, null, $user);
             } catch (QueryException $e) {
@@ -303,6 +311,36 @@ trait TaskControllerIndexMethods
                 abort('Your PMQL contains invalid syntax.', 400);
             }
         }
+    }
+
+    private function advancedFilterHasStatus($request): bool
+    {
+        $advancedFilter = $request->input('advanced_filter', '');
+        if (empty($advancedFilter)) {
+            return false;
+        }
+
+        $filterArray = is_string($advancedFilter) ? json_decode($advancedFilter, true) : $advancedFilter;
+        if (!is_array($filterArray)) {
+            return false;
+        }
+
+        foreach ($filterArray as $filter) {
+            if (isset($filter['subject']['type']) && $filter['subject']['type'] === 'Status') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function removeStatusFromPmql(string $pmql): string
+    {
+        $pmql = preg_replace('/\s+AND\s+\(status\s*=\s*"[^"]*"\)/i', '', $pmql);
+        $pmql = preg_replace('/\(status\s*=\s*"[^"]*"\)\s+AND\s+/i', '', $pmql);
+        $pmql = preg_replace('/\(status\s*=\s*"[^"]*"\)/i', '', $pmql);
+
+        return trim($pmql);
     }
 
     private function applyAdvancedFilter($query, $request)
