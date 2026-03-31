@@ -79,7 +79,6 @@
     "require-dev": {
         "filp/whoops": "^2.16",
         "laravel/dusk": "^8.2",
-        "laravel/homestead": "^15.0",
         "mockery/mockery": "^1.6",
         "phpunit/phpunit": "^12.5.8",
         "spatie/laravel-ignition": "^2.9",
