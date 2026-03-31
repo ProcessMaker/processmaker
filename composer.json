@@ -65,6 +65,7 @@
         "spatie/laravel-multitenancy": "^4.0",
         "spomky-labs/otphp": "^11.3",
         "symfony/expression-language": "^7.2",
+        "symfony/filesystem": "^7.1",
         "symfony/http-foundation": "^7.3",
         "teamtnt/laravel-scout-tntsearch-driver": "^14.0",
         "twilio/sdk": "^8.3",
