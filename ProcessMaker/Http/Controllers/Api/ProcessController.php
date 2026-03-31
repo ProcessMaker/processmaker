@@ -615,6 +615,13 @@ class ProcessController extends Controller
         $changes = $process->getChanges();
         $changes['tmp_process_category_id'] = $request->input('process_category_id');
 
+        // Prevent non-administrators from updating the retention period
+        if (!auth()->user()->is_administrator) {
+            unset($changes['properties']['retention_updated_by']);
+            unset($changes['properties']['retention_updated_at']);
+            unset($changes['properties']['retention_period']);
+        }
+
         // Register the Event
         ProcessPublished::dispatch($process->refresh(), $changes, $original);
 
