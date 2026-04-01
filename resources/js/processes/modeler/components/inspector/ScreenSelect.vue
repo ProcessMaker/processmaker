@@ -16,9 +16,9 @@
       :show-labels="false"
       label="title"
       track-by="id"
+      :name="name"
       @open="load()"
       @search-change="load"
-      :name="name"
     >
       <template slot="noResult">
         {{ $t("No elements found. Consider changing the search query.") }}
@@ -46,7 +46,7 @@
       @asset="processAssetCreation"
     />
     <a
-      v-if="content && content.id"
+      v-if="canOpenScreen"
       :href="`/designer/screen-builder/${content.id}/edit`"
       target="_blank"
     >
@@ -74,6 +74,7 @@ export default {
     "placeholder",
     "defaultKey",
     "name",
+    "excludedKeys",
   ],
   data() {
     return {
@@ -84,6 +85,11 @@ export default {
       localValue: this.value,
       uniqId: uniqueId("screen-select-"),
     };
+  },
+  computed: {
+    canOpenScreen() {
+      return Boolean(this.content && this.content.id && this.canUseScreen(this.content));
+    },
   },
   watch: {
     content: {
@@ -118,6 +124,9 @@ export default {
     this.setDefault();
   },
   methods: {
+    canUseScreen(screen) {
+      return !(Array.isArray(this.excludedKeys) && this.excludedKeys.includes(screen?.key));
+    },
     type() {
       if (this.params && this.params.type) {
         return this.params.type;
@@ -173,7 +182,7 @@ export default {
           { params },
         );
         this.loading = false;
-        this.screens = data.data;
+        this.screens = data.data.filter((screen) => this.canUseScreen(screen));
       } catch (err) {
         console.error("There was a problem getting the screens", err);
         this.loading = false;
@@ -186,15 +195,18 @@ export default {
       }
 
       ProcessMaker.apiClient
-        .get("screens", { params: { 
-          key: this.defaultKey,
-          include_system: 1,
-          order_by: "id",
-          order_direction: "ASC",
-          per_page: 1,
-        }})
+        .get("screens", {
+          params: {
+            key: this.defaultKey,
+            include_system: 1,
+            order_by: "id",
+            order_direction: "ASC",
+            per_page: 1,
+          },
+        })
         .then(({ data }) => {
-          this.content = data.data[0];
+          const [screen] = data.data;
+          this.content = screen;
         });
     },
     /**

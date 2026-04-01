@@ -8,10 +8,9 @@
       v-model="screen"
       name="interstitialScreen"
       :label="$t('Screen Interstitial')"
-      :required="true"
       :helper="$t('What Screen Should Be Used For Rendering This Interstitial')"
       :params="parameters"
-      default-key="interstitial"
+      :excluded-keys="['interstitial']"
     />
   </div>
 </template>
