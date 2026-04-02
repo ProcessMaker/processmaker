@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ab42dc3cdc9d04e26b554fce98a09f2c",
+    "content-hash": "b46b1bb8f4b4db3d70206b5b3b678b6c",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -5971,23 +5971,23 @@
         },
         {
             "name": "open-telemetry/opentelemetry-auto-laravel",
-            "version": "1.4.0",
+            "version": "dev-l13-compatibility",
             "source": {
                 "type": "git",
-                "url": "https://github.com/opentelemetry-php/contrib-auto-laravel.git",
-                "reference": "fa6e0c9189cf559a5d83983bc313eea16d2b6b52"
+                "url": "https://github.com/laravel-shift/contrib-auto-laravel.git",
+                "reference": "f75f99115d675bafd54f20813bdaccf7a35dfb94"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opentelemetry-php/contrib-auto-laravel/zipball/fa6e0c9189cf559a5d83983bc313eea16d2b6b52",
-                "reference": "fa6e0c9189cf559a5d83983bc313eea16d2b6b52",
+                "url": "https://api.github.com/repos/laravel-shift/contrib-auto-laravel/zipball/f75f99115d675bafd54f20813bdaccf7a35dfb94",
+                "reference": "f75f99115d675bafd54f20813bdaccf7a35dfb94",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-opentelemetry": "*",
-                "laravel/framework": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0",
-                "open-telemetry/api": "^1.6",
+                "laravel/framework": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0",
+                "open-telemetry/api": "^1.8",
                 "open-telemetry/sem-conv": "^1.32",
                 "php": "^8.1"
             },
@@ -5997,14 +5997,14 @@
                 "nunomaduro/collision": "*",
                 "open-telemetry/sdk": "^1.8",
                 "orchestra/testbench": ">=7.41.3",
-                "phan/phan": "^5.0",
+                "phan/phan": "^5.0 || ^6.0",
                 "php-http/mock-client": "*",
-                "phpstan/phpstan": "^1.1",
-                "phpstan/phpstan-phpunit": "^1.0",
-                "phpunit/phpunit": "^9.5",
+                "phpstan/phpstan": "^1.1 || ^2.1",
+                "phpstan/phpstan-phpunit": "^1.0 || ^2.0",
+                "phpunit/phpunit": "^9.5 || ^12.5.12",
                 "psalm/plugin-phpunit": "^0.19.2",
                 "spatie/laravel-ignition": "*",
-                "vimeo/psalm": "6.4.0"
+                "vimeo/psalm": "6.4.0 || ^6.15"
             },
             "suggest": {
                 "open-telemetry/opentelemetry-propagation-server-timing": "Automatically propagate the context to the client through server-timing headers.",
@@ -6012,19 +6012,23 @@
             },
             "type": "library",
             "autoload": {
-                "files": [
-                    "_register.php"
-                ],
                 "psr-4": {
                     "OpenTelemetry\\Contrib\\Instrumentation\\Laravel\\": "src/"
+                },
+                "files": [
+                    "_register.php"
+                ]
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "OpenTelemetry\\Tests\\Contrib\\Instrumentation\\Laravel\\": "tests/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "Apache-2.0"
             ],
             "description": "OpenTelemetry auto-instrumentation for Laravel",
-            "homepage": "https://opentelemetry.io/docs/php",
+            "homepage": "https://opentelemetry.io/docs/languages/php/",
             "keywords": [
                 "instrumentation",
                 "laravel",
@@ -6034,9 +6038,9 @@
                 "tracing"
             ],
             "support": {
-                "source": "https://github.com/opentelemetry-php/contrib-auto-laravel/tree/1.4.0"
+                "source": "https://github.com/laravel-shift/contrib-auto-laravel/tree/l13-compatibility"
             },
-            "time": "2025-09-23T23:14:02+00:00"
+            "time": "2026-03-05T19:47:15+00:00"
         },
         {
             "name": "open-telemetry/sdk",
@@ -15843,6 +15847,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "open-telemetry/opentelemetry-auto-laravel": 20,
         "processmaker/laravel-i18next": 20
     },
     "prefer-stable": true,
