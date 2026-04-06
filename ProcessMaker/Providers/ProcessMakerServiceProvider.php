@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
-use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Horizon\SystemProcessCounter;
 use Laravel\Horizon\WorkerCommandString;
@@ -113,12 +112,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
             DB::listen(function ($query) {
                 self::$queryTime += $query->time;
             });
-        }
-
-        // Dusk, if env is appropriate
-        // TODO Remove Dusk references and remove from composer dependencies
-        if (!$this->app->environment('production')) {
-            $this->app->register(DuskServiceProvider::class);
         }
 
         // Register our permission services
