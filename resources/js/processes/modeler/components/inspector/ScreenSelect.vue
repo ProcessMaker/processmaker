@@ -74,7 +74,6 @@ export default {
     "placeholder",
     "defaultKey",
     "name",
-    "excludedKeys",
   ],
   data() {
     return {
@@ -88,7 +87,7 @@ export default {
   },
   computed: {
     canOpenScreen() {
-      return Boolean(this.content && this.content.id && this.canUseScreen(this.content));
+      return Boolean(this.content && this.content.id && this.isEditableScreen(this.content));
     },
   },
   watch: {
@@ -124,8 +123,20 @@ export default {
     this.setDefault();
   },
   methods: {
-    canUseScreen(screen) {
-      return !(Array.isArray(this.excludedKeys) && this.excludedKeys.includes(screen?.key));
+    includesWithCategory(include) {
+      const includes = new Set(
+        String(include || "")
+          .split(",")
+          .map((value) => value.trim())
+          .filter(Boolean),
+      );
+
+      includes.add("category");
+
+      return Array.from(includes).join(",");
+    },
+    isEditableScreen(screen) {
+      return !(screen?.is_system || screen?.category?.is_system);
     },
     type() {
       if (this.params && this.params.type) {
@@ -146,7 +157,11 @@ export default {
     loadScreen(value) {
       this.loading = true;
       ProcessMaker.apiClient
-        .get(`screens/${value}`)
+        .get(`screens/${value}`, {
+          params: {
+            include: "category",
+          },
+        })
         .then(({ data }) => {
           this.loading = false;
           this.content = data;
@@ -169,6 +184,7 @@ export default {
         type: this.type(),
         interactive: this.interactive(),
         include_system: 1,
+        include: this.includesWithCategory(this.params?.include),
         order_direction: "asc",
         status: "active",
         selectList: true,
@@ -182,7 +198,7 @@ export default {
           { params },
         );
         this.loading = false;
-        this.screens = data.data.filter((screen) => this.canUseScreen(screen));
+        this.screens = data.data;
       } catch (err) {
         console.error("There was a problem getting the screens", err);
         this.loading = false;
@@ -199,6 +215,7 @@ export default {
           params: {
             key: this.defaultKey,
             include_system: 1,
+            include: "category",
             order_by: "id",
             order_direction: "ASC",
             per_page: 1,

@@ -10,7 +10,6 @@
       :label="$t('Screen Interstitial')"
       :helper="$t('What Screen Should Be Used For Rendering This Interstitial')"
       :params="parameters"
-      :excluded-keys="['interstitial']"
     />
   </div>
 </template>
