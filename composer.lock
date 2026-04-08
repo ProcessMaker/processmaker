@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "77069405bc94eb9d5bfacd5ebb81c959",
+    "content-hash": "4c97527d73ba14e3c5886054f90e1124",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -6809,16 +6809,16 @@
         },
         {
             "name": "processmaker/docker-executor-php",
-            "version": "1.4.1",
+            "version": "1.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/docker-executor-php.git",
-                "reference": "821dd2b0adb1d02f1f77b82924797370da4664aa"
+                "reference": "63f3e09f5c579873c27fb41658f041ccfb45a13e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/821dd2b0adb1d02f1f77b82924797370da4664aa",
-                "reference": "821dd2b0adb1d02f1f77b82924797370da4664aa",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/63f3e09f5c579873c27fb41658f041ccfb45a13e",
+                "reference": "63f3e09f5c579873c27fb41658f041ccfb45a13e",
                 "shasum": ""
             },
             "type": "library",
@@ -6842,9 +6842,9 @@
             "description": "PHP script executor for processmaker 4",
             "support": {
                 "issues": "https://github.com/ProcessMaker/docker-executor-php/issues",
-                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.4.1"
+                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.4.2"
             },
-            "time": "2026-02-11T00:38:59+00:00"
+            "time": "2026-04-07T21:19:12+00:00"
         },
         {
             "name": "processmaker/laravel-i18next",
