@@ -310,7 +310,7 @@ return [
     'case_retention_policy_enabled' => filter_var(env('CASE_RETENTION_POLICY_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
 
     // Controls which retention periods are available in the UI for the current tier.
-    'case_retention_tier' => env('CASE_RETENTION_TIER', '1'),
+    'case_retention_tier' => trim((string) env('CASE_RETENTION_TIER', '1'), " \t\n\r\0\x0B\"'"),
     'case_retention_tier_options' => [
         '1' => ['six_months', 'one_year'],
         '2' => ['six_months', 'one_year', 'three_years'],
