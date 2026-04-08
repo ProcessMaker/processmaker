@@ -26,9 +26,14 @@
         '@{{taskTitle}}' => null,
       ], 'attributes' => 'v-cloak'])
 @endsection
+@section('css')
+  @include('shared.prospect-process-shell-styles')
+@endsection
 @section('content')
+@php($isProspectProcess = \Illuminate\Support\Str::contains(\Illuminate\Support\Str::lower($task->process->name ?? ''), 'prospect'))
 <div
   id="task"
+  class="{{ $isProspectProcess ? 'prospect-process-shell' : '' }}"
   v-cloak
 >
   <div class="menu-mask" :class="{ 'menu-open': showMenu }"></div>
@@ -88,25 +93,29 @@
               <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
                 @can('update', $task)
                   @unless($hitlEnabled)
-                    <task
-                      ref="task"
-                      class="card border-0"
-                      v-model="formData"
-                      :initial-task-id="{{ $task->id }}"
-                      :initial-request-id="{{ $task->process_request_id }}"
-                      :screen-version="{{ $task->screen['id'] ?? null }}"
-                      :user-id="{{ Auth::user()->id }}"
-                      csrf-token="{{ csrf_token() }}"
-                      initial-loop-context="{{ $task->getLoopContext() }}"
-                      :wait-loading-listeners="true"
-                      @task-updated="taskUpdated"
-                      @updated-page-core="updatePage"
-                      @submit="submit"
-                      @completed="completed"
-                      @@error="error"
-                      @closed="closed"
-                      @redirect="redirectToTask"
-                      @form-data-changed="handleFormDataChange" />
+                    <div class="prospect-screen-shell prospect-task-shell">
+                      <div class="prospect-screen-frame">
+                        <task
+                          ref="task"
+                          class="card border-0 prospect-task-renderer"
+                          v-model="formData"
+                          :initial-task-id="{{ $task->id }}"
+                          :initial-request-id="{{ $task->process_request_id }}"
+                          :screen-version="{{ $task->screen['id'] ?? null }}"
+                          :user-id="{{ Auth::user()->id }}"
+                          csrf-token="{{ csrf_token() }}"
+                          initial-loop-context="{{ $task->getLoopContext() }}"
+                          :wait-loading-listeners="true"
+                          @task-updated="taskUpdated"
+                          @updated-page-core="updatePage"
+                          @submit="submit"
+                          @completed="completed"
+                          @@error="error"
+                          @closed="closed"
+                          @redirect="redirectToTask"
+                          @form-data-changed="handleFormDataChange" />
+                      </div>
+                    </div>
                   @else
                     @include('tasks.partials.hitl-iframe', ['iframeSrc' => $iframeSrc ?? null])
                   @endunless

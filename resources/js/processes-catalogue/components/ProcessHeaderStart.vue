@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <div class="header-mobile">
+  <div :class="{ 'prospect-process-shell': isProspectProcess }">
+    <div class="header-mobile prospect-process-header-mobile">
       <div class="title">
         {{ process.name }}
       </div>
     </div>
-    <div class="header card card-body card-custom">
+    <div class="header card card-body card-custom prospect-process-header">
       <div class="d-flex justify-content-between">
         <div class="d-flex align-items-center flex-grow-1">
           <i class="fas fa-chevron-left mr-2 custom-color" 
@@ -83,6 +83,11 @@ export default {
       processEvents: [],
       singleStartEvent: null,
     }
+  },
+  computed: {
+    isProspectProcess() {
+      return (this.process?.name || "").toLowerCase().includes("prospect");
+    },
   },
   mounted() {
     this.getStartEvents();

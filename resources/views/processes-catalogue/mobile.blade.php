@@ -38,5 +38,5 @@
 @endsection
 
 @section('css')
-
+  @include('shared.prospect-process-shell-styles')
 @endsection

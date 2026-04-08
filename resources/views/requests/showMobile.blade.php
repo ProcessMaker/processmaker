@@ -2,8 +2,12 @@
 @section('title')
   {{ __('Request Detail') }}
 @endsection
+@section('css')
+  @include('shared.prospect-process-shell-styles')
+@endsection
 @section('content_mobile')
-<div v-cloak id="requestMobile">
+@php($isProspectProcess = \Illuminate\Support\Str::contains(\Illuminate\Support\Str::lower($request->process->name ?? ''), 'prospect'))
+<div v-cloak id="requestMobile" class="{{ $isProspectProcess ? 'prospect-process-shell' : '' }}">
   <navbar-request-mobile :title="request.name"></navbar-request-mobile>
   <!--Header-->
   @if (shouldShow('requestStatusContainer'))
@@ -186,8 +190,4 @@
       },
     });
   </script>
-@endsection
-
-@section('css')
-
 @endsection

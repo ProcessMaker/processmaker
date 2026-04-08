@@ -7,6 +7,9 @@
 @section('meta')
     <meta name="request-id" content="{{ $request->getKey() }}">
 @endsection
+@section('css')
+    @include('shared.prospect-process-shell-styles')
+@endsection
 
 
 @section('sidebar')
@@ -20,7 +23,8 @@
     ]])
 @endsection
 @section('content')
-    <div id="request" class="container d-print-block">
+    @php($isProspectProcess = \Illuminate\Support\Str::contains(\Illuminate\Support\Str::lower($request->process->name ?? ''), 'prospect'))
+    <div id="request" class="container d-print-block {{ $isProspectProcess ? 'prospect-process-shell' : '' }}">
         <div class="row">
             <div class="col-sm-12">
                 <screen-detail :row-data="config" v-bind:can-print="true" :timeout-on-load="true">

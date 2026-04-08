@@ -11,6 +11,9 @@
 @section('meta')
   <meta name="request-id" content="{{ $request->id }}">
 @endsection
+@section('css')
+  @include('shared.prospect-process-shell-styles')
+@endsection
 
 @section('breadcrumbs')
   @include('shared.breadcrumbs', [
@@ -22,7 +25,8 @@
   ])
 @endsection
 @section('content')
-  <div id="request">
+  @php($isProspectProcess = \Illuminate\Support\Str::contains(\Illuminate\Support\Str::lower($request->process->name ?? ''), 'prospect'))
+  <div id="request" class="{{ $isProspectProcess ? 'prospect-process-shell' : '' }}">
     <div class="menu-mask" :class="{ 'menu-open': showMenu }"></div>
     <div class="info-main" :class="{ 'menu-open': showMenu }">
       <div class="container-fluid px-3">
@@ -119,20 +123,26 @@
                 <div class="card card-body border-top-0 p-0"
                   v-bind:class="{ 'tab-pane':true, active: showSummary && !activePending}" id="summary" role="tabpanel"
                   aria-labelledby="summary-tab">
-                  <template v-if="showSummary">
-                    <template v-if="showScreenSummary">
-                      <div class="p-3">
-                        <vue-form-renderer ref="screen" :config="screenSummary.config" v-model="dataSummary"
-                          :custom-css="screenSummary?.custom_css"
-                          :computed="screenSummary.computed" />
+                    <template v-if="showSummary">
+                      <template v-if="showScreenSummary">
+                      <div class="p-3 prospect-summary-section">
+                        <div class="prospect-screen-shell">
+                          <div class="prospect-screen-frame prospect-screen-frame--compact">
+                            <vue-form-renderer ref="screen" :config="screenSummary.config" v-model="dataSummary"
+                              :custom-css="screenSummary?.custom_css"
+                              :computed="screenSummary.computed" />
+                          </div>
+                        </div>
                       </div>
                     </template>
                     <template v-if="showScreenRequestDetail && !showScreenSummary">
-                      <div class="card">
-                        <div class="card-body">
+                      <div class="prospect-summary-section">
+                        <div class="prospect-screen-shell">
+                          <div class="prospect-screen-frame prospect-screen-frame--compact">
                           <vue-form-renderer ref="screenRequestDetail" :config="screenRequestDetail.config"
                             :custom-css="screenRequestDetail.custom_css"
                             v-model="dataSummary" />
+                          </div>
                         </div>
                       </div>
                     </template>

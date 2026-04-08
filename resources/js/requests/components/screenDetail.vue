@@ -1,6 +1,7 @@
 <template>
-  <div class="card h-100">
-    <b-overlay
+  <div class="prospect-screen-shell">
+    <div class="prospect-screen-frame prospect-screen-frame--compact">
+      <b-overlay
           id="overlay-background"
           :show="disabled"
           :variant="variant"
@@ -8,7 +9,7 @@
           :blur="blur"
           rounded="sm"
         >
-    <div class="w-100 d-print-none" align="right">
+    <div class="prospect-screen-toolbar w-100 d-print-none">
       <button
         type="button"
         @click="print"
@@ -20,7 +21,7 @@
         <i class="fas fa-print"></i> {{ $t("Print") }}
       </button>
     </div>
-    <div v-for="page in printablePages" :key="page" class="card">
+    <div v-for="page in printablePages" :key="page" class="card prospect-screen-page">
       <div class="card-body h-100" :style="cardStyles">
         <component
           ref="print"
@@ -29,13 +30,16 @@
           :data="formData"
           @update="onUpdate"
           :config="json"
+          :computed="rowData.computed"
+          :custom-css="rowData.custom_css"
+          :watchers="rowData.watchers"
           csrf-token=""
           submiturl=""
           token-id=""
         />
       </div>
     </div>
-    <div class="w-100 d-print-none" align="right">
+    <div class="prospect-screen-toolbar w-100 d-print-none">
       <button
         type="button"
         @click="print"
@@ -48,6 +52,7 @@
       </button>
     </div>
   </b-overlay>
+    </div>
   </div>
 </template>
 
@@ -230,3 +235,12 @@
   }
 </script>
 
+<style scoped>
+.prospect-screen-page + .prospect-screen-page {
+  margin-top: 1rem;
+}
+
+.prospect-screen-toolbar {
+  align-items: center;
+}
+</style>

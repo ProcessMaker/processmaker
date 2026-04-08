@@ -11,6 +11,9 @@
 @section('meta')
   <meta name="request-id" content="">
 @endsection
+@section('css')
+  @include('shared.prospect-process-shell-styles')
+@endsection
 
 @section('content')
   <div id="processes-catalogue" class="px-3 tw-h-[99%] tw-overflow-hidden">

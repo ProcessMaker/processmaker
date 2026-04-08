@@ -39,6 +39,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
+    @include('shared.prospect-process-shell-styles')
     @yield('css')
     <script type="text/javascript">
     @if(Auth::user())
@@ -84,9 +85,10 @@
     @endif
 </head>
 <body>
+  @php($isProspectProcess = \Illuminate\Support\Str::contains(\Illuminate\Support\Str::lower($task->process->name ?? ''), 'prospect'))
   <div id="sidebar" style="display: 'none'"></div>
   <div id="navbar" style="display: 'none'"></div>
-    <div v-cloak id="task" class="container-fluid px-3">
+    <div v-cloak id="task" class="container-fluid px-3 {{ $isProspectProcess ? 'prospect-process-shell' : '' }}">
         <div class="d-flex flex-column flex-md-row" id="interactionListener">
             <div class="flex-grow-1">
                 <div v-if="isSelfService" class="alert alert-primary" role="alert">
@@ -95,26 +97,30 @@
                 </div>
                 <div class="container-fluid h-100 d-flex flex-column">
                     <div id="tabContent" class="tab-content flex-grow-1">
-                        <task
-                          ref="task"
-                          class="card border-0"
-                          v-model="formData"
-                          :initial-task-id="{{ $task->id }}"
-                          :initial-request-id="{{ $task->process_request_id }}"
-                          :user-id="{{ Auth::user()->id }}"
-                          csrf-token="{{ csrf_token() }}"
-                          initial-loop-context="{{ $task->getLoopContext() }}"
-                          @task-updated="taskUpdated"
-                          @after-submit="afterSubmit"
-                          @submit="submit"
-                          @completed="completed"
-                          @@error="error"
-                          @closed="closed"
-                          @redirect="redirectToTask"
-                          :task-preview="true"
-                          :always-allow-editing="alwaysAllowEditing"
-                          :disable-interstitial="disableInterstitial"
-                        ></task>
+                        <div class="prospect-screen-shell prospect-task-shell">
+                          <div class="prospect-screen-frame">
+                            <task
+                              ref="task"
+                              class="card border-0 prospect-task-renderer"
+                              v-model="formData"
+                              :initial-task-id="{{ $task->id }}"
+                              :initial-request-id="{{ $task->process_request_id }}"
+                              :user-id="{{ Auth::user()->id }}"
+                              csrf-token="{{ csrf_token() }}"
+                              initial-loop-context="{{ $task->getLoopContext() }}"
+                              @task-updated="taskUpdated"
+                              @after-submit="afterSubmit"
+                              @submit="submit"
+                              @completed="completed"
+                              @@error="error"
+                              @closed="closed"
+                              @redirect="redirectToTask"
+                              :task-preview="true"
+                              :always-allow-editing="alwaysAllowEditing"
+                              :disable-interstitial="disableInterstitial"
+                            ></task>
+                          </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -7,9 +7,13 @@
 @section('title')
   {{ __('Edit Task') }}
 @endsection
+@section('css')
+  @include('shared.prospect-process-shell-styles')
+@endsection
 
 @section('content_mobile')
-<div v-cloak id="taskMobile">
+@php($isProspectProcess = \Illuminate\Support\Str::contains(\Illuminate\Support\Str::lower($task->process->name ?? ''), 'prospect'))
+<div v-cloak id="taskMobile" class="{{ $isProspectProcess ? 'prospect-process-shell' : '' }}">
   <navbar-task-mobile
     :task="task"
     :userIsAdmin="userIsAdmin"
@@ -26,23 +30,27 @@
       </div>
       <div id="interactionListener" class="container-fluid h-100 d-flex flex-column">
         <div id="tabContent" class="tab-content m-3 flex-grow-1">
-          <task
-            ref="task"
-            class="card border-0"
-            v-model="formData"
-            :initial-task-id="{{ $task->id }}"
-            :initial-request-id="{{ $task->process_request_id }}"
-            :user-id="{{ Auth::user()->id }}"
-            csrf-token="{{ csrf_token() }}"
-            initial-loop-context="{{ $task->getLoopContext() }}"
-            @task-updated="taskUpdated"
-            @submit="submit"
-            @completed="completed"
-            @@error="error"
-            @closed="closed"
-            @redirect="redirectToTask"
-            @form-data-changed="handleFormDataChange"
-          ></task>
+          <div class="prospect-screen-shell prospect-task-shell">
+            <div class="prospect-screen-frame">
+              <task
+                ref="task"
+                class="card border-0 prospect-task-renderer"
+                v-model="formData"
+                :initial-task-id="{{ $task->id }}"
+                :initial-request-id="{{ $task->process_request_id }}"
+                :user-id="{{ Auth::user()->id }}"
+                csrf-token="{{ csrf_token() }}"
+                initial-loop-context="{{ $task->getLoopContext() }}"
+                @task-updated="taskUpdated"
+                @submit="submit"
+                @completed="completed"
+                @@error="error"
+                @closed="closed"
+                @redirect="redirectToTask"
+                @form-data-changed="handleFormDataChange"
+              ></task>
+            </div>
+          </div>
         </div>
       </div>
     </div>

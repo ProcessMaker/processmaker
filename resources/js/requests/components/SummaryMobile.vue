@@ -1,23 +1,31 @@
 <template v-if="showSummary">
   <div>
     <template v-if="showScreenSummary">
-      <div class="p-3">
-        <vue-form-renderer
-          ref="screen"
-          v-model="dataSummary"
-          :config="screenSummary.config"
-          :computed="screenSummary.computed"
-        />
+      <div class="p-3 prospect-summary-section">
+        <div class="prospect-screen-shell">
+          <div class="prospect-screen-frame prospect-screen-frame--compact">
+            <vue-form-renderer
+              ref="screen"
+              v-model="dataSummary"
+              :config="screenSummary.config"
+              :custom-css="screenSummary.custom_css"
+              :computed="screenSummary.computed"
+            />
+          </div>
+        </div>
       </div>
     </template>
     <template v-if="showScreenRequestDetail && !showScreenSummary">
-      <div class="card">
-        <div class="card-body">
+      <div class="prospect-summary-section">
+        <div class="prospect-screen-shell">
+          <div class="prospect-screen-frame prospect-screen-frame--compact">
           <vue-form-renderer
             ref="screenRequestDetail"
             v-model="dataSummary"
             :config="screenRequestDetail"
+            :custom-css="request.request_detail_screen && request.request_detail_screen.custom_css"
           />
+          </div>
         </div>
       </div>
     </template>

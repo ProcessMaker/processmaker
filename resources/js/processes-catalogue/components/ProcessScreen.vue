@@ -10,6 +10,7 @@
     <display-screen
       v-if="showScreen"
       :screen="screen"
+      :process="process"
     />
     <create-template-modal
       id="create-template-modal"
