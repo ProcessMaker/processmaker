@@ -20,8 +20,10 @@
       v-if="allowInterstitial"
       v-model="screen"
       :label="$t('Screen Interstitial')"
+      :required="true"
       :helper="$t('What Screen Should Be Used For Rendering This Interstitial')"
       :params="parameters"
+      default-key="interstitial"
     />
   </div>
 </template>
