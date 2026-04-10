@@ -91,7 +91,7 @@ class LoginController extends Controller
                     true,
                     true,
                     false,
-                    'none'
+                    $this->sessionSameSite()
                 );
 
                 // Redirect to SSO and attach the cookie
@@ -111,7 +111,7 @@ class LoginController extends Controller
             true,
             true,
             false,
-            'none'
+            $this->sessionSameSite()
         );
         $loginView = empty(config('app.login_view')) ? 'auth.login' : config('app.login_view');
         $response = response(view($loginView, compact('addons', 'block')));
@@ -358,7 +358,7 @@ class LoginController extends Controller
                     true,
                     true,
                     false,
-                    'none',
+                    $this->sessionSameSite(),
                 );
 
                 return redirect()->route('password.change');
@@ -405,5 +405,10 @@ class LoginController extends Controller
             $user->language = json_decode($language)->code;
             $user->save();
         }
+    }
+
+    private function sessionSameSite(): string
+    {
+        return config('session.same_site') ?: 'lax';
     }
 }
