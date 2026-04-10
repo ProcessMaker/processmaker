@@ -51,7 +51,7 @@ $app = Application::configure(basePath: realpath(__DIR__ . '/../'))
         $middleware->append(ProcessMakerMiddleware\HideServerHeaders::class);
 
         // Remove CSRF middleware from web group (was disabled in original Kernel.php)
-        $middleware->removeFromGroup('web', Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
+        $middleware->removeFromGroup('web', Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class);
 
         // Replace Laravel default middleware in web group
         $middleware->replaceInGroup('web',
