@@ -91,6 +91,38 @@
           :assetId="assetId"
           :assetName="assetName"
         />
+        <b-modal ref="duplicateScriptModalRef" :title="$t('Copy Script')" centered header-close-content="&times;">
+          <form>
+            <div class="form-group">
+              <label for="dup-script-title">{{ $t('Name') }}<small class="ml-1">*</small></label>
+              <input
+                id="dup-script-title"
+                type="text"
+                class="form-control"
+                v-model="dupScript.title"
+                v-bind:class="{ 'is-invalid': errors.title }"
+              />
+              <div class="invalid-feedback" role="alert" v-if="errors.title">{{ errors.title[0] }}</div>
+            </div>
+            <div class="form-group">
+              <category-select
+                :label="$t('Category')"
+                api-get="script_categories"
+                api-list="script_categories"
+                v-model="dupScript.script_category_id"
+                :errors="errors.script_category_id"
+              />
+            </div>
+            <div class="form-group">
+              <label for="dup-script-description">{{ $t('Description') }}</label>
+              <textarea id="dup-script-description" class="form-control" rows="3" v-model="dupScript.description" />
+            </div>
+          </form>
+          <div slot="modal-footer" class="w-100 text-right">
+            <button type="button" class="btn btn-outline-secondary" @click="hideDuplicateScriptModal">{{ $t('Cancel') }}</button>
+            <button type="button" @click="onSubmitDuplicateScript" class="btn btn-secondary ml-2">{{ $t('Save') }}</button>
+          </div>
+        </b-modal>
       </div>
     </div>
   </div>
@@ -112,6 +144,7 @@ import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
 import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
+import CategorySelect from "../categories/components/CategorySelect.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -121,6 +154,7 @@ export default {
     CreateTemplateModal,
     CreatePmBlockModal,
     EllipsisMenu,
+    CategorySelect,
   },
   mixins: [
     datatableMixin,
@@ -319,6 +353,29 @@ export default {
       this.processId = id;
       this.pmBlockName = name;
       this.$refs["create-pm-block-modal"].show();
+    },
+    /**
+     * Open the duplicate script modal (required by scriptNavigation mixin for "Copy").
+     */
+    showModal() {
+      this.$refs.duplicateScriptModalRef.show();
+    },
+    hideDuplicateScriptModal() {
+      this.$refs.duplicateScriptModalRef.hide();
+    },
+    onSubmitDuplicateScript() {
+      window.ProcessMaker.apiClient
+        .put("scripts/" + this.dupScript.id + "/duplicate", this.dupScript)
+        .then(() => {
+          ProcessMaker.alert(this.$t("The script was duplicated."), "success");
+          this.hideDuplicateScriptModal();
+          this.fetch();
+        })
+        .catch((error) => {
+          if (error.response?.status === 422 && error.response?.data?.errors) {
+            this.errors = error.response.data.errors;
+          }
+        });
     },
   },
 };
