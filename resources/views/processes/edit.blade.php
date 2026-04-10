@@ -688,8 +688,15 @@
                     .catch(error => {
                         //define how display errors
                         if (error.response.status && error.response.status === 422) {
-                        // Validation error
-                        that.errors = error.response.data.errors;
+                            // Validation error
+                            that.errors = error.response.data.errors;
+                            const errors = that.errors || {};
+                            const firstFieldErrors = Object.values(errors).find(fieldErrors => Array.isArray(fieldErrors) && fieldErrors.length);
+                            const firstError = (firstFieldErrors && firstFieldErrors[0]) || error.response.data.message;
+
+                            if (firstError) {
+                                window.ProcessMaker.alert(that.$t(firstError), 'danger');
+                            }
                         }
                     });
                 },
