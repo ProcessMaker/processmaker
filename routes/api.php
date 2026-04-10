@@ -60,10 +60,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->p
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy')->middleware('can:delete-users');
     Route::put('password/change', [ChangePasswordController::class, 'update'])->name('password.update');
     Route::put('users/update_language', [UserController::class, 'updateLanguage'])->name('users.updateLanguage');
-    Route::get('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count')
-        ->middleware('can:view-users');
-    Route::post('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count_post')
-        ->middleware('can:view-users');
+    Route::get('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count');
+    Route::post('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count_post');
 
     // User Groups
     Route::put('users/{user}/groups', [UserController::class, 'updateGroups'])->name('users.groups.update')->middleware('can:edit-users');
@@ -235,6 +233,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->p
 
     // Cases
     Route::get('cases/stages_bar/{case_number?}', [CaseController::class, 'getStagePerCase'])->name('cases.stage');
+    Route::delete('cases/{case_number}', [CaseController::class, 'destroy'])->name('cases.destroy');
 
     // TaskDrafts
     Route::put('drafts/{task}', [TaskDraftController::class, 'update'])->name('taskdraft.update');

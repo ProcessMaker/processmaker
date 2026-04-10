@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
+use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Filesystem\Filesystem;
@@ -9,9 +10,6 @@ use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
-use Illuminate\Queue\Events\JobAttempted;
-use Illuminate\Queue\Events\JobProcessing;
-use Illuminate\Queue\Events\JobRetryRequested;
 use Illuminate\Queue\Listener;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
@@ -22,14 +20,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
-use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Horizon\SystemProcessCounter;
 use Laravel\Horizon\WorkerCommandString;
 use Lavary\Menu\Menu;
+use OpenApi\Analysers\AttributeAnnotationFactory;
+use OpenApi\Analysers\DocBlockAnnotationFactory;
+use OpenApi\Analysers\ReflectionAnalyser;
 use ProcessMaker\Cache\Settings\SettingCacheManager;
 use ProcessMaker\Console\Commands\HorizonListen;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
+use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Events\TenantResolved;
@@ -50,6 +51,7 @@ use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
+use ProcessMaker\Services\ConditionalRedirectService;
 use RuntimeException;
 use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
 use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
@@ -114,12 +116,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
             DB::listen(function ($query) {
                 self::$queryTime += $query->time;
             });
-        }
-
-        // Dusk, if env is appropriate
-        // TODO Remove Dusk references and remove from composer dependencies
-        if (!$this->app->environment('production')) {
-            $this->app->register(DuskServiceProvider::class);
         }
 
         // Register our permission services
@@ -245,6 +241,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         $this->app->instance('tenant-resolved', false);
+
+        /**
+         * Conditional Redirect Service
+         * This service is used to evaluate the conditional redirect property of a process request token.
+         */
+        $this->app->bind(ConditionalRedirectServiceInterface::class, ConditionalRedirectService::class);
     }
 
     /**
@@ -321,6 +323,17 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
                 // Otherwise, show a 404 page.
                 throw new MultitenancyNoTenantFound();
+            }
+        });
+
+        Facades\Event::listen(function (CommandStarting $event) {
+            if ($event->command === 'l5-swagger:generate') {
+                // Set the analyser to use the legacy DocBlockAnnotationFactory. This must
+                // be set here because this config value is not serializable and cannot be cached.
+                config(['l5-swagger.defaults.scanOptions.analyser' => new ReflectionAnalyser([
+                    new AttributeAnnotationFactory(),
+                    new DocBlockAnnotationFactory(),
+                ])]);
             }
         });
     }

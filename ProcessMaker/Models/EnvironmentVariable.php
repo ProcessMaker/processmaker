@@ -60,9 +60,10 @@ class EnvironmentVariable extends ProcessMakerModel
         } catch (Exception $e) {
             Log::error(
                 'Can not decrypt environment variable: ' .
-                $this->attributes['name'] .
+                ($this->attributes['name'] ?? 'unknown') .
                 "\n" . $e->getMessage() .
-                "\n" . $e->getTraceAsString()
+                "\n" . $e->getTraceAsString(),
+                ['attributes' => $this->attributes]
             );
 
             return null;

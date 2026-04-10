@@ -13,9 +13,12 @@ use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Casts\MillisecondsToDateCast;
+use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowUserManager;
+use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Models\MustacheExpressionEvaluator;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
@@ -782,8 +785,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
                     $query->whereIn('process_request_tokens.id', $selfServiceTaskIds);
                 } elseif ($user) {
-                    $taskIds = $user->availableSelfServiceTaskIds();
-                    $query->whereIn('process_request_tokens.id', $taskIds);
+                    $query->whereIn('process_request_tokens.id', $user->availableSelfServiceTasksQuery());
                 } else {
                     $query->where('process_request_tokens.is_self_service', 1);
                 }
@@ -989,6 +991,60 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         }
 
         return $assignment;
+    }
+
+    /**
+     * Get user IDs from process variables for task assignment.
+     *
+     * Extracts user IDs and group IDs from form data based on the activity's
+     * assignedUsers and assignedGroups properties. Retrieves all users from
+     * specified groups (including subgroups recursively) and combines them
+     * with directly assigned users.
+     *
+     * Used when assignment rule is 'process_variable'.
+     *
+     * @param array $form_data Form data containing process variable values.
+     *                         Keys must match activity's assignedUsers and
+     *                         assignedGroups properties. Values must be arrays.
+     *
+     * @return array Unique numeric user IDs (direct users + users from groups).
+     */
+    public function getUsersFromProcessVariable(array $form_data)
+    {
+        $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
+        $assignedUsers = $activity->getProperty('assignedUsers', null);
+        $assignedGroups = $activity->getProperty('assignedGroups', null);
+
+        $usersIds = [];
+        $groupsIds = [];
+
+        // Validate and get user IDs from form_data
+        if ($assignedUsers && isset($form_data[$assignedUsers]) && is_array($form_data[$assignedUsers])) {
+            $usersIds = $form_data[$assignedUsers];
+        }
+
+        // Validate and get group IDs from form_data
+        if ($assignedGroups && isset($form_data[$assignedGroups]) && is_array($form_data[$assignedGroups])) {
+            $groupsIds = $form_data[$assignedGroups];
+        }
+
+        // Get users from groups using the Process model method
+        $usersFromGroups = [];
+        if (!empty($groupsIds) && $this->process) {
+            // Use the getConsolidatedUsers method from the Process model
+            // This method gets users from groups including subgroups recursively
+            $this->process->getConsolidatedUsers($groupsIds, $usersFromGroups);
+        }
+
+        // Combine direct users with users from groups
+        $allUserIds = array_unique(array_merge($usersIds, $usersFromGroups));
+
+        // Convert to numeric array and filter valid values
+        $allUserIds = array_values(array_filter($allUserIds, function ($id) {
+            return !empty($id) && is_numeric($id) && $id > 0;
+        }));
+
+        return $allUserIds;
     }
 
     /**
@@ -1387,6 +1443,59 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * Build context for Mustache (end event external URL). Same as scripts/screens: _user, _request, process data, APP_URL.
+     */
+    private function getElementDestinationMustacheContext(): array
+    {
+        try {
+            $context = (new DataManager())->getData($this);
+        } catch (Throwable $e) {
+            Log::warning('Failed to load Mustache context via DataManager, falling back to request data', [
+                'token_id' => $this->id,
+                'error' => $e->getMessage(),
+            ]);
+            $request = $this->processRequest;
+            $context = array_merge($request->data ?? [], $request ? (new DataManager())->updateRequestMagicVariable([], $request) : []);
+            $user = $this->user ?? auth()->user();
+            if ($user) {
+                $userData = $user->attributesToArray();
+                unset($userData['remember_token']);
+                $context['_user'] = $userData;
+            }
+        }
+
+        $context['APP_URL'] = config('app.url');
+
+        // Never expose remember_token to Mustache (defense in depth; DataManager/fallback may already strip it)
+        if (isset($context['_user']) && is_array($context['_user'])) {
+            unset($context['_user']['remember_token']);
+        }
+
+        // Normalize to plain arrays/scalars so Mustache resolves all keys (common PHP idiom)
+        $json = json_encode($context, JSON_THROW_ON_ERROR);
+        $normalized = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+
+        return is_array($normalized) ? $normalized : [];
+    }
+
+    /**
+     * Resolve Mustache in end event external URL. FEEL is not supported here; use Mustache only.
+     * Context: APP_URL, _request, _user, process variables (same as getElementDestinationMustacheContext).
+     *
+     * Example (Mustache):
+     *   {{APP_URL}}/admin/users/{{_request.id}}/edit     -> https://example.com/admin/users/123/edit
+     *   {{APP_URL}}/webentry/{{_request.id}}             -> https://example.com/webentry/123
+     *   {{APP_URL}}/path/{{my_process_var}}               -> uses process variable my_process_var
+     */
+    private function resolveElementDestinationUrl(string $url): string
+    {
+        $url = html_entity_decode($url, ENT_QUOTES | ENT_HTML401, 'UTF-8');
+        $context = $this->getElementDestinationMustacheContext();
+
+        return (new MustacheExpressionEvaluator())->render($url, $context);
+    }
+
+    /**
      * Determines the destination based on the type of element destination property
      *
      * @param elementDestinationType Used to determine the type of destination for an element.
@@ -1394,10 +1503,28 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      *
      * @return array|null Returns the destination URL.
      */
-    private function getElementDestination($elementDestinationType, $elementDestinationProp): ?array
+    private function getElementDestination($elementDestinationType, $elementDestinationProp, array $conditionalRedirectProp): ?array
     {
         $elementDestination = null;
 
+        if (!empty($conditionalRedirectProp['isEnabled']) && !empty($conditionalRedirectProp['conditions'])) {
+            $result = $this->evaluateConditionalRedirect(app(ConditionalRedirectServiceInterface::class), $conditionalRedirectProp);
+            if ($result) {
+                $elementDestinationType = $result['taskDestination']['value'];
+
+                $url = match ($elementDestinationType) {
+                    'customDashboard' => $result['customDashboard']['url'] ?? null,
+                    'externalURL' => $result['externalUrl'] ?? null,
+                    default => null,
+                };
+
+                $elementDestinationProp = [
+                    'value' => [
+                        'url' => $url,
+                    ],
+                ];
+            }
+        }
         switch ($elementDestinationType) {
             case 'anotherProcess':
             case 'customDashboard':
@@ -1407,6 +1534,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                         $elementDestination = $elementDestinationProp['value'];
                     } else {
                         $elementDestination = $elementDestinationProp['value']['url'] ?? null;
+                    }
+                }
+                if (is_string($elementDestination) && $elementDestination !== '') {
+                    if ($elementDestinationType === 'externalURL' || $elementDestinationType === 'customDashboard') {
+                        $elementDestination = $this->resolveElementDestinationUrl($elementDestination);
                     }
                 }
                 break;
@@ -1441,6 +1573,15 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         ];
     }
 
+    private function evaluateConditionalRedirect(ConditionalRedirectServiceInterface $conditionalRedirectService, array $conditionalRedirectProp): ?array
+    {
+        if (!$conditionalRedirectProp['isEnabled']) {
+            return null;
+        }
+
+        return $conditionalRedirectService->resolveForToken($conditionalRedirectProp['conditions'], $this);
+    }
+
     /**
      * Determines the destination URL based on the element destination type specified in the definition.
      *
@@ -1451,6 +1592,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $definition = $this->getDefinition();
         $elementDestinationProp = $definition['elementDestination'] ?? null;
         $elementDestinationType = null;
+        $conditionalRedirectProp = $definition['conditionalRedirect'] ?? '[]';
+        $conditionalRedirectProp = json_decode($conditionalRedirectProp, true);
 
         try {
             $elementDestinationProp = json_decode($elementDestinationProp, true);
@@ -1461,7 +1604,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             return null;
         }
 
-        return $this->getElementDestination($elementDestinationType, $elementDestinationProp);
+        return $this->getElementDestination($elementDestinationType, $elementDestinationProp, $conditionalRedirectProp);
     }
 
     /**

@@ -293,6 +293,8 @@ class ProcessTemplate implements TemplateInterface
         $processId = $rootLog['newId'];
 
         $process = Process::findOrFail($processId);
+        $process->user_id = Auth::id();
+        $process->save();
 
         $this->syncLaunchpadAssets($request, $process);
 

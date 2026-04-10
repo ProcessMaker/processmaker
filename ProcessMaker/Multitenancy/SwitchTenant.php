@@ -3,6 +3,7 @@
 namespace ProcessMaker\Multitenancy;
 
 use Illuminate\Broadcasting\BroadcastManager;
+use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
 use Monolog\Handler\RotatingFileHandler;
@@ -135,6 +136,9 @@ class SwitchTenant implements SwitchTenantTask
         $this->setConfig('logging.channels.daily.path', storage_path('logs/processmaker.log'));
         $app->make('log')->reset();
         $app->forgetInstance('log');
+
+        // url() helper
+        app(UrlGenerator::class)->useOrigin($tenant->config['app.url']);
 
         // NOTE: Cache prefix and cache settings prefix are handled in PrefixCacheTask
 

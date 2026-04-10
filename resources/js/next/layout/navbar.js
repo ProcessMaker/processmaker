@@ -63,6 +63,7 @@ const sessionModal = function (title, message, time, warnSeconds) {
 
 const closeSessionModal = function () {
   ProcessMaker.navbar.sessionShow = false;
+  ProcessMaker.navbar.sessionIsRenewing = false;
 };
 
 // Set out own specific confirm modal.
@@ -137,6 +138,7 @@ const navbar = new Vue({
       sessionMessage: "",
       sessionTime: "",
       sessionWarnSeconds: "",
+      sessionIsRenewing: false,
       taskTitle: "",
       isMobile: false,
       isMobileDevice: mobileApp,

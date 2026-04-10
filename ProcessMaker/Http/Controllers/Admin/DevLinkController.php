@@ -43,7 +43,7 @@ class DevLinkController extends Controller
 
         if (!$client) {
             $clientRepository = app('Laravel\Passport\ClientRepository');
-            $client = $clientRepository->create(null, 'devlink', $redirectUri);
+            $client = $clientRepository->createAuthorizationCodeGrantClient('devlink', [$redirectUri]);
         }
 
         $query = http_build_query([
