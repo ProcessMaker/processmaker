@@ -40,21 +40,21 @@
         "mustache/mustache": "^2.14",
         "open-telemetry/api": "^1.8",
         "open-telemetry/exporter-otlp": "^1.3",
-        "open-telemetry/opentelemetry-auto-laravel": "dev-l13-compatibility#f75f99115d675bafd54f20813bdaccf7a35dfb94",
+        "open-telemetry/opentelemetry-auto-laravel": "dev-main",
         "open-telemetry/transport-grpc": "^1.1",
         "openai-php/laravel": "^0.19.1",
         "paragonie/sodium_compat": "^2.5",
         "php-amqplib/php-amqplib": "^3.7",
         "php-http/promise": "~1.2.0",
         "phpseclib/phpseclib": "^3.0.50",
-        "pion/laravel-chunk-upload": "dev-laravel-13-support#b32bfb637d5af6501a9fe703393f812e7d6c8458",
+        "pion/laravel-chunk-upload": "dev-master",
         "predis/predis": "^2.3",
         "processmaker/docker-executor-lua": "^1.0",
         "processmaker/docker-executor-node": "1.1.0",
         "processmaker/docker-executor-php": "1.4.1",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.12.4",
-        "processmaker/pmql": "dev-task/FOUR-28803#a650ca80d98865dc52a4ceba44ed564ad4096d6e",
+        "processmaker/pmql": "1.13.3",
         "promphp/prometheus_client_php": "^2.12",
         "psr/http-message": "^2.0",
         "psr/log": "^3.0",
@@ -221,15 +221,11 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/ProcessMaker/pmql.git"
+            "url": "https://github.com/ProcessMaker/laravel-chunk-upload.git"
         },
         {
             "type": "vcs",
-            "url": "https://github.com/hsndmr/laravel-chunk-upload.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/laravel-shift/contrib-auto-laravel.git"
+            "url": "https://github.com/ProcessMaker/contrib-auto-laravel.git"
         },
         {
             "type": "vcs",

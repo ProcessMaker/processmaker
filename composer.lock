@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0ffe903ae36727ce622c99f5ed12759c",
+    "content-hash": "9acde1dce44bb63be483e02fe4e04466",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -6040,16 +6040,16 @@
         },
         {
             "name": "open-telemetry/opentelemetry-auto-laravel",
-            "version": "dev-l13-compatibility",
+            "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://github.com/laravel-shift/contrib-auto-laravel.git",
-                "reference": "f75f99115d675bafd54f20813bdaccf7a35dfb94"
+                "url": "https://github.com/ProcessMaker/contrib-auto-laravel.git",
+                "reference": "890ccd089c03168cfc62bd0e449d1f5611add486"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel-shift/contrib-auto-laravel/zipball/f75f99115d675bafd54f20813bdaccf7a35dfb94",
-                "reference": "f75f99115d675bafd54f20813bdaccf7a35dfb94",
+                "url": "https://api.github.com/repos/ProcessMaker/contrib-auto-laravel/zipball/890ccd089c03168cfc62bd0e449d1f5611add486",
+                "reference": "890ccd089c03168cfc62bd0e449d1f5611add486",
                 "shasum": ""
             },
             "require": {
@@ -6066,19 +6066,20 @@
                 "nunomaduro/collision": "*",
                 "open-telemetry/sdk": "^1.8",
                 "orchestra/testbench": ">=7.41.3",
-                "phan/phan": "^5.0 || ^6.0",
+                "phan/phan": "^5.0",
                 "php-http/mock-client": "*",
-                "phpstan/phpstan": "^1.1 || ^2.1",
-                "phpstan/phpstan-phpunit": "^1.0 || ^2.0",
-                "phpunit/phpunit": "^9.5 || ^12.5.12",
+                "phpstan/phpstan": "^1.1",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "phpunit/phpunit": "^9.5",
                 "psalm/plugin-phpunit": "^0.19.2",
                 "spatie/laravel-ignition": "*",
-                "vimeo/psalm": "6.4.0 || ^6.15"
+                "vimeo/psalm": "6.4.0"
             },
             "suggest": {
                 "open-telemetry/opentelemetry-propagation-server-timing": "Automatically propagate the context to the client through server-timing headers.",
                 "open-telemetry/opentelemetry-propagation-traceresponse": "Automatically propagate the context to the client through trace-response headers."
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -6107,9 +6108,9 @@
                 "tracing"
             ],
             "support": {
-                "source": "https://github.com/laravel-shift/contrib-auto-laravel/tree/l13-compatibility"
+                "source": "https://github.com/ProcessMaker/contrib-auto-laravel/tree/main"
             },
-            "time": "2026-03-05T19:47:15+00:00"
+            "time": "2026-04-08T12:06:23+00:00"
         },
         {
             "name": "open-telemetry/sdk",
@@ -7281,16 +7282,16 @@
         },
         {
             "name": "pion/laravel-chunk-upload",
-            "version": "dev-laravel-13-support",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/hsndmr/laravel-chunk-upload.git",
-                "reference": "b32bfb637d5af6501a9fe703393f812e7d6c8458"
+                "url": "https://github.com/ProcessMaker/laravel-chunk-upload.git",
+                "reference": "bac78894f1caa1d219f4405bbd8399b73ab4c124"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hsndmr/laravel-chunk-upload/zipball/b32bfb637d5af6501a9fe703393f812e7d6c8458",
-                "reference": "b32bfb637d5af6501a9fe703393f812e7d6c8458",
+                "url": "https://api.github.com/repos/ProcessMaker/laravel-chunk-upload/zipball/bac78894f1caa1d219f4405bbd8399b73ab4c124",
+                "reference": "bac78894f1caa1d219f4405bbd8399b73ab4c124",
                 "shasum": ""
             },
             "require": {
@@ -7305,6 +7306,7 @@
                 "overtrue/phplint": "^1.1 | ^2.0 | ^9.1",
                 "phpunit/phpunit": "5.7 | 6.0 | 7.0 | 7.5 | 8.4 | ^8.5 | ^9.3 | ^10.0 | ^11.0"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -7348,9 +7350,9 @@
             ],
             "description": "Service for chunked upload with several js providers",
             "support": {
-                "source": "https://github.com/hsndmr/laravel-chunk-upload/tree/laravel-13-support"
+                "source": "https://github.com/ProcessMaker/laravel-chunk-upload/tree/master"
             },
-            "time": "2026-03-21T15:45:15+00:00"
+            "time": "2026-04-10T00:40:44+00:00"
         },
         {
             "name": "predis/predis",
@@ -7622,16 +7624,16 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "dev-task/FOUR-28803",
+            "version": "1.13.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "a650ca80d98865dc52a4ceba44ed564ad4096d6e"
+                "reference": "c77cf2127083c8a5b2bc794b2da189f85851a023"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/a650ca80d98865dc52a4ceba44ed564ad4096d6e",
-                "reference": "a650ca80d98865dc52a4ceba44ed564ad4096d6e",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/c77cf2127083c8a5b2bc794b2da189f85851a023",
+                "reference": "c77cf2127083c8a5b2bc794b2da189f85851a023",
                 "shasum": ""
             },
             "type": "project",
@@ -7645,11 +7647,7 @@
                     "ProcessMaker\\Query\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "ProcessMaker\\Query\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
                     "name": "Taylor Dondich",
@@ -7658,10 +7656,10 @@
             ],
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
-                "source": "https://github.com/ProcessMaker/pmql/tree/task/FOUR-28803",
-                "issues": "https://github.com/ProcessMaker/pmql/issues"
+                "issues": "https://github.com/ProcessMaker/pmql/issues",
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.13.3"
             },
-            "time": "2026-04-02T19:09:06+00:00"
+            "time": "2026-04-10T00:46:08+00:00"
         },
         {
             "name": "promphp/prometheus_client_php",
@@ -15943,8 +15941,7 @@
     "stability-flags": {
         "open-telemetry/opentelemetry-auto-laravel": 20,
         "pion/laravel-chunk-upload": 20,
-        "processmaker/laravel-i18next": 20,
-        "processmaker/pmql": 20
+        "processmaker/laravel-i18next": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
