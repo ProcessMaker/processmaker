@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "2026.6.2",
+    "version": "2026.6.3",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -51,7 +51,7 @@
         "predis/predis": "^2.3",
         "processmaker/docker-executor-lua": "^1.0",
         "processmaker/docker-executor-node": "1.1.0",
-        "processmaker/docker-executor-php": "1.4.1",
+        "processmaker/docker-executor-php": "1.4.2",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.12.4",
         "processmaker/pmql": "1.13.3",
@@ -112,7 +112,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "90f2c5a3",
+            "build": "4af44984",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.10",
