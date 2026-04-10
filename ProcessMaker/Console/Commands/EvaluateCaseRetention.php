@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use ProcessMaker\Jobs\EvaluateProcessRetentionJob;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Services\CaseRetentionTierService;
 
 class EvaluateCaseRetention extends Command
 {
@@ -39,6 +40,8 @@ class EvaluateCaseRetention extends Command
 
         $this->info('Case retention policy is enabled');
         $this->info('Dispatching retention evaluation jobs for all processes');
+        // Get the allowed periods for the current tier (support for downgrading to a lower tier)
+        $tierAllowedPeriods = CaseRetentionTierService::allowedPeriodsForCurrentTier();
 
         // Get system category IDs to exclude
         $systemCategoryIds = ProcessCategory::where('is_system', true)->pluck('id');
@@ -61,9 +64,9 @@ class EvaluateCaseRetention extends Command
             });
         }
 
-        $query->chunkById(100, function ($processes) use (&$jobCount) {
+        $query->chunkById(100, function ($processes) use (&$jobCount, $tierAllowedPeriods) {
             foreach ($processes as $process) {
-                dispatch(new EvaluateProcessRetentionJob($process->id));
+                dispatch(new EvaluateProcessRetentionJob($process->id, $tierAllowedPeriods));
                 $jobCount++;
             }
         });

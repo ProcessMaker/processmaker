@@ -15,16 +15,20 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\TaskDraft;
+use ProcessMaker\Services\CaseRetentionTierService;
 
 class EvaluateProcessRetentionJob implements ShouldQueue
 {
     use Queueable, DeletesCaseRecords;
 
     /**
-     * Create a new job instance.
+     * @param  list<string>|null  $tierAllowedPeriods  From {@see EvaluateCaseRetention} so tier options are not
+     *                                                 re-resolved for every queued process; null = resolve in job.
      */
-    public function __construct(public int $processId)
-    {
+    public function __construct(
+        public int $processId,
+        public ?array $tierAllowedPeriods = null,
+    ) {
     }
 
     /**
@@ -73,6 +77,14 @@ class EvaluateProcessRetentionJob implements ShouldQueue
             ]);
 
             return;
+        }
+
+        if (CaseRetentionTierService::clampProcessRetentionToCurrentTier($process, $this->tierAllowedPeriods)) {
+            Log::info('EvaluateProcessRetentionJob: Retention period clamped to current tier maximum', [
+                'process_id' => $this->processId,
+                'retention_period' => $process->properties['retention_period'] ?? null,
+            ]);
+            $process->refresh();
         }
 
         // Default to one_year if retention_period is not set
