@@ -260,10 +260,16 @@ export const initSessionSync = ({
   const markActivity = (source) => {
     setSessionState(accountTimeoutLength);
     clearWarningState();
+    setSuppressWarning(2000);
     broadcastSessionEvent("activity", { timeout: accountTimeoutLength, source });
     sessionDebugLog("activity", { source, timeout: accountTimeoutLength });
+    const closeSessionModal = resolveCloseSessionModal();
+    if (closeSessionModal) {
+      closeSessionModal();
+    }
     if (isLeader()) {
       ensureWorkerRunning(`activity:${source}`);
+      startTimeoutWorker(sessionState.timeout);
     }
   };
 
@@ -497,20 +503,6 @@ export const initSessionSync = ({
     }
     clearWarningState();
     broadcastSessionEvent("logout");
-  });
-
-  // Restart the timeout worker (when the user interacts with the page)
-  const eventsTimeoutWorker = ["click", "keypress"];
-  eventsTimeoutWorker.forEach((event) => {
-    document.addEventListener(event, () => {
-      if (!isLeader()) {
-        sessionDebugLog("worker:restart:skip", { event });
-        return;
-      }
-      markActivity(event);
-      sessionDebugLog("worker:restart", { event });
-      AccountTimeoutWorker.postMessage({ method: "restart" });
-    });
   });
 
   const isSameDevice = (e) => {

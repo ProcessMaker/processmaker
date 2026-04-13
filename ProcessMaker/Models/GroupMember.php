@@ -131,10 +131,8 @@ class GroupMember extends ProcessMakerModel
     /**
      * Boot the model and register observers
      */
-    protected static function boot()
+    protected static function booted()
     {
-        parent::boot();
-
         static::observe(GroupMemberObserver::class);
     }
 }

@@ -36,7 +36,7 @@
           />
         </div>
 
-        <div v-if="packageAi" class="col-4 p-0">
+        <div v-if="packageAi && showPiImport" class="col-4 p-0">
           <button-card
             :button="processIntelligenceButton"
             @show-details="showDetails($event)"
@@ -129,7 +129,14 @@ import WizardTemplateDetails from "./WizardTemplateDetails.vue";
 export default {
   components: { ButtonCard, TemplateSelectCard, TemplateDetails, WizardTemplateDetails },
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["type", "component", "packageAi", 'showTemplateGalleryLink', 'showTemplateOptionsActionBar'],
+  props: {
+    type: String,
+    component: String,
+    packageAi: [Boolean, Number],
+    showTemplateGalleryLink: [Boolean, String, Number],
+    showTemplateOptionsActionBar: [Boolean, String, Number],
+    showPiImport: { type: Boolean, default: true },
+  },
   data() {
     return {
       filter: "",

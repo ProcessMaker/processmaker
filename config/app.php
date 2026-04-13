@@ -179,7 +179,6 @@ return [
          */
         Laravel\Passport\PassportServiceProvider::class,
         Laravel\Scout\ScoutServiceProvider::class,
-        TeamTNT\Scout\TNTSearchScoutServiceProvider::class,
         Jenssegers\Agent\AgentServiceProvider::class,
 
         /**
@@ -246,6 +245,7 @@ return [
         'cache_enabled' => env('SCREEN_CACHE_ENABLED', false),
         'cache_timeout' => env('SCREEN_CACHE_TIMEOUT', 5000), // timeout in milliseconds
         'show_secure_handler_toggle' => filter_var(env('SCREEN_SECURE_HANDLER_TOGGLE_VISIBLE', false), FILTER_VALIDATE_BOOLEAN),
+        'merge_draft_on_restore' => filter_var(env('SCREEN_MERGE_DRAFT_ON_RESTORE', true), FILTER_VALIDATE_BOOLEAN),
     ],
 
     'queue_imports' => env('QUEUE_IMPORTS', true),

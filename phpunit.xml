@@ -5,6 +5,7 @@
          colors="true"
          testdox="true"
          extensionsDirectory="tests/Extensions"
+         displayDetailsOnAllIssues="true"
 >
   <testsuites>
       <testsuite name="Features">
