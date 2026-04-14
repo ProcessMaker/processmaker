@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "07e9a3a2f4231c25e36ea541f7684e66",
+    "content-hash": "6088d4affaf42d74115c474927d96aec",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -9971,16 +9971,16 @@
         },
         {
             "name": "swagger-api/swagger-ui",
-            "version": "v5.32.1",
+            "version": "v5.32.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "d361f5b3570b8ade67fb1c02cf7a676fcb441479"
+                "reference": "5717343f5cd3afef84bf3e7aac47df079013638f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/d361f5b3570b8ade67fb1c02cf7a676fcb441479",
-                "reference": "d361f5b3570b8ade67fb1c02cf7a676fcb441479",
+                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/5717343f5cd3afef84bf3e7aac47df079013638f",
+                "reference": "5717343f5cd3afef84bf3e7aac47df079013638f",
                 "shasum": ""
             },
             "type": "library",
@@ -10026,9 +10026,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swagger-api/swagger-ui/issues",
-                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.32.1"
+                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.32.3"
             },
-            "time": "2026-03-17T14:00:38+00:00"
+            "time": "2026-04-14T12:08:03+00:00"
         },
         {
             "name": "symfony/cache",

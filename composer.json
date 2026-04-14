@@ -71,6 +71,7 @@
         "spatie/laravel-medialibrary": "^11.21",
         "spatie/laravel-multitenancy": "^4.0.9",
         "spomky-labs/otphp": "^11.3",
+        "swagger-api/swagger-ui": "^5.32.3",
         "symfony/expression-language": "^7.2",
         "symfony/http-foundation": "^7.3",
         "twilio/sdk": "^8.3",
