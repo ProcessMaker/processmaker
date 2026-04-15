@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "77c2d2379f9f2bdb2acf8ed7aa46bc72",
+    "content-hash": "274c47a8f91c08337978f11c36ccbdee",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -7621,6 +7621,77 @@
                 "source": "https://github.com/ProcessMaker/nayra/tree/v1.12.4"
             },
             "time": "2025-12-11T00:15:43+00:00"
+        },
+        {
+            "name": "processmaker/package-photo-video",
+            "version": "1.6.2",
+            "dist": {
+                "type": "path",
+                "url": "/Users/eresendez/projects/packages/processmaker/package-photo-video",
+                "reference": "987d14175a3009534ffe8ac1cfee96b5ca333f9c"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\PhotoVideo\\PluginServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\PhotoVideo\\": "src"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Sanja Cornelius",
+                    "email": "sanja.cornelius@processmaker.com"
+                }
+            ],
+            "description": "ProcessMaker 4 Plugin that provides a photo/video capture screen builder component",
+            "transport-options": {
+                "relative": false
+            }
+        },
+        {
+            "name": "processmaker/package-webentry",
+            "version": "2.29.17",
+            "dist": {
+                "type": "path",
+                "url": "/Users/eresendez/projects/packages/processmaker/package-webentry",
+                "reference": "4a1d0629d9802cad69a5c44768e8468fc9081c51"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\WebEntry\\WebEntryServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\WebEntry\\": "src",
+                    "Database\\Factories\\ProcessMaker\\Package\\WebEntry\\": "database/factories",
+                    "Tests\\": "tests/",
+                    "TestHelpers\\": "tests/Helpers"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Nolan Ehrstrom",
+                    "email": "nolan.ehrstrom@processmaker.com"
+                },
+                {
+                    "name": "Dante Loayza",
+                    "email": "dante.loayza@processmaker.com"
+                }
+            ],
+            "description": "Provide to end users the ability to complete tasks from outside the core system",
+            "transport-options": {
+                "relative": false
+            }
         },
         {
             "name": "processmaker/pmql",

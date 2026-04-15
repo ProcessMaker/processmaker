@@ -54,6 +54,8 @@
         "processmaker/docker-executor-php": "1.4.2",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.12.4",
+        "processmaker/package-photo-video": "^1.6",
+        "processmaker/package-webentry": "^2.29",
         "processmaker/pmql": "1.13.3",
         "promphp/prometheus_client_php": "^2.12",
         "psr/http-message": "^2.0",
@@ -230,6 +232,18 @@
         {
             "type": "vcs",
             "url": "https://github.com/ProcessMaker/SocialiteProviders"
+        },
+        {
+            "type": "path",
+            "url": "/Users/eresendez/projects/packages/processmaker/package-photo-video"
+        },
+        {
+            "type": "path",
+            "url": "/Users/eresendez/projects/packages/processmaker/package-webentry"
+        },
+        {
+            "type": "path",
+            "url": "/Users/eresendez/projects/packages/processmaker/packages"
         }
     ],
     "config": {
