@@ -20,11 +20,12 @@
           <i class="fas fa-print"></i> {{ $t("Print") }}
         </button>
       </div>
-      <div class="card-body" :style="cardStyles">
+      <div v-for="page in printablePages" :key="page" class="card-body" :style="cardStyles">
         <component
           ref="print"
           :is="component"
           v-model="formData"
+          :current-page="page"
           :data="formData"
           @update="onUpdate"
           :config="json"
@@ -85,6 +86,7 @@
         isPhotoVideo: false,
         cardStyles: 'pointer-events: none;',
         iFramePostedData: null,
+        printablePages: [],
       }
     },
     computed: {
@@ -102,11 +104,6 @@
         set() {
 
         }
-      },
-      printablePages() {
-        // New strategy: always return only page 0
-        // This avoids any problem with the detection of pages
-        return [0];
       },
       component() {
         if ('renderComponent' in this.rowData.config) {
@@ -135,7 +132,7 @@
       } else {
           this.disabled = false;
       }
-      this.loadPages();
+      this.printablePages = this.loadPages();
     },
     methods: {
       closeRequestCount() {
@@ -150,12 +147,13 @@
         }
       },
       loadPages() {
-        this.$nextTick(() => {
-          if (this.$refs.print && this.$refs.print.setCurrentPage) {
-            // Force page 0
-            this.$refs.print.setCurrentPage(0);
-          }
-        });
+        const pages = [0];
+        if (this.rowData.config instanceof Array) {
+          this.rowData.config.forEach((page) => {
+            this.findPagesInNavButtons(page, pages);
+          });
+        }
+        return pages;
       },
       findPagesInNavButtons(object, found = []) {
         if (object.items) {
