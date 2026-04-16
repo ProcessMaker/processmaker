@@ -186,54 +186,6 @@
           }
         }
       },
-      hasRealContent(item) {
-        // Verify if the element has real content that should be shown
-        if (!item) return false;
-        
-        // If it is a component that should not be shown in print, it does not have content
-        if (item.component === 'FormButton' || item.component === 'FileUpload' || item.component === 'PhotoVideo') {
-          return false;
-        }
-        
-        // If it has items, verify if any of them has content
-        if (item.items && item.items.length > 0) {
-          return item.items.some(child => this.hasRealContent(child));
-        }
-        
-        // If it is an array, verify if any of them has content
-        if (item instanceof Array) {
-          return item.some(child => this.hasRealContent(child));
-        }
-        
-        // If it has a valid component, it has content
-        if (item.component && item.component !== 'FormButton' && item.component !== 'FileUpload' && item.component !== 'PhotoVideo') {
-          return true;
-        }
-        
-        return false;
-      },
-      findAllPagesWithContent(config, pages) {
-        if (config instanceof Array) {
-          config.forEach((item, index) => {
-            if (this.hasRealContent(item)) {
-              if (pages.indexOf(index) === -1) {
-                pages.push(index);
-              }
-            }
-            // Search recursively in the items
-            if (item.items) {
-              this.findAllPagesWithContent(item.items, pages);
-            }
-          });
-        } else if (config.items) {
-          this.findAllPagesWithContent(config.items, pages);
-        } else if (config.component && config.component !== 'FormButton' && config.component !== 'FileUpload' && config.component !== 'PhotoVideo') {
-          // If it is a valid component, include page 0
-          if (pages.indexOf(0) === -1) {
-            pages.push(0);
-          }
-        }
-      },
       /**
        * Disable the form items.
        *
