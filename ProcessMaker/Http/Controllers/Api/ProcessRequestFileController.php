@@ -216,7 +216,7 @@ class ProcessRequestFileController extends Controller
         // we are in chunk mode, lets send the current progress
         /** @var AbstractHandler $handler */
         $handler = $save->handler();
-
+        \Illuminate\Support\Facades\Log::info("b2");
         return response()->json([
             'done' => $handler->getPercentageDone(),
         ]);
@@ -356,7 +356,7 @@ class ProcessRequestFileController extends Controller
         $media = $model
             ->addMedia($file)
             ->withCustomProperties([
-                'data_name' => $data_name,
+                'data_name' => $file->getClientOriginalName(),
                 'parent' => $parent != 0 ? $parent : null,
                 'row_id' => $rowId,
                 'createdBy' => $originalCreatedBy,
