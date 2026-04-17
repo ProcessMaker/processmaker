@@ -279,7 +279,7 @@ class ProcessRequestFileController extends Controller
     {
         //delete it and upload the new one
         if ($laravel_request->input('chunk')) {
-            // Perform a chunk uploadProcessMaker/Http/Controllers/Api/ProcessRequestFileController.php
+            // Perform a chunk upload
             return $this->chunk($receiver, $request, $laravel_request);
         } else {
             try {
