@@ -913,4 +913,75 @@ class TasksTest extends TestCase
         $this->assertEquals($scriptTask->id, $response['data'][1]['id']);
         $this->assertEquals($gatewayTask->id, $response['data'][2]['id']);
     }
+
+    /**
+     * Test that the free-text filter parameter works on the tasks endpoint.
+     */
+    public function testFilterByFreeTextSearch()
+    {
+        $request = ProcessRequest::factory()->create();
+
+        $matchingTask = ProcessRequestToken::factory()->create([
+            'element_type' => 'task',
+            'element_name' => 'UniqueSearchableTaskName',
+            'status' => 'ACTIVE',
+            'process_request_id' => $request->id,
+        ]);
+
+        ProcessRequestToken::factory()->create([
+            'element_type' => 'task',
+            'element_name' => 'OtherTask',
+            'status' => 'ACTIVE',
+            'process_request_id' => $request->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', [
+            'filter' => 'UniqueSearchableTaskName',
+            'per_page' => 50,
+        ]));
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertNotEmpty($data);
+        $this->assertTrue(
+            collect($data)->contains('id', $matchingTask->id),
+            'Expected matching task to appear in filtered results'
+        );
+    }
+
+    /**
+     * Test that scopeFilter uses qualified column names so it works
+     * when the query has a join that introduces duplicate column names.
+     */
+    public function testScopeFilterWorksWithJoinedSubquery()
+    {
+        $request = ProcessRequest::factory()->create();
+
+        ProcessRequestToken::factory()->create([
+            'element_type' => 'task',
+            'element_name' => 'JoinTestTask',
+            'status' => 'ACTIVE',
+            'process_request_id' => $request->id,
+        ]);
+
+        $query = ProcessRequestToken::query()
+            ->where('element_type', 'task');
+
+        $subQuery = clone $query;
+        $subQuery->select('id', 'updated_at')->latest('updated_at')->take(25);
+
+        $query->select('process_request_tokens.*')
+            ->joinSub($subQuery, 'cte', function ($join) {
+                $join->on('process_request_tokens.id', '=', 'cte.id');
+            });
+
+        $query->filter('JoinTestTask');
+
+        $results = $query->get();
+
+        $this->assertNotEmpty($results);
+        $this->assertTrue(
+            $results->contains('element_name', 'JoinTestTask')
+        );
+    }
 }
