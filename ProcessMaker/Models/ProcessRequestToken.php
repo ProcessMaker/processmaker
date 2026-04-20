@@ -640,10 +640,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $setting = Setting::byKey('indexed-search');
         if ($setting && $setting->config['enabled'] === true) {
             if (is_numeric($filter)) {
-                $query->whereIn('id', [$filter]);
+                $query->whereIn('process_request_tokens.id', [$filter]);
             } else {
                 $matches = self::search($filter)->take(10000)->get()->pluck('id');
-                $query->whereIn('id', $matches);
+                $query->whereIn('process_request_tokens.id', $matches);
             }
         } else {
             $filter = '%' . mb_strtolower($filter) . '%';
