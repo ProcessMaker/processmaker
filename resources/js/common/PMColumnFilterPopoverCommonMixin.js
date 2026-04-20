@@ -1,4 +1,5 @@
 import { get, cloneDeep } from "lodash";
+import { isTaskStatusColumnFilter } from "./setDefaultAdvancedFilterStatus";
 
 const PMColumnFilterCommonMixin = {
   props: {
@@ -37,18 +38,66 @@ const PMColumnFilterCommonMixin = {
     });
   },
   methods: {
-    storeFilterConfiguration() {
-      const {order, type} = this.filterConfiguration();
+    /**
+     * Task inbox: if no Status column filter is present, default to the same behavior as
+     * tasks/index.js (In Progress, or Completed / Self Service from URL query).
+     */
+    applyTaskInboxDefaultStatusIfMissing() {
+      if (typeof this.filterConfiguration !== "function") {
+        return;
+      }
+      if (this.filterConfiguration().type !== "taskFilter") {
+        return;
+      }
+      if (this.advancedFilterProp !== null) {
+        return;
+      }
+      const savedSearch = this.$props.savedSearch;
+      if (savedSearch !== false && savedSearch != null && savedSearch !== "") {
+        return;
+      }
+      this.advancedFilterInit();
+      const statusFilters = this.advancedFilter.status;
+      if (Array.isArray(statusFilters) && statusFilters.length > 0) {
+        return;
+      }
 
+      let value = "In Progress";
+      try {
+        const params = new URL(document.location).searchParams;
+        if (params.get("status") === "CLOSED") {
+          value = "Completed";
+        } else if (params.get("status") === "SELF_SERVICE") {
+          value = "Self Service";
+        }
+      } catch (e) {
+        // no window (tests)
+      }
+
+      this.advancedFilter.status = [
+        {
+          subject: { type: "Field", value: "status" },
+          operator: "=",
+          value,
+          _column_field: "status",
+          _column_label: "Status",
+        },
+      ];
+    },
+    storeFilterConfiguration() {
       // If advanced filter was provided as a prop, do not save the filter
       // or overwrite the global advanced_filter, instead emit the filter.
       if (this.advancedFilterProp !== null) {
+        const { order } = this.filterConfiguration();
         this.$emit("advanced-filter-updated", {
           filters: this.formattedFilter(),
           order
         });
         return;
       }
+
+      this.applyTaskInboxDefaultStatusIfMissing();
+      const { order, type } = this.filterConfiguration();
 
       let url = "users/store_filter_configuration/";
       if (this.$props.columns && this.savedSearch) {
@@ -151,9 +200,99 @@ const PMColumnFilterCommonMixin = {
     getAliasColumnForOrderBy(value) {
       return this.tableHeaders.find(column => column.field === value)?.order_column || value;
     },
+    /**
+     * Group advanced_filter rows by column. Some saved payloads omit _column_field or use "N/A",
+     * so status (or process version) rows were split across buckets and never merged into `in`.
+     */
+    resolveAdvancedFilterGroupKey(filter) {
+      let key = filter._column_field;
+      if (!key || key === "N/A") {
+        if (isTaskStatusColumnFilter(filter)) {
+          return "status";
+        }
+        if (filter.subject?.value === "process_version_alternative") {
+          return "process_version_alternative";
+        }
+        return "N/A";
+      }
+      return key;
+    },
+    /**
+     * Columns that use stringSelect with "=" rows; multiple sibling "=" filters are AND-ed
+     * by the API and can never match (e.g. status In Progress AND Completed). Collapse those
+     * into one filter object using nested `or` so each value stays operator "=" (OR semantics
+     * in SQL — same as IN). Leaves existing OR-nested structures unchanged.
+     *
+     * @param {Array} filters - Filters for one column from PMColumnFilterForm
+     * @param {string} columnField - Column field name (e.g. status)
+     * @returns {Array}
+     */
+    mergeFlatEnumEqualsToOrChainForColumn(filters, columnField) {
+      if (!['status', 'process_version_alternative'].includes(columnField)) {
+        return filters;
+      }
+      if (!Array.isArray(filters) || filters.length < 2) {
+        return filters;
+      }
+      const hasNestedOr = filters.some((f) => Array.isArray(f.or) && f.or.length > 0);
+      if (hasNestedOr) {
+        return filters;
+      }
+      const allEquals = filters.every((f) => f.operator === '=');
+      if (!allEquals) {
+        return filters;
+      }
+      const seen = new Set();
+      const uniqueRows = [];
+      for (const f of filters) {
+        if (seen.has(f.value)) {
+          continue;
+        }
+        seen.add(f.value);
+        uniqueRows.push(f);
+      }
+      if (uniqueRows.length < 2) {
+        return uniqueRows;
+      }
+      const subjectSource =
+        filters.find((f) => f.subject?.value === columnField)
+        || filters.find((f) => f.subject?.type === "Field" && f.subject?.value)
+        || filters.find((f) => isTaskStatusColumnFilter(f));
+      const defaultSubject = subjectSource
+        ? { ...subjectSource.subject }
+        : { type: "Field", value: columnField };
+      const subjectFor = (row) =>
+        row.subject && (row.subject.value !== undefined || row.subject.type === "Status")
+          ? { ...row.subject }
+          : defaultSubject;
+      const equalsLeaf = (row) => ({
+        subject: subjectFor(row),
+        operator: "=",
+        value: row.value,
+      });
+      let node = equalsLeaf(uniqueRows[uniqueRows.length - 1]);
+      for (let i = uniqueRows.length - 2; i >= 1; i--) {
+        const row = uniqueRows[i];
+        node = {
+          subject: subjectFor(row),
+          operator: "=",
+          value: row.value,
+          or: [node],
+        };
+      }
+      const first = uniqueRows[0];
+      return [
+        {
+          subject: subjectFor(first),
+          operator: "=",
+          value: first.value,
+          or: [node],
+        },
+      ];
+    },
     onApply(json, index) {
       this.advancedFilterInit();
-      this.advancedFilter[index] = json;
+      this.advancedFilter[index] = this.mergeFlatEnumEqualsToOrChainForColumn(json, index);
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
       this.fetch(true);
@@ -182,7 +321,9 @@ const PMColumnFilterCommonMixin = {
       Object.keys(filterCopy).forEach((key) => {
         if (filterCopy[key].length === 0) {
           delete filterCopy[key];
+          return;
         }
+        filterCopy[key] = this.mergeFlatEnumEqualsToOrChainForColumn(filterCopy[key], key);
         const label = this.tableHeaders.find(column => column.field === key)?.label;
         this.addAliases(filterCopy[key], key, label);
       });
@@ -303,13 +444,30 @@ const PMColumnFilterCommonMixin = {
       }
 
       inputAdvancedFilter.forEach((filter) => {
-        const key = filter._column_field || 'N/A';
+        const key = this.resolveAdvancedFilterGroupKey(filter);
         if (!(key in filters)) {
           filters[key] = [];
         }
         filters[key].push(filter);
       });
+      Object.keys(filters).forEach((key) => {
+        filters[key] = this.mergeFlatEnumEqualsToOrChainForColumn(filters[key], key);
+      });
       this.advancedFilter = filters;
+
+      this.applyTaskInboxDefaultStatusIfMissing();
+
+      if (
+        this.advancedFilterProp === null &&
+        typeof this.filterConfiguration === "function" &&
+        this.filterConfiguration().type === "taskFilter"
+      ) {
+        window.ProcessMaker.advanced_filter = {
+          ...get(window, "ProcessMaker.advanced_filter", {}),
+          filters: this.formattedFilter(),
+          order: order || get(window, "ProcessMaker.advanced_filter.order"),
+        };
+      }
 
       if (order?.by && order?.direction) {
         this.setOrderByProps(order.by, order.direction);
