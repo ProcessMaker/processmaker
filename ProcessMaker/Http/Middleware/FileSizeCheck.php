@@ -135,7 +135,7 @@ class FileSizeCheck
     {
         $files = $request->allFiles();
         $totalSize = (int) $request->get('totalSize', 0);
-        $maxSize = config('app.settings.max_filesize_limit');
+        $maxSize = $this->getMaxFileSize('application/octet-stream');
         $maxSizeInBytes = $this->convertToBytes($maxSize);
 
         // Check total size first if it exists (using a general max_filesize_limit from env)
