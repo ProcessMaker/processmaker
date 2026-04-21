@@ -327,7 +327,17 @@ class ProcessRequestFileController extends Controller
         $user = pmUser();
         $originalCreatedBy = $user ? $user->id : null;
 
-        $data_name = $laravelRequest->input('data_name', $file->getClientOriginalName());
+        $parentRequest->loadMissing('process');
+        $isPublicFilesProcess = optional($parentRequest->process)->package_key === 'package-files/public-files';
+
+        $fileName = $file->getClientOriginalName();
+        $data_name = $laravelRequest->input('data_name', $fileName);
+        if ($isPublicFilesProcess) {
+            // File manager builds URLs as #/public/{data_name} (see Media::getManagerUrlAttribute).
+            // Key media by the real client file name so multi-file uploads and /public-files/{name}
+            // stay correct even when the client sends a shared or wrong data_name per file.
+            $data_name = $fileName;
+        }
         $rowId = $laravelRequest->input('row_id', null);
         $parent = (int) $laravelRequest->input('parent', null);
         $multiple = $laravelRequest->input('multiple', null);
@@ -356,7 +366,7 @@ class ProcessRequestFileController extends Controller
         $media = $model
             ->addMedia($file)
             ->withCustomProperties([
-                'data_name' => $file->getClientOriginalName(),
+                'data_name' => $data_name,
                 'parent' => $parent != 0 ? $parent : null,
                 'row_id' => $rowId,
                 'createdBy' => $originalCreatedBy,
