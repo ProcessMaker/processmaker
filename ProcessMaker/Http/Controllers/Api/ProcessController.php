@@ -19,6 +19,7 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Api\GroupController;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Requests\ProcessUpdateRequest;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Process as Resource;
@@ -463,7 +464,7 @@ class ProcessController extends Controller
     /**
      * Updates the current element.
      *
-     * @param Request $request
+     * @param ProcessUpdateRequest $request
      * @param Process $process
      * @return ResponseFactory|Response
      *
@@ -494,21 +495,13 @@ class ProcessController extends Controller
      *     ),
      * )
      */
-    public function update(Request $request, Process $process)
+    public function update(ProcessUpdateRequest $request, Process $process)
     {
         $lastVersion = $process->getDraftOrPublishedLatestVersion();
         $process->bpmn = $lastVersion->bpmn;
         $process->alternative = $lastVersion->alternative;
         $process->stages = $lastVersion->stages;
 
-        $rules = Process::rules($process);
-        if (!$request->has('name')) {
-            unset($rules['name']);
-        }
-        if ($request->has('default_for_anon_webentry')) {
-            $rules = ['language_code' => 'required_if:default_for_anon_webentry,true'];
-        }
-        $request->validate($rules);
         $original = $process->getOriginal();
 
         // Replace html entities with the correct characters

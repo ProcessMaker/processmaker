@@ -2,11 +2,14 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Foundation\Testing\WithConsoleEvents;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class DocumentationTest extends TestCase
 {
+    use WithConsoleEvents;
+
     public function testGenerateSwaggerDocument()
     {
         \Artisan::call('l5-swagger:generate');

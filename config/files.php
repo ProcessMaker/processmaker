@@ -33,7 +33,7 @@ return [
         'mp3',
 
         // Video
-        'mp4',
+        'mp4', 'webm',
     ],
     /*
     |--------------------------------------------------------------------------
@@ -58,7 +58,7 @@ return [
         'txt'  => ['text/plain'],
         'csv'  => ['text/csv', 'application/csv', 'text/plain'],
 
-        // Audio
+        // Images
         'jpg'  => ['image/jpeg'],
         'jpeg' => ['image/jpeg'],
         'png'  => ['image/png'],
@@ -70,6 +70,7 @@ return [
 
         // Video
         'mp4'  => ['video/mp4'],
+        'webm' => ['video/webm'],
     ],
 
     /*
