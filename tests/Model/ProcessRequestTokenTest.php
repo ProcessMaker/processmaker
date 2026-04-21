@@ -2,6 +2,7 @@
 
 namespace Tests\Model;
 
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
@@ -11,6 +12,7 @@ use ProcessMaker\Models\User;
 use stdClass;
 use Tests\TestCase;
 
+#[AllowMockObjectsWithoutExpectations]
 class ProcessRequestTokenTest extends TestCase
 {
     public function testSetStagePropertiesInRecord()

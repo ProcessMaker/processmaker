@@ -54,7 +54,8 @@ class RequestControllerShowTest extends TestCase
 
         // Mock the ModelerManager to return test scripts
         $mockManager = $this->createMock(ModelerManager::class);
-        $mockManager->method('getScriptWithParams')
+        $mockManager->expects($this->atLeastOnce())
+            ->method('getScriptWithParams')
             ->willReturn([
                 [
                     'src' => '/js/test-script-1.js',

@@ -3,6 +3,7 @@
 namespace Tests\Unit\ProcessMaker\Cache\Screens;
 
 use Illuminate\Cache\CacheManager;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use Illuminate\Support\Facades\Config;
 use ProcessMaker\Cache\CacheInterface;
 use ProcessMaker\Cache\Monitoring\CacheMetricsDecorator;
@@ -13,6 +14,7 @@ use ProcessMaker\Cache\Screens\ScreenCacheManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
 use Tests\TestCase;
 
+#[AllowMockObjectsWithoutExpectations]
 class ScreenCacheFactoryTest extends TestCase
 {
     protected function setUp(): void
