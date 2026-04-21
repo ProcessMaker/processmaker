@@ -3,8 +3,8 @@
 namespace Tests\Unit\ProcessMaker\Cache\Screens;
 
 use Illuminate\Cache\CacheManager;
-use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use Illuminate\Support\Facades\Config;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use ProcessMaker\Cache\CacheInterface;
 use ProcessMaker\Cache\Monitoring\CacheMetricsDecorator;
 use ProcessMaker\Cache\Monitoring\RedisMetricsManager;
