@@ -114,6 +114,14 @@ class PermissionSeeder extends Seeder
             'edit-signals',
             'delete-signals',
         ],
+        'Plugins' => [
+            'manage-plugins',
+            'create-plugins',
+            'view-plugins',
+            'install-plugins',
+            'uninstall-plugins',
+            'toggle-plugins',
+        ],
     ];
 
     public function run($seedUser = null)

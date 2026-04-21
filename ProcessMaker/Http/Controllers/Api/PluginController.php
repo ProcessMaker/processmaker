@@ -24,8 +24,10 @@ class PluginController extends Controller
     public function install(Request $request): JsonResponse
     {
         $request->validate([
-            'url' => 'required_without:zip|nullable|string|url',
+            'url' => 'required_without:zip|nullable|string',
             'zip' => 'required_without:url|nullable|file|mimes:zip',
+            'branch' => 'prohibits:tag|nullable|string',
+            'tag' => 'prohibits:branch|nullable|string',
         ]);
 
         try {
@@ -33,9 +35,9 @@ class PluginController extends Controller
                 $zipFile = $request->file('zip');
                 $tmpPath = $zipFile->store('plugin-uploads', 'local');
                 $fullPath = storage_path('app/' . $tmpPath);
-                $this->manager->installFromZip($fullPath);
+                $this->manager->installFromZip($fullPath, $request->user()->id);
             } else {
-                $this->manager->install($request->input('url'));
+                $this->manager->install($request->input('url'), $request->input('branch'), $request->input('tag'), $request->user()->id);
             }
 
             return response()->json(['message' => 'Plugin installed successfully']);
@@ -44,10 +46,10 @@ class PluginController extends Controller
         }
     }
 
-    public function destroy(string $name): JsonResponse
+    public function destroy(string $name, Request $request): JsonResponse
     {
         try {
-            $this->manager->uninstall($name);
+            $this->manager->uninstall($name, $request->user()->id);
 
             return response()->json(['message' => 'Plugin uninstalled successfully']);
         } catch (RuntimeException $e) {

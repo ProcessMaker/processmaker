@@ -3,8 +3,6 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Support\Arr;
-use function Illuminate\Support\artisan_binary;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Process;
 use function Illuminate\Support\php_binary;
 use ProcessMaker\Events\PluginLog;
@@ -22,10 +20,11 @@ class PluginManager
      * @param string $repoUrl
      * @param string|null $branch
      * @param string|null $tag
+     * @param int|null $userId
      * @return void
      * @throws RuntimeException
      */
-    public function install(string $repoUrl, ?string $branch = null, ?string $tag = null): void
+    public function install(string $repoUrl, ?string $branch = null, ?string $tag = null, ?int $userId = null): void
     {
         if ($branch && $tag) {
             throw new RuntimeException('Cannot specify both --branch and --tag');
@@ -40,61 +39,64 @@ class PluginManager
             $repoName = basename($localPath);
             $pluginPath = storage_path('plugins') . '/' . $repoName;
 
-            $this->logRunning("Starting installation of plugin from local path: {$repoName}", $repoName);
+            $this->logRunning("Starting installation of plugin from local path: {$repoName}", $repoName, $userId);
 
             // Create symlink if target doesn't exist
             if (is_link($pluginPath) || is_dir($pluginPath)) {
                 // throw new RuntimeException("Plugin directory or symlink already exists: {$pluginPath}");
-                $this->logRunning("Plugin directory or symlink already exists: {$pluginPath}", $repoName);
+                $this->logRunning("Plugin directory or symlink already exists: {$pluginPath}", $repoName, $userId);
             } else {
-                $this->logRunning('Creating symlink to local path...', $repoName);
-                $this->createSymlink($localPath, $pluginPath);
+                $this->logRunning('Creating symlink to local path...', $repoName, $userId);
+                $this->createSymlink($localPath, $pluginPath, $repoName, $userId);
             }
         } else {
             // Extract repository name from URL
             $repoName = $this->extractRepoName($repoUrl);
             $pluginPath = storage_path('plugins') . '/' . $repoName;
 
-            $this->logRunning("Starting installation of plugin: {$repoName}", $repoName);
+            $this->logRunning("Starting installation of plugin: {$repoName}", $repoName, $userId);
 
             // Clone or pull the repository
             if (is_dir($pluginPath)) {
-                $this->logRunning('Plugin directory exists, pulling latest changes...', $repoName);
-                $this->pullRepository($pluginPath);
+                // Fetch branches
+                $this->logRunning('Plugin directory exists, checking out main branch...', $repoName, $userId);
+                $this->checkoutBranch($pluginPath, 'main', $repoName, $userId);
+                $this->logRunning('Pulling latest changes from main branch...', $repoName, $userId);
+                $this->pullRepository($pluginPath, $repoName, $userId);
             } else {
-                $this->logRunning('Cloning repository...', $repoName);
-                $this->cloneRepository($repoUrl, $pluginPath);
+                $this->logRunning('Cloning repository...', $repoName, $userId);
+                $this->cloneRepository($repoUrl, $pluginPath, $repoName, $userId);
             }
 
             // Checkout branch or tag if specified
             if ($branch) {
-                $this->logRunning("Checking out branch: {$branch}", $repoName);
-                $this->checkoutBranch($pluginPath, $branch);
+                $this->logRunning("Checking out branch: {$branch}", $repoName, $userId);
+                $this->checkoutBranch($pluginPath, $branch, $repoName, $userId);
             } elseif ($tag) {
-                $this->logRunning("Checking out tag: {$tag}", $repoName);
-                $this->checkoutTag($pluginPath, $tag);
+                $this->logRunning("Checking out tag: {$tag}", $repoName, $userId);
+                $this->checkoutTag($pluginPath, $tag, $repoName, $userId);
             }
         }
 
         // Validate composer.json
-        $this->logRunning('Validating plugin...', $repoName);
-        $this->validatePlugin($pluginPath);
+        $this->logRunning('Validating plugin...', $repoName, $userId);
+        $this->validatePlugin($pluginPath, $repoName, $userId);
 
         // Run composer install
-        $this->logRunning('Installing dependencies...', $repoName);
-        $this->runComposerInstall($pluginPath);
+        $this->logRunning('Installing dependencies...', $repoName, $userId);
+        $this->runComposerInstall($pluginPath, $repoName, $userId);
 
         // Run plugin install command if it exists
         $installCommand = "{$repoName}:install";
 
-        $this->logRunning('Running plugin install command...', $repoName);
-        $this->runCommand($installCommand, $repoName);
+        $this->logRunning('Running plugin install command...', $repoName, $userId);
+        $this->runCommand($installCommand, $repoName, $userId);
 
         // Rebuild route cache so we pick up the new routes from the plugin
-        $this->logRunning('Rebuilding route cache...', $repoName);
-        $this->runCommand('route:cache', $repoName);
+        $this->logRunning('Rebuilding route cache...', $repoName, $userId);
+        $this->runCommand('route:cache', $repoName, $userId);
 
-        $this->logDone('Plugin installed successfully', $repoName);
+        $this->logDone('Plugin installed successfully', $repoName, $userId);
     }
 
     /**
@@ -104,48 +106,58 @@ class PluginManager
      * @return void
      * @throws RuntimeException
      */
-    public function uninstall(string $pluginName): void
+    public function uninstall(string $pluginName, ?int $userId = null): void
     {
-        $pluginPath = storage_path('plugins') . '/' . $pluginName;
+        $pluginDir = storage_path('plugins');
+        $pluginPath = "{$pluginDir}/{$pluginName}";
+        $pluginDisabledPath = "{$pluginDir}/_{$pluginName}";
 
-        if (!is_dir($pluginPath)) {
+        if (is_dir($pluginDisabledPath)) {
+            $pluginPath = $pluginDisabledPath;
+        } elseif (!is_dir($pluginPath)) {
             throw new RuntimeException("Plugin not found: {$pluginName}");
         }
 
-        $this->logRunning("Starting uninstallation of plugin: {$pluginName}", $pluginName);
+        $this->logRunning("Starting uninstallation of plugin: {$pluginName}", $pluginName, $userId);
 
         // Run plugin uninstall command if it exists
         $uninstallCommand = "{$pluginName}:uninstall";
-        $this->logRunning('Running plugin uninstall command...', $pluginName);
-        $this->runCommand($uninstallCommand, $pluginName);
+        $this->logRunning('Running plugin uninstall command...', $pluginName, $userId);
+        $this->runCommand($uninstallCommand, $pluginName, $userId);
 
         // Delete the plugin directory
-        $this->logRunning('Removing plugin directory...', $pluginName);
-        $this->deleteDirectory($pluginPath);
+        $this->logRunning('Removing plugin directory...', $pluginName, $userId);
+        $this->deleteDirectory($pluginPath, $pluginName, $userId);
 
         // Rebuild route cache so we remove the routes from the plugin
-        $this->logRunning('Rebuilding route cache...', $pluginName);
+        $this->logRunning('Rebuilding route cache...', $pluginName, $userId);
         $this->runCommand('route:cache', $pluginName);
 
-        $this->logDone('Plugin uninstalled successfully', $pluginName);
+        $this->logDone('Plugin uninstalled successfully', $pluginName, $userId);
     }
 
-    private function runCommand(string $command, string $pluginName): void
+    private function runCommand(string $command, string $pluginName, ?int $userId = null): void
     {
+        // Use absolute path: web SAPI (php-fpm) cwd is not the app root, so plain "artisan" fails.
+        //TODO: Change artisan_binary() for base_path('artisan')
+        $artisan = base_path('artisan');
         $result = Process::run(array_filter([
             php_binary(),
-            artisan_binary(),
+            $artisan,
             $command,
         ]));
 
         if (!$result->successful()) {
             if (str_contains($result->output(), 'is not defined')) {
-                $this->logRunning("Plugin does not have a {$command} command", $pluginName);
+                \Log::info("Plugin does not have a {$command} command", ['output' => $result->output()]);
+                $this->logRunning("Plugin does not have a {$command} command", $pluginName, $userId);
             } else {
-                $this->logError("Plugin {$command} command failed. Got output:\n\n{$result->output()}", $pluginName);
+                \Log::info("Plugin {$command} command failed. Got output:\n\n{$result->output()}", ['output' => $result->output()]);
+                $this->logError("Plugin {$command} command failed. Got output:\n\n{$result->output()}", $pluginName, $userId);
             }
         } else {
-            $this->logRunning("Plugin {$command} command output:\n\n{$result->output()}", $pluginName);
+            \Log::info("Plugin {$command} command output:\n\n{$result->output()}", ['output' => $result->output()]);
+            $this->logRunning("Plugin {$command} command output:\n\n{$result->output()}", $pluginName, $userId);
         }
     }
 
@@ -156,7 +168,7 @@ class PluginManager
      * @return void
      * @throws RuntimeException
      */
-    public function installFromZip(string $zipPath): void
+    public function installFromZip(string $zipPath, ?int $userId = null): void
     {
         if (!file_exists($zipPath)) {
             throw new RuntimeException("Zip file not found: {$zipPath}");
@@ -191,13 +203,12 @@ class PluginManager
             }
 
             // Validate before copying
-            $this->validatePlugin($pluginSourceDir);
-
             $repoName = basename($pluginSourceDir);
+            $this->validatePlugin($pluginSourceDir, $repoName, $userId);
+
             $pluginPath = storage_path('plugins') . '/' . $repoName;
 
-            $this->logRunning("Installing plugin from zip: {$repoName}", $repoName);
-
+            $this->logRunning("Installing plugin from zip: {$repoName}", $repoName, $userId);
             // Ensure plugins directory exists
             if (!is_dir(storage_path('plugins'))) {
                 mkdir(storage_path('plugins'), 0755, true);
@@ -205,30 +216,30 @@ class PluginManager
 
             // Remove existing plugin directory if present
             if (is_dir($pluginPath)) {
-                $this->deleteDirectory($pluginPath);
+                $this->deleteDirectory($pluginPath, $repoName, $userId);
             }
 
             // Copy extracted directory to plugins folder
-            $this->copyDirectory($pluginSourceDir, $pluginPath);
+            $this->copyDirectory($pluginSourceDir, $pluginPath, $repoName, $userId);
 
             // Run composer install
-            $this->logRunning('Installing dependencies...', $repoName);
-            $this->runComposerInstall($pluginPath);
+            $this->logRunning('Installing dependencies...', $repoName, $userId);
+            $this->runComposerInstall($pluginPath, $repoName, $userId);
 
             // Run plugin install command if it exists
             $installCommand = "{$repoName}:install";
-            $this->logRunning('Running plugin install command...', $repoName);
-            $this->runCommand($installCommand, $repoName);
+            $this->logRunning('Running plugin install command...', $repoName, $userId);
+            $this->runCommand($installCommand, $repoName, $userId);
 
             // Rebuild route cache
-            $this->logRunning('Rebuilding route cache...', $repoName);
-            $this->runCommand('route:cache', $repoName);
+            $this->logRunning('Rebuilding route cache...', $repoName, $userId);
+            $this->runCommand('route:cache', $repoName, $userId);
 
-            $this->logDone('Plugin installed successfully', $repoName);
+            $this->logDone('Plugin installed successfully', $repoName, $userId);
         } finally {
             // Always clean up temp directory and zip file
             if (is_dir($tmpExtractDir)) {
-                $this->deleteDirectory($tmpExtractDir);
+                $this->deleteDirectory($tmpExtractDir, $repoName, $userId);
             }
             if (file_exists($zipPath)) {
                 unlink($zipPath);
@@ -244,7 +255,7 @@ class PluginManager
      * @return bool True if now enabled, false if now disabled
      * @throws RuntimeException
      */
-    public function toggle(string $pluginName): bool
+    public function toggle(string $pluginName, ?int $userId = null): bool
     {
         $pluginsFolder = storage_path('plugins');
 
@@ -256,6 +267,7 @@ class PluginManager
         if (is_dir($enabledPath)) {
             // Disable it
             if (!rename($enabledPath, $disabledPath)) {
+                $this->logError("Failed to disable plugin: {$pluginName}", $pluginName, $userId);
                 throw new RuntimeException("Failed to disable plugin: {$pluginName}");
             }
 
@@ -267,12 +279,14 @@ class PluginManager
             $enabledName = ltrim($pluginName, '_');
             $enabledPath = $pluginsFolder . '/' . $enabledName;
             if (!rename($disabledPath, $enabledPath)) {
+                $this->logError("Failed to enable plugin: {$pluginName}", $pluginName, $userId);
                 throw new RuntimeException("Failed to enable plugin: {$pluginName}");
             }
 
             return true;
         }
 
+        $this->logError("Plugin not found: {$pluginName}", $pluginName, $userId);
         throw new RuntimeException("Plugin not found: {$pluginName}");
     }
 
@@ -303,11 +317,12 @@ class PluginManager
 
                 $plugins[] = [
                     'name' => $isDisabled ? ltrim($dirName, '_') : $dirName,
+                    'url' => $plugin->getUrl(),
                     'folder' => $dirName,
                     'description' => $plugin->getDescription() ?? 'No description',
                     'version' => $composerJson['version'] ?? null,
                     'branch' => $reference,
-                    'enabled' => !$isDisabled,
+                    'enabled' => !$isDisabled ? 'Enabled' : 'Disabled',
                 ];
             } catch (\Exception $e) {
                 // Skip invalid plugins
@@ -326,9 +341,8 @@ class PluginManager
      */
     protected function extractRepoName(string $repoUrl): string
     {
-        // Remove .git suffix if present
-        $repoUrl = rtrim($repoUrl, '.git');
-        $repoUrl = rtrim($repoUrl, '/');
+        // Remove only a single trailing '.git' or '/' if present
+        $repoUrl = preg_replace('/(\.git|\/)$/', '', $repoUrl);
 
         // Extract name from URL
         if (preg_match('#/([^/]+)$#', $repoUrl, $matches)) {
@@ -346,7 +360,7 @@ class PluginManager
      * @return void
      * @throws RuntimeException
      */
-    protected function cloneRepository(string $repoUrl, string $destination): void
+    protected function cloneRepository(string $repoUrl, string $destination, string $repoName, ?int $userId = null): void
     {
         // Handle GITHUB_TOKEN if present
         $url = $this->prepareGitUrl($repoUrl);
@@ -354,6 +368,7 @@ class PluginManager
         $process = Process::run("git clone {$url} {$destination}");
 
         if (!$process->successful()) {
+            $this->logError('Failed to clone repository: ' . $process->errorOutput(), $repoName, $userId);
             throw new RuntimeException('Failed to clone repository: ' . $process->errorOutput());
         }
     }
@@ -365,11 +380,12 @@ class PluginManager
      * @return void
      * @throws RuntimeException
      */
-    protected function pullRepository(string $pluginPath): void
+    protected function pullRepository(string $pluginPath, string $repoName, ?int $userId = null): void
     {
         $process = Process::path($pluginPath)->run('git pull');
 
         if (!$process->successful()) {
+            $this->logError('Failed to pull repository: ' . $process->errorOutput(), $repoName, $userId);
             throw new RuntimeException('Failed to pull repository: ' . $process->errorOutput());
         }
     }
@@ -382,11 +398,12 @@ class PluginManager
      * @return void
      * @throws RuntimeException
      */
-    protected function checkoutBranch(string $pluginPath, string $branch): void
+    protected function checkoutBranch(string $pluginPath, string $branch, string $repoName, ?int $userId = null): void
     {
         $process = Process::path($pluginPath)->run("git checkout {$branch}");
 
         if (!$process->successful()) {
+            $this->logError('Failed to checkout branch: ' . $process->errorOutput(), $repoName, $userId);
             throw new RuntimeException("Failed to checkout branch {$branch}: " . $process->errorOutput());
         }
     }
@@ -399,11 +416,12 @@ class PluginManager
      * @return void
      * @throws RuntimeException
      */
-    protected function checkoutTag(string $pluginPath, string $tag): void
+    protected function checkoutTag(string $pluginPath, string $tag, string $repoName, ?int $userId = null): void
     {
         $process = Process::path($pluginPath)->run("git checkout tags/{$tag}");
 
         if (!$process->successful()) {
+            $this->logError('Failed to checkout tag: ' . $process->errorOutput(), $repoName, $userId);
             throw new RuntimeException("Failed to checkout tag {$tag}: " . $process->errorOutput());
         }
     }
@@ -415,11 +433,12 @@ class PluginManager
      * @return void
      * @throws RuntimeException
      */
-    protected function validatePlugin(string $pluginPath): void
+    protected function validatePlugin(string $pluginPath, string $repoName, ?int $userId = null): void
     {
         $composerJsonPath = $pluginPath . '/composer.json';
 
         if (!file_exists($composerJsonPath)) {
+            $this->logError('composer.json not found in plugin: ' . $pluginPath, $repoName, $userId);
             throw new RuntimeException("composer.json not found in plugin: {$pluginPath}");
         }
 
@@ -427,35 +446,82 @@ class PluginManager
         $composerJson = json_decode($content, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->logError('Invalid JSON in composer.json at ' . $composerJsonPath . ': ' . json_last_error_msg(), $repoName, $userId);
             throw new RuntimeException(
                 "Invalid JSON in composer.json at {$composerJsonPath}: " . json_last_error_msg()
             );
+        }
+
+        // Check if require or require-dev is an empty array ([]), if so change for empty object and save to file
+        $changed = false;
+        if (Arr::get($composerJson, 'require', []) === []) {
+            $composerJson['require'] = new \stdClass();
+            $changed = true;
+        }
+        if (Arr::get($composerJson, 'require-dev', []) === []) {
+            $composerJson['require-dev'] = new \stdClass();
+            $changed = true;
+        }
+        if ($changed) {
+            file_put_contents($composerJsonPath, json_encode($composerJson, JSON_PRETTY_PRINT));
         }
 
         // Check PSR-4 autoload namespace
         $psr4Namespaces = Arr::get($composerJson, 'autoload.psr-4', []);
 
         if (empty($psr4Namespaces)) {
+            $this->logError('Plugin must have PSR-4 autoload configuration in composer.json', $repoName, $userId);
             throw new RuntimeException('Plugin must have PSR-4 autoload configuration in composer.json');
         }
 
         $valid = false;
         foreach ($psr4Namespaces as $namespace => $path) {
-            if (str_starts_with($namespace, 'ProcessMaker\\Plugins\\')) {
-                $valid = true;
+            $prefixes = [
+                'ProcessMaker\\Plugins\\',
+                'ProcessMaker\\Package\\',
+                'ProcessMaker\\Packages\\',
+            ];
+            $valid = (bool) collect($prefixes)->first(fn ($prefix) => str_starts_with($namespace, $prefix));
+            if ($valid) {
                 break;
             }
-            if (str_starts_with($namespace, 'ProcessMaker\\Package\\')) {
-                $valid = true;
-                break;
-            }
+            // if (str_starts_with($namespace, 'ProcessMaker\\Plugins\\')) {
+            //     $valid = true;
+            //     break;
+            // }
+            // if (str_starts_with($namespace, 'ProcessMaker\\Package\\')) {
+            //     $valid = true;
+            //     break;
+            // }
+            // //TODO: Check if needs to be package or packages or both
+            // if (str_starts_with($namespace, 'ProcessMaker\\Packages\\')) {
+            //     $valid = true;
+            //     break;
+            // }
         }
 
         if (!$valid) {
+            $this->logError('Plugin PSR-4 namespace must start with ' . implode(', ', $prefixes) . '. Found: ' . implode(', ', array_keys($psr4Namespaces)), $repoName, $userId);
             throw new RuntimeException(
                 "Plugin PSR-4 namespace must start with 'ProcessMaker\\Plugins\\'. Found: " .
                 implode(', ', array_keys($psr4Namespaces))
             );
+        }
+    }
+
+    /**
+     * Fetch branches from the repository.
+     *
+     * @param string $pluginPath
+     * @return void
+     * @throws RuntimeException
+     */
+    protected function fetchBranches(string $pluginPath, string $repoName, ?int $userId = null): void
+    {
+        $process = Process::path($pluginPath)->run('git branch -a');
+        if (!$process->successful()) {
+            $this->logError('Failed to fetch branches: ' . $process->errorOutput(), $repoName, $userId);
+            throw new RuntimeException('Failed to fetch branches: ' . $process->errorOutput());
         }
     }
 
@@ -466,11 +532,14 @@ class PluginManager
      * @return void
      * @throws RuntimeException
      */
-    protected function runComposerInstall(string $pluginPath): void
+    protected function runComposerInstall(string $pluginPath, string $repoName, ?int $userId = null): void
     {
-        $process = Process::path($pluginPath)->run('composer install --no-interaction');
+        set_time_limit(0);
+        //TODO: Check if needs to be export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin
+        $process = Process::path($pluginPath)->run('export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin && composer install --no-interaction');
 
         if (!$process->successful()) {
+            $this->logError('Failed to run composer install: ' . $process->errorOutput(), $repoName, $userId);
             throw new RuntimeException('Failed to run composer install: ' . $process->errorOutput());
         }
     }
@@ -483,7 +552,7 @@ class PluginManager
      * @return void
      * @throws RuntimeException
      */
-    protected function copyDirectory(string $source, string $destination): void
+    protected function copyDirectory(string $source, string $destination, string $repoName, ?int $userId = null): void
     {
         if (!is_dir($destination)) {
             mkdir($destination, 0755, true);
@@ -496,9 +565,10 @@ class PluginManager
             $destPath = $destination . '/' . $file;
 
             if (is_dir($srcPath)) {
-                $this->copyDirectory($srcPath, $destPath);
+                $this->copyDirectory($srcPath, $destPath, $repoName, $userId);
             } else {
                 if (!copy($srcPath, $destPath)) {
+                    $this->logError('Failed to copy file: ' . $srcPath . ' to ' . $destPath, $repoName, $userId);
                     throw new RuntimeException("Failed to copy file: {$srcPath} to {$destPath}");
                 }
             }
@@ -512,7 +582,7 @@ class PluginManager
      * @return void
      * @throws RuntimeException
      */
-    protected function deleteDirectory(string $directory): void
+    protected function deleteDirectory(string $directory, string $repoName, ?int $userId = null): void
     {
         if (!is_dir($directory)) {
             return;
@@ -522,14 +592,25 @@ class PluginManager
 
         foreach ($files as $file) {
             $path = $directory . '/' . $file;
-            if (is_dir($path)) {
-                $this->deleteDirectory($path);
+            if (is_dir($path) && !is_link($path)) {
+                $this->deleteDirectory($path, $repoName, $userId);
             } else {
-                unlink($path);
+                if (!@unlink($path) && file_exists($path)) {
+                    $this->logError('Failed to delete file: ' . $path, $repoName, $userId);
+                    throw new RuntimeException("Failed to delete file: {$path}");
+                }
             }
         }
 
-        if (!rmdir($directory)) {
+        clearstatcache(true, $directory);
+
+        if (count(array_diff(scandir($directory), ['.', '..'])) !== 0) {
+            $this->logError('Directory not empty after attempting to delete: ' . $directory, $repoName, $userId);
+            throw new RuntimeException("Directory not empty after attempting to delete: {$directory}");
+        }
+
+        if (!@rmdir($directory) && is_dir($directory)) {
+            $this->logError('Failed to delete directory: ' . $directory, $repoName, $userId);
             throw new RuntimeException("Failed to delete directory: {$directory}");
         }
     }
@@ -571,7 +652,7 @@ class PluginManager
      * @return void
      * @throws RuntimeException
      */
-    protected function createSymlink(string $source, string $destination): void
+    protected function createSymlink(string $source, string $destination, string $repoName, ?int $userId = null): void
     {
         // Ensure the plugins directory exists
         $pluginsDir = dirname($destination);
@@ -581,6 +662,7 @@ class PluginManager
 
         // Create symlink
         if (!symlink($source, $destination)) {
+            $this->logError('Failed to create symlink from ' . $source . ' to ' . $destination, $repoName, $userId);
             throw new RuntimeException("Failed to create symlink from {$source} to {$destination}");
         }
     }
@@ -610,9 +692,9 @@ class PluginManager
      * @param string $pluginName
      * @return void
      */
-    protected function logRunning(string $message, string $pluginName): void
+    protected function logRunning(string $message, string $pluginName, ?int $userId = null): void
     {
-        $this->log($message, 'running', $pluginName);
+        $this->log($message, 'running', $pluginName, $userId);
     }
 
     /**
@@ -622,9 +704,9 @@ class PluginManager
      * @param string $pluginName
      * @return void
      */
-    protected function logError(string $message, string $pluginName): void
+    protected function logError(string $message, string $pluginName, ?int $userId = null): void
     {
-        $this->log($message, 'error', $pluginName);
+        $this->log($message, 'error', $pluginName, $userId);
     }
 
     /**
@@ -634,9 +716,9 @@ class PluginManager
      * @param string $pluginName
      * @return void
      */
-    protected function logDone(string $message, string $pluginName): void
+    protected function logDone(string $message, string $pluginName, ?int $userId = null): void
     {
-        $this->log($message, 'done', $pluginName);
+        $this->log($message, 'done', $pluginName, $userId);
     }
 
     /**
@@ -647,8 +729,18 @@ class PluginManager
      * @param string $pluginName
      * @return void
      */
-    protected function log(string $message, string $type, string $pluginName): void
+    protected function log(string $message, string $type, string $pluginName, ?int $userId = null): void
     {
-        event(new PluginLog($message, $type, $pluginName));
+        if ($userId) {
+            event(new PluginLog($message, $type, $pluginName, $userId));
+        } else {
+            if ($type === 'done') {
+                \Log::info($message);
+            } elseif ($type === 'error') {
+                \Log::error($message);
+            } else {
+                \Log::info($message);
+            }
+        }
     }
 }

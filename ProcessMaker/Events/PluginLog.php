@@ -2,15 +2,14 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 
 /**
  * Event dispatched during plugin operations to provide real-time logging.
  */
-class PluginLog
+class PluginLog implements ShouldBroadcastNow
 {
-    use Dispatchable;
-
     /**
      * The log message.
      *
@@ -33,16 +32,34 @@ class PluginLog
     public $pluginName;
 
     /**
+     * The user ID to send the broadcast event to.
+     *
+     * @var int
+     */
+    public $userId;
+
+    /**
      * Create a new event instance.
      *
      * @param string $message
      * @param string $status
      * @param string|null $pluginName
      */
-    public function __construct(string $message, string $status, ?string $pluginName = null)
+    public function __construct(string $message, string $status, ?string $pluginName = null, ?int $userId = null)
     {
         $this->message = $message;
         $this->status = $status;
         $this->pluginName = $pluginName;
+        $this->userId = $userId;
+    }
+
+    public function broadcastAs()
+    {
+        return 'PluginLog';
+    }
+
+    public function broadcastOn()
+    {
+        return new PrivateChannel('ProcessMaker.Models.User.' . $this->userId);
     }
 }

@@ -99,6 +99,8 @@ mix
   .js("resources/js/admin/groups/index.js", "public/js/admin/groups")
   .js("resources/js/admin/groups/edit.js", "public/js/admin/groups/edit.js")
   .js("resources/js/admin/auth-clients/index.js", "public/js/admin/auth-clients/index.js")
+  .js("resources/js/admin/plugins/index.js", "public/js/admin/plugins/index.js")
+  .js("resources/js/admin/plugins/output.js", "public/js/admin/plugins/output.js")
   // .js("resources/js/admin/queues/index.js", "public/js/admin/queues")
   .js("resources/js/admin/profile/edit.js", "public/js/admin/profile/edit.js")
   .js("resources/js/admin/cssOverride/edit.js", "public/js/admin/cssOverride/edit.js")

@@ -185,6 +185,16 @@ class Plugin extends ProcessMakerModel
     }
 
     /**
+     * Get the plugin URL.
+     *
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return 'https://github.com/ProcessMaker/' . $this->name;
+    }
+
+    /**
      * Override getTable to return null since this model doesn't use a database table.
      *
      * @return string|null

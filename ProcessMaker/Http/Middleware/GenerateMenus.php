@@ -122,6 +122,10 @@ class GenerateMenus
                         'icon' => 'fa-code',
                     ]);
                 }
+                $submenu->add(__('Plugins'), [
+                    'route' => 'plugins.index',
+                    'icon' => 'fa-plug',
+                ]);
 
                 $devlinkIcon = base64_encode(file_get_contents(base_path('resources/img/devlink.svg')));
                 $submenu->add(__('DevLink'), [
