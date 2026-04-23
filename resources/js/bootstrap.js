@@ -4,7 +4,8 @@ import * as bootstrap from "bootstrap";
 import TenantAwareEcho from "./common/TenantAwareEcho";
 import { initSessionSync } from "./common/sessionSync";
 import Router from "vue-router";
-import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
+import ScreenBuilder from "@processmaker/screen-builder";
+import attachScreenCacheAdapter from "./common/attachScreenCacheAdapter";
 import * as VueDeepSet from "vue-deepset";
 
 /**
@@ -393,8 +394,9 @@ window.ProcessMaker.screen = {
   cacheTimeout: Number(screenCacheTimeout),
   secureHandlerToggleVisible: !!Number(screenSecureHandlerToggleVisible?.content),
 };
-// Initialize screen-builder cache
-initializeScreenCache(window.ProcessMaker.apiClient, window.ProcessMaker.screen);
+// Axios 1.x uses adapter name list on defaults.adapter, not a function. screen-builder's
+// initializeScreenCache passes that through to cacheAdapterEnhancer and breaks dispatch.
+attachScreenCacheAdapter(window.ProcessMaker.apiClient, window.ProcessMaker.screen);
 
 const clickTab = () => {
   const { hash } = window.location;
