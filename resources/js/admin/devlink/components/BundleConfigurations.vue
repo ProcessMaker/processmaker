@@ -4,10 +4,18 @@
       {{ $t(title) }}
     </div>
     <div class="card-grid">
-      <div v-for="config in configurations || []" :key="config.type" class="card">
+      <div
+        v-for="config in configurations || []"
+        :key="config.type"
+        class="card"
+      >
         <div class="config-info">
-          <div class="config-label">{{ $t(config.name) }}</div>
-          <div class="config-status">{{ status(config) }}</div>
+          <div class="config-label">
+            {{ $t(config.name) }}
+          </div>
+          <div class="config-status">
+            {{ status(config) }}
+          </div>
         </div>
         <div class="config-action">
           <button
@@ -40,47 +48,45 @@
 </template>
 
 <script setup>
-import { getCurrentInstance } from 'vue';
+import { getCurrentInstance } from "vue";
 
 const vue = getCurrentInstance().proxy;
 const props = defineProps({
   configurations: {
     type: Array,
     required: true,
-    default: () => []
+    default: () => [],
   },
   values: {
     type: Array,
     required: true,
-    default: () => []
+    default: () => [],
   },
   title: {
     type: String,
-    required: true
+    required: true,
   },
   type: {
     type: String,
-    required: false
+    required: false,
   },
   disabled: {
     type: Boolean,
     required: false,
-    default: false
-  }
+    default: false,
+  },
 });
 
-defineEmits(['config-change', 'open-settings-modal']);
+defineEmits(["config-change", "open-settings-modal"]);
 
-const isInSettings = (type) => {
-  return (props.values || []).find(value => value.setting === type.type);
-};
+const isInSettings = (type) => (props.values || []).find((value) => value.setting === type.type);
 
 const status = (type) => {
-  const settingValue = (props.values || []).find(value => value.setting === type.type);
+  const settingValue = (props.values || []).find((value) => value.setting === type.type);
 
-  if (!settingValue) return vue.$t('Not shared');
-  if (settingValue.config === null) return vue.$t('All');
-  return vue.$t('Shared');
+  if (!settingValue) return vue.$t("Not shared");
+  if (settingValue.config === null) return vue.$t("All");
+  return vue.$t("Shared");
 };
 </script>
 

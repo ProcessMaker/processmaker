@@ -7,19 +7,39 @@
       :hide-footer="true"
       @close="close"
     >
-      <b-row v-if="!showHelperProcess" align-v="center">
+      <b-row
+        v-if="!showHelperProcess"
+        align-v="center"
+      >
         <b-col class="wizard-template-carousel col-5">
-          <b-carousel fade :interval="slideInterval">
-            <b-carousel-slide v-for="(image, index) in templateSlides" :key="index" :img-src="image"/>
+          <b-carousel
+            fade
+            :interval="slideInterval"
+          >
+            <b-carousel-slide
+              v-for="(image, index) in templateSlides"
+              :key="index"
+              :img-src="image"
+            />
           </b-carousel>
         </b-col>
         <b-col>
           <div class="wizard-details-container text-left mb-3">
             <div class="wizard-details-text pl-3">
-              <h1 class="mb-3 d-inline-block font-weight-bold template-name">{{ templateDetails['modal-title']| str_limit(30) }}</h1>
-              <h3 class="wizard-details-headline text-white">{{ templateDetails['modal-excerpt'] | str_limit(150) }}</h3>
-              <div v-for="item in templateModalDescriptionItems" class="mb-3 wizard-details-description text-white d-flex align-items-center">
-                <span v-if="templateListIcon" class="mr-3">
+              <h1 class="mb-3 d-inline-block font-weight-bold template-name">
+                {{ templateDetails['modal-title']| str_limit(30) }}
+              </h1>
+              <h3 class="wizard-details-headline text-white">
+                {{ templateDetails['modal-excerpt'] | str_limit(150) }}
+              </h3>
+              <div
+                v-for="item in templateModalDescriptionItems"
+                class="mb-3 wizard-details-description text-white d-flex align-items-center"
+              >
+                <span
+                  v-if="templateListIcon"
+                  class="mr-3"
+                >
                   <img
                     :src="templateListIcon"
                     :alt="template.name + ' icon'"
@@ -28,8 +48,11 @@
                 </span>
                 <span class="template-list-item">{{ item | str_limit(150) }}</span>
               </div>
-              <hr class="template-divider mx-2"/>
-              <button class="wizard-details-button text-uppercase"  @click.prevent="getHelperProcessStartEvent('wizard-details-modal')">
+              <hr class="template-divider mx-2">
+              <button
+                class="wizard-details-button text-uppercase"
+                @click.prevent="getHelperProcessStartEvent('wizard-details-modal')"
+              >
                 <i class="fas fa-play-circle mr-1" />
                 {{ $t('Get Started') }}
               </button>
@@ -38,24 +61,24 @@
         </b-col>
       </b-row>
       <task
-          v-if="showHelperProcess"
-          ref="task"
-          class="card border-0"
-          v-model="formData"
-          :initial-task-id="task.id"
-          :initial-request-id="task.process_request_id"
-          :user-id="currentUserId"
-          @task-updated="taskUpdated"
-          @submit="submit"
-          @completed="completed"
-      ></task>
+        v-if="showHelperProcess"
+        ref="task"
+        v-model="formData"
+        class="card border-0"
+        :initial-task-id="task.id"
+        :initial-request-id="task.process_request_id"
+        :user-id="currentUserId"
+        @task-updated="taskUpdated"
+        @submit="submit"
+        @completed="completed"
+      />
     </modal>
   </div>
 </template>
 
 <script>
+import { Task } from "@processmaker/screen-builder";
 import Modal from "../shared/Modal.vue";
-import {Task} from "@processmaker/screen-builder";
 import wizardHelperProcessModalMixin from "./mixins/wizardHelperProcessModal";
 
 export default {
@@ -85,11 +108,11 @@ export default {
       return this.template?.template_media?.slides;
     },
     templateModalDescriptionItems() {
-      return this.templateDetails['modal-description'].split(';');
+      return this.templateDetails["modal-description"].split(";");
     },
     slideInterval() {
       return Object.keys(this.template?.template_media?.slides).length > 1 ? 3000 : 0;
-    }
+    },
   },
   methods: {
     show() {
@@ -97,15 +120,15 @@ export default {
     },
     close() {
       this.$bvModal.hide("wizardTemplateDetails");
-      
+
       // Remove template parameter from the URL
-      let url = new URL(window.location.href);
-      if (url.search.includes('?categoryId=guided_templates')) {
-        url.searchParams.delete('template');
-        url.searchParams.delete('guided_templates');
-        history.pushState(null, '', url); // Update the URL without triggering a page reload
+      const url = new URL(window.location.href);
+      if (url.search.includes("?categoryId=guided_templates")) {
+        url.searchParams.delete("template");
+        url.searchParams.delete("guided_templates");
+        history.pushState(null, "", url); // Update the URL without triggering a page reload
       }
-      
+
       // Cancels the associated process request to prevent orphaned processes.
       if (this.showHelperProcess) {
         this.cancelHelperProcessRequest();

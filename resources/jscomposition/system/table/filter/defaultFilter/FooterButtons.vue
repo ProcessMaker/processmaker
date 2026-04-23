@@ -3,21 +3,24 @@
     <OutlineButton
       id="cancel-btn"
       class="!tw-py-2"
-      @click="$emit('cancel')">
+      @click="$emit('cancel')"
+    >
       <span>{{ $t("Cancel") }}</span>
     </OutlineButton>
 
     <OutlineButton
       id="clear-btn"
       class="!tw-py-2"
-      @click="$emit('clear')">
+      @click="$emit('clear')"
+    >
       <span>{{ $t("Clear") }}</span>
     </OutlineButton>
 
     <OutlineButton
       id="apply-btn"
       class="!tw-py-2 tw-bg-gray-500 tw-text-white hover:tw-bg-gray-700"
-      @click="$emit('apply')">
+      @click="$emit('apply')"
+    >
       <span>{{ $t("Apply") }}</span>
     </OutlineButton>
   </div>

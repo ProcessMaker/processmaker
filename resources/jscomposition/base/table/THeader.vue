@@ -1,10 +1,12 @@
 <template>
   <th
     class="tw-relative thead-resizable tw-p-0"
-    :style="{ width: width }">
+    :style="{ width: width }"
+  >
     <div
       :style="{ width: width }"
-      class="tw-py-3 tw-px-3 tw-text-left tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis">
+      class="tw-py-3 tw-px-3 tw-text-left tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis"
+    >
       <slot>
         {{ $t(getValue()) }}
       </slot>
@@ -17,7 +19,8 @@
     <div
       class="tw-absolute tw-right-0 tw-top-0 tw-w-1.5 tw-border-r hover:tw-border-blue-400 hover:tw-border-r-2
         tw-h-full tw-cursor-col-resize tw-select-none tw-border-gray-300"
-      @mousedown="column.resizable ? columnResize.startResize($event) : null" />
+      @mousedown="column.resizable ? columnResize.startResize($event) : null"
+    />
   </th>
 </template>
 

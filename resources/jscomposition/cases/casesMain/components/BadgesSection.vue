@@ -3,13 +3,15 @@
     <transition-group
       name="badge"
       tag="div"
-      class="tw-flex tw-space-x-1">
+      class="tw-flex tw-space-x-1"
+    >
       <Badge
         v-for="(item, index) in data"
         :id="`badge-${item.fieldName.replace(/\s+/g, '-')}`"
         :key="item.fieldName"
         class="tw-text-xs tw-bg-gray-100"
-        color="gray">
+        color="gray"
+      >
         <span>
           <span class=" tw-font-bold"> {{ item.fieldName }} </span>
           <span> {{ item.operator }} </span>
@@ -17,13 +19,15 @@
 
           <i
             class="fas fa-times tw-pl-1 hover:tw-cursor-pointer"
-            @click="onClose(item, index)" />
+            @click="onClose(item, index)"
+          />
         </span>
       </Badge>
     </transition-group>
     <slot
       v-if="data.length"
-      name="endsection" />
+      name="endsection"
+    />
   </div>
 </template>
 <script setup>

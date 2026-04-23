@@ -4,7 +4,7 @@ import { useRouter } from "vue-router/composables";
 const store = reactive({
   selectedInstance: {
     id: null,
-    name: '',
+    name: "",
   },
 });
 
@@ -19,4 +19,4 @@ const loadInstance = () => {
   }
 };
 
-export { store, loadInstance }
+export { store, loadInstance };

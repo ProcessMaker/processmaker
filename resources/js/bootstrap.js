@@ -1,8 +1,6 @@
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import * as bootstrap from "bootstrap";
-import TenantAwareEcho from "./common/TenantAwareEcho";
-import { initSessionSync } from "./common/sessionSync";
 import Router from "vue-router";
 import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
 import * as VueDeepSet from "vue-deepset";
@@ -20,6 +18,8 @@ import MonacoEditor from "vue-monaco";
 import Vue from "vue";
 import * as vue from "vue";
 import VueCookies from "vue-cookies";
+import { initSessionSync } from "./common/sessionSync";
+import TenantAwareEcho from "./common/TenantAwareEcho";
 import GlobalStore from "./globalStore";
 import Pagination from "./components/common/Pagination";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";

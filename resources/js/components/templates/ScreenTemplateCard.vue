@@ -7,7 +7,10 @@
       :data-cy="`${template.name}-card`"
     >
       <b-card-body>
-        <div @click="selectTemplate" class="template-container">
+        <div
+          class="template-container"
+          @click="selectTemplate"
+        >
           <div
             v-if="thumbnail"
             class="thumbnail-container thumbnail-image-container"
@@ -34,7 +37,10 @@
             <span class="checkbox-label">{{ $t('Set as Default Template') }}</span>
           </b-form-checkbox>
         </div>
-        <div v-if="!isBlankTemplate" class="preview-template pt-1">
+        <div
+          v-if="!isBlankTemplate"
+          class="preview-template pt-1"
+        >
           <b-link @click="showTemplatePreview">
             <i class="fas fa-eye fa-fw mr-0 pr-3 preview-icon" />
             {{ $t('Preview Template') }}
@@ -50,7 +56,7 @@ import templateMixin from "./mixins/template.js";
 
 export default {
   mixins: [templateMixin],
-  props: ["template", "selectedTemplateId", "isActive", "defaultTemplateId", "defaultTemplateScreenType", 'isDefaultTemplatePublic'],
+  props: ["template", "selectedTemplateId", "isActive", "defaultTemplateId", "defaultTemplateScreenType", "isDefaultTemplatePublic"],
   data() {
     return {
       isDefaultTemplate: false,
@@ -60,21 +66,21 @@ export default {
     thumbnail() {
       if (this.template?.template_media && this.template.template_media.length > 0) {
         return this.template.template_media[0].url;
-      } else if (this.template?.template_media?.thumbnail?.url) {
-        return this.template?.template_media.thumbnail.url
+      } if (this.template?.template_media?.thumbnail?.url) {
+        return this.template?.template_media.thumbnail.url;
       }
       return null;
     },
     isBlankTemplate() {
-      return !this.template.hasOwnProperty('uuid') ? true : false;
-    }
+      return !this.template.hasOwnProperty("uuid");
+    },
   },
   watch: {
     template: {
       deep: true,
       handler() {
         this.updateDefaultTemplateStatus();
-      }
+      },
     },
     isDefaultTemplate(newValue, oldValue) {
       if (newValue) {
@@ -83,14 +89,14 @@ export default {
     },
     defaultTemplateId(newValue, oldValue) {
       if (newValue === undefined && oldValue === null || newValue === null && oldValue === undefined) {
-        return;
-      } else if (newValue !== oldValue){
-        if (this.template.id === oldValue || (!this.template.hasOwnProperty('id') && oldValue === null)) {
+
+      } else if (newValue !== oldValue) {
+        if (this.template.id === oldValue || (!this.template.hasOwnProperty("id") && oldValue === null)) {
           this.isDefaultTemplate = false;
-        } else if (newValue === null && !this.template.hasOwnProperty('id') && this.template.screen_type === this.defaultTemplateScreenType) {
+        } else if (newValue === null && !this.template.hasOwnProperty("id") && this.template.screen_type === this.defaultTemplateScreenType) {
           this.isDefaultTemplate = true;
         }
-      } 
+      }
     },
     defaultTemplateScreenType() {
       this.updateDefaultTemplateStatus();

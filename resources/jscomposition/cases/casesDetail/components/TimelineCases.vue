@@ -2,7 +2,8 @@
   <div class="px-4 mb-2 timeline">
     <template
       v-for="(item,index) in comments"
-      v-if="timeline">
+      v-if="timeline"
+    >
       <component
         :is="component(item)"
         :key="`timeline-item-${index}`"
@@ -13,11 +14,13 @@
         :allow-remove="remove"
         :allow-voting="voting"
         :read-only="readonly"
-        @refresh="load" />
+        @refresh="load"
+      />
     </template>
     <template
       v-for="(item,index) in comments"
-      v-if="!timeline">
+      v-if="!timeline"
+    >
       <component
         :is="component(item)"
         :key="`timeline-item-${index}`"
@@ -28,7 +31,8 @@
         :allow-remove="remove"
         :allow-voting="voting"
         :read-only="readonly"
-        @refresh="load" />
+        @refresh="load"
+      />
     </template>
     <template v-if="isDefined('comment-editor') && adding">
       <comment-editor
@@ -36,7 +40,8 @@
         class="mt-2"
         :commentable_id="commentable_id"
         :commentable_type="commentable_type"
-        @refresh="load" />
+        @refresh="load"
+      />
     </template>
   </div>
 </template>

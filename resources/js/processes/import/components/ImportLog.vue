@@ -1,9 +1,24 @@
 <template>
   <div class="mt-2 text-left">
-    <a href="#" class="link" v-if="!visible" @click.stop="visible = !visible">Show debugging info</a>
+    <a
+      v-if="!visible"
+      href="#"
+      class="link"
+      @click.stop="visible = !visible"
+    >Show debugging info</a>
     <div v-if="visible">
-      <div ref="log" class="log card text-left">
-        <div class="entry" :class="{ warn: line.type === 'warn' }" v-for="(line, i) in logEntries" :key="i">{{ line.message }}</div>
+      <div
+        ref="log"
+        class="log card text-left"
+      >
+        <div
+          v-for="(line, i) in logEntries"
+          :key="i"
+          class="entry"
+          :class="{ warn: line.type === 'warn' }"
+        >
+          {{ line.message }}
+        </div>
       </div>
       <div v-if="allowDownloadDebug">
         <a :href="'/import/download-debug?hash=' + $root.hash">Download Debug Data</a>
@@ -12,23 +27,22 @@
   </div>
 </template>
 
-
 <script>
 export default {
-  data() {
-    return {
-      visible: false,
-    };
-  },
   props: {
     logEntries: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     allowDownloadDebug: {
       type: Boolean,
       default: false,
-    }
+    },
+  },
+  data() {
+    return {
+      visible: false,
+    };
   },
   watch: {
     logEntries() {
@@ -41,11 +55,11 @@ export default {
       if (this.allowDownloadDebug) {
         this.visible = true;
       }
-    }
+    },
   },
   methods: {
-  }
-}
+  },
+};
 </script>
 
 <style type="text/css" scoped>

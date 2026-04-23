@@ -2,12 +2,14 @@
   <div class="tw-overflow-hidden tw-flex -tw-space-x-1 tw-items-center tw-justify-center">
     <AppPopover
       position="bottom"
-      :hover="true">
+      :hover="true"
+    >
       <AppAvatar
         :initials="initials(row, column, columns) || ''"
         :src="src(row, column, columns)"
         class="tw-cursor-pointer"
-        @click="onClick" />
+        @click="onClick"
+      />
       <template #content>
         <div class="tw-p-2 tw-rounded-lg tw-border tw-border-gray-300 tw-bg-white">
           {{ formatter(row, column, columns) || "" }}
@@ -16,7 +18,8 @@
     </AppPopover>
 
     <span
-      class="tw-px-2">
+      class="tw-px-2"
+    >
       {{ formatter(row, column, columns) }}
     </span>
   </div>

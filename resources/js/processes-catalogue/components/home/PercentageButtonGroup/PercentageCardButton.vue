@@ -7,12 +7,14 @@
       [`tw-bg-${color}-100 hover:tw-bg-${color}-200  tw-border-${color}-200`]:!active,
       [`tw-bg-${color}-200 hover:tw-bg-${color}-300 tw-border-${color}-500 `]:active
     }]"
-    @click="handleClick">
+    @click="handleClick"
+  >
     <div class="tw-flex tw-flex-col tw-w-full">
       <div class="tw-flex tw-flex-col tw-justify-start">
         <slot name="icon">
           <i
-            :class="[`tw-text-lg`, icon]" />
+            :class="[`tw-text-lg`, icon]"
+          />
         </slot>
         <slot name="header">
           <div class="tw-text-base tw-line-clamp-1">
@@ -26,7 +28,8 @@
         </slot>
       </div>
       <slot
-        name="content">
+        name="content"
+      >
         <div class="tw-flex tw-justify-end tw-text-sm tw-truncate">
           {{ content }}
         </div>

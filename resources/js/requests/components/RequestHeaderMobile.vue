@@ -14,7 +14,7 @@
         class="status-header-class"
         @click="toggleCollapse"
       >
-      <tr>
+        <tr>
           <th class="d-flex align-items-center pl-3 border-0 mt-1">
             <div class="d-flex flex-column ml-2">
               <h4
@@ -24,12 +24,14 @@
               >
                 {{ $t(statusLabel) }}
               </h4>
-              <p class="small mb-1 detail-header-class">{{ $t("Start") }}: {{ moment(startDate).format() }}</p>
+              <p class="small mb-1 detail-header-class">
+                {{ $t("Start") }}: {{ moment(startDate).format() }}
+              </p>
             </div>
           </th>
           <th class="border-0 text-right pr-3 align-middle">
             <div class="icon-class">
-              <i :class="iconClass"></i>
+              <i :class="iconClass" />
             </div>
           </th>
         </tr>
@@ -42,12 +44,21 @@
           v-if="!collapsed"
           key="content"
         >
-          <td colspan="2" style="padding: 0%;">
-            <table class="table m-0 border-0" aria-describedby="table-description">
+          <td
+            colspan="2"
+            style="padding: 0%;"
+          >
+            <table
+              class="table m-0 border-0"
+              aria-describedby="table-description"
+            >
               <thead v-if="false">
                 <tr>
-                  <th scope="col" class="pl-0"></th>
-                  <th scope="col"></th>
+                  <th
+                    scope="col"
+                    class="pl-0"
+                  />
+                  <th scope="col" />
                 </tr>
               </thead>
               <tbody>
@@ -66,10 +77,13 @@
                     role="cell"
                     class="custom-font-text"
                   >
-                    <span>{{ request.case_number}}</span>
+                    <span>{{ request.case_number }}</span>
                   </td>
                 </tr>
-                <tr v-if="request.case_title" class="row-class">
+                <tr
+                  v-if="request.case_title"
+                  class="row-class"
+                >
                   <td
                     aria-colindex="1"
                     role="cell"
@@ -84,7 +98,7 @@
                     role="cell"
                     class="custom-font-text"
                   >
-                    <span>{{ request.case_title}}</span>
+                    <span>{{ request.case_title }}</span>
                   </td>
                 </tr>
                 <tr v-if="request.user_id">
@@ -112,7 +126,10 @@
                     <span v-else>{{ $t("Web Entry") }}</span>
                   </td>
                 </tr>
-                <tr v-if="request.participants.length" class="row-class">
+                <tr
+                  v-if="request.participants.length"
+                  class="row-class"
+                >
                   <td
                     aria-colindex="1"
                     role="cell"
@@ -127,20 +144,23 @@
                     role="cell"
                     class="custom-font-text"
                   >
-                  <div class="avatar-wrapper">
-                    <avatar-image
-                      v-for="(participant, index) in participants"
-                      :key="index"
-                      size="32"
-                      class="avatar"
-                      :input-data="participant"
-                      hide-name="true"
-                      :custom-style="borderRoundedWhite"
-                    />
-                    <div v-if="hiddenParticipantsCount > 0" class="more-avatars">
-                      ...
+                    <div class="avatar-wrapper">
+                      <avatar-image
+                        v-for="(participant, index) in participants"
+                        :key="index"
+                        size="32"
+                        class="avatar"
+                        :input-data="participant"
+                        hide-name="true"
+                        :custom-style="borderRoundedWhite"
+                      />
+                      <div
+                        v-if="hiddenParticipantsCount > 0"
+                        class="more-avatars"
+                      >
+                        ...
+                      </div>
                     </div>
-                  </div>
                   </td>
                 </tr>
                 <tr v-if="request.created_at">
@@ -240,12 +260,10 @@
                 >
                   <i class="fas fa-undo" /> {{ $t("Rollback") }}
                 </button>
-                <small
-                  >{{ $t("Rollback to task") }}:
+                <small>{{ $t("Rollback to task") }}:
                   <b>{{ eligibleRollbackTask.element_name }}</b> ({{
                     eligibleRollbackTask.element_id
-                  }})</small
-                >
+                  }})</small>
               </li>
             </ul>
           </td>
@@ -427,7 +445,7 @@ export default {
         "",
         () => {
           this.okCancel();
-        }
+        },
       );
     },
     /*
@@ -447,7 +465,7 @@ export default {
               ProcessMaker.alert(this.$t("Request Completed"), "success");
               window.location.reload();
             });
-        }
+        },
       );
     },
     /*
@@ -465,7 +483,7 @@ export default {
               return;
             }
 
-            const message = response.data.message;
+            const { message } = response.data;
             success = response.data.success || false;
 
             if (success) {
@@ -477,20 +495,18 @@ export default {
             } else {
               ProcessMaker.alert(
                 this.$t("Request could not be retried"),
-                "danger"
+                "danger",
               );
             }
           })
-          .finally(() =>
-            setTimeout(() => window.location.reload(), success ? 3000 : 1000)
-          );
+          .finally(() => setTimeout(() => window.location.reload(), success ? 3000 : 1000));
       };
 
       ProcessMaker.confirmModal(
         this.$t("Confirm"),
         this.$t("Are you sure you want to retry this request?"),
         "default",
-        apiRequest
+        apiRequest,
       );
     },
   },
@@ -517,7 +533,7 @@ export default {
   overflow: hidden;
 }
 .detail-header-class {
-  padding: 0; 
+  padding: 0;
   font-family: 'Open', sans-serif;
   font-weight: 500;
   font-size: 14px;

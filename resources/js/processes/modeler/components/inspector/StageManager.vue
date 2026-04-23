@@ -77,7 +77,7 @@ const getDefinition = () => getHighlightedNode().definition;
 
 const saveProcess = () => {
   window.$modelerApp?.autosaveApiCall?.();
-}
+};
 
 const getConfigFromDefinition = (definition) => {
   let config = {};

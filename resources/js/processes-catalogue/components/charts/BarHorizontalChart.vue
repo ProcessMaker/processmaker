@@ -1,28 +1,28 @@
 <script>
-import { HorizontalBar } from "vue-chartjs"
+import { HorizontalBar } from "vue-chartjs";
 
 export default {
   extends: HorizontalBar,
   props: ["data", "options", "preview"],
   computed: {
-    chartData: function() {
+    chartData() {
       return this.data;
     },
-    previewData: function() {
+    previewData() {
       return {
         datasets: [{
           data: [
-            5, 10, 15
-          ]
+            5, 10, 15,
+          ],
         }],
         labels: [
           1,
           2,
-          3
-        ]
+          3,
+        ],
       };
     },
-    previewOptions: function() {
+    previewOptions() {
       return {
         layout: {
           padding: {
@@ -38,23 +38,28 @@ export default {
         maintainAspectRatio: true,
         responsive: true,
         tooltips: {
-          enabled: false
+          enabled: false,
         },
         scales: {
           xAxes: [{
             display: false,
             ticks: {
               max: 15,
-            }
+            },
           }],
           yAxes: [{
             display: false,
           }],
-        }
-      }
-    }
+        },
+      };
+    },
   },
-  mounted () {
+  watch: {
+    data() {
+      this.render();
+    },
+  },
+  mounted() {
     this.render();
   },
   methods: {
@@ -68,12 +73,7 @@ export default {
     },
     describe() {
       return this.$t("Horizontal Bar Graph");
-    }
+    },
   },
-  watch: {
-    data: function() {
-      this.render();
-    }
-  }
-}
+};
 </script>

@@ -8,7 +8,7 @@ Vue.use(VueRouter);
 const router = new VueRouter({
   mode: "history",
   base: "/process-browser",
-  //See https://v3.router.vuejs.org/guide/
+  // See https://v3.router.vuejs.org/guide/
   routes: [
     {
       name: "index",
@@ -16,9 +16,9 @@ const router = new VueRouter({
       component: ProcessListing,
       props(route) {
         return {
-          categoryId: route.query.categoryId || 'recent',
+          categoryId: route.query.categoryId || "recent",
         };
-      }
+      },
     },
     {
       name: "show",
@@ -29,9 +29,9 @@ const router = new VueRouter({
           processId: parseInt(route.params.processId) || null,
           process: route.params.process || null,
         };
-      }
+      },
     },
-  ]
+  ],
 });
 
 new Vue({

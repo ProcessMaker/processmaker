@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div v-if="!allowInterstitial" class="alert alert-info task-info-alert">
+    <div
+      v-if="!allowInterstitial"
+      class="alert alert-info task-info-alert"
+    >
       "{{ $t('Display Next Assigned Task to Task Assignee') }}" {{ $t('option has been moved to the task destination dropdown') }}
     </div>
     <screen-select
@@ -124,12 +127,11 @@ export default {
         this.$set(this.node, "allowInterstitial", true);
       } else {
         // Prevent disabling interstitial if displayNextAssignedTask is set via conditional redirect or element destination
-        const isDisplayNextAssignedTask =
-          (isConditionalRedirect && this.elementDestination?.type === "displayNextAssignedTask") ||
-          (!isConditionalRedirect &&
-            Array.isArray(this.conditionalRedirect?.conditions) &&
-            this.conditionalRedirect.conditions.some(
-              (condition) => condition?.taskDestination?.value === "displayNextAssignedTask"
+        const isDisplayNextAssignedTask = (isConditionalRedirect && this.elementDestination?.type === "displayNextAssignedTask")
+          || (!isConditionalRedirect
+            && Array.isArray(this.conditionalRedirect?.conditions)
+            && this.conditionalRedirect.conditions.some(
+              (condition) => condition?.taskDestination?.value === "displayNextAssignedTask",
             ));
 
         if (isDisplayNextAssignedTask) return;

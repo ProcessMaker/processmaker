@@ -8,34 +8,47 @@
     <div class="header card card-body card-custom">
       <div class="d-flex justify-content-between">
         <div class="d-flex align-items-center flex-grow-1">
-          <i class="fas fa-chevron-left mr-2 custom-color" 
-            @click="$emit('goBack')" />
-          <div class="title text-truncate" v-b-tooltip.hover :title="process.name">
+          <i
+            class="fas fa-chevron-left mr-2 custom-color"
+            @click="$emit('goBack')"
+          />
+          <div
+            v-b-tooltip.hover
+            class="title text-truncate"
+            :title="process.name"
+          >
             {{ process.name }}
           </div>
         </div>
         <div class="d-flex align-items-center flex-shrink-0">
-          <button class="info-button mx-3" 
+          <button
+            class="info-button mx-3"
             :class="showProcessInfo ? 'info-button-active' : 'info-button'"
-            @click="handleInfoClick">
+            @click="handleInfoClick"
+          >
             <span>i</span>
           </button>
           <div class="card-bookmark mx-3">
             <bookmark :process="process" />
           </div>
           <span class="ellipsis-border">
-            <ellipsis-menu 
-              v-if="showEllipsis" 
-              :actions="processLaunchpadActions" 
-              :data="process" 
+            <ellipsis-menu
+              v-if="showEllipsis"
+              :actions="processLaunchpadActions"
+              :data="process"
               :divider="false"
-              :lauchpad="true" 
-              variant="none" 
+              :lauchpad="true"
+              variant="none"
+              :is-documenter-installed="$root.isDocumenterInstalled"
+              :permission="$root.permission || ellipsisPermission"
               @navigate="ellipsisNavigate"
-              :isDocumenterInstalled="$root.isDocumenterInstalled" 
-              :permission="$root.permission || ellipsisPermission" />
+            />
           </span>
-          <buttons-start :process="process" :startEvent="singleStartEvent" :processEvents="processEvents" />
+          <buttons-start
+            :process="process"
+            :start-event="singleStartEvent"
+            :process-events="processEvents"
+          />
         </div>
       </div>
     </div>
@@ -57,32 +70,32 @@ export default {
   },
   mixins: [
     ProcessesMixin,
-    ellipsisMenuMixin
+    ellipsisMenuMixin,
   ],
   props: {
     process: {
       type: Object,
-      required: true
+      required: true,
     },
     enableCollapse: {
       type: Boolean,
-      default: true
+      default: true,
     },
     ellipsisPermission: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     showProcessInfo: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
       infoCollapsed: true,
       processEvents: [],
       singleStartEvent: null,
-    }
+    };
   },
   mounted() {
     this.getStartEvents();
@@ -107,7 +120,7 @@ export default {
             ProcessMaker.alert(this.$t("The current user does not have permission to start this process"), "danger");
           }
           const nonWebEntryStartEvents = this.processEvents.filter(
-            (e) => !("webEntry" in e) || !e.webEntry
+            (e) => !("webEntry" in e) || !e.webEntry,
           );
           if (nonWebEntryStartEvents.length === 1 && this.processEvents.length === 1) {
             this.singleStartEvent = nonWebEntryStartEvents[0].id;
@@ -118,10 +131,10 @@ export default {
         });
     },
     handleInfoClick() {
-      this.$emit('toggle-info');
-    }
-  }
-}
+      this.$emit("toggle-info");
+    },
+  },
+};
 </script>
 <style>
 .ellipsis-border div button span {
@@ -131,7 +144,6 @@ export default {
 <style lang="scss" scoped>
 @import url("./scss/processes.css");
 @import '~styles/variables';
-
 
 .header-mobile .title,
 .header .title {
@@ -230,7 +242,7 @@ export default {
   cursor: pointer;
   font-weight: 700;
   position: relative;
-  
+
   span {
     color: #ffffff;
     font-size: 14px;

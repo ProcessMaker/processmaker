@@ -4,29 +4,87 @@
       <div v-if="text">
         {{ trimmed(text) }}
       </div>
-      <div v-else class="font-italic text-black-50">
+      <div
+        v-else
+        class="font-italic text-black-50"
+      >
         Empty
       </div>
     </div>
-    <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden">
-      <template v-slot:modal-header class="d-block">
+    <b-modal
+      v-model="showModal"
+      class="setting-object-modal"
+      size="lg"
+      @hidden="onModalHidden"
+    >
+      <template
+        #modal-header
+        class="d-block"
+      >
         <div>
-          <h5 class="mb-0" v-if="setting.name">{{ $t(setting.name) }}</h5>
-          <h5 class="mb-0" v-else>{{ setting.key }}</h5>
-          <small class="form-text text-muted" v-if="setting.helper">{{ $t(setting.helper) }}</small>
+          <h5
+            v-if="setting.name"
+            class="mb-0"
+          >
+            {{ $t(setting.name) }}
+          </h5>
+          <h5
+            v-else
+            class="mb-0"
+          >
+            {{ setting.key }}
+          </h5>
+          <small
+            v-if="setting.helper"
+            class="form-text text-muted"
+          >{{ $t(setting.helper) }}</small>
         </div>
-        <button type="button" :aria-label="$t('Close')" class="close" @click="onCancel">×</button>
+        <button
+          type="button"
+          :aria-label="$t('Close')"
+          class="close"
+          @click="onCancel"
+        >
+          ×
+        </button>
       </template>
-      <div v-if="!ui('single')" class="position-absolute w-100 ml-n3 d-flex">
-        <div class="w-75"></div>
-        <div class="w-25 ml-n3 d-flex justify-content-end"><b-button class="setting-add-button" @click="onAdd()" variant="secondary" size="sm"><i class="fa fa-plus"></i> Add</b-button></div>
+      <div
+        v-if="!ui('single')"
+        class="position-absolute w-100 ml-n3 d-flex"
+      >
+        <div class="w-75" />
+        <div class="w-25 ml-n3 d-flex justify-content-end">
+          <b-button
+            class="setting-add-button"
+            variant="secondary"
+            size="sm"
+            @click="onAdd()"
+          >
+            <i class="fa fa-plus" /> Add
+          </b-button>
+        </div>
       </div>
-      <b-table class="setting-object-table" :items="table" :fields="fields" striped>
+      <b-table
+        class="setting-object-table"
+        :items="table"
+        :fields="fields"
+        striped
+      >
         <template #cell(key)="data">
           <div v-if="ui('fixedKeys') === false">
             <div class="d-flex w-100 flex-wrap">
-              <b-form-input class="ml-2 mr-2" :class="{'is-invalid': !data.item.isValid}" v-model="data.item.key.name" @keyup.enter="onSave()" spellcheck="false" autocomplete="off"></b-form-input>
-              <small class="form-text text-danger mx-2" v-if="!data.item.isValid">
+              <b-form-input
+                v-model="data.item.key.name"
+                class="ml-2 mr-2"
+                :class="{'is-invalid': !data.item.isValid}"
+                spellcheck="false"
+                autocomplete="off"
+                @keyup.enter="onSave()"
+              />
+              <small
+                v-if="!data.item.isValid"
+                class="form-text text-danger mx-2"
+              >
                 {{ $t('Invalid variable name') }}
               </small>
             </div>
@@ -40,22 +98,48 @@
               aria-label="name"
               :show-labels="false"
               class="setting-object-multiselect ml-2 mr-2"
-            ></multiselect>
+            />
           </div>
         </template>
         <template #cell(value)="data">
           <div class="d-flex w-100">
-            <b-form-input class="mr-2" v-model="data.item.value" @keyup.enter="onSave()" spellcheck="false" autocomplete="off"></b-form-input>
-            <b-button :aria-label="$t('Delete')" v-if="!ui('single')" class="mr-2" @click="onDelete(data)" variant="link"><i class="fa fa-trash"></i></b-button>
+            <b-form-input
+              v-model="data.item.value"
+              class="mr-2"
+              spellcheck="false"
+              autocomplete="off"
+              @keyup.enter="onSave()"
+            />
+            <b-button
+              v-if="!ui('single')"
+              :aria-label="$t('Delete')"
+              class="mr-2"
+              variant="link"
+              @click="onDelete(data)"
+            >
+              <i class="fa fa-trash" />
+            </b-button>
           </div>
         </template>
       </b-table>
-      <div slot="modal-footer" class="w-100 m-0 d-flex">
-        <button type="button" class="btn btn-outline-secondary ml-auto" @click="onCancel">
-            {{ $t('Cancel') }}
+      <div
+        slot="modal-footer"
+        class="w-100 m-0 d-flex"
+      >
+        <button
+          type="button"
+          class="btn btn-outline-secondary ml-auto"
+          @click="onCancel"
+        >
+          {{ $t('Cancel') }}
         </button>
-        <button type="button" class="btn btn-secondary ml-3" @click="onSave" :disabled="! changed || haveInvalid">
-            {{ $t('Save')}}
+        <button
+          type="button"
+          class="btn btn-secondary ml-3"
+          :disabled="! changed || haveInvalid"
+          @click="onSave"
+        >
+          {{ $t('Save') }}
         </button>
       </div>
     </b-modal>
@@ -67,7 +151,7 @@ import settingMixin from "../mixins/setting";
 
 export default {
   mixins: [settingMixin],
-  props: ['value', 'setting'],
+  props: ["value", "setting"],
   data() {
     return {
       input: null,
@@ -78,26 +162,26 @@ export default {
       haveInvalid: false,
       fields: [
         {
-          key: 'key',
+          key: "key",
           label: this.keyLabel(),
           sortable: false,
-          thClass: 'thKey',
+          thClass: "thKey",
         },
         {
-          key: 'value',
+          key: "value",
           label: this.valueLabel(),
           sortable: false,
-          thClass: 'thValue',
+          thClass: "thValue",
         },
       ],
     };
   },
   computed: {
     availableKeys() {
-      let available = this.copy(this.keys);
-      this.table.forEach(item => {
+      const available = this.copy(this.keys);
+      this.table.forEach((item) => {
         if (item.key && item.key.name) {
-          let disable = available.find(key => key.name === item.key.name);
+          const disable = available.find((key) => key.name === item.key.name);
           if (disable) {
             disable.$isDisabled = true;
           }
@@ -108,94 +192,96 @@ export default {
     changed() {
       if (_.isEmpty(this.input) && _.isEmpty(this.transformed)) {
         return false;
-      } else {
-        return JSON.stringify(this.input) !== JSON.stringify(this.transformed);
       }
+      return JSON.stringify(this.input) !== JSON.stringify(this.transformed);
     },
     text() {
-      let lines = [];
-      if (this.input && typeof this.input == 'object') {
-        Object.keys(this.input).forEach(key => {
+      const lines = [];
+      if (this.input && typeof this.input === "object") {
+        Object.keys(this.input).forEach((key) => {
           if (this.input[key] !== null) {
-            lines.push(key + ' → ' + this.input[key]);
+            lines.push(`${key} → ${this.input[key]}`);
           }
-        })
+        });
       }
       if (lines.length) {
-        return lines.join(', ');
-      } else {
-        return '';
+        return lines.join(", ");
       }
-    }
+      return "";
+    },
   },
   watch: {
     value: {
-      handler: function(value) {
+      handler(value) {
         this.input = value;
         this.setTable();
       },
     },
     table: {
-      handler: function(value) {
+      handler(value) {
         this.transformed = this.copy(this.input);
-        if (this.ui('single')) {
+        if (this.ui("single")) {
           this.transformed = {};
-          this.keys.forEach(key => {
-            let match = value.find(item => item.key.name == key.name);
+          this.keys.forEach((key) => {
+            const match = value.find((item) => item.key.name == key.name);
             if (match) {
               this.transformed[key.name] = match.value;
             }
           });
+        } else if (this.ui("fixedKeys")) {
+          this.keys.forEach((key) => {
+            const match = value.find((item) => item.key.name == key.name);
+            if (match) {
+              this.transformed[key.name] = match.value;
+            } else {
+              this.transformed[key.name] = null;
+            }
+          });
         } else {
-          if (this.ui('fixedKeys')) {
-            this.keys.forEach(key => {
-              let match = value.find(item => item.key.name == key.name);
-              if (match) {
-                this.transformed[key.name] = match.value;
-              } else {
-                this.transformed[key.name] = null;
+          this.transformed = {};
+          this.table.forEach((row) => {
+            if (row.key.name && row.key.name.length && row.value && row.value.length) {
+              this.transformed[row.key.name] = row.value;
+            }
+          });
+          this.haveInvalid = false;
+          value.forEach((item) => {
+            if (item.key) {
+              item.isValid = this.isValid(item.key.name);
+              if (!item.isValid) {
+                this.haveInvalid = true;
               }
-            });
-          } else {
-            this.transformed = {};
-            this.table.forEach(row => {
-              if (row.key.name && row.key.name.length && row.value && row.value.length) {
-                this.transformed[row.key.name] = row.value;
-              }
-            });
-            this.haveInvalid = false;
-            value.forEach(item => {
-              if (item.key) {
-                item.isValid = this.isValid(item.key.name);
-                if (!item.isValid) {
-                  this.haveInvalid = true;
-                }
-              }
-            });
-          }
+            }
+          });
         }
       },
       deep: true,
+    },
+  },
+  mounted() {
+    if (this.value === null) {
+      this.input = "";
+    } else {
+      this.input = this.copy(this.value);
     }
+    this.setTable();
   },
   methods: {
     isValid(key) {
-      let pattern = /^[a-zA-Z_][a-zA-Z0-9_]*$/g;
-      return pattern.test(key) && key != '';
+      const pattern = /^[a-zA-Z_][a-zA-Z0-9_]*$/g;
+      return pattern.test(key) && key != "";
     },
     keyLabel() {
-      if (this.ui('keyLabel')) {
-        return this.$t(this.ui('keyLabel'));
-      } else {
-        return this.$t('Key');
+      if (this.ui("keyLabel")) {
+        return this.$t(this.ui("keyLabel"));
       }
+      return this.$t("Key");
     },
     valueLabel() {
-      if (this.ui('valueLabel')) {
-        return this.$t(this.ui('valueLabel'));
-      } else {
-        return this.$t('Value');
+      if (this.ui("valueLabel")) {
+        return this.$t(this.ui("valueLabel"));
       }
+      return this.$t("Value");
     },
     onAdd(data) {
       if (data) {
@@ -237,31 +323,21 @@ export default {
     },
     setTable() {
       this.table = [];
-      this.keys = Object.keys(this.input).map(key => {
-        return {
-          name: key,
-          $isDisabled: false,
-        };
-      });
-      this.keys.forEach(key => {
+      this.keys = Object.keys(this.input).map((key) => ({
+        name: key,
+        $isDisabled: false,
+      }));
+      this.keys.forEach((key) => {
         if (this.input[key.name] !== null && this.input[key.name].length) {
           this.table.push({
-            key: key,
+            key,
             value: this.input[key.name],
-            isValid: this.isValid(key.name)
-          })
+            isValid: this.isValid(key.name),
+          });
         }
       });
-    }
+    },
   },
-  mounted() {
-    if (this.value === null) {
-      this.input = '';
-    } else {
-      this.input = this.copy(this.value);
-    }
-    this.setTable();
-  }
 };
 </script>
 

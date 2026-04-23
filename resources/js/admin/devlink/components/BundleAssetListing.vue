@@ -1,8 +1,8 @@
 <script setup>
-import { ref, onMounted, getCurrentInstance } from 'vue';
-import { useRouter, useRoute } from 'vue-router/composables';
-import types from './assetTypes';
-import moment from 'moment';
+import { ref, onMounted, getCurrentInstance } from "vue";
+import { useRouter, useRoute } from "vue-router/composables";
+import moment from "moment";
+import types from "./assetTypes";
 
 const vue = getCurrentInstance().proxy;
 const router = useRouter();
@@ -18,14 +18,14 @@ const loadAssets = async () => {
   loading.value = true;
   const response = await window.ProcessMaker.apiClient.get(`/api/1.0/devlink/local-bundles/${bundleId}`);
   bundle.value = response.data;
-  items.value = response.data.assets.filter(asset => asset.type.toUpperCase() === route.params.type.toUpperCase());
+  items.value = response.data.assets.filter((asset) => asset.type.toUpperCase() === route.params.type.toUpperCase());
   loading.value = false;
 };
 
 const remove = async (asset) => {
-  const confirm = await vue.$bvModal.msgBoxConfirm(vue.$t('Are you sure you want to remote this asset from the bundle?'), {
-    okTitle: vue.$t('Ok'),
-    cancelTitle: vue.$t('Cancel'),
+  const confirm = await vue.$bvModal.msgBoxConfirm(vue.$t("Are you sure you want to remote this asset from the bundle?"), {
+    okTitle: vue.$t("Ok"),
+    cancelTitle: vue.$t("Cancel"),
   });
   if (!confirm) {
     return;
@@ -35,7 +35,7 @@ const remove = async (asset) => {
 };
 
 const dateFormatter = (value) => {
-  if (!value) return '';
+  if (!value) return "";
   return moment(value).format(ProcessMaker.user.datetime_format);
 };
 
@@ -44,7 +44,7 @@ onMounted(() => {
 });
 
 const goToAssets = () => {
-  const url = typeConfig?.listingUrl || '#';
+  const url = typeConfig?.listingUrl || "#";
   window.location.href = url;
 };
 
@@ -84,7 +84,10 @@ const fields = [
       {{ typeConfig?.name }}
     </div>
     <div>
-      <div class="asset-listing-card" v-if="!typeConfig">
+      <div
+        v-if="!typeConfig"
+        class="asset-listing-card"
+      >
         No assets found
       </div>
       <div v-else>

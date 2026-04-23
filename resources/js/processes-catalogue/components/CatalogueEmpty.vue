@@ -8,10 +8,16 @@
           alt="recent projects"
         >
       </div>
-      <h4 v-show="!isBookmarkEmpty" class="text-center">
+      <h4
+        v-show="!isBookmarkEmpty"
+        class="text-center"
+      >
         {{ $t("Currently, you don't have any processes created.") }}
       </h4>
-      <h4 v-show="isBookmarkEmpty" class="text-center">
+      <h4
+        v-show="isBookmarkEmpty"
+        class="text-center"
+      >
         {{ $t("Currently, you don’t have any processes bookmarked.") }}
       </h4>
       <p class="text-center">

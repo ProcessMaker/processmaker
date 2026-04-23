@@ -30,12 +30,12 @@ const ListMixin = {
     onScroll() {
       const container = document.querySelector(".mobile-container");
       if (
-        container.scrollTop + container.clientHeight >=
-        container.scrollHeight - 10
+        container.scrollTop + container.clientHeight
+        >= container.scrollHeight - 10
       ) {
         if (this.totalCards >= this.perPage) {
           this.cardMessage = "show-page";
-          this.sumCards = this.sumCards + this.perPage;
+          this.sumCards += this.perPage;
           this.fetch();
         }
       }
@@ -75,7 +75,7 @@ const ListMixin = {
           this.page = 1;
         }
         this.previousPmql = pmql;
-        let advancedFilter = this.getAdvancedFilter
+        const advancedFilter = this.getAdvancedFilter
           ? this.getAdvancedFilter()
           : "";
         if (this.previousAdvancedFilter !== advancedFilter) {
@@ -96,25 +96,25 @@ const ListMixin = {
         // Load from our api client
         ProcessMaker.apiClient
           .get(
-            `${this.endpoint}?page=${this.page}&include=` +
-              include.join(",") +
-              `&pmql=${encodeURIComponent(pmql)}&per_page=${
-                this.perPage + this.sumCards
-              }${filterParams}${this.getSortParam()}&non_system=true` +
-              `&processesIManage=${this.processesIManage ? "true" : "false"}` +
-              advancedFilter +
-              this.columnsQuery,
+            `${this.endpoint}?page=${this.page}&include=${
+              include.join(",")
+            }&pmql=${encodeURIComponent(pmql)}&per_page=${
+              this.perPage + this.sumCards
+            }${filterParams}${this.getSortParam()}&non_system=true`
+              + `&processesIManage=${this.processesIManage ? "true" : "false"}${
+                advancedFilter
+              }${this.columnsQuery}`,
             {
               dataLoadingId: this.dataLoadingId,
               headers: { "Cache-Control": "no-cache" },
-            }
+            },
           )
           .then((response) => {
             this.data = this.transform(response.data);
             this.totalCards = response.data.meta.total;
             this.totalPages = this.calculateTotalPages(
               this.totalCards,
-              this.perPage
+              this.perPage,
             );
             if (this.$cookies.get("isMobile") === "true") {
               const dataIds = [];

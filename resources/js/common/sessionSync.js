@@ -497,7 +497,7 @@ export const initSessionSync = ({
 
   // Broadcast manual logout so all tabs close warning and redirect.
   document.addEventListener("click", (event) => {
-    const logoutLink = event.target.closest('a[href="/logout"], a[href^="/logout?"]');
+    const logoutLink = event.target.closest("a[href=\"/logout\"], a[href^=\"/logout?\"]");
     if (!logoutLink) {
       return;
     }

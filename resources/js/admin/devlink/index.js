@@ -14,7 +14,7 @@ Vue.use(VueRouter);
 const router = new VueRouter({
   mode: "history",
   base: "/admin/devlink",
-  //See https://v3.router.vuejs.org/guide/
+  // See https://v3.router.vuejs.org/guide/
   routes: [
     {
       name: "index",
@@ -45,25 +45,25 @@ const router = new VueRouter({
           name: "bundle-asset-listing",
           path: "assets/:type",
           component: BundleAssetListing,
-        }
+        },
       ],
     },
     {
-      name: 'assets',
-      path: '/instance/:id/assets',
+      name: "assets",
+      path: "/instance/:id/assets",
       component: Assets,
     },
     {
-      name: 'asset-listing',
-      path: '/instance/:id/assets/:type',
+      name: "asset-listing",
+      path: "/instance/:id/assets/:type",
       component: AssetListing,
     },
     {
-      name: 'assets-shared',
-      path: '/assets-shared',
+      name: "assets-shared",
+      path: "/assets-shared",
       component: SharedAssets,
-    }
-  ]
+    },
+  ],
 });
 
 new Vue({

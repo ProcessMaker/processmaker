@@ -1,5 +1,9 @@
 <template>
-  <b-card v-if="showCards" class="m-3 card-mobile" no-body>
+  <b-card
+    v-if="showCards"
+    class="m-3 card-mobile"
+    no-body
+  >
     <a :href="openURL">
       <b-card-body
         class="card-mobile-body"
@@ -13,8 +17,16 @@
                   :style="{ display: isVisible ? 'block' : 'none' }"
                   v-html="sanitize(item.case_title_formatted)"
                 />
-                <div ref="line1" class="line-1" v-html="title1"></div>
-                <div ref="line2" class="line-2" v-html="title2"></div>
+                <div
+                  ref="line1"
+                  class="line-1"
+                  v-html="title1"
+                />
+                <div
+                  ref="line2"
+                  class="line-2"
+                  v-html="title2"
+                />
               </span>
             </b-col>
           </b-row>
@@ -35,7 +47,10 @@
           </div>
         </b-card-text>
       </b-card-body>
-      <b-card-footer @click="openCard()" class="card-mobile-footer">
+      <b-card-footer
+        class="card-mobile-footer"
+        @click="openCard()"
+      >
         <b-row align-h="between">
           <b-col cols="4">
             <img
@@ -73,11 +88,14 @@
       </b-card-footer>
     </a>
   </b-card>
-  <b-card v-else class="card-tasks">
+  <b-card
+    v-else
+    class="card-tasks"
+  >
     <div class="card-tasks-content">
       <span v-if="cardMessage === 'show-page'">Page {{ currentPage }} of {{ totalPages }}</span>
       <span v-if="cardMessage === 'show-more' && !loading"> {{ $t('Show More') }}</span>
-      <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
+      <span v-if="loading"><i class="fas fa-spinner fa-spin" /> {{ $t('Loading') }}...</span>
     </div>
   </b-card>
 </template>
@@ -99,17 +117,17 @@ export default {
     },
     totalPages: {
       type: Number,
-      default: 0
-    } ,
+      default: 0,
+    },
     process: null,
     hideBookmark: {
       type: Boolean,
-      default: false
+      default: false,
     },
     showCards: true,
     fields: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
   },
   data() {
@@ -122,7 +140,7 @@ export default {
       title1: "",
       title2: "",
       formatItem: [],
-      callbackResize: function() {}
+      callbackResize() {},
     };
   },
   computed: {
@@ -187,25 +205,25 @@ export default {
      */
     showBadge() {
       const statusMap = {
-        "DRAFT": { color: "#F9E8C3", label: this.$t("Draft") },
-        "CANCELED": { color: "#FFC7C7", label: this.$t("Canceled") },
-        "CLOSED": { color: "#B8DCF7", label: this.$t("Completed") },
-        "COMPLETED": { color: "#B8DCF7", label: this.$t("Completed") },
-        "ERROR": { color: "#FFC7C7", label: this.$t("Error") },
-        "ACTIVE": {
-          "overdue": { color: "#FFC7C7", label: this.$t("Overdue") },
-          "open": { color: "#C8F0CF", label: this.$t("In Progress") },
-          "default": { color: "#C8F0CF", label: this.$t("In Progress") }
+        DRAFT: { color: "#F9E8C3", label: this.$t("Draft") },
+        CANCELED: { color: "#FFC7C7", label: this.$t("Canceled") },
+        CLOSED: { color: "#B8DCF7", label: this.$t("Completed") },
+        COMPLETED: { color: "#B8DCF7", label: this.$t("Completed") },
+        ERROR: { color: "#FFC7C7", label: this.$t("Error") },
+        ACTIVE: {
+          overdue: { color: "#FFC7C7", label: this.$t("Overdue") },
+          open: { color: "#C8F0CF", label: this.$t("In Progress") },
+          default: { color: "#C8F0CF", label: this.$t("In Progress") },
         },
-        "default": { color: "#C8F0CF", label: this.$t("In Progress") }
+        default: { color: "#C8F0CF", label: this.$t("In Progress") },
       };
 
       if (this.item.status === "ACTIVE") {
-        const advanceStatus = this.item.advanceStatus ? statusMap["ACTIVE"][this.item.advanceStatus] : statusMap["ACTIVE"]["default"];
+        const advanceStatus = this.item.advanceStatus ? statusMap.ACTIVE[this.item.advanceStatus] : statusMap.ACTIVE.default;
         this.colorStatus = `background-color: ${advanceStatus.color}`;
         this.requestBadge = advanceStatus.label;
       } else {
-        const currentStatus = statusMap[this.item.status] || statusMap["default"];
+        const currentStatus = statusMap[this.item.status] || statusMap.default;
         this.colorStatus = `background-color: ${currentStatus.color}`;
         this.requestBadge = currentStatus.label;
       }
@@ -217,7 +235,7 @@ export default {
      */
     formatDate(value) {
       if (value) {
-        return window.moment(value).format('DD MMM YYYY / HH:mm');
+        return window.moment(value).format("DD MMM YYYY / HH:mm");
       }
       return "n/a";
     },
@@ -235,9 +253,9 @@ export default {
       this.title2 = "";
       let lineBreak = false;
       this.isVisible = true;
-      const words = text.split(' ');
+      const words = text.split(" ");
       this.$nextTick(() => {
-        const fullText = this.$refs.fullText;
+        const { fullText } = this.$refs;
         const fullWidth = fullText.offsetWidth;
         words.forEach((word) => {
           if (((this.title1 + word).length < (fullWidth / 7)) && !lineBreak) {
@@ -257,14 +275,14 @@ export default {
       return this.removeScripts(html);
     },
     removeScripts(input) {
-      const doc = new DOMParser().parseFromString(input, 'text/html');
+      const doc = new DOMParser().parseFromString(input, "text/html");
 
-      const scripts = doc.querySelectorAll('script');
+      const scripts = doc.querySelectorAll("script");
       scripts.forEach((script) => {
         script.remove();
       });
 
-      const styles = doc.querySelectorAll('style');
+      const styles = doc.querySelectorAll("style");
       styles.forEach((style) => {
         style.remove();
       });

@@ -5,11 +5,13 @@
       :columns="columnsConfig"
       :data="data"
       :placeholder="showPlaceholder"
-      @changeFilter="onChangeFilter">
+      @changeFilter="onChangeFilter"
+    >
       <template #placeholder>
         <TablePlaceholder
           :placeholder="placeholderType"
-          class="tw-grow" />
+          class="tw-grow"
+        />
       </template>
     </SortTable>
 
@@ -19,7 +21,8 @@
       :pages="dataPagination.pages"
       :per-page="dataPagination.perPage"
       @perPage="onPerPage"
-      @go="onGo" />
+      @go="onGo"
+    />
   </div>
 </template>
 

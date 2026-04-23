@@ -85,7 +85,6 @@ export default {
       this.iframeContentWindow.location.reload();
     },
     loaded() {
-      // eslint-disable-next-line no-underscore-dangle
       this.iframeContentWindow.event_parent_id = this._uid;
       this.sendEvent("sendValidateForm", false);
     },
@@ -97,7 +96,6 @@ export default {
     },
     receiveEvent(name, callback) {
       window.addEventListener(name, (event) => {
-        // eslint-disable-next-line no-underscore-dangle
         if (event.detail.event_parent_id !== this._uid) {
           return;
         }

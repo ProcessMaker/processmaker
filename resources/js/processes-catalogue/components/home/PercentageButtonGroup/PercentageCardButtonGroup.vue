@@ -1,6 +1,7 @@
 <template>
   <div
-    class="tw-w-auto tw-flex tw-flex-row">
+    class="tw-w-auto tw-flex tw-flex-row"
+  >
     <div
       v-for="(item, index) in data"
       :key="index"
@@ -8,7 +9,8 @@
       class=" tw-w-auto tw-flex tw-flex-col sm:tw-space-y-0 sm:tw-py-0
         first:tw-rounded-l-lg last:tw-rounded-r-lg tw-border-y tw-border-gray-200
         first:tw-border-l
-        tw-overflow-hidden last:tw-border-r">
+        tw-overflow-hidden last:tw-border-r"
+    >
       <PercentageCardButton
         :id="item.id"
         :header="item.body"
@@ -18,15 +20,19 @@
         :icon="item.icon"
         :active="item.active"
         :content="item.content"
-        @click="onClick(item, index)" />
+        @click="onClick(item, index)"
+      />
       <div
         v-if="item.subpercentage"
-        class="tw-flex">
+        class="tw-flex"
+      >
         <div
           :style="{ width: `${item.subpercentage}%` }"
-          class="tw-h-2 tw-bg-blue-400" />
+          class="tw-h-2 tw-bg-blue-400"
+        />
         <div
-          class="tw-h-2 tw-w-full tw-bg-orange-400" />
+          class="tw-h-2 tw-w-full tw-bg-orange-400"
+        />
       </div>
     </div>
   </div>

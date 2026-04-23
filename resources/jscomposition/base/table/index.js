@@ -6,4 +6,6 @@ import TRow from "./TRow.vue";
 
 export default {};
 
-export { BaseTable, Pagination, TCell, THeader, TRow };
+export {
+  BaseTable, Pagination, TCell, THeader, TRow,
+};

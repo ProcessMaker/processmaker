@@ -2,21 +2,26 @@
   <b-modal
     ref="bundleModal"
     centered
-    @ok="onOk"
     :ok-title="modalOkButton"
     :cancel-title="'Cancel'"
+    @ok="onOk"
   >
     <template #modal-header>
       <div class="delete-icon">
         <i class="fp-trash" />
       </div>
     </template>
-    <p class="modal-body-text">{{ title }}</p>
-    <p class="text-muted" v-html="message"></p>
+    <p class="modal-body-text">
+      {{ title }}
+    </p>
+    <p
+      class="text-muted"
+      v-html="message"
+    />
   </b-modal>
 </template>
 <script>
-import { ref } from 'vue';
+import { ref } from "vue";
 
 export default {
   props: {

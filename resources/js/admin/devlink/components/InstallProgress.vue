@@ -1,15 +1,20 @@
 <template>
   <div>
     <div class="install-progress">
-      <b-spinner v-if="showSpinner"></b-spinner>
+      <b-spinner v-if="showSpinner" />
       <b-progress
         :value="progress"
         :max="100"
         show-progress
         animated
-      ></b-progress>
-      <div class="current-message">{{ currentMessage }}</div>
-      <div class="warnings" v-if="warnings.length > 0">
+      />
+      <div class="current-message">
+        {{ currentMessage }}
+      </div>
+      <div
+        v-if="warnings.length > 0"
+        class="warnings"
+      >
         <ul>
           <li
             v-for="(warning, index) in warnings"
@@ -33,48 +38,51 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, getCurrentInstance } from 'vue';
+import {
+  ref, onMounted, onUnmounted, getCurrentInstance,
+} from "vue";
 
 const vue = getCurrentInstance().proxy;
 const progress = ref(0);
 const userId = window.ProcessMaker.user.id;
 const done = ref(false);
-const currentMessage = ref('');
+const currentMessage = ref("");
 const warnings = ref([]);
 const showSpinner = ref(true);
-const error = ref('');
-const emit = defineEmits(['installation-complete']);
+const error = ref("");
+const emit = defineEmits(["installation-complete"]);
 
 onMounted(() => {
-  currentMessage.value = vue.$t('Initializing') + '...';
+  currentMessage.value = `${vue.$t("Initializing")}...`;
   window.Echo.private(`ProcessMaker.Models.User.${userId}`).listen(
-    '.ImportLog',
+    ".ImportLog",
     (response) => {
       showSpinner.value = false;
-      if (response.type === 'progress') {
+      if (response.type === "progress") {
         progress.value = response.message;
       }
 
-      if (response.type === 'status') {
-        if (response.message === 'done') {
+      if (response.type === "status") {
+        if (response.message === "done") {
           progress.value = 100;
           warnings.value = response.additionalParams;
           done.value = true;
-          currentMessage.value = 'Successfully installed!';
+          currentMessage.value = "Successfully installed!";
         } else {
           currentMessage.value = response.message;
         }
       }
 
-      if (response.type === 'log') {
+      if (response.type === "log") {
         currentMessage.value = response.message;
       }
 
-      if (response.type === 'error') {
+      if (response.type === "error") {
         error.value = response.message;
         done.value = true;
       }
-    });
+    },
+  );
 });
 
 onUnmounted(() => {
@@ -82,8 +90,8 @@ onUnmounted(() => {
 });
 
 const handleClose = () => {
-  vue.$bvModal.hide('install-progress');
-  emit('installation-complete');
+  vue.$bvModal.hide("install-progress");
+  emit("installation-complete");
 };
 </script>
 

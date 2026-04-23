@@ -3,7 +3,8 @@
     v-model="selectedOption"
     class="tw-w-full"
     :options="optionsModel"
-    @change="onChangeOption" />
+    @change="onChangeOption"
+  />
 </template>
 <script setup>
 import { ref } from "vue";

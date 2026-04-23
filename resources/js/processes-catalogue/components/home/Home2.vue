@@ -5,23 +5,27 @@
     <PercentageCardButtonGroup :data="subpercentageData" />
     <ArrowButtonGroup
       :data="arrowData"
-      color="emerald" />
+      color="emerald"
+    />
 
     <div class="tw-w-full tw-flex tw-flex-row tw-space-x-4">
       <ArrowButtonHome
         class="tw-w-60 tw-bg-emerald-200"
         header="200"
-        body="Cases" />
+        body="Cases"
+      />
 
       <ArrowButtonGroup
         class="tw-w-full"
         :data="arrowData"
-        color="orange" />
+        color="orange"
+      />
 
       <ArrowButtonHome
         class="tw-w-60 tw-bg-blue-200"
         header="5"
-        body="Completed" />
+        body="Completed"
+      />
     </div>
   </div>
 </template>

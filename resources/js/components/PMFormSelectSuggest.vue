@@ -1,82 +1,84 @@
 <template>
-  <VueMultiselect v-model="input" 
-                  :options="options"
-                  :placeholder="placeholder"
-                  :select-label="selectLabel"
-                  :deselect-label="deselectLabel"
-                  :selected-label="selectedLabel"
-                  :searchable="searchable"
-                  :loading="loading"
-                  :internal-search="internalSearch"
-                  :clear-on-select="clearOnSelect"
-                  :close-on-select="closeOnSelect"
-                  label="text"
-                  track-by="value"
-                  @search-change="onSearchChange"
-                  class="pm-suggest-list">
-  </VueMultiselect>
+  <VueMultiselect
+    v-model="input"
+    :options="options"
+    :placeholder="placeholder"
+    :select-label="selectLabel"
+    :deselect-label="deselectLabel"
+    :selected-label="selectedLabel"
+    :searchable="searchable"
+    :loading="loading"
+    :internal-search="internalSearch"
+    :clear-on-select="clearOnSelect"
+    :close-on-select="closeOnSelect"
+    label="text"
+    track-by="value"
+    class="pm-suggest-list"
+    @search-change="onSearchChange"
+  />
 </template>
 
 <script>
-  import VueMultiselect from "@processmaker/vue-multiselect";
-  export default {
-    components: {
-      VueMultiselect
-    },
-    props: {
-      value: {type: null, default: null},
-      options: {type: [Array], default: null},
-      placeholder: {type: String, default: "Select option"},
-      selectLabel: {type: String, default: "Press enter to select"},
-      deselectLabel: {type: String, default: "Press enter to remove"},
-      selectedLabel: {type: String, default: "Selected"},
-      searchable: {type: Boolean, default: true},
-      loading: {type: Boolean, default: false},
-      internalSearch: {type: Boolean, default: true},
-      clearOnSelect: {type: Boolean, default: true},
-      closeOnSelect: {type: Boolean, default: true}
-    },
-    data() {
-      return {
-        input: null,
-        newValue: null
-      };
-    },
-    watch: {
-      value: {
-        handler(newValue) {
-          this.newValue = newValue;
-        },
-        immediate: true
+import VueMultiselect from "@processmaker/vue-multiselect";
+
+export default {
+  components: {
+    VueMultiselect,
+  },
+  props: {
+    value: { type: null, default: null },
+    options: { type: [Array], default: null },
+    placeholder: { type: String, default: "Select option" },
+    selectLabel: { type: String, default: "Press enter to select" },
+    deselectLabel: { type: String, default: "Press enter to remove" },
+    selectedLabel: { type: String, default: "Selected" },
+    searchable: { type: Boolean, default: true },
+    loading: { type: Boolean, default: false },
+    internalSearch: { type: Boolean, default: true },
+    clearOnSelect: { type: Boolean, default: true },
+    closeOnSelect: { type: Boolean, default: true },
+  },
+  data() {
+    return {
+      input: null,
+      newValue: null,
+    };
+  },
+  watch: {
+    value: {
+      handler(newValue) {
+        this.newValue = newValue;
       },
-      options: {
-        handler() {
-          this.setInput(this.newValue);
-        },
-        immediate: true,
-        deep: true
-      },
-      input() {
-        this.emitInput();
-      }
+      immediate: true,
     },
-    methods: {
-      setInput(value) {
-        for (let option of this.options) {
-          if (option.value === value) {
-            this.input = option;
-            break;
-          }
+    options: {
+      handler() {
+        this.setInput(this.newValue);
+      },
+      immediate: true,
+      deep: true,
+    },
+    input() {
+      this.emitInput();
+    },
+  },
+  methods: {
+    setInput(value) {
+      for (const option of this.options) {
+        if (option.value === value) {
+          this.input = option;
+          break;
         }
-      },
-      emitInput() {
-        this.$emit("input", this.input?.value);
-      },
-      onSearchChange(searchTerm) {
-        this.$emit("onSearchChange", searchTerm);
       }
-    }
-  };
+    },
+    emitInput() {
+      this.$emit("input", this.input?.value);
+    },
+    onSearchChange(searchTerm) {
+      this.$emit("onSearchChange", searchTerm);
+    },
+  },
+};
 </script>
 
 <style scoped>

@@ -1,47 +1,85 @@
 <template>
-  <div class="container" id="exportProcess">
+  <div
+    id="exportProcess"
+    class="container"
+  >
     <div class="row">
       <div class="col">
         <div class="card text-center">
-          <div class="card-header bg-light" align="left">
+          <div
+            class="card-header bg-light"
+            align="left"
+          >
             <h5>{{ $t("Export Process") }}</h5>
-            <h6 class="text-muted">{{ $t("Download a process model and its associated assets.") }}</h6>
+            <h6 class="text-muted">
+              {{ $t("Download a process model and its associated assets.") }}
+            </h6>
           </div>
-          <div class="card-body" align="left">
-            <h5 class="card-title export-type">{{ $t("You are about to export") }}
-              <span class="font-weight-bold">{{ processName + "."}}</span>
+          <div
+            class="card-body"
+            align="left"
+          >
+            <h5 class="card-title export-type">
+              {{ $t("You are about to export") }}
+              <span class="font-weight-bold">{{ processName + "." }}</span>
             </h5>
             <div>
-              <b-form-group label="Select Export Type" class="medium-font">
+              <b-form-group
+                label="Select Export Type"
+                class="medium-font"
+              >
                 <b-form-radio
-                    v-for="(item, index) in exportTypeOptions"
-                    v-model="selectedExportOption"
-                    :aria-describedby="index.toString()"
-                    :key="item.value"
-                    :value="item.value"
+                  v-for="(item, index) in exportTypeOptions"
+                  :key="item.value"
+                  v-model="selectedExportOption"
+                  :aria-describedby="index.toString()"
+                  :value="item.value"
                 >
-                    <span class="fw-medium">{{ item.content }}</span>
-                    <div>
-                        <small class="text-muted">{{ item.helper }}</small>
-                    </div>
+                  <span class="fw-medium">{{ item.content }}</span>
+                  <div>
+                    <small class="text-muted">{{ item.helper }}</small>
+                  </div>
                 </b-form-radio>
-            </b-form-group>
-            <div v-if="!$root.canExport">
-              <div class="form-group medium-font mt-3 text-center">
-                <i class="fas fa-spin fa-spinner p-0 mr-2"></i>{{ $t("Retrieving manifest for export please wait...")}}
+              </b-form-group>
+              <div v-if="!$root.canExport">
+                <div class="form-group medium-font mt-3 text-center">
+                  <i class="fas fa-spin fa-spinner p-0 mr-2" />{{ $t("Retrieving manifest for export please wait...") }}
+                </div>
               </div>
             </div>
           </div>
-          </div>
-          <div class="card-footer bg-light" align="right">
-            <button type="button" class="btn btn-outline-secondary" @click="onCancel">
+          <div
+            class="card-footer bg-light"
+            align="right"
+          >
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              @click="onCancel"
+            >
               {{ $t("Cancel") }}
             </button>
-            <button :disabled="!$root.canExport" type="button" class="btn btn-primary ml-2" @click="onExport">
+            <button
+              :disabled="!$root.canExport"
+              type="button"
+              class="btn btn-primary ml-2"
+              @click="onExport"
+            >
               {{ $t("Export") }}
             </button>
-            <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess" :ask="true" />
-            <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" />
+            <set-password-modal
+              ref="set-password-modal"
+              :process-id="processId"
+              :process-name="processName"
+              :ask="true"
+              @verifyPassword="exportProcess"
+            />
+            <export-success-modal
+              ref="export-success-modal"
+              :process-name="processName"
+              :process-id="processId"
+              :export-info="exportInfo"
+            />
           </div>
         </div>
       </div>
@@ -64,8 +102,8 @@ export default {
   data() {
     return {
       exportTypeOptions: [
-        {"value": "basic", "content": "Basic", "helper": "Download all related assets."},
-        {"value": "custom", "content": "Custom", "helper": "Select which assets to include in the export file for a custom export package."},
+        { value: "basic", content: "Basic", helper: "Download all related assets." },
+        { value: "custom", content: "Custom", helper: "Select which assets to include in the export file for a custom export package." },
       ],
       selectedExportOption: "basic",
       exportInfo: {},
@@ -98,21 +136,21 @@ export default {
     exportProcess(password) {
       DataProvider.exportProcess(this.processId, password, [])
         .then((exportInfo) => {
-            this.exportInfo = exportInfo;
-            this.$refs['export-success-modal'].show();
-            this.$refs['set-password-modal'].hide();
+          this.exportInfo = exportInfo;
+          this.$refs["export-success-modal"].show();
+          this.$refs["set-password-modal"].hide();
         })
         .catch((error) => {
-            ProcessMaker.alert(error, "danger");
+          ProcessMaker.alert(error, "danger");
         });
     },
     handleCustomExport() {
       this.$router.push({ name: "export-custom-process" });
     },
-  }
-}   
+  },
+};
 </script>
-    
+
 <style lang="scss" scoped>
 .medium-font {
   font-weight: 500;

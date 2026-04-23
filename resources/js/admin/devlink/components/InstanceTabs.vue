@@ -1,14 +1,16 @@
 <script setup>
-import { ref, getCurrentInstance, onMounted, defineProps } from 'vue';
-import { useRouter, useRoute } from 'vue-router/composables';
-import { store, loadInstance } from '../common';
+import {
+  ref, getCurrentInstance, onMounted, defineProps,
+} from "vue";
+import { useRouter, useRoute } from "vue-router/composables";
+import { store, loadInstance } from "../common";
 import PMTabs from "../../../components/PMTabs.vue";
-import Header from './Header.vue';
+import Header from "./Header.vue";
 
 loadInstance();
 
 const props = defineProps({
-  instance: Object
+  instance: Object,
 });
 
 const vue = getCurrentInstance().proxy;
@@ -19,20 +21,24 @@ const router = useRouter();
 
 <template>
   <div>
-    <Header back="index">{{ store.selectedInstance.name }}</Header>
+    <Header back="index">
+      {{ store.selectedInstance.name }}
+    </Header>
 
     <PMTabs content-class="mt-3">
       <b-tab
         :active="route.name === 'instance'"
+        :title="$t('Bundles')"
         @click="router.push({ name: 'instance' })"
-        :title="$t('Bundles')">
-        <slot name="bundles"></slot>
+      >
+        <slot name="bundles" />
       </b-tab>
       <b-tab
         :active="route.name === 'assets' || route.name === 'asset-listing'"
+        :title="$t('Assets')"
         @click="router.push({ name: 'assets' })"
-        :title="$t('Assets')">
-        <slot name="assets"></slot>
+      >
+        <slot name="assets" />
       </b-tab>
     </PMTabs>
   </div>

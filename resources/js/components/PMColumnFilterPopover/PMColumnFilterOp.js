@@ -23,5 +23,5 @@ export {
   PMColumnFilterOpSelect,
   PMColumnFilterOpSelectMultiple,
   PMColumnFilterOpBoolean,
-  PMColumnFilterToggleAscDesc
+  PMColumnFilterToggleAscDesc,
 };

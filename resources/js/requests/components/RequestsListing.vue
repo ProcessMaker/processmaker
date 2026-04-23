@@ -13,10 +13,13 @@
         @table-column-mouseleave="handleColumnMouseleave"
       >
         <!-- Slot Table Header -->
-        <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
+        <template
+          v-for="(column, index) in tableHeaders"
+          #[column.field]
+        >
           <div
-            :key="`requests-table-column-${index}`"
             :id="`requests-table-column-${column.field}`"
+            :key="`requests-table-column-${index}`"
             class="pm-table-column-header-text"
           >
             {{ $t(column.label) }}
@@ -33,35 +36,42 @@
           </b-tooltip>
         </template>
         <!-- Slot Table Header filter Button -->
-        <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
-            <PMColumnFilterPopover v-if="column.sortable"
-                                   :key="index"
-                                   :id="'pm-table-column-'+index"
-                                   :type="getTypeColumnFilter(column.field)"
-                                   :value="column.field"
-                                   :format="getFormat(column)"
-                                   :formatRange="getFormatRange(column)"
-                                   :operators="getOperators(column)"
-                                   :viewConfig="getViewConfigFilter()"
-                                   :container="''"
-                                   :boundary="'viewport'"
-                                   :hideSortingButtons="column.hideSortingButtons"
-                                   :columnSortAsc="column.sortAsc"
-                                   :columnSortDesc="column.sortDesc"
-                                   :filterApplied="column.filterApplied"
-                                   :columnMouseover="columnMouseover"
-                                   @onChangeSort="onChangeSort($event, column.field)"
-                                   @onApply="onApply($event, column.field)"
-                                   @onClear="onClear(column.field)"
-                                   @onUpdate="onUpdate($event, column.field)">
-            </PMColumnFilterPopover>
+        <template
+          v-for="(column, index) in tableHeaders"
+          #[`filter-${column.field}`]
+        >
+          <PMColumnFilterPopover
+            v-if="column.sortable"
+            :id="'pm-table-column-'+index"
+            :key="index"
+            :type="getTypeColumnFilter(column.field)"
+            :value="column.field"
+            :format="getFormat(column)"
+            :format-range="getFormatRange(column)"
+            :operators="getOperators(column)"
+            :view-config="getViewConfigFilter()"
+            :container="''"
+            :boundary="'viewport'"
+            :hide-sorting-buttons="column.hideSortingButtons"
+            :column-sort-asc="column.sortAsc"
+            :column-sort-desc="column.sortDesc"
+            :filter-applied="column.filterApplied"
+            :column-mouseover="columnMouseover"
+            @onChangeSort="onChangeSort($event, column.field)"
+            @onApply="onApply($event, column.field)"
+            @onClear="onClear(column.field)"
+            @onUpdate="onUpdate($event, column.field)"
+          />
         </template>
         <!-- Slot Table Body -->
-        <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
+        <template
+          v-for="(row, rowIndex) in data.data"
+          #[`row-${rowIndex}`]
+        >
           <td
             v-for="(header, colIndex) in tableHeaders"
-            :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
             :key="colIndex"
+            :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
           >
             <template v-if="containsHTML(getNestedPropertyValue(row, header))">
               <div
@@ -69,17 +79,17 @@
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
               >
-                <span v-html="sanitize(getNestedPropertyValue(row, header))"></span>
+                <span v-html="sanitize(getNestedPropertyValue(row, header))" />
               </div>
               <b-tooltip
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
-                @show="checkIfTooltipIsNeeded"
                 placement="topright"
                 trigger="hover"
                 boundary="viewport"
                 :delay="{'show':0,'hide':0}"
+                @show="checkIfTooltipIsNeeded"
               >
                 {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
@@ -89,8 +99,7 @@
                 <component
                   :is="row[header.field].component"
                   v-bind="row[header.field].props"
-                >
-                </component>
+                />
               </template>
               <template v-else>
                 <div
@@ -103,11 +112,11 @@
                     v-if="header.truncate"
                     :target="`element-${rowIndex}-${colIndex}`"
                     custom-class="pm-table-tooltip"
-                    @show="checkIfTooltipIsNeeded"
                     placement="topright"
                     trigger="hover"
                     boundary="viewport"
                     :delay="{'show':0,'hide':0}"
+                    @show="checkIfTooltipIsNeeded"
                   >
                     {{ getNestedPropertyValue(row, header) }}
                   </b-tooltip>
@@ -169,7 +178,7 @@ export default {
     paginationTable,
     PMColumnFilterIconAsc,
     PMColumnFilterIconDesc,
-    DefaultTab
+    DefaultTab,
   },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin, FilterTableBodyMixin],
   props: {
@@ -321,7 +330,7 @@ export default {
           default: true,
           width: 175,
           truncate: true,
-          filter_subject: { type: 'ParticipantsFullName' },
+          filter_subject: { type: "ParticipantsFullName" },
           hideSortingButtons: true,
         },
         {
@@ -330,7 +339,7 @@ export default {
           sortable: true,
           default: true,
           width: 115,
-          filter_subject: { type: 'Status' },
+          filter_subject: { type: "Status" },
         },
         {
           label: "Started",
@@ -363,8 +372,8 @@ export default {
       return `/tasks/${task.id}/edit`;
     },
     formatStatus(status) {
-      let color = "success",
-        label = "In Progress";
+      let color = "success";
+      let label = "In Progress";
       switch (status) {
         case "DRAFT":
           color = "danger";
@@ -384,23 +393,21 @@ export default {
           break;
       }
       return (
-        '<span class="badge badge-' +
-        color +
-        ' status-' +
-        color +
-        '">' +
-        this.$t(label) +
-        "</span>"
+        `<span class="badge badge-${
+          color
+        } status-${
+          color
+        }">${
+          this.$t(label)
+        }</span>`
       );
     },
     formatActiveTasks(value) {
-      return value.map((task) => {
-        return `
+      return value.map((task) => `
           <a href="${this.openTask(task)}">
             ${task.element_name}
           </a>
-        `;
-      }).join('<br/>');
+        `).join("<br/>");
       return htmlString;
     },
     formatId(value) {
@@ -451,7 +458,7 @@ export default {
         <span
           class="badge badge-${color} status-${badge}"
         >
-          ${this.$t('Alternative')} ${value}
+          ${this.$t("Alternative")} ${value}
         </span>`;
     },
     transform(dataInput) {
@@ -461,17 +468,17 @@ export default {
       data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
       data.meta.to = data.meta.from + data.meta.count;
       data.data = this.jsonRows(data.data);
-      for (let record of data.data) {
-        //format Status
-        record["case_title"] = this.formatCaseTitle(record);
-        record["case_number"] = this.formatCaseNumber(record);
-        if (record["active_tasks"]) {
-          record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
+      for (const record of data.data) {
+        // format Status
+        record.case_title = this.formatCaseTitle(record);
+        record.case_number = this.formatCaseNumber(record);
+        if (record.active_tasks) {
+          record.active_tasks = this.formatActiveTasks(record.active_tasks);
         }
-        record["status"] = this.formatStatus(record["status"]);
-        record["participants"] = this.formatParticipants(record["participants"]);
-        record["process_version_alternative"] = this.formatProcessVersionAlternative(record["process_version_alternative"]);
-        record["id"] = this.formatId(record);
+        record.status = this.formatStatus(record.status);
+        record.participants = this.formatParticipants(record.participants);
+        record.process_version_alternative = this.formatProcessVersionAlternative(record.process_version_alternative);
+        record.id = this.formatId(record);
       }
       return data;
     },
@@ -482,36 +489,36 @@ export default {
           this.cancelToken = null;
         }
 
-        const CancelToken = ProcessMaker.apiClient.CancelToken;
+        const { CancelToken } = ProcessMaker.apiClient;
 
         const { pmql, filter, advancedFilter } = this.buildPmqlAndFilter(navigateToFirstPage);
 
         // Load from our api client
         ProcessMaker.apiClient
           .get(
-            `${this.endpoint}?page=` +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&include=process,participants,activeTasks,data" +
-            "&pmql=" +
-            encodeURIComponent(pmql) +
-            "&filter=" +
-            filter +
-            "&order_by=" +
-            (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
-            "&order_direction=" +
-            this.orderDirection +
-            this.additionalParams +
-            advancedFilter +
-            "&row_format=",
+            `${this.endpoint}?page=${
+              this.page
+            }&per_page=${
+              this.perPage
+            }&include=process,participants,activeTasks,data`
+            + `&pmql=${
+              encodeURIComponent(pmql)
+            }&filter=${
+              filter
+            }&order_by=${
+              this.orderBy === "__slot:ids" ? "id" : this.orderBy
+            }&order_direction=${
+              this.orderDirection
+            }${this.additionalParams
+            }${advancedFilter
+            }&row_format=`,
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
               }),
               headers: {
-                'Cache-Control': 'no-cache',
-              }
+                "Cache-Control": "no-cache",
+              },
             },
           )
           .then((response) => {
@@ -521,10 +528,10 @@ export default {
             if (error.code === "ERR_CANCELED") {
               return;
             }
-            if (_.has(error, 'response.data.message')) {
-              ProcessMaker.alert(error.response.data.message, 'danger');
-            } else if (_.has(error, 'response.data.error')) {
-              return;
+            if (_.has(error, "response.data.message")) {
+              ProcessMaker.alert(error.response.data.message, "danger");
+            } else if (_.has(error, "response.data.error")) {
+
             } else {
               throw error;
             }
@@ -532,18 +539,18 @@ export default {
       });
     },
     buildPmqlAndFilter(navigateToFirstPage) {
-      let pmql = '';
+      let pmql = "";
 
       if (this.pmql !== undefined) {
         pmql = this.pmql;
       }
 
-      let filter = this.filter;
+      let { filter } = this;
 
       if (filter?.length) {
         if (filter.isPMQL()) {
-          pmql = (pmql ? `${pmql} and ` : '') + `(${filter})`;
-          filter = '';
+          pmql = `${pmql ? `${pmql} and ` : ""}(${filter})`;
+          filter = "";
         }
       }
 
@@ -566,7 +573,6 @@ export default {
       }
 
       return { pmql, filter, advancedFilter };
-
     },
     handleRowClick(row) {
     },
@@ -576,10 +582,10 @@ export default {
      */
     getStatus() {
       return [
-        {value: "In Progress", text: this.$t("In Progress")},
-        {value: "Completed", text: this.$t("Completed")},
-        {value: "Error", text: this.$t("Error")},
-        {value: "Canceled", text: this.$t("Canceled")}
+        { value: "In Progress", text: this.$t("In Progress") },
+        { value: "Completed", text: this.$t("Completed") },
+        { value: "Error", text: this.$t("Error") },
+        { value: "Canceled", text: this.$t("Canceled") },
       ];
     },
     /**
@@ -590,8 +596,8 @@ export default {
      */
     getAlternatives() {
       return [
-        { value: 'A', text: 'A' },
-        { value: 'B', text: 'B' },
+        { value: "A", text: "A" },
+        { value: "B", text: "B" },
       ];
     },
     /**
@@ -621,10 +627,10 @@ export default {
       return {
         order: {
           by: this.orderBy,
-          direction: this.orderDirection
+          direction: this.orderDirection,
         },
-        type: 'requestFilter',
-      }
+        type: "requestFilter",
+      };
     },
     handleColumnMouseover(column) {
       this.columnMouseover = column;
@@ -632,7 +638,7 @@ export default {
     handleColumnMouseleave() {
       this.columnMouseover = null;
     },
-  }
+  },
 };
 </script>
 <style lang="scss" scoped>

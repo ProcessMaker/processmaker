@@ -299,7 +299,7 @@ export default {
     "isProjectSelectionRequired",
     "projectId",
     "assetData",
-    "runAsUserDefault"
+    "runAsUserDefault",
   ],
   data() {
     return {

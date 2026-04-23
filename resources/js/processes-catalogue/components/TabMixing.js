@@ -7,8 +7,8 @@ export const methodsTabMixin = {
       return rows.map((row) => JSON.parse(row._json));
     },
     formatStatus(status) {
-      let color = "success",
-        label = "In Progress";
+      let color = "success";
+      let label = "In Progress";
       switch (status) {
         case "DRAFT":
           color = "danger";
@@ -28,13 +28,13 @@ export const methodsTabMixin = {
           break;
       }
       return (
-        '<span class="badge badge-' +
-        color +
-        " status-" +
-        color +
-        '">' +
-        this.$t(label) +
-        "</span>"
+        `<span class="badge badge-${
+          color
+        } status-${
+          color
+        }">${
+          this.$t(label)
+        }</span>`
       );
     },
   },

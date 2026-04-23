@@ -2,7 +2,8 @@
   <div class="tw-flex tw-grow tw-relative">
     <transition
       name="fade"
-      mode="in-out">
+      mode="in-out"
+    >
       <object
         ref="processMap"
         class="card"
@@ -11,7 +12,8 @@
         :height="'auto'"
         frameborder="0"
         type="text/html"
-        style="border-radius: 4px;">
+        style="border-radius: 4px;"
+      >
         <!-- Accessible Alternative Content -->
         {{ $t('Content not available. Check settings or try a different device.') }}
       </object>

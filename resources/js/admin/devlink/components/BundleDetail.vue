@@ -1,22 +1,34 @@
 <template>
   <div class="main-content">
-    <div class="tw-flex tw-items-center tw-justify-center" v-if="loading">
-      <div class="spinner-border text-primary" role="status" />
+    <div
+      v-if="loading"
+      class="tw-flex tw-items-center tw-justify-center"
+    >
+      <div
+        class="spinner-border text-primary"
+        role="status"
+      />
       <span class="visually-hidden">Loading...</span>
     </div>
     <!-- Header -->
-    <div v-else class="content-header">
+    <div
+      v-else
+      class="content-header"
+    >
       <div class="content-header-title">
         {{ bundle.name }}
-        <VersionCheck @updateAvailable="updateAvailable = $event" :dev-link="bundle"></VersionCheck>
+        <VersionCheck
+          :dev-link="bundle"
+          @updateAvailable="updateAvailable = $event"
+        />
       </div>
       <div class="header-actions">
         <b-button
           v-if="bundle.dev_link_id === null"
+          v-b-tooltip.hover
           class="btn text-secondary icon-button"
           variant="light"
           :aria-label="$t('Edit Bundle')"
-          v-b-tooltip.hover
           :title="$t('Edit Bundle')"
           @click.prevent="openBundleModalForEdit()"
         >
@@ -32,7 +44,10 @@
         >
           {{ $t('Reinstall') }}
         </button>
-        <div class="dropdown-menu dropdown-menu-right" id="dropdown">
+        <div
+          id="dropdown"
+          class="dropdown-menu dropdown-menu-right"
+        >
           <a
             v-if="updateAvailable"
             class="dropdown-item"
@@ -77,7 +92,9 @@
       <div class="description-section-title">
         {{ $t('Description:') }}
       </div>
-      <p class="description-section-text">{{ bundle.description || $t('No description available') }}</p>
+      <p class="description-section-text">
+        {{ bundle.description || $t('No description available') }}
+      </p>
     </div>
 
     <div class="divider" />
@@ -94,18 +111,18 @@
       :configurations="platformConfigurations"
       :values="bundle.settings"
       :disabled="bundle.dev_link_id !== null"
-      @config-change="handleConfigChange"
       title="Platform Configurations"
+      @config-change="handleConfigChange"
     />
 
     <BundleConfigurations
       :configurations="settings"
       :values="bundle.settings"
       :disabled="bundle.dev_link_id !== null"
-      @config-change="handleConfigChange"
-      @open-settings-modal="openSettingsModal"
       title="Settings"
       type="settings"
+      @config-change="handleConfigChange"
+      @open-settings-modal="openSettingsModal"
     />
 
     <BundleModal
@@ -131,22 +148,24 @@
       title="Publish New Version"
       @ok="executeIncrease"
     >
-      <p v-html="confirmPublishNewVersionText"></p>
+      <p v-html="confirmPublishNewVersionText" />
     </b-modal>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, getCurrentInstance } from 'vue';
-import { useRoute } from 'vue-router/composables';
-import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
-import UpdateBundle from './UpdateBundle.vue';
-import BundleSettingsModal from './BundleSettingsModal.vue';
-import BundleAssets from './BundleAssets.vue';
-import BundleConfigurations from './BundleConfigurations.vue';
-import VersionCheck from './VersionCheck.vue';
-import platformConfigurations from './platformConfigurations';
-import settings from './settings';
+import {
+  ref, onMounted, computed, getCurrentInstance,
+} from "vue";
+import { useRoute } from "vue-router/composables";
+import BundleModal, { show as showBundleModal, hide as hideBundleModal } from "./BundleModal.vue";
+import UpdateBundle from "./UpdateBundle.vue";
+import BundleSettingsModal from "./BundleSettingsModal.vue";
+import BundleAssets from "./BundleAssets.vue";
+import BundleConfigurations from "./BundleConfigurations.vue";
+import VersionCheck from "./VersionCheck.vue";
+import platformConfigurations from "./platformConfigurations";
+import settings from "./settings";
 
 const vue = getCurrentInstance().proxy;
 const bundle = ref({});
@@ -190,9 +209,7 @@ const updateBundle = () => {
     });
 };
 
-const confirmPublishNewVersionText = computed(() => {
-  return vue.$t('Are you sure you increase the version of <strong>{{ bundleName }}</strong>?', { bundleName: bundle.value?.name });
-});
+const confirmPublishNewVersionText = computed(() => vue.$t("Are you sure you increase the version of <strong>{{ bundleName }}</strong>?", { bundleName: bundle.value?.name }));
 
 const publishBundle = () => {
   selected.value = bundle.value;

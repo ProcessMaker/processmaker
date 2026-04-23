@@ -15,10 +15,10 @@ export default {
               ProcessMaker.alert(this.$t("The template has been successfully shared!"), "success");
               this.fetch();
             })
-            .catch(error => {
+            .catch((error) => {
               if (error?.response?.status === 409) {
-                error.response?.data?.name.forEach(message => {
-                  ProcessMaker.alert(message, 'danger');
+                error.response?.data?.name.forEach((message) => {
+                  ProcessMaker.alert(message, "danger");
                 });
               } else {
                 ProcessMaker.alert(error.message, "danger");

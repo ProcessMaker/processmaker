@@ -1,7 +1,0 @@
-test/
-__tests__/
-node_modules/
-vendor/
-public/
-**/coverage/**
-*.php

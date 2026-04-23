@@ -45,47 +45,47 @@
       </b-list-group>
     </b-collapse>
     <div class="hide-on-mobile">
-    <hr class="my-12">
-    <div
-      v-b-toggle.collapse-3
-      block
-      variant="light"
-      class="m-1"
-      @click="onToggleTemplates"
-    >
-      <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
-        <div class="d-flex align-items-center">
-          <img
-            class="mr-3"
-            src="../../../img/template-icon.svg"
-            alt="Template Icon"
-          >
-          {{ $t("Add From Templates") }}
+      <hr class="my-12">
+      <div
+        v-b-toggle.collapse-3
+        block
+        variant="light"
+        class="m-1"
+        @click="onToggleTemplates"
+      >
+        <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
+          <div class="d-flex align-items-center">
+            <img
+              class="mr-3"
+              src="../../../img/template-icon.svg"
+              alt="Template Icon"
+            >
+            {{ $t("Add From Templates") }}
+          </div>
+          <i
+            class="fas fa-sort-down"
+            :class="{'fa-sort-up': showGuidedTemplates, 'fa-sort-down': !showGuidedTemplates,}"
+          />
         </div>
-        <i
-          class="fas fa-sort-down"
-          :class="{'fa-sort-up': showGuidedTemplates, 'fa-sort-down': !showGuidedTemplates,}"
-        />
       </div>
-    </div>
-    <b-collapse
-      id="collapse-3"
-      visible
-      class="hide-on-mobile"
-    >
-      <b-list-group>
-        <b-list-group-item
-          v-for="(item, index) in filteredTemplateOptions"
-          :key="index"
-          ref="templateItems"
-          :class="{ 'list-item-selected': isSelectedTemplate(item) }"
-          class="list-item"
-          @click="selectTemplateItem(item)"
-        >
-          {{ item.label }}
-        </b-list-group-item>
-      </b-list-group>
-    </b-collapse>
+      <b-collapse
+        id="collapse-3"
+        visible
+        class="hide-on-mobile"
+      >
+        <b-list-group>
+          <b-list-group-item
+            v-for="(item, index) in filteredTemplateOptions"
+            :key="index"
+            ref="templateItems"
+            :class="{ 'list-item-selected': isSelectedTemplate(item) }"
+            class="list-item"
+            @click="selectTemplateItem(item)"
+          >
+            {{ item.label }}
+          </b-list-group-item>
+        </b-list-group>
+      </b-collapse>
     </div>
 
     <select-template-modal
@@ -100,7 +100,7 @@
 
 <script>
 import SelectTemplateModal from "../../components/templates/SelectTemplateModal.vue";
-import { EventBus } from '../index.js';
+import { EventBus } from "../index.js";
 
 export default {
   components: {
@@ -142,15 +142,6 @@ export default {
       comeFromProcess: false,
     };
   },
-  created() {
-    EventBus.$on('templates-selected', (obj) => {
-      this.openTemplate(obj);
-    });
-
-    window.ProcessMaker.EventBus.$on("wizard-templates-selected", (obj) => {
-      this.selectTemplateItem(obj);
-    });
-  },
   computed: {
     /**
      * Filters options regarding user permissions
@@ -158,6 +149,23 @@ export default {
     filteredTemplateOptions() {
       return this.templateOptions.filter((item) => this.shouldShowTemplateItem(item));
     },
+  },
+  watch: {
+    $route(r) {
+      this.handleRouteQuery();
+    },
+    data() {
+      this.handleRouteQuery();
+    },
+  },
+  created() {
+    EventBus.$on("templates-selected", (obj) => {
+      this.openTemplate(obj);
+    });
+
+    window.ProcessMaker.EventBus.$on("wizard-templates-selected", (obj) => {
+      this.selectTemplateItem(obj);
+    });
   },
   mounted() {
     this.comeFromProcess = this.fromProcessList;
@@ -176,17 +184,8 @@ export default {
       window.ProcessMaker.EventBus.$emit("template-item-selected");
     }
   },
-  watch: {
-    $route(r) {
-      this.handleRouteQuery();
-    },
-    data() {
-      this.handleRouteQuery();
-    }
-  },
   methods: {
     handleRouteQuery() {
-
       // Do not change the selected category if we are not in the index route.
       // This way, we preserve the selected category when returning from process details.
 
@@ -194,20 +193,16 @@ export default {
         return;
       }
 
-      const query = this.$route.query;
+      const { query } = this.$route;
 
       if (query.categoryId) {
-        const selectedProcessItem = this.data.find((category) => {
-          return String(category.id) === String(query.categoryId);
-        });
+        const selectedProcessItem = this.data.find((category) => String(category.id) === String(query.categoryId));
 
         if (selectedProcessItem) {
           this.selectProcessItem(selectedProcessItem);
         }
 
-        const selectedTemplateItem = this.filteredTemplateOptions.find((category) => {
-          return String(category.id) === String(query.categoryId);
-        });
+        const selectedTemplateItem = this.filteredTemplateOptions.find((category) => String(category.id) === String(query.categoryId));
 
         if (selectedTemplateItem) {
           this.selectTemplateItem(selectedTemplateItem);
@@ -224,7 +219,7 @@ export default {
       this.comeFromProcess = false;
       this.selectedProcessItem = item;
       this.selectedTemplateItem = null;
-      this.$emit('categorySelected', item);
+      this.$emit("categorySelected", item);
     },
     /**
      * Enables All Templates option only if user has create-processes permission
@@ -234,13 +229,11 @@ export default {
     },
     selectTemplateItem(item = null) {
       if (item === null) {
-        item = this.templateOptions.find((obj) => {
-          return obj.id === "guided_templates";
-        });
+        item = this.templateOptions.find((obj) => obj.id === "guided_templates");
       }
       this.selectedTemplateItem = item;
       this.selectedProcessItem = null;
-      this.$emit('categorySelected', item);
+      this.$emit("categorySelected", item);
     },
     /**
      * This method opens New Process modal window

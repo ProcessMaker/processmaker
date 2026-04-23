@@ -4,7 +4,8 @@
       <img
         src="/img/all-cleared.svg"
         class="no-results-img"
-        alt="no-results">
+        alt="no-results"
+      >
     </div>
     <span class="tw-pt-4"> {{ title }}</span>
 

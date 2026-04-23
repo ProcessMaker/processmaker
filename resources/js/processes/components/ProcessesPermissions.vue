@@ -1,190 +1,206 @@
 <template>
   <div class="reassignment-user-selector-container p-0">
-    <b-form-group v-if="showUserSelector"
-                  class="floating w-100 reassignment-user-selector-search">
-      <b-dropdown id="reassignmentUserSelector"
-                  size="sm"
-                  variant="light"
-                  split-variant="light"
-                  split
-                  class="reassignment-user-selector-border rounded-sm">
-        <template v-slot:button-content>
+    <b-form-group
+      v-if="showUserSelector"
+      class="floating w-100 reassignment-user-selector-search"
+    >
+      <b-dropdown
+        id="reassignmentUserSelector"
+        size="sm"
+        variant="light"
+        split-variant="light"
+        split
+        class="reassignment-user-selector-border rounded-sm"
+      >
+        <template #button-content>
           <div class="d-flex align-items-center">
-            <i class="fa fa-search pmql-icons"></i>
-            <b-form-input v-model="selectedText"
-                          :placeholder="selectedOption ? selectedOption.text : $t('Type here to search users')"
-                          size="sm"
-                          class="reassignment-user-selector-input"
-                          autocomplete="off"
-                          id="reassignmentUserSelectorInput"
-                          @input="onInput"
-                          @click="showMenu(toggleShowMenu=!toggleShowMenu)">
-            </b-form-input>
+            <i class="fa fa-search pmql-icons" />
+            <b-form-input
+              id="reassignmentUserSelectorInput"
+              v-model="selectedText"
+              :placeholder="selectedOption ? selectedOption.text : $t('Type here to search users')"
+              size="sm"
+              class="reassignment-user-selector-input"
+              autocomplete="off"
+              @input="onInput"
+              @click="showMenu(toggleShowMenu=!toggleShowMenu)"
+            />
           </div>
         </template>
-        <b-dropdown-item v-for="option in users"
-                         :key="option.value" 
-                         :value="option"
-                         @click="onSelect(option)">
+        <b-dropdown-item
+          v-for="option in users"
+          :key="option.value"
+          :value="option"
+          @click="onSelect(option)"
+        >
           {{ option.text }}
         </b-dropdown-item>
       </b-dropdown>
     </b-form-group>
     <div class="reassignment-user-selector-body">
-      <div v-for="(item, index) in items"
-           class="d-flex justify-content-between">
+      <div
+        v-for="(item, index) in items"
+        class="d-flex justify-content-between"
+      >
         <div>
-          {{item.fullname}}
+          {{ item.fullname }}
         </div>
         <div>
-          <b-button size="sm"
-                    variant="outline-light"
-                    class="p-0"
-                    @click="confirmDelete(item.id)"
-                    pill>
-            <img src="/img/button-small-trash.svg" :alt="$t('Remove')"/>
+          <b-button
+            size="sm"
+            variant="outline-light"
+            class="p-0"
+            pill
+            @click="confirmDelete(item.id)"
+          >
+            <img
+              src="/img/button-small-trash.svg"
+              :alt="$t('Remove')"
+            >
           </b-button>
         </div>
-      </div>  
+      </div>
     </div>
 
-    <b-modal ref="deleteModal"
-             :title="$t('Confirm Deletion')"
-             :ok-title="$t('Remove')"
-             :cancel-title="$t('Cancel')"
-             ok-variant="danger"
-             @ok="remove(itemToRemove)"
-             centered
-             >
+    <b-modal
+      ref="deleteModal"
+      :title="$t('Confirm Deletion')"
+      :ok-title="$t('Remove')"
+      :cancel-title="$t('Cancel')"
+      ok-variant="danger"
+      centered
+      @ok="remove(itemToRemove)"
+    >
       <p>{{ $t('Are you sure you want to delete this reassignment?') }}</p>
     </b-modal>
   </div>
 </template>
 
 <script>
-  import PMFormSelectSuggest from "../../components/PMFormSelectSuggest.vue";
-  export default {
-    components: {
-      PMFormSelectSuggest
+import PMFormSelectSuggest from "../../components/PMFormSelectSuggest.vue";
+
+export default {
+  components: {
+    PMFormSelectSuggest,
+  },
+  props: {
+    reassignments: {
+      type: Array,
+      default: () => [],
     },
-    props: {
-      reassignments: {
-        type: Array,
-        default: () => []
+  },
+  data() {
+    return {
+      showUserSelector: false,
+      users: [],
+      items: [],
+      selectedOption: null,
+      selectedText: "",
+      toggleShowMenu: false,
+    };
+  },
+  watch: {
+    reassignments() {
+      this.items = this.reassignments;
+    },
+    users() {
+      this.showMessageEmpty = this.users.length <= 0;
+    },
+    selectedOption() {
+      this.selectedText = this.selectedOption?.text;
+    },
+  },
+  mounted() {
+    this.requestUser("");
+    document.addEventListener("click", (event) => {
+      if (event.target.id !== "reassignmentUserSelectorInput"
+                && event.target.parentNode.id !== "buttonReassignmentClicked") {
+        this.showUserSelector = false;
+      }
+    });
+  },
+  methods: {
+    add() {
+      this.showUserSelector = !this.showUserSelector;
+      if (this.showUserSelector) {
+        this.requestUser("");
+        this.$nextTick(() => {
+          this.showMenu(true);
+        });
       }
     },
-    data() {
-      return {
-        showUserSelector: false,
-        users: [],
-        items: [],
-        selectedOption: null,
-        selectedText: "",
-        toggleShowMenu: false
-      };
+    confirmDelete(id) {
+      this.itemToRemove = id;
+      this.$refs.deleteModal.show();
     },
-    mounted() {
-      this.requestUser("");
-      document.addEventListener("click", (event) => {
-        if (event.target.id !== "reassignmentUserSelectorInput" &&
-                event.target.parentNode.id !== "buttonReassignmentClicked") {
-          this.showUserSelector = false;
-        }
-      });
+    remove(id) {
+      this.items = this.items.filter((item) => item.id !== id);
     },
-    watch: {
-      reassignments() {
-        this.items = this.reassignments;
-      },
-      users() {
-        this.showMessageEmpty = this.users.length <= 0;
-      },
-      selectedOption() {
-        this.selectedText = this.selectedOption?.text;
+    requestUser(filter) {
+      const url = "users"
+                + "?page=1"
+                + "&per_page=30"
+                + `&filter=${filter
+                }&order_by=firstname`
+                + "&order_direction=asc";
+      ProcessMaker.apiClient.get(url)
+        .then((response) => {
+          this.users = [];
+          for (const i in response.data.data) {
+            this.users.push({
+              text: response.data.data[i].fullname,
+              value: response.data.data[i].id,
+            });
+          }
+        });
+    },
+    onInput(value) {
+      this.requestUser(value);
+      this.showMenu(true);
+    },
+    showMenu(sw) {
+      const button = document.getElementById("reassignmentUserSelector");
+      if (!button) {
+        return;
+      }
+      const obj = button.querySelector(".dropdown-menu").classList;
+      if (sw === true) {
+        obj.add("reassignment-user-selector-show");
+      } else {
+        obj.remove("reassignment-user-selector-show");
       }
     },
-    methods: {
-      add() {
-        this.showUserSelector = !this.showUserSelector;
-        if (this.showUserSelector) {
-          this.requestUser("");
-          this.$nextTick(() => {
-            this.showMenu(true);
-          });
-        }
-      },
-      confirmDelete(id) {
-        this.itemToRemove = id;
-        this.$refs.deleteModal.show();
-      },
-      remove(id) {
-        this.items = this.items.filter(item => item.id !== id);
-      },
-      requestUser(filter) {
-        let url = "users" +
-                "?page=1" +
-                "&per_page=30" +
-                "&filter=" + filter +
-                "&order_by=firstname" +
-                "&order_direction=asc";
-        ProcessMaker.apiClient.get(url)
-                .then(response => {
-                  this.users = [];
-                  for (let i in response.data.data) {
-                    this.users.push({
-                      text: response.data.data[i].fullname,
-                      value: response.data.data[i].id
-                    });
-                  }
-                });
-      },
-      onInput(value) {
-        this.requestUser(value);
-        this.showMenu(true);
-      },
-      showMenu(sw) {
-        let button = document.getElementById("reassignmentUserSelector");
-        if (!button) {
+    onSelect(option) {
+      this.selectedOption = option;
+      this.showMenu(false);
+
+      this.showUserSelector = false;
+      this.onChangeUserId();
+    },
+    onChangeUserId() {
+      if (this.selectedOption) {
+        const user = {
+          id: this.selectedOption.value,
+          fullname: this.selectedOption.text,
+        };
+        this.selectedOption = null;
+        this.selectedText = "";
+
+        if (this.items.find((item) => item.id === user.id)) {
+          ProcessMaker.alert(this.$t("This has already been assigned."), "info");
           return;
         }
-        let obj = button.querySelector(".dropdown-menu").classList;
-        if (sw === true) {
-          obj.add("reassignment-user-selector-show");
-        } else {
-          obj.remove("reassignment-user-selector-show");
-        }
-      },
-      onSelect(option) {
-        this.selectedOption = option;
-        this.showMenu(false);
-
-        this.showUserSelector = false;
-        this.onChangeUserId();
-      },
-      onChangeUserId() {
-        if (this.selectedOption) {
-          let user = {
-            id: this.selectedOption.value,
-            fullname: this.selectedOption.text
-          };
-          this.selectedOption = null;
-          this.selectedText = "";
-
-          if (this.items.find(item => item.id === user.id)) {
-            ProcessMaker.alert(this.$t("This has already been assigned."), "info");
-            return;
-          }
-          this.items.push(user);
-        }
-      },
-      getItems() {
-        return this.items;
-      },
-      handleClose() {
-        this.showUserSelector = false;
+        this.items.push(user);
       }
-    }
-  }
+    },
+    getItems() {
+      return this.items;
+    },
+    handleClose() {
+      this.showUserSelector = false;
+    },
+  },
+};
 </script>
 
 <style>

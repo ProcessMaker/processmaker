@@ -19,7 +19,7 @@ import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 
 export default {
   components: { Card },
-  mixins: [datatableMixin,  dataLoadingMixin],
+  mixins: [datatableMixin, dataLoadingMixin],
   props: ["processRequestId", "isAdmin", "isProcessManager"],
   data() {
     return {
@@ -60,18 +60,18 @@ export default {
       list.meta.last_page = list.meta.total_pages;
       list.meta.from = (list.meta.current_page - 1) * list.meta.per_page;
       list.meta.to = list.meta.from + list.meta.count;
-      //load data for participants
-      for (let record of list.data) {
-        record["participants"] = record["user"] ? [record["user"]] : [];
+      // load data for participants
+      for (const record of list.data) {
+        record.participants = record.user ? [record.user] : [];
 
         let color = "text-primary";
-        if (record["status"] === "overdue") {
+        if (record.status === "overdue") {
           color = "badge badge-danger";
         }
 
-        record["due_at"] = this.formatDueDate(
-          record["due_at"],
-          record["status"]
+        record.due_at = this.formatDueDate(
+          record.due_at,
+          record.status,
         );
       }
       return list;
@@ -80,9 +80,9 @@ export default {
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "tasks?process_request_id=" +
-          this.processRequestId +
-          "&status=ACTIVE"
+          `tasks?process_request_id=${
+            this.processRequestId
+          }&status=ACTIVE`,
         )
         .then((response) => {
           response.data.data.forEach((item) => {

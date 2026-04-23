@@ -5,7 +5,8 @@
       [`tw-bg-${color}-200 hover:tw-bg-${color}-300`]:!active,
       [`tw-outline tw-bg-${color}-100 tw-border-${color}-500 tw-outline-${color}-300 tw-bg-${color}-100 hover:tw-bg-${color}-200`]:active
     }]"
-    @click="onClick">
+    @click="onClick"
+  >
     <div class=" tw-flex tw-flex-col tw-w-full">
       <div class="tw-flex tw-flex-col tw-justify-start tw-px-6 tw-py-4 tw-gap-0">
         <slot name="header">
@@ -21,7 +22,8 @@
         <slot name="helper">
           <div
             v-if="helper"
-            class="tw-text-sm tw-truncate">
+            class="tw-text-sm tw-truncate"
+          >
             {{ helper }}
           </div>
         </slot>

@@ -1,11 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted } from "vue";
 
 const props = defineProps({
-  devlink: { type: Object, required: true }, 
+  devlink: { type: Object, required: true },
 });
 
-let status = ref('loading');
+const status = ref("loading");
 
 onMounted(() => {
   window.ProcessMaker.apiClient.get(`/devlink/${props.devlink.id}/ping`).then((result) => {
@@ -30,11 +30,19 @@ const reconnect = () => {
 
 <template>
   <div>
-    <b-spinner v-if="status === 'loading'"></b-spinner>
-    <template v-if="status === 'ok'"><span class="badge badge-linked">{{ $t('Linked') }}</span></template>
+    <b-spinner v-if="status === 'loading'" />
+    <template v-if="status === 'ok'">
+      <span class="badge badge-linked">{{ $t('Linked') }}</span>
+    </template>
     <template v-if="status === 'error'">
       <span class="badge badge-not-available">{{ $t('Not available') }}</span>
-      <b-button variant="primary" size="sm" @click="reconnect">{{ $t('Reconnect') }}</b-button>
+      <b-button
+        variant="primary"
+        size="sm"
+        @click="reconnect"
+      >
+        {{ $t('Reconnect') }}
+      </b-button>
     </template>
   </div>
 </template>

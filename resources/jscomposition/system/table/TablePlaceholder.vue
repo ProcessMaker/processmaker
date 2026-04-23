@@ -1,7 +1,8 @@
 <template>
   <component
     :is="getComponent"
-    v-bind="getOptions()" />
+    v-bind="getOptions()"
+  />
 </template>
 
 <script setup>

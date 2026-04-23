@@ -182,4 +182,3 @@ window.addEventListener("load", () => {
     },
   });
 });
-

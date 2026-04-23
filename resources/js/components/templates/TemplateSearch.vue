@@ -1,13 +1,25 @@
 <template>
   <div>
     <div class="pb-3">
-      <b-input-group class="class-align-top" v-if="component === 'template-select-card'">
+      <b-input-group
+        v-if="component === 'template-select-card'"
+        class="class-align-top"
+      >
         <b-input-group-prepend>
-          <b-btn class="btn-search-run px-2" :title="$t('Search Templates')" @click="fetch()">
+          <b-btn
+            class="btn-search-run px-2"
+            :title="$t('Search Templates')"
+            @click="fetch()"
+          >
             <i class="fas fa-search search-icon" />
           </b-btn>
         </b-input-group-prepend>
-        <b-form-input v-model="filter" id="search-box" class="pl-0" :placeholder="$t('Search Templates')"></b-form-input>
+        <b-form-input
+          id="search-box"
+          v-model="filter"
+          class="pl-0"
+          :placeholder="$t('Search Templates')"
+        />
         <b-input-group-append v-if="filter">
           <b-btn
             class="px-1"
@@ -19,8 +31,16 @@
         </b-input-group-append>
       </b-input-group>
     </div>
-    <div class="cards-container" :class="type !== 'wizard' ? 'fixed-height' : '' ">
-      <b-card-group v-if="showTemplateOptionsActionBar && component === 'template-select-card' " id="template-options" deck class="d-flex small-deck-margin">
+    <div
+      class="cards-container"
+      :class="type !== 'wizard' ? 'fixed-height' : '' "
+    >
+      <b-card-group
+        v-if="showTemplateOptionsActionBar && component === 'template-select-card' "
+        id="template-options"
+        deck
+        class="d-flex small-deck-margin"
+      >
         <button-card
           class="col-4 p-0"
           :button="blankProcessButton"
@@ -28,7 +48,10 @@
           @card-button-clicked="$emit('blank-process-button-clicked')"
         />
 
-        <div v-if="packageAi" class="col-4 p-0">
+        <div
+          v-if="packageAi"
+          class="col-4 p-0"
+        >
           <button-card
             :button="aiProcessButton"
             @show-details="showDetails($event)"
@@ -36,7 +59,10 @@
           />
         </div>
 
-        <div v-if="packageAi" class="col-4 p-0">
+        <div
+          v-if="packageAi"
+          class="col-4 p-0"
+        >
           <button-card
             :button="processIntelligenceButton"
             @show-details="showDetails($event)"
@@ -45,9 +71,8 @@
         </div>
         <div class="d-flex w-100 align-items-center my-3 card-separator">
           <small class="mr-2 text-secondary">{{ $t('Templates') }}</small>
-          <div class="flex-grow-1 border-bottom"></div>
+          <div class="flex-grow-1 border-bottom" />
         </div>
-
       </b-card-group>
 
       <div class="pb-2 template-container">
@@ -75,43 +100,57 @@
           </p>
         </template>
         <template v-else>
-          <b-card-group id="template-options" deck class="small-deck-margin template-options" :class="type !== 'wizard' ?  'd-flex' : ''">
+          <b-card-group
+            id="template-options"
+            deck
+            class="small-deck-margin template-options"
+            :class="type !== 'wizard' ? 'd-flex' : ''"
+          >
             <template-select-card
-              v-show="component === 'template-select-card'"
               v-for="(template, index) in templates"
-              :type="type"
+              v-show="component === 'template-select-card'"
               :key="index"
+              :type="type"
               :template="template"
               @show-details="showDetails($event)"
             />
           </b-card-group>
         </template>
-        <template-details v-if="component === 'template-details'" :template="template"></template-details>
-        <wizard-template-details v-if="showWizardTemplateDetails" ref="wizardTemplateDetails" :template="template"></wizard-template-details>
+        <template-details
+          v-if="component === 'template-details'"
+          :template="template"
+        />
+        <wizard-template-details
+          v-if="showWizardTemplateDetails"
+          ref="wizardTemplateDetails"
+          :template="template"
+        />
       </div>
     </div>
     <template v-if="component !== 'template-details'">
       <div class="d-flex justify-content-between align-items-center">
         <b-pagination
-        v-model="currentPage"
-        v-if="templates.length > 0"
-        class="template-modal-pagination"
-        :total-rows="totalRow"
-        :per-page="perPage"
-        :limit="limit"
-        prev-class="caretBtn prevBtn"
-        next-class="caretBtn nextBtn"
-        size="sm"
-        last-number
-        first-number
-        ></b-pagination>
+          v-if="templates.length > 0"
+          v-model="currentPage"
+          class="template-modal-pagination"
+          :total-rows="totalRow"
+          :per-page="perPage"
+          :limit="limit"
+          prev-class="caretBtn prevBtn"
+          next-class="caretBtn nextBtn"
+          size="sm"
+          last-number
+          first-number
+        />
         <div v-if="showTemplateGalleryLink">
-          <a href="https://www.processmaker.com/resources/customer-success/templates/" 
+          <a
+            href="https://www.processmaker.com/resources/customer-success/templates/"
             class="text-muted"
-            target="_blank">
+            target="_blank"
+          >
             {{ $t("Visit our Gallery for more Templates") }}
           </a>
-          <i class="ml-1 fas fa-external-link-alt text-muted"></i>
+          <i class="ml-1 fas fa-external-link-alt text-muted" />
         </div>
       </div>
     </template>
@@ -122,14 +161,16 @@
 import ButtonCard from "./ButtonCard.vue";
 import TemplateSelectCard from "./TemplateSelectCard.vue";
 import TemplateDetails from "./TemplateDetails.vue";
-import datatableMixin from "../../components/common/mixins/datatable";
-import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
+import datatableMixin from "../common/mixins/datatable";
+import dataLoadingMixin from "../common/mixins/apiDataLoading";
 import WizardTemplateDetails from "./WizardTemplateDetails.vue";
 
 export default {
-  components: { ButtonCard, TemplateSelectCard, TemplateDetails, WizardTemplateDetails },
+  components: {
+    ButtonCard, TemplateSelectCard, TemplateDetails, WizardTemplateDetails,
+  },
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["type", "component", "packageAi", 'showTemplateGalleryLink', 'showTemplateOptionsActionBar'],
+  props: ["type", "component", "packageAi", "showTemplateGalleryLink", "showTemplateOptionsActionBar"],
   data() {
     return {
       filter: "",
@@ -154,7 +195,7 @@ export default {
       },
       processIntelligenceButton: {
         title: this.$t("Import a PI Process"),
-        description: '',
+        description: "",
         svgIcon: "../../../img/process-intelligence-logo-black.png",
         svgIconStyle: "margin-left: auto; width: 60%; margin-right: auto;",
       },
@@ -163,8 +204,8 @@ export default {
   },
   computed: {
     hasGuidedTemplateParams() {
-      return window.location.search.includes('?categoryId=guided_templates');
-    }
+      return window.location.search.includes("?categoryId=guided_templates");
+    },
   },
   watch: {
     currentPage() {
@@ -173,6 +214,9 @@ export default {
     perPage() {
       this.fetch();
     },
+  },
+  beforeMount() {
+    this.loadData();
   },
   methods: {
     async loadData() {
@@ -189,33 +233,32 @@ export default {
       this.apiDataLoading = true;
       this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
 
-      let url =
-          this.status === null || this.status === "" || this.status === undefined
-              ? "templates/" + this.type.toLowerCase() +"?"
-              : "templates/" + this.type.toLowerCase() + "?status=" + this.status + "&";
+      let url = this.status === null || this.status === "" || this.status === undefined
+        ? `templates/${this.type.toLowerCase()}?`
+        : `templates/${this.type.toLowerCase()}?status=${this.status}&`;
 
       // If the type is 'wizard', override the URL to fetch guided templates
-      if (this.type === 'wizard') {
-        url = 'wizard-templates?';
+      if (this.type === "wizard") {
+        url = "wizard-templates?";
       }
       // Load from our api client
       await ProcessMaker.apiClient
         .get(
-            url +
-            "page=" +
-            this.currentPage +
-            "&per_page=" +
-            this.perPage + 
-            "&filter=" +
-            this.filter +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=" +
-            this.orderDirection +
-            "&include=user,categories,category"
+          `${url
+          }page=${
+            this.currentPage
+          }&per_page=${
+            this.perPage
+          }&filter=${
+            this.filter
+          }&order_by=${
+            this.orderBy
+          }&order_direction=${
+            this.orderDirection
+          }&include=user,categories,category`,
         )
-        .then(response => {
-          if(response.data.data.length === 0) {
+        .then((response) => {
+          if (response.data.data.length === 0) {
             this.noResults = true;
           } else {
             this.templates = response.data.data;
@@ -223,7 +266,7 @@ export default {
             this.apiDataLoading = false;
             this.apiNoResults = false;
             this.noResults = false;
-            }
+          }
         })
         .finally(() => {
           this.loading = false;
@@ -242,13 +285,13 @@ export default {
         if (templateId) {
           this.loadTemplateDetails(templateId);
         }
-      } else if ($event && $event.type === "wizard") {  // Handle different scenarios based on $event type 
+      } else if ($event && $event.type === "wizard") { // Handle different scenarios based on $event type
         // Add template parameter to the URL if guided templates are selected
-        let url = new URL(window.location.href);
-        if (url.search.includes('?categoryId=guided_templates')) {
-          url.searchParams.append('guided_templates', true);
-          url.searchParams.append('template', $event.template.unique_template_id);
-          history.pushState(null, '', url); // Update the URL without triggering a page reload
+        const url = new URL(window.location.href);
+        if (url.search.includes("?categoryId=guided_templates")) {
+          url.searchParams.append("guided_templates", true);
+          url.searchParams.append("template", $event.template.unique_template_id);
+          history.pushState(null, "", url); // Update the URL without triggering a page reload
         }
 
         // Direct selection of a wizard template card
@@ -259,7 +302,7 @@ export default {
       }
     },
     loadTemplateDetails(uniqueTemplateId) {
-      this.template = this.templates.find(template => template.unique_template_id === uniqueTemplateId);
+      this.template = this.templates.find((template) => template.unique_template_id === uniqueTemplateId);
       this.showWizardTemplateDetails = true;
 
       this.$nextTick(() => {
@@ -267,20 +310,17 @@ export default {
       });
     },
     emitTemplateDetails(template) {
-      this.$emit('show-details', {
-        'id': template.id,
-        'name': template.name,
-        'description': template.description,
-        'category_id': template.process_category_id,
-        'version': template.version,
+      this.$emit("show-details", {
+        id: template.id,
+        name: template.name,
+        description: template.description,
+        category_id: template.process_category_id,
+        version: template.version,
       });
 
       this.template = template;
-    }
+    },
   },
-  beforeMount() {
-    this.loadData();
-  }
 };
 </script>
 

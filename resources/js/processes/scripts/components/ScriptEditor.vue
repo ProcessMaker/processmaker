@@ -552,7 +552,7 @@ export default {
       return this.packageAi && this.newCode !== "" && !this.changesApplied && !this.isDiffEditor;
     },
     language() {
-      return this.scriptExecutor.language === 'php-nayra' ? 'php' : this.scriptExecutor.language;
+      return this.scriptExecutor.language === "php-nayra" ? "php" : this.scriptExecutor.language;
     },
     autosaveApiCall() {
       return () => {
@@ -784,7 +784,7 @@ export default {
       const { clientHeight } = this.$refs.editorContainer;
       domNode.style.height = `${clientHeight.toString()}px`;
     },
-    // eslint-disable-next-line func-names
+
     stopResizing: _.debounce(function () {
       this.resizing = false;
     }, 50),

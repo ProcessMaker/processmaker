@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, getCurrentInstance } from 'vue';
-import types from './assetTypes';
+import { ref, onMounted, getCurrentInstance } from "vue";
+import types from "./assetTypes";
 
 const vue = getCurrentInstance().proxy;
 const assets = ref([]);
@@ -11,30 +11,26 @@ onMounted(() => {
 
 const load = () => {
   ProcessMaker.apiClient
-    .get(`/devlink/shared-assets`)
+    .get("/devlink/shared-assets")
     .then((result) => {
       assets.value = result.data;
     });
 };
 
-const isInAssets = (type) => {
-  return assets.value.some(asset => asset.config === type.class);
-};
+const isInAssets = (type) => assets.value.some((asset) => asset.config === type.class);
 
-const getAssetById = (type) => {
-  return assets.value.find(asset => asset.config === type.class);
-};
+const getAssetById = (type) => assets.value.find((asset) => asset.config === type.class);
 
 const addSharedAsset = async (type) => {
   try {
-    const response = await ProcessMaker.apiClient.post('/devlink/add-shared-asset', {
-      key: 'devlink.' + type.type,
+    const response = await ProcessMaker.apiClient.post("/devlink/add-shared-asset", {
+      key: `devlink.${type.type}`,
       config: type.class,
       name: type.name,
     });
     load();
   } catch (error) {
-    console.error('Error adding asset:', error);
+    console.error("Error adding asset:", error);
   }
 };
 
@@ -43,7 +39,7 @@ const removeSharedAsset = async (assetId) => {
     const response = await ProcessMaker.apiClient.delete(`/devlink/remove-shared-asset/${assetId}`);
     load();
   } catch (error) {
-    console.error('Error removing asset:', error);
+    console.error("Error removing asset:", error);
   }
 };
 
@@ -59,16 +55,16 @@ const updateEnabled = (type) => {
 
 const fields = [
   {
-    key: 'name',
-    label: vue.$t('Type')
+    key: "name",
+    label: vue.$t("Type"),
   },
   {
-    key: 'option',
-    label: ''
+    key: "option",
+    label: "",
   },
   {
-    key: 'blank',
-    label: ''
+    key: "blank",
+    label: "",
   },
 ];
 
@@ -82,7 +78,10 @@ const fields = [
         :fields="fields"
       >
         <template #cell(name)="data">
-          <span><i class="fp-folder-outline" style="margin-right: 10px;"></i>{{ $t(data.item.name) }}</span>
+          <span><i
+            class="fp-folder-outline"
+            style="margin-right: 10px;"
+          />{{ $t(data.item.name) }}</span>
         </template>
         <template #cell(option)="data">
           <b-form-checkbox

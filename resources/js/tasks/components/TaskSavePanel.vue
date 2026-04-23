@@ -21,7 +21,10 @@
     <div class="autosave-draft-date">
       {{ $t('Last save: ')+date }}
     </div>
-    <div v-if="error" class="autosave-draft-error">
+    <div
+      v-if="error"
+      class="autosave-draft-error"
+    >
       {{ $t('Unable to save: Verify your internet connection.') }}
     </div>
   </div>

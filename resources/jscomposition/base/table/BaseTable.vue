@@ -1,22 +1,26 @@
 <template>
   <div
     class="tw-w-full tw-relative tw-text-sm
-      tw-border tw-rounded-xl tw-border-gray-200 tw-overflow-hidden tw-overflow-x-auto tw-overflow-y-auto">
+      tw-border tw-rounded-xl tw-border-gray-200 tw-overflow-hidden tw-overflow-x-auto tw-overflow-y-auto"
+  >
     <table
       class="tw-w-full tw-border-collapse"
       :class="{
         'tw-table-fixed':getDefaultConfig(config).tableFixed
-      }">
+      }"
+    >
       <thead
         ref="thead"
-        class="tw-border-b tw-sticky tw-top-0 tw-z-[9] tw-bg-gray-50 tw-text-[#5C6066] tw-border-[#EBEDEF]">
+        class="tw-border-b tw-sticky tw-top-0 tw-z-[9] tw-bg-gray-50 tw-text-[#5C6066] tw-border-[#EBEDEF]"
+      >
         <tr>
           <THeader
             v-for="(column, index) in columns"
             :key="index"
             :columns="columns"
             :column="column"
-            @stopResize="onStopResize">
+            @stopResize="onStopResize"
+          >
             <slot :name="`theader-${column.field}`" />
             <template #filter>
               <slot :name="`theader-filter-${column.field}`" />
@@ -27,10 +31,12 @@
       </thead>
       <transition
         name="fade-table"
-        mode="out-in">
+        mode="out-in"
+      >
         <tbody
           v-show="!placeholder"
-          ref="tbody">
+          ref="tbody"
+        >
           <template v-for="(row, indexRow) in data">
             <TRow :key="`row-${indexRow}`">
               <template #[`cell`]>
@@ -41,18 +47,21 @@
                   :column="column"
                   :row="row"
                   :index-row="indexRow"
-                  @toogleContainer="(e)=>toogleContainer(e, indexRow)">
+                  @toogleContainer="(e)=>toogleContainer(e, indexRow)"
+                >
                   <slot :name="`tcell-${indexRow}-${column.field}`" />
                 </TCell>
               </template>
 
               <template
                 v-if="`checkEllipsisMenu(${indexRow})`"
-                #[`menu`]>
+                #[`menu`]
+              >
                 <slot
                   :name="`ellipsis-menu-${indexRow}`"
                   :row="row"
-                  :columns="columns" />
+                  :columns="columns"
+                />
               </template>
             </TRow>
 
@@ -60,9 +69,11 @@
               v-if="`checkContainerRow(${indexRow})`"
               :key="`container-${indexRow}`"
               :columns="columns"
-              :show-row="getShowContainer(indexRow)">
+              :show-row="getShowContainer(indexRow)"
+            >
               <slot
-                :name="`container-row-${indexRow}`" />
+                :name="`container-row-${indexRow}`"
+              />
             </ContainerRow>
           </template>
         </tbody>
@@ -70,11 +81,13 @@
     </table>
     <transition
       name="fade"
-      mode="in-out">
+      mode="in-out"
+    >
       <div
         v-show="placeholder"
         class="tw-flex tw-grow tw-w-full tw-h-full tw-pointer-events-none
-          tw-absolute tw-left-0 tw-top-0 tw-z-[3] tw-justify-center tw-items-center">
+          tw-absolute tw-left-0 tw-top-0 tw-z-[3] tw-justify-center tw-items-center"
+      >
         <slot name="placeholder" />
       </div>
     </transition>

@@ -1,17 +1,20 @@
 <template>
   <div
     ref="inputRef"
-    class="tw-relative">
+    class="tw-relative"
+  >
     <slot
       v-bind="{
         toogleShow,
         data,
       }"
-      name="input">
+      name="input"
+    >
       <button
         class="tw-flex tw-w-full tw-justify-between tw-items-center tw-py-2 tw-px-3 tw-ring-1 tw-ring-inset
         tw-ring-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-inset focus:tw-ring-primary-400"
-        @click.prevent.stop="toogleShow">
+        @click.prevent.stop="toogleShow"
+      >
         <span>{{ data?.label || data?.value }} </span>
 
         <i class="fas fa-chevron-down" />
@@ -23,7 +26,8 @@
         v-show="show"
         ref="containerRef"
         class="tw-fixed tw-mt-1 tw-rounded-lg tw-z-10 tw-shadow-lg tw-bg-white tw-ring-1 tw-ring-inset tw-ring-gray-300"
-        :style="{ width: `${widthContainer}px`, top: `${top}px` }">
+        :style="{ width: `${widthContainer}px`, top: `${top}px` }"
+      >
         <ul class="tw-list-none tw-overflow-hidden tw-rounded">
           <slot
             name="options"
@@ -31,23 +35,27 @@
               options: optionsModel,
               data,
               onClick,
-            }">
+            }"
+          >
             <li
               v-for="(option, index) in optionsModel"
               :key="index"
               class="hover:tw-bg-gray-200"
-              @click.prevent.stop="onClick(option, index)">
+              @click.prevent.stop="onClick(option, index)"
+            >
               <slot
                 name="option"
                 v-bind="{
                   option,
                   data,
-                }">
+                }"
+              >
                 <span
                   :class="{
                     'tw-bg-gray-300': option?.value === data?.value,
                   }"
-                  class="tw-flex tw-py-2 tw-px-4 transition duration-300">
+                  class="tw-flex tw-py-2 tw-px-4 transition duration-300"
+                >
                   {{ option.label || option.value }}
                 </span>
               </slot>

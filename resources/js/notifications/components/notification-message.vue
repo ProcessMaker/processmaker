@@ -52,11 +52,11 @@ export default {
   },
   computed: {
     messages() {
-        return window.Processmaker?.notificationMessages || {};
+      return window.Processmaker?.notificationMessages || {};
     },
     message() {
       if (this.isInboxRule) {
-        return this.$t('Inbox rules <strong>handled {{ruleCount}} tasks</strong> since your last login', { ruleCount: this.ruleCount });
+        return this.$t("Inbox rules <strong>handled {{ruleCount}} tasks</strong> since your last login", { ruleCount: this.ruleCount });
       }
       const message = this.messages[this.data.type] || this.messages[this.notification.type] || this.data.message;
       return this.$t(message, this.bindings);
@@ -79,7 +79,7 @@ export default {
       }
     },
     ruleCount() {
-      return this.data.message?.total
+      return this.data.message?.total;
     },
   },
   mounted() {

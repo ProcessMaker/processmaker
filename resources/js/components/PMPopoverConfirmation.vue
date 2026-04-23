@@ -1,30 +1,32 @@
 <template>
-  <b-popover :target="id"
-             triggers="click"
-             placement="bottomleft"
-             boundary="window"
-             custom-class="pm-popover-confirmation"
-             @hidden="$emit('onHidden', $event)">
+  <b-popover
+    :target="id"
+    triggers="click"
+    placement="bottomleft"
+    boundary="window"
+    custom-class="pm-popover-confirmation"
+    @hidden="$emit('onHidden', $event)"
+  >
     <div class="row p-2">
       <div class="col-auto pm-popover-confirmation-text">
-        <slot name="content-message"></slot>
+        <slot name="content-message" />
       </div>
       <div class="col">
-        <slot name="content-button"></slot>
+        <slot name="content-button" />
       </div>
     </div>
   </b-popover>
 </template>
 
 <script>
-  export default {
-    props: {
-      id: {
-        type: String,
-        default: ""
-      }
-    }
-  };
+export default {
+  props: {
+    id: {
+      type: String,
+      default: "",
+    },
+  },
+};
 </script>
 
 <style>

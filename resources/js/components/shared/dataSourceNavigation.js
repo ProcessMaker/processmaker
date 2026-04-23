@@ -2,7 +2,7 @@ export default {
   components: {
   },
   data() {
-    return {}
+    return {};
   },
   methods: {
     /**
@@ -13,12 +13,12 @@ export default {
         case "remove-item":
           this.doDataSourceDelete(data);
           break;
-        case 'add-to-project':
+        case "add-to-project":
           this.showAddToProjectModal(data.name, data.id);
           break;
         case "edit-item":
           this.editDataSourse(data);
-          break;  
+          break;
       }
     },
     /**

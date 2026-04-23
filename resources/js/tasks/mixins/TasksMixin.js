@@ -53,15 +53,15 @@ export default {
   computed: {
     effectiveSavedsearchDefaultsEditRoute() {
       return (
-        this.savedsearchDefaultsEditRoute ||
-        window.ProcessMaker.savedsearchDefaultsEditRoute
+        this.savedsearchDefaultsEditRoute
+        || window.ProcessMaker.savedsearchDefaultsEditRoute
       );
     },
   },
   methods: {
     defineUserConfiguration() {
       this.localUserConfiguration = JSON.parse(
-        window.ProcessMaker.userConfiguration || "{}"
+        window.ProcessMaker.userConfiguration || "{}",
       );
       if (this.localUserConfiguration.tasks_inbox) {
         this.showMenu = this.localUserConfiguration.tasks_inbox.isMenuCollapse;
@@ -130,13 +130,12 @@ export default {
     setInOverdueMessage(inOverdue) {
       let inOverdueMessage = "";
       if (inOverdue) {
-        const taskText =
-          inOverdue > 1
-            ? this.$t("Tasks").toLowerCase()
-            : this.$t("Task").toLowerCase();
+        const taskText = inOverdue > 1
+          ? this.$t("Tasks").toLowerCase()
+          : this.$t("Task").toLowerCase();
         inOverdueMessage = this.$t(
           "You have {{ inOverDue }} overdue {{ taskText }} pending",
-          { inOverDue: inOverdue, taskText }
+          { inOverDue: inOverdue, taskText },
         );
       }
       this.inOverdueMessage = inOverdueMessage;

@@ -1,44 +1,73 @@
 <template>
   <div>
     <label v-uni-for="name">{{ label }}</label>
-    <b-card v-if="mode === 'preview'" class="mb-2">
+    <b-card
+      v-if="mode === 'preview'"
+      class="mb-2"
+    >
       {{ $t('File uploads are unavailable in preview mode.') }}
     </b-card>
     <uploader
       v-else
+      ref="uploader"
       :options="options"
       :attrs="attrs"
-      ref="uploader"
       @complete="complete"
       @upload-start="start"
       @file-removed="removed"
       @file-success="fileUploaded"
       @file-added="addFile"
     >
-      <uploader-unsupport></uploader-unsupport>
+      <uploader-unsupport />
 
-      <uploader-drop id="uploaderMain" class="form-control-file">
+      <uploader-drop
+        id="uploaderMain"
+        class="form-control-file"
+      >
         <p>{{ $t('Drop a file here to upload or') }}</p>
-        <uploader-btn id="submitFile" class="btn btn-secondary text-white">{{ $t('select file') }}</uploader-btn>
-        <span v-if="config && config.validation === 'required' && !value" class="required">{{ $t('Required') }}</span>
+        <uploader-btn
+          id="submitFile"
+          class="btn btn-secondary text-white"
+        >
+          {{ $t('select file') }}
+        </uploader-btn>
+        <span
+          v-if="config && config.validation === 'required' && !value"
+          class="required"
+        >{{ $t('Required') }}</span>
       </uploader-drop>
 
       <uploader-list>
         <template slot-scope="{ fileList }">
           <ul>
             <li v-if="fileList.length === 0 && value">
-              <i class="fas fa-paperclip"></i> {{ displayName }}
+              <i class="fas fa-paperclip" /> {{ displayName }}
             </li>
-            <li v-for="file in fileList" :key="file.id">
-              <uploader-file :file="file" :list="true"></uploader-file>
+            <li
+              v-for="file in fileList"
+              :key="file.id"
+            >
+              <uploader-file
+                :file="file"
+                :list="true"
+              />
             </li>
           </ul>
         </template>
       </uploader-list>
     </uploader>
 
-    <div class="invalid-feedback" role="alert" v-if="error">{{error}}</div>
-    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
+    <div
+      v-if="error"
+      class="invalid-feedback"
+      role="alert"
+    >
+      {{ error }}
+    </div>
+    <small
+      v-if="helper"
+      class="form-text text-muted"
+    >{{ helper }}</small>
   </div>
 </template>
 
@@ -53,28 +82,43 @@ export default {
   components: uploader,
   mixins: [uniqIdsMixin],
   props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", "accept", "validation", "parent", "index", "config"],
-  beforeMount() {
-    this.getFileType();
-  },
-  updated() {
-    this.removeDefaultClasses();
-  },
-  mounted() {
-    this.$root.$on('set-upload-data-name',
-        (recordList, index, id) => this.listenRecordList(recordList, index, id));
-
-    this.removeDefaultClasses();
-
-    this.checkIfInRecordList();
-
-    this.setPrefix();
-    if (this.$refs['uploader']) {
-      this.$refs['uploader'].$forceUpdate();
-    }
+  data() {
+    return {
+      content: "",
+      fileType: null,
+      validator: {
+        errorCount: 0,
+        errors: [],
+      },
+      prefix: "",
+      row_id: null,
+      options: {
+        target: this.getTargetUrl,
+        // We cannot increase this until laravel chunk uploader handles this gracefully
+        simultaneousUploads: 1,
+        query: {
+          chunk: true,
+          data_name: this.name,
+          parent: null,
+          index: 0,
+          row_id: null,
+        },
+        testChunks: false,
+        // Setup our headers to deal with API calls
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          "X-CSRF-TOKEN": window.ProcessMaker.apiClient.defaults.headers.common["X-CSRF-TOKEN"],
+        },
+        singleFile: true,
+      },
+      attrs: {
+        accept: this.accept,
+      },
+    };
   },
   computed: {
     displayName() {
-      const requestFiles = _.get(window, 'PM4ConfigOverrides.requestFiles', {});
+      const requestFiles = _.get(window, "PM4ConfigOverrides.requestFiles", {});
       const fileInfo = requestFiles[this.fileDataName];
       if (fileInfo) {
         return fileInfo.file_name;
@@ -88,27 +132,27 @@ export default {
       return {
         "is-invalid": (this.validator && this.validator.errorCount) || this.error,
         [this.controlClass]: !!this.controlClass,
-      }
+      };
     },
     inProgress() {
-      return this.$refs.uploader.fileList.some(file => file._prevProgress < 1);
+      return this.$refs.uploader.fileList.some((file) => file._prevProgress < 1);
     },
     filesAccept() {
       if (!this.accept) {
         return null;
       }
 
-      let accept = [];
+      const accept = [];
 
-      (this.accept.split(',')).forEach(item => {
-        accept.push(item.trim())
+      (this.accept.split(",")).forEach((item) => {
+        accept.push(item.trim());
       });
       return accept;
     },
     // return  the file's identifier in PM4ConfigOverrides.requestFiles
     fileDataName() {
-      return this.prefix + this.name + (this.row_id ? '.' + this.row_id : '');
-    }
+      return this.prefix + this.name + (this.row_id ? `.${this.row_id}` : "");
+    },
 
   },
   watch: {
@@ -139,52 +183,38 @@ export default {
     row_id: {
       handler() {
         this.options.query.row_id = this.row_id;
-        this.options.query.data_name = this.prefix + this.name + (this.row_id ? '.' + this.row_id : '');
+        this.options.query.data_name = this.prefix + this.name + (this.row_id ? `.${this.row_id}` : "");
       },
       immediate: true,
     },
   },
-  data() {
-    return {
-      content: "",
-      fileType: null,
-      validator: {
-        errorCount: 0,
-        errors: [],
-      },
-      prefix: '',
-      row_id: null,
-      options: {
-        target: this.getTargetUrl,
-        // We cannot increase this until laravel chunk uploader handles this gracefully
-        simultaneousUploads: 1,
-        query: {
-          chunk: true,
-          data_name: this.name,
-          parent: null,
-          index: 0,
-          row_id: null
-        },
-        testChunks: false,
-        // Setup our headers to deal with API calls
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-          "X-CSRF-TOKEN": window.ProcessMaker.apiClient.defaults.headers.common["X-CSRF-TOKEN"]
-        },
-        singleFile: true
-      },
-      attrs: {
-        accept: this.accept
-      },
-    };
+  beforeMount() {
+    this.getFileType();
+  },
+  updated() {
+    this.removeDefaultClasses();
+  },
+  mounted() {
+    this.$root.$on(
+      "set-upload-data-name",
+      (recordList, index, id) => this.listenRecordList(recordList, index, id),
+    );
+
+    this.removeDefaultClasses();
+
+    this.checkIfInRecordList();
+
+    this.setPrefix();
+    if (this.$refs.uploader) {
+      this.$refs.uploader.$forceUpdate();
+    }
   },
   methods: {
     listenRecordList(recordList, index, id) {
-      const parent =  this.$parent.$parent.$parent;
+      const parent = this.$parent.$parent.$parent;
       if (parent === recordList) {
         this.row_id = id;
-      }
-      else {
+      } else {
         this.row_id = null;
       }
       this.$forceUpdate();
@@ -192,7 +222,7 @@ export default {
     setPrefix() {
       let parent = this.$parent;
       let i = 0;
-      while(!parent.loopContext) {
+      while (!parent.loopContext) {
         parent = parent.$parent;
 
         if (parent === this.$root) {
@@ -202,19 +232,19 @@ export default {
 
         i++;
         if (i > 100) {
-          throw "Loop Error";
+          throw new Error("Loop Error");
         }
       }
 
       if (parent && parent.loopContext) {
-        this.prefix = parent.loopContext + '.';
+        this.prefix = `${parent.loopContext}.`;
       }
     },
     setFileUploadNameForChildren(children, prefix) {
-      children.forEach(child => {
-        if (_.get(child, '$options.name') === 'FileUpload') {
+      children.forEach((child) => {
+        if (_.get(child, "$options.name") === "FileUpload") {
           child.prefix = prefix;
-        } else if (_.get(child, '$children', []).length > 0) {
+        } else if (_.get(child, "$children", []).length > 0) {
           this.setFileUploadNameForChildren(child.$children, prefix);
         }
       });
@@ -227,12 +257,12 @@ export default {
         }
         if (file.ignored) {
           ProcessMaker.alert(this.$t("This file type is not accepted."), "danger");
-          return false
+          return false;
         }
       }
       file.ignored = false;
       if (!this.name) {
-        this.options.query.data_name = file.name
+        this.options.query.data_name = file.name;
       }
       return true;
     },
@@ -240,36 +270,36 @@ export default {
       // we need to be able to remove the classes from the npm package
       document
         .querySelectorAll("[id='submitFile'],[id='uploaderMain']")
-        .forEach(element => {
+        .forEach((element) => {
           element.classList.remove("uploader-btn", "uploader-drop");
         });
     },
     getFileType() {
-      if (document.head.querySelector('meta[name="collection-id"]')) {
-        this.fileType = 'collection';
+      if (document.head.querySelector("meta[name=\"collection-id\"]")) {
+        this.fileType = "collection";
       } else {
-        this.fileType = 'request';
+        this.fileType = "request";
       }
     },
     fileUploaded(rootFile, file, message) {
-      if (this.fileType == 'request') {
-        let id = '';
+      if (this.fileType == "request") {
+        let id = "";
         if (message) {
           const msgObj = JSON.parse(message);
-          if (!_.has(window, 'PM4ConfigOverrides.requestFiles')) {
+          if (!_.has(window, "PM4ConfigOverrides.requestFiles")) {
             window.PM4ConfigOverrides.requestFiles = {};
           }
-          window.PM4ConfigOverrides.requestFiles[this.fileDataName] = { id:msgObj.fileUploadId, file_name:file.name };
+          window.PM4ConfigOverrides.requestFiles[this.fileDataName] = { id: msgObj.fileUploadId, file_name: file.name };
           id = msgObj.fileUploadId;
         }
         this.$emit("input", id);
       }
 
-      if (this.fileType == 'collection') {
+      if (this.fileType == "collection") {
         message = JSON.parse(message);
         this.$emit("input", {
           id: message.id,
-          name: message.file_name
+          name: message.file_name,
         });
       }
     },
@@ -281,17 +311,17 @@ export default {
     complete() {
       // Unblock submit
       this.validator.errorCount = 0;
-      window.onbeforeunload = function() {};
+      window.onbeforeunload = function () {};
     },
     start() {
       // Block submit until files are loaded
       this.validator.errorCount = 1;
-      window.onbeforeunload = function() {
+      window.onbeforeunload = function () {
         return true;
       };
     },
     getTargetUrl() {
-      if (_.has(window, 'PM4ConfigOverrides.postFileEndpoint')) {
+      if (_.has(window, "PM4ConfigOverrides.postFileEndpoint")) {
         return window.PM4ConfigOverrides.postFileEndpoint;
       }
 
@@ -299,37 +329,37 @@ export default {
         return this.endpoint;
       }
 
-      if (this.fileType == 'request') {
-        const requestIDNode = document.head.querySelector('meta[name="request-id"]');
+      if (this.fileType == "request") {
+        const requestIDNode = document.head.querySelector("meta[name=\"request-id\"]");
 
         return requestIDNode
           ? `/api/1.0/requests/${requestIDNode.content}/files`
           : null;
       }
 
-      if (this.fileType == 'collection') {
-        const collectionIdNode = document.head.querySelector('meta[name="collection-id"]');
+      if (this.fileType == "collection") {
+        const collectionIdNode = document.head.querySelector("meta[name=\"collection-id\"]");
 
         return collectionIdNode
-          ? '/api/1.0/files' +
-            '?model=' +
-            'ProcessMaker\\Plugins\\Collections\\Models\\Collection' +
-            '&model_id=' +
-            collectionIdNode.content +
-            '&collection=' +
-            'collection'
+          ? "/api/1.0/files"
+            + "?model="
+            + "ProcessMaker\\Plugins\\Collections\\Models\\Collection"
+            + `&model_id=${
+              collectionIdNode.content
+            }&collection=`
+            + "collection"
           : null;
       }
     },
     checkIfInRecordList() {
-      const parent =  this.$parent.$parent.$parent;
-      if (parent.$options._componentTag == 'FormRecordList') {
+      const parent = this.$parent.$parent.$parent;
+      if (parent.$options._componentTag == "FormRecordList") {
         const recordList = parent;
-        const prefix = recordList.name + '.';
+        const prefix = `${recordList.name}.`;
         this.setFileUploadNameForChildren(recordList.$children, prefix);
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

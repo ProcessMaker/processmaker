@@ -1,18 +1,18 @@
 <script>
-import { Line } from "vue-chartjs"
+import { Line } from "vue-chartjs";
 
 export default {
   extends: Line,
   props: ["data", "options", "preview"],
   computed: {
-    chartData: function() {
+    chartData() {
       return this.data;
     },
-    previewData: function() {
+    previewData() {
       return {
         datasets: [{
           data: [
-            5, 7, 4, 15, 10
+            5, 7, 4, 15, 10,
           ],
           fill: false,
           pointRadius: 0,
@@ -24,10 +24,10 @@ export default {
           3,
           4,
           5,
-        ]
+        ],
       };
     },
-    previewOptions: function() {
+    previewOptions() {
       return {
         layout: {
           padding: {
@@ -43,7 +43,7 @@ export default {
         maintainAspectRatio: true,
         responsive: true,
         tooltips: {
-          enabled: false
+          enabled: false,
         },
         scales: {
           xAxes: [{
@@ -53,18 +53,23 @@ export default {
             display: false,
             ticks: {
               max: 18,
-            }
+            },
           }],
-        }
-      }
-    }
+        },
+      };
+    },
   },
-  mounted () {
+  watch: {
+    data() {
+      this.render();
+    },
+  },
+  mounted() {
     this.render();
   },
   methods: {
     render() {
-      if (! this.preview) {
+      if (!this.preview) {
         this.renderChart(this.chartData, this.options);
       } else {
         this.renderChart(this.previewData, this.previewOptions);
@@ -73,12 +78,7 @@ export default {
     },
     describe() {
       return this.$t("Line Graph");
-    }
+    },
   },
-  watch: {
-    data: function() {
-      this.render();
-    }
-  }
-}
+};
 </script>

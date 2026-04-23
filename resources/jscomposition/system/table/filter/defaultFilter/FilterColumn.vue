@@ -3,11 +3,13 @@
     <AppPopover
       v-model="show"
       :hover="false"
-      position="bottom">
+      position="bottom"
+    >
       <div
         class="tw-text-xs tw-py-1 tw-px-1 hover:tw-cursor-pointer
         hover:tw-bg-gray-200 tw-rounded"
-        @click.prevent="onClick">
+        @click.prevent="onClick"
+      >
         <i :class="iconClass()" />
       </div>
       <template #content>
@@ -16,13 +18,16 @@
             'tw-h-60': filter.operators,
           }"
           class="tw-shadow-md tw-text-xs tw-space-y-2 tw-flex tw-flex-col tw-justify-between
-            tw-font-normal tw-bg-white tw-text-gray-600 tw-overflow-hidden tw-rounded-lg tw-border tw-border-gray-300">
+            tw-font-normal tw-bg-white tw-text-gray-600 tw-overflow-hidden tw-rounded-lg tw-border tw-border-gray-300"
+        >
           <div
             v-if="filter.operators"
-            class="tw-flex tw-flex-col tw-space-y-2 tw-px-4 tw-pt-4">
+            class="tw-flex tw-flex-col tw-space-y-2 tw-px-4 tw-pt-4"
+          >
             <SortingButtons
               @asc="onAsc"
-              @desc="onDesc" />
+              @desc="onDesc"
+            />
 
             <div class="tw-grow tw-overflow-auto tw-space-y-4">
               <FilterOperator
@@ -32,25 +37,29 @@
                 :operators="filter.operators"
                 :type="filter.dataType"
                 :config="filter.config"
-                @change="(e) => onChangeFilterOperator(e)" />
+                @change="(e) => onChangeFilterOperator(e)"
+              />
             </div>
 
             <FooterButtons
               @cancel="onCancel"
               @clear="onClear"
-              @apply="onApply" />
+              @apply="onApply"
+            />
           </div>
           <div
             v-if="filter.resetTable"
             :class="{
               'tw-border-t': filter.operators,
             }"
-            class="tw-flex tw-border-gray-300 tw-justify-start tw-p-4">
+            class="tw-flex tw-border-gray-300 tw-justify-start tw-p-4"
+          >
             <div
               id="reset-table-btn"
               class="tw-flex tw-text-gray-500 tw-space-x-2 tw-bg-transparent
                 hover:tw-opacity-80 hover:tw-cursor-pointer tw-justify-center tw-items-center"
-              @click="onResetTable">
+              @click="onResetTable"
+            >
               <i class="fas fa-reply" />
               <span>{{ $t("Reset Table") }}</span>
             </div>

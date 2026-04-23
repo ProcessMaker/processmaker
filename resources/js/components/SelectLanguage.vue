@@ -11,8 +11,8 @@
     track-by="language"
     label="humanLanguage"
     class="assignable-input"
-    @input="change"
     data-test="translation-select-language"
+    @input="change"
   >
     <template slot="noResult">
       <slot name="noResult">

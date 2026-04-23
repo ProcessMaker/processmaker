@@ -8,28 +8,33 @@
     </p>
     <p
       v-if="readActivated || !largeDescription"
-      class="description">
+      class="description"
+    >
       {{ process.description }}
     </p>
     <span
       v-if="readActivated || !largeDescription"
-      class="class-version">
+      class="class-version"
+    >
       {{ $t('Version') }} {{ processVersion }}
     </span>
     <p
       v-if="!readActivated && largeDescription"
-      class="description">
+      class="description"
+    >
       {{ process.description.slice(0,190) }} ...
       <a
         v-if="!readActivated"
         class="read-more"
-        @click="activateReadMore">
+        @click="activateReadMore"
+      >
         <span style="color: #1572C2;">{{ $t('More') }}</span>
       </a>
     </p>
     <div
       v-if="!readActivated && largeDescription"
-      class="class-version">
+      class="class-version"
+    >
       {{ $t('Version') }} {{ processVersion }}
     </div>
   </div>

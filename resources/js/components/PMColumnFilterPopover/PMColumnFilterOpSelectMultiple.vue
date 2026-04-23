@@ -1,33 +1,34 @@
 <template>
-  <b-form-select v-model="input" 
-                 :options="formatRange"
-                 multiple
-                 size="sm">
-  </b-form-select>
+  <b-form-select
+    v-model="input"
+    :options="formatRange"
+    multiple
+    size="sm"
+  />
 </template>
 
 <script>
-  export default {
-    props: [
-      "value", "formatRange"
-    ],
-    data() {
-      return {
-        input: []
-      };
-    },
-    watch: {
-      value: {
-        handler(newValue) {
-          this.input = newValue;
-        },
-        immediate: true
+export default {
+  props: [
+    "value", "formatRange",
+  ],
+  data() {
+    return {
+      input: [],
+    };
+  },
+  watch: {
+    value: {
+      handler(newValue) {
+        this.input = newValue;
       },
-      input() {
-        this.$emit("input", this.input);
-      }
-    }
-  };
+      immediate: true,
+    },
+    input() {
+      this.$emit("input", this.input);
+    },
+  },
+};
 </script>
 
 <style scoped>

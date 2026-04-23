@@ -29,7 +29,10 @@
           variant="custom"
         />
       </div>
-      <div class="requests-count" v-if="caseCount">
+      <div
+        v-if="caseCount"
+        class="requests-count"
+      >
         {{ caseCount }}
       </div>
       <bookmark
@@ -40,11 +43,13 @@
       />
     </b-card-text>
   </b-card>
-  <b-card v-else
-  class="d-flex text-center align-items-center justify-content-center card-process2">
+  <b-card
+    v-else
+    class="d-flex text-center align-items-center justify-content-center card-process2"
+  >
     <span v-if="cardMessage === 'show-page'">Page {{ currentPage }} of {{ totalPages }}</span>
     <span v-if="cardMessage === 'show-more' && !loading"> {{ $t('Show More') }}</span>
-    <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
+    <span v-if="loading"><i class="fas fa-spinner fa-spin" /> {{ $t('Loading') }}...</span>
   </b-card>
 </template>
 
@@ -54,7 +59,7 @@ import Bookmark from "../Bookmark.vue";
 
 export default {
   components: {
-    Bookmark
+    Bookmark,
   },
   props: {
     loading: false,
@@ -65,12 +70,12 @@ export default {
     },
     totalPages: {
       type: Number,
-      default: 0
-    } ,
+      default: 0,
+    },
     process: null,
     hideBookmark: {
       type: Boolean,
-      default: false
+      default: false,
     },
     showCards: true,
   },
@@ -105,7 +110,7 @@ export default {
       return `/img/launchpad-images/icons/${icon}.svg`;
     },
     callLoadCard() {
-      this.$emit('callLoadCard', () => {}, 'bookmark');
+      this.$emit("callLoadCard", () => {}, "bookmark");
     },
   },
 };
@@ -178,7 +183,7 @@ export default {
   font-weight: bold;
   background-color: #F9E7C3;
   margin-right: 8px;
-  
+
   border-radius: 12px;
   min-width: 24px;
   height: 24px;
@@ -199,7 +204,7 @@ export default {
   height: 100%;
   display: flex;
   width: 100%;
-  
+
   @media (max-width: $lp-breakpoint) {
     align-items: center;
   }
@@ -226,7 +231,7 @@ export default {
 
   @media (max-width: $lp-breakpoint) {
     margin-bottom: 0;
-    margin-right: 10px;  
+    margin-right: 10px;
     width: 24px;
     height: 24px;
   }

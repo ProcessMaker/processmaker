@@ -1,74 +1,90 @@
 <template>
   <div class="data-table">
     <data-loading
-      :for="/clients/"
       v-show="shouldShowLoader"
+      :for="/clients/"
       :empty="$t('No Data Available')"
       :empty-desc="$t('')"
       empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader" class="card card-body table-card">
+    <div
+      v-show="!shouldShowLoader"
+      class="card card-body table-card"
+    >
       <vuetable
         ref="vuetable"
-        :dataManager="dataManager"
-        :sortOrder="sortOrder"
+        :data-manager="dataManager"
+        :sort-order="sortOrder"
         :css="css"
         :api-mode="false"
-        @vuetable:pagination-data="onPaginationData"
         :fields="fields"
         :data="data"
         data-path="data"
         pagination-path="meta"
-        :noDataTemplate="$t('No Data Available')"
+        :no-data-template="$t('No Data Available')"
+        @vuetable:pagination-data="onPaginationData"
       >
-        <template slot="name" slot-scope="props">
+        <template
+          slot="name"
+          slot-scope="props"
+        >
           <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.name }}</span>
         </template>
-        <template slot="actions" slot-scope="props">
-          <ellipsis-menu 
-            @navigate="onNavigate"
+        <template
+          slot="actions"
+          slot-scope="props"
+        >
+          <ellipsis-menu
             :actions="actions"
             :data="props.rowData"
             :permission="permission"
             :divider="true"
+            @navigate="onNavigate"
           />
         </template>
-        <template slot="secret" slot-scope="props">
+        <template
+          slot="secret"
+          slot-scope="props"
+        >
           <b-btn
+            v-b-tooltip.hover
+            v-uni-aria-describedby="props.rowData.id.toString()"
             variant="link"
             class="copylink"
-            @click="copySecret(props.rowData.secret)"
-            v-b-tooltip.hover
             :title="$t('Copy Client Secret To Clipboard')"
-            v-uni-aria-describedby="props.rowData.id.toString()"
+            @click="copySecret(props.rowData.secret)"
           >
-            <i class="fas fa-clipboard fa-lg fa-fw"></i>
+            <i class="fas fa-clipboard fa-lg fa-fw" />
           </b-btn>
           {{ props.rowData.secret.substr(0, 10) }}...
         </template>
       </vuetable>
       <pagination
+        ref="pagination"
         :single="$t('Auth Client')"
         :plural="$t('Auth Clients')"
-        :perPageSelectEnabled="true"
+        :per-page-select-enabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
-        ref="pagination"
-      ></pagination>
-      <textarea class="copytext" ref="copytext"></textarea>
+      />
+      <textarea
+        ref="copytext"
+        class="copytext"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
-import { createUniqIdsMixin } from "vue-uniq-ids";
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: {EllipsisMenu},
+  components: { EllipsisMenu },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "permission"],
   data() {
@@ -82,8 +98,12 @@ export default {
         },
       ],
       actions: [
-        { value: "edit-item", content: "Edit Auth Client", icon: "fas fa-pen-square", ariaDescribedBy: 'data.id'},
-        { value: "delete-item", content: "Delete Auth Client", icon: "fas fa-trash-alt",  ariaDescribedBy: 'data.id'},
+        {
+          value: "edit-item", content: "Edit Auth Client", icon: "fas fa-pen-square", ariaDescribedBy: "data.id",
+        },
+        {
+          value: "delete-item", content: "Delete Auth Client", icon: "fas fa-trash-alt", ariaDescribedBy: "data.id",
+        },
       ],
       fields: [
         {
@@ -98,7 +118,7 @@ export default {
           title: () => this.$t("Redirect"),
           name: "redirect",
           callback(val) {
-            return val.substr(0, 20) + "...";
+            return `${val.substr(0, 20)}...`;
           },
         },
         {
@@ -125,18 +145,16 @@ export default {
     },
     transform(data) {
       if (this.filter) {
-        //Manual filter
-        data = data.filter((item) => {
-          return (
-            item.name.toLowerCase().indexOf(this.filter.toLowerCase()) > -1 ||
-            item.redirect.toLowerCase().indexOf(this.filter.toLowerCase()) > -1 ||
-            item.secret.toLowerCase().indexOf(this.filter.toLowerCase()) > -1
-          );
-        });
+        // Manual filter
+        data = data.filter((item) => (
+          item.name.toLowerCase().indexOf(this.filter.toLowerCase()) > -1
+            || item.redirect.toLowerCase().indexOf(this.filter.toLowerCase()) > -1
+            || item.secret.toLowerCase().indexOf(this.filter.toLowerCase()) > -1
+        ));
       }
 
-      //Pagination
-      let meta = {};
+      // Pagination
+      const meta = {};
       if (parseInt(this.perPage) >= data.length) {
         this.page = 1;
       }
@@ -154,31 +172,31 @@ export default {
       if (meta.to > meta.total) {
         meta.to = meta.total;
       }
-      let rows = data.slice(meta.from, meta.to);
+      const rows = data.slice(meta.from, meta.to);
       meta.count = rows.length;
 
       this.$refs.pagination.tablePagination = meta;
       return rows;
     },
     changePerPage(value) {
-        this.perPage = value;
-        if (this.page * value > this.$refs.pagination.tablePagination.total) {
-            this.page = Math.floor(this.$refs.pagination.tablePagination.total / value) + 1;
-        }
-        this.fetch();
+      this.perPage = value;
+      if (this.page * value > this.$refs.pagination.tablePagination.total) {
+        this.page = Math.floor(this.$refs.pagination.tablePagination.total / value) + 1;
+      }
+      this.fetch();
     },
     onPageChange(page) {
       if (page == "next") {
-        this.page = this.page + 1;
+        this.page += 1;
       } else if (page == "prev") {
-        this.page = this.page - 1;
+        this.page -= 1;
       } else {
         this.page = page;
       }
       if (this.page <= 0) {
         this.page = 1;
       }
-      let meta = this.$refs.pagination.tablePagination;
+      const meta = this.$refs.pagination.tablePagination;
       if (this.page > meta.last_page) {
         this.page = meta.last_page;
       }
@@ -191,33 +209,33 @@ export default {
     },
     onNavigate(action, data) {
       switch (action.value) {
-        case 'edit-item':
-          this.$emit("edit", Object.assign({}, data));
+        case "edit-item":
+          this.$emit("edit", { ...data });
           break;
-        case 'delete-item':
+        case "delete-item":
           this.doDelete(data);
           break;
       }
-    },  
+    },
     doDelete(item) {
       ProcessMaker.confirmModal(
         this.$t("Caution!"),
-        this.$t("Are you sure you want to delete the auth client") +
-          " " +
-          item.name +
-          this.$t("?"),
+        `${this.$t("Are you sure you want to delete the auth client")
+        } ${
+          item.name
+        }${this.$t("?")}`,
         "",
         () => {
           ProcessMaker.apiClient
-            .delete("/oauth/clients/" + item.id, { baseURL: "/" })
+            .delete(`/oauth/clients/${item.id}`, { baseURL: "/" })
             .then(() => {
               ProcessMaker.alert(
                 this.$t("The auth client was deleted."),
-                "success"
+                "success",
               );
               this.fetch();
             });
-        }
+        },
       );
     },
   },

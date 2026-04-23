@@ -7,12 +7,11 @@
       :template-selected="templateSelected"
     />
     <div
-      id="infinite-list-card"
       v-show="processList.length > 0"
-      class="processList d-flex"
+      id="infinite-list-card"
       ref="processListContainer"
+      class="processList d-flex"
     >
-      
       <template v-for="(process, index) in processList">
         <Card
           :key="`${index}_${renderKey}`"
@@ -22,12 +21,15 @@
           :total-pages="totalPages"
           :card-message="cardMessage"
           :loading="false"
+          :hide-bookmark="categoryId === 'all_templates'"
           @openProcessInfo="openProcessInfo"
           @callLoadCard="loadCard"
-          :hideBookmark="categoryId === 'all_templates'"
         />
 
-        <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" :class="separatorClass">
+        <div
+          v-if="(index % perPage === perPage - 1) && processList.length >= perPage"
+          :class="separatorClass"
+        >
           <Card
             v-if="((index + 1) === processList.length) && ((index + 1) < totalPages * perPage)"
             :show-cards="false"
@@ -38,16 +40,16 @@
             @callLoadCard="loadCard"
           />
 
-          <div v-else-if="((index + 1) === processList.length) && currentPage === totalPages && ((index + 1) === processList.length)">
-          </div>
-          <Card v-else
-          :show-cards="false"
+          <div v-else-if="((index + 1) === processList.length) && currentPage === totalPages && ((index + 1) === processList.length)" />
+          <Card
+            v-else
+            :show-cards="false"
             :current-page="counterPage + Math.floor(index / perPage)"
             :total-pages="totalPages"
             :card-message="cardMessage"
             :loading="loading"
             @callLoadCard="loadCard"
-            />
+          />
         </div>
       </template>
     </div>
@@ -65,8 +67,7 @@ import pagination from "./utils/pagination.vue";
 import SearchCards from "./utils/SearchCards.vue";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import Card from "./utils/Card.vue";
-import { EventBus } from '../index.js';
-
+import { EventBus } from "../index.js";
 
 export default {
   components: {
@@ -104,8 +105,8 @@ export default {
   computed: {
     separatorClass() {
       const classes = {
-        'separator-class': true,
-        'width-changed': this.sizeChange,
+        "separator-class": true,
+        "width-changed": this.sizeChange,
       };
       return classes;
     },
@@ -154,7 +155,7 @@ export default {
       this.sizeChange = value;
     },
     loadCard(callback, message) {
-      if(message === 'bookmark') {
+      if (message === "bookmark") {
         this.processList = [];
         this.page = 1;
       }
@@ -168,23 +169,23 @@ export default {
           this.totalRow = response.data.meta.total;
           this.totalPages = response.data.meta.total_pages;
           this.showMoreVisible = this.processList.length < this.totalRow;
-          this.renderKey = this.renderKey + 1;
+          this.renderKey += 1;
           callback?.();
-          const container =  document.querySelector(".processes-info");
-          if(!callback) {
+          const container = document.querySelector(".processes-info");
+          if (!callback) {
             this.$nextTick(() => {
-                if((container.scrollTop+container.clientHeight)>=container.scrollHeight-5){
-                  container.scrollTop = container.scrollTop - 1050;
-                } 
+              if ((container.scrollTop + container.clientHeight) >= container.scrollHeight - 5) {
+                container.scrollTop -= 1050;
+              }
             });
-          } 
+          }
         });
     },
     /**
      * Build URL for Process Cards
      */
     buildURL() {
-      if (this.categoryId === 'all_processes') {
+      if (this.categoryId === "all_processes") {
         return "process_bookmarks/processes?"
           + `&page=${this.currentPage}`
           + `&per_page=${this.perPage}`
@@ -194,7 +195,7 @@ export default {
           + "&cat_status=ACTIVE"
           + "&order_by=name&order_direction=asc";
       }
-      if (this.categoryId === 'bookmarks') {
+      if (this.categoryId === "bookmarks") {
         return `process_bookmarks?page=${this.currentPage}`
           + `&per_page=${this.perPage}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
@@ -202,13 +203,13 @@ export default {
           + "&launchpad=true"
           + "&order_by=name&order_direction=asc";
       }
-      if (this.categoryId === 'all_templates') {
+      if (this.categoryId === "all_templates") {
         return `templates/process?page=${this.currentPage}`
           + `&per_page=${this.perPage}`
           + `&filter=${encodeURIComponent(this.filter)}`
-          + `&order_by=name`
-          + `&order_direction=asc`
-          + `&include=user,categories,category`;
+          + "&order_by=name"
+          + "&order_direction=asc"
+          + "&include=user,categories,category";
       }
       return `process_bookmarks/processes?page=${this.currentPage}`
           + `&per_page=${this.perPage}`
@@ -222,11 +223,11 @@ export default {
      * Go to process info
      */
     openProcessInfo(process) {
-      if (this.categoryId === 'all_templates') {
-        EventBus.$emit('templates-selected', { template: process, type: "Process" });
+      if (this.categoryId === "all_templates") {
+        EventBus.$emit("templates-selected", { template: process, type: "Process" });
         return;
       }
-      this.$router.push({ name: "show", params: { process: process, processId: process.id } });
+      this.$router.push({ name: "show", params: { process, processId: process.id } });
       this.$emit("openProcess", process);
     },
     /**

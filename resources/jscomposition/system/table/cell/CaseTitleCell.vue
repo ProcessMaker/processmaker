@@ -3,18 +3,22 @@
     <a
       v-if="href !== null"
       class="hover:tw-text-blue-400 tw-text-inherit tw-no-underline"
-      :href="href(row)">
+      :href="href(row)"
+    >
       <case-title
         :title="row.case_title_formatted"
-        :default-value="getValue()" />
+        :default-value="getValue()"
+      />
     </a>
     <span
       v-else
       class="hover:tw-text-blue-400 text-inherit no-underline hover:tw-cursor-pointer"
-      @click.prevent="onClick">
+      @click.prevent="onClick"
+    >
       <case-title
         :title="row.case_title_formatted"
-        :default-value="getValue()" />
+        :default-value="getValue()"
+      />
     </span>
   </div>
 </template>

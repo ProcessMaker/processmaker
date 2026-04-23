@@ -1,6 +1,7 @@
 <template>
   <div
-    class="tw-flex tw-flex-row">
+    class="tw-flex tw-flex-row"
+  >
     <ArrowButton
       v-for="(item, index) in dataModel"
       :id="item.id"
@@ -15,7 +16,8 @@
         last:tw-rounded-r-xl
         hover:tw-cursor-pointer
         last:tw-overflow-hidden`"
-      @click="click(dataModel[index], index)" />
+      @click="click(dataModel[index], index)"
+    />
   </div>
 </template>
 

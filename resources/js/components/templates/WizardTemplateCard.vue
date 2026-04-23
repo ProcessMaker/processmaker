@@ -1,7 +1,7 @@
 <template>
   <div>
-    <b-card 
-      no-body 
+    <b-card
+      no-body
       class="wizard-template-select-card p-0"
       :style="{ backgroundImage: 'url(' + cardBackgroundImage + ')' }"
       @click="showDetails()"
@@ -10,11 +10,21 @@
     >
       <b-card-body class="p-2">
         <div class="wizard-icon-container text-right mb-3">
-          <img src="../../../img/wizard-template-icon.svg" alt="Guided Template Icon">
+          <img
+            src="../../../img/wizard-template-icon.svg"
+            alt="Guided Template Icon"
+          >
         </div>
         <b-card-text class="mx-4">
-          <img :src="templateIcon" :alt="template.name + ' icon'" width="45px" class="mb-3"/>
-          <h5 class="text-uppercase">{{ template.name | str_limit(30) }}</h5>
+          <img
+            :src="templateIcon"
+            :alt="template.name + ' icon'"
+            width="45px"
+            class="mb-3"
+          >
+          <h5 class="text-uppercase">
+            {{ template.name | str_limit(30) }}
+          </h5>
           {{ template.description | str_limit(150) }}
         </b-card-text>
       </b-card-body>
@@ -23,7 +33,7 @@
 </template>
 
 <script>
-import templateMixin from './mixins/template.js';
+import templateMixin from "./mixins/template.js";
 
 export default {
   components: { },
@@ -35,7 +45,7 @@ export default {
     },
     templateIcon() {
       return this.template?.template_media?.icon;
-    }
+    },
   },
 };
 </script>
@@ -73,7 +83,7 @@ export default {
       }
     }
   }
-  
+
 }
 
 @media (min-width: 576px) {

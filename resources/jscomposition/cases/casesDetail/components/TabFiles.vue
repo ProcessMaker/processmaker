@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 import { getRequest } from "../variables";
 
 const requestFile = ref(getRequest());
@@ -8,7 +8,11 @@ const fileManager = () => window.ProcessMaker.caseFileManager;
 </script>
 
 <template>
-  <component v-if="requestFile.id" :is="fileManager()" :process-request-id="requestFile.id"></component>
+  <component
+    :is="fileManager()"
+    v-if="requestFile.id"
+    :process-request-id="requestFile.id"
+  />
 </template>
 
 <style scoped>

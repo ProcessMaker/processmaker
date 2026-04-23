@@ -1,28 +1,52 @@
 <template>
   <div>
-    <div class="recommendation" :class="{ 'dashboard': dashboard }" v-if="userRecommendation">
-      <div class="recommendation-navigation" v-if="userRecommendations.length > 1">
-        <a href="#" @click.prevent="previous" :class="{ 'disabled': hasPrevious }">
+    <div
+      v-if="userRecommendation"
+      class="recommendation"
+      :class="{ 'dashboard': dashboard }"
+    >
+      <div
+        v-if="userRecommendations.length > 1"
+        class="recommendation-navigation"
+      >
+        <a
+          href="#"
+          :class="{ 'disabled': hasPrevious }"
+          @click.prevent="previous"
+        >
           <i class="fas fa-caret-left" />
         </a>
         <div>{{ currentIndex + 1 }} of {{ userRecommendations.length }}</div>
-        <a href="#" @click.prevent="next" :class="{ 'disabled': hasNext }">
+        <a
+          href="#"
+          :class="{ 'disabled': hasNext }"
+          @click.prevent="next"
+        >
           <i class="fas fa-caret-right" />
         </a>
       </div>
       <div class="recommendation-title">
-        <div class="recommendation-name" v-if="!dashboard">
+        <div
+          v-if="!dashboard"
+          class="recommendation-name"
+        >
           {{ name }}
         </div>
-        <a href="#" @click.prevent="filter">{{ description }}</a>
+        <a
+          href="#"
+          @click.prevent="filter"
+        >{{ description }}</a>
       </div>
-      <div class="recommendation-actions" v-if="!dashboard">
+      <div
+        v-if="!dashboard"
+        class="recommendation-actions"
+      >
         <b-button
           v-if="userRecommendation.recommendation.actions.includes('mark_as_priority')"
           class="ml-2"
           variant="outline-secondary"
           @click="markAsPriority"
-          >
+        >
           {{ markAsPriorityLabel }}
         </b-button>
         <b-button
@@ -30,49 +54,109 @@
           class="ml-2"
           variant="outline-secondary"
           @click="reassignToUser"
-          >
+        >
           {{ reassignToUserLabel }}
         </b-button>
 
-        <b-dropdown variant="outline-secondary" class="ml-2" no-caret right boundary="window">
+        <b-dropdown
+          variant="outline-secondary"
+          class="ml-2"
+          no-caret
+          right
+          boundary="window"
+        >
           <template #button-content>
-            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+            <i
+              class="fa fa-ellipsis-v"
+              aria-hidden="true"
+            />
           </template>
-          <b-dropdown-item @click="createRule">{{ $t('Create a rule based on this suggestion') }}</b-dropdown-item>
+          <b-dropdown-item @click="createRule">
+            {{ $t('Create a rule based on this suggestion') }}
+          </b-dropdown-item>
           <b-dropdown-divider />
-          <b-dropdown-item @click="dismiss">{{ $t('Dismiss This Suggestion') }}</b-dropdown-item>
-          <b-dropdown-item @click="dismissAll">{{ $t('Dismiss All') }}</b-dropdown-item>
+          <b-dropdown-item @click="dismiss">
+            {{ $t('Dismiss This Suggestion') }}
+          </b-dropdown-item>
+          <b-dropdown-item @click="dismissAll">
+            {{ $t('Dismiss All') }}
+          </b-dropdown-item>
         </b-dropdown>
 
-        <a href="#" class="ml-2 recommendation-dismiss" @click="dismiss">
-          <i class="fa fa-times" aria-hidden="true"></i>
+        <a
+          href="#"
+          class="ml-2 recommendation-dismiss"
+          @click="dismiss"
+        >
+          <i
+            class="fa fa-times"
+            aria-hidden="true"
+          />
         </a>
       </div>
 
-      <div class="recommendation-actions" v-if="dashboard">
-        <b-dropdown variant="outline-secondary" class="ml-2" no-caret right boundary="window" menu-class="w-50">
+      <div
+        v-if="dashboard"
+        class="recommendation-actions"
+      >
+        <b-dropdown
+          variant="outline-secondary"
+          class="ml-2"
+          no-caret
+          right
+          boundary="window"
+          menu-class="w-50"
+        >
           <template #button-content>
-            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+            <i
+              class="fa fa-ellipsis-v"
+              aria-hidden="true"
+            />
           </template>
-          <b-dropdown-item @click="dismiss">{{ $t('Dismiss This Suggestion') }}</b-dropdown-item>
-          <b-dropdown-item @click="dismissAll">{{ $t('Dismiss All') }}</b-dropdown-item>
+          <b-dropdown-item @click="dismiss">
+            {{ $t('Dismiss This Suggestion') }}
+          </b-dropdown-item>
+          <b-dropdown-item @click="dismissAll">
+            {{ $t('Dismiss All') }}
+          </b-dropdown-item>
         </b-dropdown>
       </div>
     </div>
 
-    <b-modal id="confirm" :title="$t('Confirmation')">
+    <b-modal
+      id="confirm"
+      :title="$t('Confirmation')"
+    >
       <template v-if="loadingMode === 'timeout'">
         {{ $t('This actions is taking longer than expected. We will continue updating your tasks in the background.') }}
       </template>
       <template v-else>
-        <p v-html="confirmText"></p>
-        <user-select v-if="action === 'reassign_to_user'" :label="false" @input="toUserId = $event" />
-        <div class="message" v-if="message">{{ message }}</div>
+        <p v-html="confirmText" />
+        <user-select
+          v-if="action === 'reassign_to_user'"
+          :label="false"
+          @input="toUserId = $event"
+        />
+        <div
+          v-if="message"
+          class="message"
+        >
+          {{ message }}
+        </div>
       </template>
 
       <template #modal-footer="{ cancel }">
-        <b-button @click="cancel()" class="" v-if="loadingMode === null">{{ $t('Cancel') }}</b-button>
-        <b-button @click="loadingMode === 'timeout' ? cancel() : onConfirm()" variant="primary">
+        <b-button
+          v-if="loadingMode === null"
+          class=""
+          @click="cancel()"
+        >
+          {{ $t('Cancel') }}
+        </b-button>
+        <b-button
+          variant="primary"
+          @click="loadingMode === 'timeout' ? cancel() : onConfirm()"
+        >
           <template v-if="loadingMode === 'loading'">
             <b-spinner small />
           </template>
@@ -86,11 +170,17 @@
 </template>
 
 <script>
-import UserSelect from '../processes/modeler/components/inspector/UserSelect.vue';
+import UserSelect from "../processes/modeler/components/inspector/UserSelect.vue";
 
 export default {
   components: {
-    UserSelect
+    UserSelect,
+  },
+  props: {
+    dashboard: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -102,39 +192,33 @@ export default {
       loadingMode: null,
       message: null,
       timeout: null,
-    }
-  },
-  props: {
-    dashboard: {
-      type: Boolean,
-      default: false,
-    }
+    };
   },
   computed: {
     userRecommendation() {
-      return this.userRecommendations.find(recommendation => recommendation.id === this.currentUserRecommendationId);
+      return this.userRecommendations.find((recommendation) => recommendation.id === this.currentUserRecommendationId);
     },
     name() {
       return this.$t(this.userRecommendation.recommendation.name, { count: this.userRecommendation.count });
     },
     description() {
-      return this.$t(this.userRecommendation.recommendation.description, { count: this.userRecommendation.count })
+      return this.$t(this.userRecommendation.recommendation.description, { count: this.userRecommendation.count });
     },
     markAsPriorityLabel() {
-      return this.$t('Mark ({{count}}) as priority', { count: this.userRecommendation.count })
+      return this.$t("Mark ({{count}}) as priority", { count: this.userRecommendation.count });
     },
     reassignToUserLabel() {
-      return this.$t('Reassign ({{count}})', { count: this.userRecommendation.count })
+      return this.$t("Reassign ({{count}})", { count: this.userRecommendation.count });
     },
     currentIndex() {
-      return this.userRecommendations.findIndex(recommendation => recommendation.id === this.currentUserRecommendationId)
+      return this.userRecommendations.findIndex((recommendation) => recommendation.id === this.currentUserRecommendationId);
     },
     hasPrevious() {
-      return this.currentIndex > 0
+      return this.currentIndex > 0;
     },
     hasNext() {
-      return this.currentIndex < this.userRecommendations.length - 1
-    }
+      return this.currentIndex < this.userRecommendations.length - 1;
+    },
   },
   mounted() {
     this.fetchRecommendations();
@@ -151,7 +235,7 @@ export default {
           clearTimeout(this.timeout);
           this.message = response.message || null;
           if (!this.message) {
-            this.$bvModal.hide('confirm');
+            this.$bvModal.hide("confirm");
             this.removeSelectedRecommendation();
           }
         },
@@ -178,66 +262,64 @@ export default {
     },
     filterQueryRecommendation() {
       const urlParams = new URLSearchParams(window.location.search);
-      const id = Number(urlParams.get('filter_user_recommendation'));
+      const id = Number(urlParams.get("filter_user_recommendation"));
       if (id) {
         this.currentUserRecommendationId = id;
         this.filter();
       }
     },
     dismiss() {
-      this.action = 'dismiss';
+      this.action = "dismiss";
       this.update();
     },
     dismissAll() {
-      const promises = this.userRecommendations.map(userRecommendation => {
-        return this.callApi(userRecommendation.id, { action: 'dismiss' });
-      });
+      const promises = this.userRecommendations.map((userRecommendation) => this.callApi(userRecommendation.id, { action: "dismiss" }));
       Promise.all(promises).then(() => {
         this.userRecommendations = [];
       });
     },
     createRule() {
       const payload = {
-        name: this.userRecommendation.recommendation.name.replace(/[^a-zA-Z0-9 ]/g, ''),
+        name: this.userRecommendation.recommendation.name.replace(/[^a-zA-Z0-9 ]/g, ""),
         advanced_filter: {
           filters: this.userRecommendation.recommendation.advanced_filter,
-          order: {by: "id", direction: "desc"}
+          order: { by: "id", direction: "desc" },
         },
         data: {},
       };
 
-      return ProcessMaker.apiClient.post('tasks/rules', payload)
+      return ProcessMaker.apiClient.post("tasks/rules", payload)
         .then((response) => {
           this.dismiss().then(() => {
-            const id = response.data.id;
-            window.location.href = `/tasks/rules/${id}`
+            const { id } = response.data;
+            window.location.href = `/tasks/rules/${id}`;
           });
         });
     },
     reassignToUser() {
-      this.action = 'reassign_to_user';
+      this.action = "reassign_to_user";
       this.confirmText = this.$t(
-        'Reassign <strong>({{count}}) tasks</strong> to:',
-        { count: this.userRecommendation.count}
+        "Reassign <strong>({{count}}) tasks</strong> to:",
+        { count: this.userRecommendation.count },
       );
       this.toUserId = null;
-      this.$bvModal.show('confirm');
+      this.$bvModal.show("confirm");
     },
     markAsPriority() {
-      this.action = 'mark_as_priority';
+      this.action = "mark_as_priority";
       this.confirmText = this.$t(
-        'Are you sure you want to mark <strong>({{count}}) tasks</strong> as priority?',
-        { count: this.userRecommendation.count }
+        "Are you sure you want to mark <strong>({{count}}) tasks</strong> as priority?",
+        { count: this.userRecommendation.count },
       );
-      this.$bvModal.show('confirm');
+      this.$bvModal.show("confirm");
     },
     onConfirm() {
-      if (this.loadingMode === 'loading') {
+      if (this.loadingMode === "loading") {
         return;
       }
 
-      let params = {};
-      if (this.action === 'reassign_to_user') {
+      const params = {};
+      if (this.action === "reassign_to_user") {
         this.update({ to_user_id: this.toUserId });
         return;
       }
@@ -249,40 +331,38 @@ export default {
       }
 
       this.message = null;
-      this.loadingMode = 'loading';
+      this.loadingMode = "loading";
       this.timeout = setTimeout(() => {
-        this.loadingMode = 'timeout';
+        this.loadingMode = "timeout";
         this.removeSelectedRecommendation();
       }, 10 * 1000);
 
       return this.callApi(
-        this.userRecommendation.id, 
+        this.userRecommendation.id,
         {
           action: this.action,
-          ...params
-        }
+          ...params,
+        },
       ).then(() => {
       });
     },
     removeSelectedRecommendation() {
-      this.userRecommendations = this.userRecommendations.filter(r => r.id !== this.userRecommendation.id);
+      this.userRecommendations = this.userRecommendations.filter((r) => r.id !== this.userRecommendation.id);
     },
     callApi(id, params) {
-      return ProcessMaker.apiClient.put(
-        "recommendations/" + id, params
-      );
+      return ProcessMaker.apiClient.put(`recommendations/${id}`, params);
     },
     filter() {
       const filter = this.userRecommendation.recommendation.advanced_filter;
       filter.push({ subject: { type: "Status" }, operator: "=", value: "In Progress" });
       if (this.dashboard) {
-        window.location.href = `/tasks?filter_user_recommendation=${this.userRecommendation.id}`
+        window.location.href = `/tasks?filter_user_recommendation=${this.userRecommendation.id}`;
       } else {
-        this.$root.$emit('load-with-filter', filter);
+        this.$root.$emit("load-with-filter", filter);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss">
@@ -306,7 +386,7 @@ export default {
 .recommendation-title {
   flex-grow: 1;
   min-width: 0;
-  
+
   a {
     display: block;
     text-overflow: ellipsis;

@@ -1,7 +1,8 @@
 <template>
   <div class="tw-flex tw-flex-col tw-gap-4">
     <CustomHomeFilter
-      @enter="onChangeInputFilter" />
+      @enter="onChangeInputFilter"
+    />
     <FilterableTable
       ref="table"
       :columns="columnsConfig"
@@ -10,11 +11,13 @@
       :placeholder="showPlaceholder"
       @changeFilter="onChangeFilter"
       @stopResize="onStopResize"
-      @resetFilters="onChangeFilter">
+      @resetFilters="onChangeFilter"
+    >
       <template #placeholder>
         <TablePlaceholder
           :placeholder="placeholderType"
-          class="tw-grow" />
+          class="tw-grow"
+        />
       </template>
     </FilterableTable>
     <Pagination
@@ -28,7 +31,8 @@
       :pages="dataPagination.pages"
       :per-page="dataPagination.perPage"
       @perPage="onPerPage"
-      @go="onGo" />
+      @go="onGo"
+    />
   </div>
 </template>
 
@@ -140,9 +144,7 @@ const onChangeInputFilter = async (value) => {
 const onStopResize = async () => {
 };
 
-const getColumns = () => {
-  return unbuildColumns(columnsConfig.value);
-};
+const getColumns = () => unbuildColumns(columnsConfig.value);
 
 onMounted(async () => {
   // Default columns from BE
@@ -151,6 +153,6 @@ onMounted(async () => {
 });
 
 defineExpose({
-  getColumns
-})
+  getColumns,
+});
 </script>

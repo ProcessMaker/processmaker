@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     openAnalytics() {
-      window.open('../analytics/process-intelligence', '_blank').focus();
+      window.open("../analytics/process-intelligence", "_blank").focus();
     },
   },
 };
@@ -78,11 +78,11 @@ export default {
 
 .image-container img {
   position: absolute;
-  width: 90%; 
+  width: 90%;
   height: 90%;
   top: 5%;
-  left: 5%; 
-  object-fit: cover; 
+  left: 5%;
+  object-fit: cover;
 }
 
 @media (width < 1360px) and (width > 768px) {

@@ -1,8 +1,10 @@
 <template>
-    <div :style="{ top: (position.y) + 'px', right: '45px' }" class="task-tooltip">
-        <slot name="task-tooltip-body">
-        </slot>
-    </div>
+  <div
+    :style="{ top: (position.y) + 'px', right: '45px' }"
+    class="task-tooltip"
+  >
+    <slot name="task-tooltip-body" />
+  </div>
 </template>
 
 <script>

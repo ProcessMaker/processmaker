@@ -8,8 +8,8 @@
         <buttons-start
           :process="process"
           :title="$t('Start')"
-          :startEvent="singleStartEvent"
-          :processEvents="processEvents"
+          :start-event="singleStartEvent"
+          :process-events="processEvents"
         />
       </div>
     </div>
@@ -29,13 +29,13 @@
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
           <template v-if="infoCollapsed">
-            <i class="fas fa-caret-down pl-2 mr-2 custom-color"></i>
+            <i class="fas fa-caret-down pl-2 mr-2 custom-color" />
             <span class="custom-text">
               {{ $t("Process Info") }}
             </span>
           </template>
           <template v-else>
-            <i class="fas fa-caret-right pl-2 mr-2 custom-color"></i>
+            <i class="fas fa-caret-right pl-2 mr-2 custom-color" />
             <span class="custom-text">
               {{ $t("Process Info") }}
             </span>
@@ -44,14 +44,14 @@
 
         <div class="d-flex align-items-center custom-align-wizard">
           <div
-            class="icon-wizard-class"
             v-if="iconWizardTemplate && infoCollapsed"
+            class="icon-wizard-class"
             @click="getHelperProcess"
           >
             <img
               src="../../../img/wizard-icon.svg"
               :alt="$t('Guided Template Icon')"
-            />
+            >
             <span class="custom-text">
               {{ $t('Re-run Wizard') }}
             </span>
@@ -63,7 +63,7 @@
           class="d-flex align-items-center"
         >
           <div class="card-bookmark mx-2">
-            <bookmark :process="process"></bookmark>
+            <bookmark :process="process" />
           </div>
           <span class="ellipsis-border">
             <ellipsis-menu
@@ -73,15 +73,15 @@
               :divider="false"
               :lauchpad="true"
               variant="none"
-              @navigate="ellipsisNavigate"
-              :isDocumenterInstalled="$root.isDocumenterInstalled"
+              :is-documenter-installed="$root.isDocumenterInstalled"
               :permission="$root.permission"
+              @navigate="ellipsisNavigate"
             />
           </span>
           <buttons-start
             :process="process"
-            :startEvent="singleStartEvent"
-            :processEvents="processEvents"
+            :start-event="singleStartEvent"
+            :process-events="processEvents"
           />
         </div>
         <div
@@ -152,9 +152,6 @@ export default {
       singleStartEvent: null,
     };
   },
-  mounted() {
-    this.getStartEvents();
-  },
   computed: {
     createdFromWizardTemplate() {
       return !!this.process?.properties?.wizardTemplateUuid;
@@ -162,6 +159,9 @@ export default {
     wizardTemplateUuid() {
       return this.process?.properties?.wizardTemplateUuid;
     },
+  },
+  mounted() {
+    this.getStartEvents();
   },
   methods: {
     ellipsisNavigate(action, data) {
@@ -181,7 +181,7 @@ export default {
         .then((response) => {
           this.processEvents = response.data.data;
           const nonWebEntryStartEvents = this.processEvents.filter(
-            (e) => !("webEntry" in e) || !e.webEntry
+            (e) => !("webEntry" in e) || !e.webEntry,
           );
           if (nonWebEntryStartEvents.length === 1) {
             this.singleStartEvent = nonWebEntryStartEvents[0].id;

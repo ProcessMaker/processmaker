@@ -51,16 +51,16 @@ import FilterableTable from "../../../jscomposition/system/table/FilterableTable
 import EmptyPlaceholder from "../../../jscomposition/system/placeholders/EmptyPlaceholder.vue";
 import LoadingPlaceholder from "../../../jscomposition/system/placeholders/LoadingPlaceholder.vue";
 import Pagination from "../../../jscomposition/system/table/Pagination.vue";
-import TasksList from '../../tasks/components/TasksList';
-import apiDataLoading from '../common/mixins/apiDataLoading';
-import datatableMixin from '../common/mixins/datatable';
-import DataLoading from '../../components/common/DataLoading';
-import AvatarImage from '../../components/AvatarImage';
+import TasksList from "../../tasks/components/TasksList";
+import apiDataLoading from "../common/mixins/apiDataLoading";
+import datatableMixin from "../common/mixins/datatable";
+import DataLoading from "../../components/common/DataLoading";
+import AvatarImage from "../../components/AvatarImage";
 import FilterTableBodyMixin from "./FilterTableBodyMixin";
 import PaginationTable from "./PaginationTable.vue";
 import { ellipsisSortClick } from "./UtilsTable";
 import TaskTooltip from "../../tasks/components/TaskTooltip.vue";
-import Recommendations from "../../components/Recommendations.vue"
+import Recommendations from "../Recommendations.vue";
 import ProgressLoader from "../common/ProgressLoader.vue";
 import AddToBundle from "./AddToBundle.vue";
 

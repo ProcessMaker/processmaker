@@ -15,7 +15,7 @@
             <slot
               name="header"
               :close="onClose"
-              :templateId="template.id"
+              :template-id="template.id"
             >
               <div class="ml-auto mr-0 text-right">
                 <b-button

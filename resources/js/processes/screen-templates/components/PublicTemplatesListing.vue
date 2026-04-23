@@ -118,8 +118,8 @@
           >
             <slot
               name="tooltip"
-              :tooltipRowData="tooltipRowData"
-              :previewTemplate="previewTemplate"
+              :tooltip-row-data="tooltipRowData"
+              :preview-template="previewTemplate"
             >
               <span>
                 <b-button
@@ -292,11 +292,11 @@ export default {
       data.meta.to = data.meta.from + data.meta.count;
       data.data = this.jsonRows(data.data);
 
-      for (let record of data.data) {
-        //format Status
-        const usePmDefaultLabel = !record['user'];
-        record["owner"] = this.formatAvatar(record["user"], usePmDefaultLabel);
-        record["category_list"] = this.formatCategory(record["categories"]);
+      for (const record of data.data) {
+        // format Status
+        const usePmDefaultLabel = !record.user;
+        record.owner = this.formatAvatar(record.user, usePmDefaultLabel);
+        record.category_list = this.formatCategory(record.categories);
       }
       return data;
     },

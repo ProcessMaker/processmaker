@@ -45,14 +45,16 @@
         </template>
       </b-col>
 
-      <div v-if="!sectionRight"
-        class="text-right">
-          <language-selector-button
-            id="language-screen-builder"
-            class="ml-2"
-            :type="'screen-builder'"
-            :show-language-code="true">
-          </language-selector-button>
+      <div
+        v-if="!sectionRight"
+        class="text-right"
+      >
+        <language-selector-button
+          id="language-screen-builder"
+          class="ml-2"
+          :type="'screen-builder'"
+          :show-language-code="true"
+        />
       </div>
       <b-col
         v-if="sectionRight"

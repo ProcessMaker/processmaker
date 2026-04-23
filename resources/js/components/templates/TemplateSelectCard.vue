@@ -1,5 +1,5 @@
 <template>
-  <div :class="type !== 'wizard' ? 'template-select-card-container pb-2' : 'wizard-select-card-container pb-4'" >
+  <div :class="type !== 'wizard' ? 'template-select-card-container pb-2' : 'wizard-select-card-container pb-4'">
     <div v-if="!showTemplatePreview">
       <wizard-template-card
         v-if="type === 'wizard'"
@@ -23,7 +23,7 @@
         @show-details="showDetails()"
       />
     </div>
-    <preview-template v-if="showTemplatePreview"></preview-template>
+    <preview-template v-if="showTemplatePreview" />
   </div>
 </template>
 
@@ -34,7 +34,9 @@ import DefaultTemplateCard from "./DefaultTemplateCard.vue";
 import PreviewTemplate from "./PreviewTemplate.vue";
 
 export default {
-  components: { WizardTemplateCard, DefaultTemplateCard, ScreenTemplateCard, PreviewTemplate },
+  components: {
+    WizardTemplateCard, DefaultTemplateCard, ScreenTemplateCard, PreviewTemplate,
+  },
   props: ["template", "type", "isActive", "defaultTemplateId", "defaultTemplateScreenType", "isDefaultTemplatePublic"],
   data() {
     return {
@@ -48,7 +50,7 @@ export default {
       this.$emit("show-details", { template: this.template, type: this.type });
     },
     showPreview(template) {
-      this.$emit("show-template-preview", { template: template, type: this.type});
+      this.$emit("show-template-preview", { template, type: this.type });
     },
     handleSelectedTemplate(templateId) {
       this.$emit("selected-template", templateId);

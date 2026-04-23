@@ -27,7 +27,7 @@
         slot="header"
         class="count-chart-icon fas fa-fw fa-4x"
         :class="iconClass"
-      ></i>
+      />
       <div
         class="count-chart-text"
         :class="`text-${textVariant}`"
@@ -46,7 +46,7 @@
 <script>
 export default {
   props: ["data", "options", "preview"],
-  data: function () {
+  data() {
     return {
       rendered: false,
       animated: false,
@@ -55,7 +55,7 @@ export default {
     };
   },
   computed: {
-    previewData: function () {
+    previewData() {
       return {
         datasets: [
           {
@@ -66,26 +66,31 @@ export default {
         ],
       };
     },
-    previewOptions: function () {
+    previewOptions() {
       return {};
     },
-    iconClass: function () {
-      let icon = this.chartData.datasets[0].icon;
+    iconClass() {
+      const { icon } = this.chartData.datasets[0];
       return `fa-${icon}`;
     },
-    backgroundColor: function () {
+    backgroundColor() {
       if (this.chartData.datasets[0].backgroundColor[0] === "#fff") {
         return "#eaeaea";
       }
 
       return this.chartData.datasets[0].backgroundColor[0];
     },
-    textVariant: function () {
+    textVariant() {
       if (this.chartData.datasets[0].backgroundColor[0] === "#fff") {
         return "muted";
       }
 
       return "white";
+    },
+  },
+  watch: {
+    data() {
+      this.render();
     },
   },
   mounted() {
@@ -114,11 +119,6 @@ export default {
           this.animated = true;
         }, 1);
       });
-    },
-  },
-  watch: {
-    data: function () {
-      this.render();
     },
   },
 };

@@ -7,11 +7,13 @@
       [`tw-bg-${color}-100`]:!active,
       [`tw-outline tw-bg-${color}-100 tw-border-${color}-500 tw-outline-${color}-300 tw-bg-${color}-100`]:active
     }]"
-    @click="handleClick">
+    @click="handleClick"
+  >
     <div>
       <slot name="icon">
         <i
-          :class="[`tw-text-lg`, icon]" />
+          :class="[`tw-text-lg`, icon]"
+        />
       </slot>
       <slot name="header">
         <div class="tw-text-base">

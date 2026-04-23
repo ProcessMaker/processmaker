@@ -1,41 +1,41 @@
 <template>
   <div class="process-listing h-100">
     <CardProcess
-      :key="index"
       v-if="!isTemplateCategory"
-      :categoryId="categoryId"
+      :key="index"
+      :category-id="categoryId"
     />
 
     <wizard-templates
-        v-if="isTemplateCategory"
-        :categoryId="categoryId"
+      v-if="isTemplateCategory"
+      :category-id="categoryId"
     />
-
   </div>
 </template>
 
 <script>
 import CardProcess from "./CardProcess.vue";
 import WizardTemplates from "./WizardTemplates.vue";
+
 export default {
-  props: ["categoryId"],
   components: {
     WizardTemplates,
     CardProcess,
   },
-  data(){
-    return {index:0};
-  },
-  watch: {
-    categoryId(nVal,oVal){
-      if(nVal !== oVal){
-        this.index++;
-      }
-    }
+  props: ["categoryId"],
+  data() {
+    return { index: 0 };
   },
   computed: {
     isTemplateCategory() {
-      return ['guided_templates'].includes(this.categoryId)
+      return ["guided_templates"].includes(this.categoryId);
+    },
+  },
+  watch: {
+    categoryId(nVal, oVal) {
+      if (nVal !== oVal) {
+        this.index++;
+      }
     },
   },
 };

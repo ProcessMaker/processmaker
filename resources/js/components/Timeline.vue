@@ -1,11 +1,14 @@
 <template>
   <div class="px-4 mb-2 timeline">
-    <template v-if="timeline" v-for="(item,index) in comments">
+    <template
+      v-for="(item,index) in comments"
+      v-if="timeline"
+    >
       <component
-        v-bind:is="component(item)"
-        v-bind:key="`timeline-item-${index}`"
-        v-bind:value="item"
-        v-bind:icon="icon(item)"
+        :is="component(item)"
+        :key="`timeline-item-${index}`"
+        :value="item"
+        :icon="icon(item)"
         :allow-reactions="reactions"
         :allow-edit="edit"
         :allow-remove="remove"
@@ -14,12 +17,15 @@
         @refresh="load"
       />
     </template>
-    <template v-if="!timeline" v-for="(item,index) in comments">
+    <template
+      v-for="(item,index) in comments"
+      v-if="!timeline"
+    >
       <component
-        v-bind:is="component(item)"
-        v-bind:key="`timeline-item-${index}`"
-        v-bind:value="item"
-        v-bind:icon="icon(item)"
+        :is="component(item)"
+        :key="`timeline-item-${index}`"
+        :value="item"
+        :icon="icon(item)"
         :allow-reactions="reactions"
         :allow-edit="edit"
         :allow-remove="remove"
@@ -27,38 +33,38 @@
         :read-only="readonly"
         @refresh="load"
       />
-    </template>    
+    </template>
     <template v-if="isDefined('comment-editor') && adding">
-    <comment-editor
-      v-model="newComment"
-      class="mt-2"
-      v-bind:commentable_id="commentable_id"
-      v-bind:commentable_type="commentable_type"
-      @refresh="load"
-    />
+      <comment-editor
+        v-model="newComment"
+        class="mt-2"
+        :commentable_id="commentable_id"
+        :commentable_type="commentable_type"
+        @refresh="load"
+      />
     </template>
   </div>
 </template>
 
 <script>
 const SubjectIcons = {
-  'Task Complete': 'far fa-square',
-  'Gateway': 'far fa-square fa-rotate-45',
-  'Rollback': 'fa fa-undo',
+  "Task Complete": "far fa-square",
+  Gateway: "far fa-square fa-rotate-45",
+  Rollback: "fa fa-undo",
 };
 export default {
-  props: ["commentable_id", 
-            "commentable_type", 
-            "type", 
-            "hidden", 
-            "reactions", 
-            "voting", 
-            "edit", 
-            "remove",
-            "adding",
-            "readonly",
-            "timeline",
-        ],
+  props: ["commentable_id",
+    "commentable_type",
+    "type",
+    "hidden",
+    "reactions",
+    "voting",
+    "edit",
+    "remove",
+    "adding",
+    "readonly",
+    "timeline",
+  ],
   data() {
     return {
       newComment: "",
@@ -68,13 +74,13 @@ export default {
         commentable_id: "",
         commentable_type: "",
         hidden: false,
-        type: "MESSAGE"
+        type: "MESSAGE",
       },
       comments: [],
       systemCommentUser: {
         id: null,
-        initials: "S"
-      }
+        initials: "S",
+      },
     };
   },
   computed: {
@@ -83,16 +89,19 @@ export default {
     },
   },
   watch: {},
+  mounted() {
+    this.load();
+  },
   methods: {
     isDefined(component) {
       return component in Vue.options.components;
     },
     component(item) {
       const component = `timeline-${item.type.toLowerCase()}`;
-      return component in Vue.options.components ? component : 'timeline-item';
+      return component in Vue.options.components ? component : "timeline-item";
     },
     icon(item) {
-      return SubjectIcons[item.subject] || '';
+      return SubjectIcons[item.subject] || "";
     },
     emptyForm() {
       this.form.subject = "";
@@ -105,30 +114,27 @@ export default {
           params: {
             commentable_id: this.commentable_id,
             commentable_type: this.commentable_type,
-            includes: 'children',
-            order_by: 'id',
-            type: 'LOG',
-          }
+            includes: "children",
+            order_by: "id",
+            type: "LOG",
+          },
         })
-        .then(response => {
+        .then((response) => {
           this.comments = response.data.data;
         });
     },
     save() {
-      let that = this;
+      const that = this;
       that.form.commentable_id = that.commentable_id;
       that.form.commentable_type = that.commentable_type;
       that.form.type = that.type ? that.type : "MESSAGE";
       that.form.hidden = that.hidden ? that.hidden : false;
-      ProcessMaker.apiClient.post("comments", that.form).then(response => {
+      ProcessMaker.apiClient.post("comments", that.form).then((response) => {
         that.load();
         that.emptyForm();
       });
-    }
+    },
   },
-  mounted() {
-    this.load();
-  }
 };
 </script>
 

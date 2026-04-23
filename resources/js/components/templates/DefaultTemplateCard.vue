@@ -1,51 +1,60 @@
 <template>
-    <div>
-        <b-card 
-            no-body 
-            class="template-select-card" 
-            @click="showDetails()" 
-            @mouseenter="addHoverClass" 
-            @mouseleave="removeHoverClass"
+  <div>
+    <b-card
+      no-body
+      class="template-select-card"
+      @click="showDetails()"
+      @mouseenter="addHoverClass"
+      @mouseleave="removeHoverClass"
+    >
+      <b-card-body
+        :title="template.name | str_limit(30)"
+        class="card-body"
+      >
+        <b-card-text class="mb-2">
+          {{ template.description | str_limit(150) }}
+        </b-card-text>
+        <b-badge
+          v-for="category in categories"
+          :key="category.id"
+          pill
+          class="category-badge mb-3 mr-1"
         >
-            <b-card-body :title="template.name | str_limit(30)" class="card-body">
-                <b-card-text class="mb-2">
-                    {{ template.description | str_limit(150) }}
-                </b-card-text>
-                <b-badge v-for="category in categories" :key="category.id" pill class="category-badge mb-3 mr-1">
-                    {{ category.name }}
-                </b-badge>
-                <small v-if="template.categories.length > 3" class="text-muted">+{{ catCount }}</small>
-            </b-card-body>
-        </b-card>
-    </div>
+          {{ category.name }}
+        </b-badge>
+        <small
+          v-if="template.categories.length > 3"
+          class="text-muted"
+        >+{{ catCount }}</small>
+      </b-card-body>
+    </b-card>
+  </div>
 </template>
 
 <script>
-import templateMixin from './mixins/template.js';
+import templateMixin from "./mixins/template";
 
 export default {
-    mixins: [templateMixin],
-    props: ['template'],
-    data() {
-        return {
-            thumbnail: null,
-            catLimit: 3,
-        };
+  mixins: [templateMixin],
+  props: ["template"],
+  data() {
+    return {
+      thumbnail: null,
+      catLimit: 3,
+    };
+  },
+  computed: {
+    categories() {
+      return this.catLimit ? this.template.categories.slice(0, this.catLimit) : this.template.categories;
     },
-    computed: {
-        categories() {
-            return this.catLimit ? this.template.categories.slice(0, this.catLimit) : this.template.categories;
-        },
-        catCount() {
-            const { length } = this.template.categories;
-            return length - this.catLimit;
-        },
+    catCount() {
+      const { length } = this.template.categories;
+      return length - this.catLimit;
     },
-    methods: {
-    }
-}
-</script>
-
+  },
+  methods: {
+  },
+};
 </script>
 
 <style lang="scss" scoped>

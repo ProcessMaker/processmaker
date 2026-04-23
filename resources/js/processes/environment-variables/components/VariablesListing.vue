@@ -1,54 +1,64 @@
 <template>
   <div class="data-table">
     <data-loading
-            :for="/environment_variables\?page/"
-            v-show="shouldShowLoader"
-            :empty="$t('No Data Available')"
-            :empty-desc="$t('')"
-            empty-icon="noData"
+      v-show="shouldShowLoader"
+      :for="/environment_variables\?page/"
+      :empty="$t('No Data Available')"
+      :empty-desc="$t('')"
+      empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader"  class="card card-body env-table-card" data-cy="env-table">
+    <div
+      v-show="!shouldShowLoader"
+      class="card card-body env-table-card"
+      data-cy="env-table"
+    >
       <vuetable
-        :dataManager="dataManager"
-        :sortOrder="sortOrder"
+        :data-manager="dataManager"
+        :sort-order="sortOrder"
         :css="css"
         :api-mode="false"
-        @vuetable:pagination-data="onPaginationData"
         :fields="fields"
         :data="data"
         data-path="data"
-        :noDataTemplate="$t('No Data Available')"
+        :no-data-template="$t('No Data Available')"
         pagination-path="meta"
+        @vuetable:pagination-data="onPaginationData"
       >
-        <template slot="name" slot-scope="props">
-          <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}</span>
+        <template
+          slot="name"
+          slot-scope="props"
+        >
+          <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.name }}</span>
         </template>
-        <template slot="actions" slot-scope="props">
+        <template
+          slot="actions"
+          slot-scope="props"
+        >
           <ellipsis-menu
-              @navigate="onAction"
-              :actions="actions"
-              :permission="permission"
-              :data="props.rowData"
-              :divider="false"
-            />
+            :actions="actions"
+            :permission="permission"
+            :data="props.rowData"
+            :divider="false"
+            @navigate="onAction"
+          />
         </template>
       </vuetable>
       <pagination
+        ref="pagination"
         :single="$t('Variable')"
         :plural="$t('Variables')"
-        :perPageSelectEnabled="true"
+        :per-page-select-enabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
-        ref="pagination"
-      ></pagination>
+      />
     </div>
   </div>
 </template>
 
 <script>
+import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
-import { createUniqIdsMixin } from "vue-uniq-ids";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
@@ -65,36 +75,36 @@ export default {
         {
           field: "name",
           sortField: "name",
-          direction: "asc"
-        }
+          direction: "asc",
+        },
       ],
       fields: [
         {
           title: () => this.$t("Name"),
           name: "__slot:name",
-          sortField: "name"
+          sortField: "name",
         },
         {
           title: () => this.$t("Description"),
           name: "description",
-          sortField: "description"
+          sortField: "description",
         },
         {
           title: () => this.$t("Modified"),
           name: "updated_at",
           sortField: "updated_at",
-          callback: "formatDate"
+          callback: "formatDate",
         },
         {
           title: () => this.$t("Created"),
           name: "created_at",
           sortField: "created_at",
-          callback: "formatDate"
+          callback: "formatDate",
         },
         {
           name: "__slot:actions",
-          title: ""
-        }
+          title: "",
+        },
       ],
       actions: [
         {
@@ -120,11 +130,11 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
-            this.$t("Are you sure you want to delete the environment variable {{ name }}?", {name: data.name}),
+            this.$t("Are you sure you want to delete the environment variable {{ name }}?", { name: data.name }),
             "",
             () => {
               this.$emit("delete", data);
-            }
+            },
           );
           break;
       }
@@ -134,23 +144,23 @@ export default {
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "environment_variables?page=" +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&filter=" +
-            this.filter +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=" +
-            this.orderDirection
+          `environment_variables?page=${
+            this.page
+          }&per_page=${
+            this.perPage
+          }&filter=${
+            this.filter
+          }&order_by=${
+            this.orderBy
+          }&order_direction=${
+            this.orderDirection}`,
         )
-        .then(response => {
+        .then((response) => {
           this.data = this.transform(response.data);
           this.loading = false;
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

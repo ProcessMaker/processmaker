@@ -168,11 +168,8 @@ export const taskColumn = ({
     component: TruncatedOptionsCell,
     params: {
       href: (option) => `/tasks/${option.id}/edit`,
-      formatterOptions: (option, row, column, columns) =>
-        option.element_name,
-      filterData: (row, column, columns) => {
-        return row.active_tasks;
-      },
+      formatterOptions: (option, row, column, columns) => option.element_name,
+      filterData: (row, column, columns) => row.active_tasks,
     },
   }),
 });
@@ -236,8 +233,7 @@ export const dateColumn = ({
   header,
   resizable,
   width,
-  formatter: (row, column, columns) =>
-    formatDate(row[field], "datetime"),
+  formatter: (row, column, columns) => formatDate(row[field], "datetime"),
   filter: {
     dataType: "datetime",
     operators: ["between", ">", ">=", "<", "<="],
@@ -348,30 +344,28 @@ export const buildColumns = (defaultColumns) => {
   return columns;
 };
 
-export const unbuildColumns = (columns) => {
-  return columns.map((col) => {
-    const original = {
-      label: col.header,
-      field: col.field,
-      width: col.width,
-    };
+export const unbuildColumns = (columns) => columns.map((col) => {
+  const original = {
+    label: col.header,
+    field: col.field,
+    width: col.width,
+  };
 
-    if (col.sortable) {
-      original.sortable = true;
-    }
+  if (col.sortable) {
+    original.sortable = true;
+  }
 
-    if (col.filter?.dataType === "datetime") {
-      original.format = "datetime";
-    }
+  if (col.filter?.dataType === "datetime") {
+    original.format = "datetime";
+  }
 
-    if (col.filter?.subject) {
-      original.filter_subject = col.filter.subject;
-    }
+  if (col.filter?.subject) {
+    original.filter_subject = col.filter.subject;
+  }
 
-    if (col.cellRenderer?.component?.name === "TruncatedOptionsCell") {
-      original.truncate = true;
-    }
+  if (col.cellRenderer?.component?.name === "TruncatedOptionsCell") {
+    original.truncate = true;
+  }
 
-    return original;
-  });
-};
+  return original;
+});

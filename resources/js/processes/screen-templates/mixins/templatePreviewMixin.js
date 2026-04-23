@@ -48,7 +48,7 @@ const templatePreviewMixin = {
       const rectTableContainer = tableContainer.getBoundingClientRect();
       const topAdjust = rectTableContainer.top;
 
-      let elementHeight = 36;
+      const elementHeight = 36;
 
       this.isTooltipVisible = true;
 
@@ -86,7 +86,7 @@ const templatePreviewMixin = {
       this.selectedTemplate = null;
     },
     onClose() {
-      this.$emit('mark-selected-row', 0);
+      this.$emit("mark-selected-row", 0);
       this.showPreview = false;
       this.resetToDefault();
     },

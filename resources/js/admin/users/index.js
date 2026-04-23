@@ -96,7 +96,7 @@ new Vue({
     downloadAllLogs() {
       ProcessMaker.apiClient
         .get("security-logs/download/all?format=csv")
-        .then(response => {
+        .then((response) => {
           window.ProcessMaker.alert(response.data.message, "success");
         });
     },

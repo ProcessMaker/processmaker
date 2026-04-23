@@ -1,8 +1,18 @@
 <template>
   <div>
     <!-- Modal -->
-    <div class="modal fade" id="detailsTaskModal" tabindex="-1" role="dialog" aria-labelledby="detailsTaskModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
+    <div
+      id="detailsTaskModal"
+      class="modal fade"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="detailsTaskModalLabel"
+      aria-hidden="true"
+    >
+      <div
+        class="modal-dialog"
+        role="document"
+      >
         <div class="modal-content">
           <div
             class="d-flex modal-header align-items-center py-2"
@@ -18,7 +28,10 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body" style="padding: 0 !important;">
+          <div
+            class="modal-body"
+            style="padding: 0 !important;"
+          >
             <table
               class="table b-table m-0"
               aria-label="fileDetails"
@@ -44,36 +57,65 @@
               </thead>
               <tbody>
                 <tr>
-                  <td aria-colindex="1" role="cell" class="pl-3">
+                  <td
+                    aria-colindex="1"
+                    role="cell"
+                    class="pl-3"
+                  >
                     <span class="font-weight-normal"> {{ $t("Name of the Task") }}: </span>
                   </td>
-                  <td aria-colindex="2" role="cell">
+                  <td
+                    aria-colindex="2"
+                    role="cell"
+                  >
                     <span class="font-weight-light"> {{ task.element_name }}</span>
                   </td>
                 </tr>
                 <tr>
-                  <td aria-colindex="1" role="cell" class="pl-3">
+                  <td
+                    aria-colindex="1"
+                    role="cell"
+                    class="pl-3"
+                  >
                     <span class="font-weight-normal"> {{ $t("Assigned") }}: </span>
                   </td>
-                  <td aria-colindex="2" role="cell" class="font-weight-light">
+                  <td
+                    aria-colindex="2"
+                    role="cell"
+                    class="font-weight-light"
+                  >
                     {{ moment(createdAt).format() }}
                     <br>
                     <small class="font-weight-light"> {{ $t('Assigned') }} {{ moment(createdAt).fromNow() }}</small>
                   </td>
                 </tr>
                 <tr>
-                  <td aria-colindex="1" role="cell" class="pl-3">
+                  <td
+                    aria-colindex="1"
+                    role="cell"
+                    class="pl-3"
+                  >
                     <span class="font-weight-normal"> {{ $t("Request") }}: </span>
                   </td>
-                  <td aria-colindex="2" role="cell">
+                  <td
+                    aria-colindex="2"
+                    role="cell"
+                  >
                     <span class="font-weight-light"> #{{ task.process_request_id }} {{ task.process_request.name }} </span>
                   </td>
                 </tr>
                 <tr>
-                  <td aria-colindex="1" role="cell" class="pl-3">
+                  <td
+                    aria-colindex="1"
+                    role="cell"
+                    class="pl-3"
+                  >
                     <span class="font-weight-normal"> {{ $t("Requested By") }}: </span>
                   </td>
-                  <td aria-colindex="2" role="cell">
+                  <td
+                    aria-colindex="2"
+                    role="cell"
+                  >
                     <avatar-image
                       v-if="task.requestor"
                       size="25"
@@ -87,10 +129,17 @@
                   </td>
                 </tr>
                 <tr v-if="task.is_self_service === 0">
-                  <td aria-colindex="1" role="cell" class="pl-3">
+                  <td
+                    aria-colindex="1"
+                    role="cell"
+                    class="pl-3"
+                  >
                     <span class="font-weight-normal"> {{ $t("Assigned To") }}: </span>
                   </td>
-                  <td aria-colindex="2" role="cell">
+                  <td
+                    aria-colindex="2"
+                    role="cell"
+                  >
                     <avatar-image
                       v-if="task.user"
                       size="25"
@@ -108,11 +157,17 @@
                 class="btn btn-outline-secondary btn-block"
                 @click="eraseDraft()"
               >
-                <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+                <img
+                  src="/img/smartinbox-images/eraser.svg"
+                  :alt="$t('No Image')"
+                >
                 {{ $t('Clear Draft') }}
               </button>
             </div>
-            <div v-if="task.definition.allowReassignment || userisadmin || userisprocessmanager" class="p-3">
+            <div
+              v-if="task.definition.allowReassignment || userisadmin || userisprocessmanager"
+              class="p-3"
+            >
               <button
                 v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
                 type="button"
@@ -177,15 +232,15 @@ export default {
     eraseDraft() {
       this.formDataWatcherActive = false;
       ProcessMaker.apiClient
-        .delete("drafts/" + this.task.id)
-        .then(response => {
+        .delete(`drafts/${this.task.id}`)
+        .then((response) => {
           this.resetRequestFiles(response);
           this.$emit("reload-task", true);
           this.closeModal();
         });
     },
     closeModal() {
-      $('#detailsTaskModal').modal('hide');
+      $("#detailsTaskModal").modal("hide");
     },
   },
 };

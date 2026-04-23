@@ -14,14 +14,17 @@
             selected:
               selectedItem.id === process.id && selectedItem.type === 'process',
           }"
-          @click="openProcessDashboard(process.id, 'process')">
+          @click="openProcessDashboard(process.id, 'process')"
+        >
           <img
             class="icon-process small-icon"
             :src="getIconProcess(process)"
-            :alt="$t(labelIcon)">
+            :alt="$t(labelIcon)"
+          >
           <span
             :id="`title-${process.id}`"
-            class="title-process">
+            class="title-process"
+          >
             {{ process.name }}
           </span>
         </button>
@@ -42,14 +45,17 @@
               selectedItem.id === dashboard.id &&
               selectedItem.type === 'dashboard',
           }"
-          @click="openProcessDashboard(dashboard.id, 'dashboard')">
+          @click="openProcessDashboard(dashboard.id, 'dashboard')"
+        >
           <img
             class="icon-size"
             :src="`/img/launchpad-images/icons/Launchpad.svg`"
-            :alt="$t('No Image')">
+            :alt="$t('No Image')"
+          >
           <span
             :id="`dashboard-${dashboard.id}`"
-            class="title-dashboard">
+            class="title-dashboard"
+          >
             {{ dashboard.title }}
           </span>
         </button>

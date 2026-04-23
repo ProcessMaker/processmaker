@@ -13,5 +13,5 @@ new Vue({
   mounted() {
     // used to reference the ScreenBuilder
     window.ProcessMaker.ScreenBuilder = this.$refs.screenBuilder;
-  }
+  },
 });

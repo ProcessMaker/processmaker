@@ -1,9 +1,11 @@
 <template>
   <div
-    class="tw-flex tw-w-full">
+    class="tw-flex tw-w-full"
+  >
     <component
       :is="screens[request.status]"
-      :request="request" />
+      :request="request"
+    />
   </div>
 </template>
 

@@ -7,7 +7,9 @@
         block
         @click="openAsset(urlAsset)"
       >
-        <p class="custom-text"> {{ $t(asset_name_new) }} </p>
+        <p class="custom-text">
+          {{ $t(asset_name_new) }}
+        </p>
         <i class="fas fa-arrow-right ml-2 align-middle text-primary" />
       </b-button>
     </div>
@@ -18,7 +20,9 @@
         block
         @click="callURL()"
       >
-        <p class="custom-text"> {{ $t(asset_name_all) }} </p>
+        <p class="custom-text">
+          {{ $t(asset_name_all) }}
+        </p>
         <i class="fas fa-arrow-right ml-2 align-middle text-primary" />
       </b-button>
     </div>

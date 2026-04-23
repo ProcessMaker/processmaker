@@ -1,12 +1,12 @@
 <template>
   <div id="process-screen">
     <process-header-start
-        :process="process"
-        :ellipsis-permission="ellipsisPermission"
-        @goBack="goBack()"
-        @onProcessNavigate="onProcessNavigate"
-        v-if="!mobileApp"
-      />
+      v-if="!mobileApp"
+      :process="process"
+      :ellipsis-permission="ellipsisPermission"
+      @goBack="goBack()"
+      @onProcessNavigate="onProcessNavigate"
+    />
     <display-screen
       v-if="showScreen"
       :screen="screen"
@@ -100,7 +100,7 @@ export default {
           this.showScreen = response.data.config !== null;
         })
         .catch(() => {
-          if(tceValidScreen.includes(this.screen_id)){
+          if (tceValidScreen.includes(this.screen_id)) {
             window.ProcessMaker.alert(this.$t("TCE dashboards are currently unavailable, please contact with the administrator in order to enable"), "danger");
           }
         });

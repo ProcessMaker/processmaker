@@ -1,7 +1,16 @@
 <template>
   <div>
-    <b-modal id="asset-tree" title="Asset Tree" size="lg">
-      <data-tree :data="tree()" :collapsable="true" :show-icon="true" :show-children-icon="true"/>
+    <b-modal
+      id="asset-tree"
+      title="Asset Tree"
+      size="lg"
+    >
+      <data-tree
+        :data="tree()"
+        :collapsable="true"
+        :show-icon="true"
+        :show-children-icon="true"
+      />
     </b-modal>
   </div>
 </template>
@@ -29,13 +38,13 @@ export default {
       this.treeNodesVisited.add(uuid);
       const asset = this.$root.manifest[uuid];
       return {
-        uuid: uuid,
+        uuid,
         label: asset.name,
         objectType: asset.type,
         icon: ImportExportIcons.ICONS[asset.type],
         dependentType,
         children: asset.dependents.map((dependent) => {
-          const uuid = dependent.uuid;
+          const { uuid } = dependent;
           const childDependentType = dependent.type;
           if (this.treeNodesVisited.has(uuid)) {
             // return a link instead so we don't end up in an infinite loop

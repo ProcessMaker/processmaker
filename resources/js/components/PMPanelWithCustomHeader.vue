@@ -2,37 +2,39 @@
   <div class="pm-panel-wch">
     <div class="pm-panel-wch-header d-flex flex-nowrap">
       <div class="flex-grow-0">
-        <slot name="header-left-content"></slot>
+        <slot name="header-left-content" />
       </div>
       <div class="flex-grow-1 d-flex align-items-center">
-        <slot name="title"><b class="pm-panel-wch-title"> {{ title }} </b></slot>
+        <slot name="title">
+          <b class="pm-panel-wch-title"> {{ title }} </b>
+        </slot>
       </div>
       <div class="flex-grow-0">
-        <slot name="header-right-content"></slot>
+        <slot name="header-right-content" />
       </div>
     </div>
     <div class="pm-panel-wch-content">
-      <slot></slot>
+      <slot />
     </div>
   </div>
 </template>
 
 <script>
-  export default {
-    components: {},
-    props: {
-      title: {
-        type: String,
-        default: "Header"
-      }
+export default {
+  components: {},
+  props: {
+    title: {
+      type: String,
+      default: "Header",
     },
-    data() {
-      return {};
-    },
-    mounted() {},
-    watch: {},
-    methods: {}
-  }
+  },
+  data() {
+    return {};
+  },
+  watch: {},
+  mounted() {},
+  methods: {},
+};
 </script>
 
 <style scoped>

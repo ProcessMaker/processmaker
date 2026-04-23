@@ -10,37 +10,49 @@
           >
             <div class="col-md-2">
               <div class="text-center">
-                <h3 class="text-primary">{{ overallStats.totalTenants }}</h3>
+                <h3 class="text-primary">
+                  {{ overallStats.totalTenants }}
+                </h3>
                 <small class="text-muted">Total Tenants</small>
               </div>
             </div>
             <div class="col-md-2">
               <div class="text-center">
-                <h3 class="text-info">{{ overallStats.totalJobs }}</h3>
+                <h3 class="text-info">
+                  {{ overallStats.totalJobs }}
+                </h3>
                 <small class="text-muted">Total Jobs</small>
               </div>
             </div>
             <div class="col-md-2">
               <div class="text-center">
-                <h3 class="text-warning">{{ overallStats.totalPending }}</h3>
+                <h3 class="text-warning">
+                  {{ overallStats.totalPending }}
+                </h3>
                 <small class="text-muted">Pending</small>
               </div>
             </div>
             <div class="col-md-2">
               <div class="text-center">
-                <h3 class="text-success">{{ overallStats.totalCompleted }}</h3>
+                <h3 class="text-success">
+                  {{ overallStats.totalCompleted }}
+                </h3>
                 <small class="text-muted">Completed</small>
               </div>
             </div>
             <div class="col-md-2">
               <div class="text-center">
-                <h3 class="text-danger">{{ overallStats.totalFailed }}</h3>
+                <h3 class="text-danger">
+                  {{ overallStats.totalFailed }}
+                </h3>
                 <small class="text-muted">Failed</small>
               </div>
             </div>
             <div class="col-md-2">
               <div class="text-center">
-                <h3 class="text-secondary">{{ overallStats.totalException }}</h3>
+                <h3 class="text-secondary">
+                  {{ overallStats.totalException }}
+                </h3>
                 <small class="text-muted">Exceptions</small>
               </div>
             </div>

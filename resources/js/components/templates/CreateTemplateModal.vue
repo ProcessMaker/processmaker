@@ -4,33 +4,39 @@
       id="createTemplate"
       :title="title"
       :subtitle="descriptionText"
+      :set-custom-buttons="true"
+      :custom-buttons="customModalButtons"
+      :size="modalSize ? modalSize : 'md'"
+      :header-class="headerClass"
+      :footer-class="footerClass"
       @update="onUpdate"
       @saveTemplate="saveTemplate"
       @close="close"
       @updateTemplate="updateTemplate"
       @saveNewTemplate="saveTemplate"
-      :setCustomButtons="true"
-      :customButtons="customModalButtons"
-      :size="modalSize ? modalSize : 'md'"
-      :headerClass="headerClass"
-      :footerClass="footerClass"
     >
-      <required></required>
-      <p class="mb-3" v-if="showWarning"><i class="fas fa-exclamation-triangle text-warning"></i> {{ assetExistsError }}</p>
-      
-      <create-screen-template-form 
+      <required />
+      <p
+        v-if="showWarning"
+        class="mb-3"
+      >
+        <i class="fas fa-exclamation-triangle text-warning" /> {{ assetExistsError }}
+      </p>
+
+      <create-screen-template-form
         v-if="assetType === 'screen'"
         :types="types"
-        :responseErrors="errors"
-        :screenType="screenType"
+        :response-errors="errors"
+        :screen-type="screenType"
         :permission="permission"
         @input="updateTemplateData"
       />
-      
-      <create-template-form v-else
+
+      <create-template-form
+        v-else
+        :response-errors="errors"
+        :asset-type="assetType"
         @input="updateTemplateData"
-        :responseErrors="errors"
-        :assetType="assetType"
       />
     </modal>
   </div>
@@ -45,7 +51,9 @@ import CreateScreenTemplateForm from "../../processes/screen-templates/component
 import CreateTemplateForm from "./CreateTemplateForm.vue";
 
 export default {
-  components: { Modal, Required, CategorySelect, CreateScreenTemplateForm, CreateTemplateForm },
+  components: {
+    Modal, Required, CategorySelect, CreateScreenTemplateForm, CreateTemplateForm,
+  },
   mixins: [FormErrorsMixin],
   props: ["assetName", "assetType", "assetId", "currentUserId", "modalSize", "screenType", "permission", "headerClass", "footerClass", "types"],
   data() {
@@ -59,62 +67,70 @@ export default {
       existingAssetOwnerId: null,
       templateData: {},
       customModalButtons: [
-        {"content": "Cancel", "action": "close", "variant": "outline-secondary", "disabled": false, "hidden": false},
-        {"content": "Save", "action": "saveTemplate", "variant": "primary", "disabled": true, "hidden": false},
-        {"content": "Update", "action": "updateTemplate", "variant": "secondary", "disabled": false, "hidden": true},
-        {"content": "Save as New", "action": "saveNewTemplate", "variant": "primary", "disabled": true, "hidden": true},
+        {
+          content: "Cancel", action: "close", variant: "outline-secondary", disabled: false, hidden: false,
+        },
+        {
+          content: "Save", action: "saveTemplate", variant: "primary", disabled: true, hidden: false,
+        },
+        {
+          content: "Update", action: "updateTemplate", variant: "secondary", disabled: false, hidden: true,
+        },
+        {
+          content: "Save as New", action: "saveNewTemplate", variant: "primary", disabled: true, hidden: true,
+        },
       ],
-    }
+    };
   },
-    computed: {
-      title() {
-        return this.$t('Create Template');
-      },
-      assetExistsError() {
-          const capFirst = this.assetType[0].toUpperCase();
-          const reset =  this.assetType.slice(1);
-          const asset = capFirst + reset;
-          return asset + ' Template with the same name already exists';
-      },
-      descriptionText() {
-        return this.$t('This will create a re-usable template based on the {{assetName}} {{assetType}}', {assetName: this.assetName, assetType: this.assetType});
-      },
-    }, 
-    methods: {
-      show() {
-        this.customModalButtons[1].hidden === true ? this.toggleButtons() : false;
-        this.$bvModal.show('createTemplate');
-      },
-      close() {
-        this.$bvModal.hide('createTemplate');
-        this.showWarning = false;
-      },
-      onUpdate() {
-        this.$emit('update-template');
-        this.close();
-      },
-      saveTemplate() {    
-        let formData = new FormData();
-        formData.append("asset_id", this.assetId);
+  computed: {
+    title() {
+      return this.$t("Create Template");
+    },
+    assetExistsError() {
+      const capFirst = this.assetType[0].toUpperCase();
+      const reset = this.assetType.slice(1);
+      const asset = capFirst + reset;
+      return `${asset} Template with the same name already exists`;
+    },
+    descriptionText() {
+      return this.$t("This will create a re-usable template based on the {{assetName}} {{assetType}}", { assetName: this.assetName, assetType: this.assetType });
+    },
+  },
+  methods: {
+    show() {
+      this.customModalButtons[1].hidden === true ? this.toggleButtons() : false;
+      this.$bvModal.show("createTemplate");
+    },
+    close() {
+      this.$bvModal.hide("createTemplate");
+      this.showWarning = false;
+    },
+    onUpdate() {
+      this.$emit("update-template");
+      this.close();
+    },
+    saveTemplate() {
+      const formData = new FormData();
+      formData.append("asset_id", this.assetId);
 
-        // Iterate over the templateData properties and append them to formData
-        for (let key in this.templateData) {
-          if (this.templateData.hasOwnProperty(key)) {
-            formData.append(key, this.templateData[key]);
-          }
-        } 
+      // Iterate over the templateData properties and append them to formData
+      for (const key in this.templateData) {
+        if (this.templateData.hasOwnProperty(key)) {
+          formData.append(key, this.templateData[key]);
+        }
+      }
 
-        this.customModalButtons[1].disabled = true;
-        ProcessMaker.apiClient.post("template/" + this.assetType + "/" + this.assetId, formData)
-        .then(response => {
+      this.customModalButtons[1].disabled = true;
+      ProcessMaker.apiClient.post(`template/${this.assetType}/${this.assetId}`, formData)
+        .then((response) => {
           ProcessMaker.alert(this.$t("Template successfully created"), "success");
           this.close();
-        }).catch(error => {
+        }).catch((error) => {
           this.errors = error.response.data;
           this.customModalButtons[1].disabled = false;
-          if (this.errors.hasOwnProperty('errors')) {
+          if (this.errors.hasOwnProperty("errors")) {
             this.errors = this.errors.errors;
-          } else if (_.includes(this.errors.name, 'The template name must be unique.')) {
+          } else if (_.includes(this.errors.name, "The template name must be unique.")) {
             this.showWarning = true;
             this.existingAssetId = error.response.data.id;
             this.existingAssetName = error.response.data.templateName;
@@ -125,20 +141,20 @@ export default {
             ProcessMaker.alert(this.$t(message), "danger");
           }
         });
-      },  
-      updateTemplate() {   
-        this.templateData.existingAssetId = this.existingAssetId;
-        this.templateData.asset_id = this.assetId;
+    },
+    updateTemplate() {
+      this.templateData.existingAssetId = this.existingAssetId;
+      this.templateData.asset_id = this.assetId;
 
-        ProcessMaker.apiClient.put("template/" + this.assetType + "/" + this.existingAssetId + "/update", this.templateData)
-        .then(response => {
-          ProcessMaker.alert( this.$t("Template successfully updated"),"success");
+      ProcessMaker.apiClient.put(`template/${this.assetType}/${this.existingAssetId}/update`, this.templateData)
+        .then((response) => {
+          ProcessMaker.alert(this.$t("Template successfully updated"), "success");
           this.close();
-        }).catch(error => {
+        }).catch((error) => {
           this.errors = error.response.data;
-          if (this.errors.hasOwnProperty('errors')) {
+          if (this.errors.hasOwnProperty("errors")) {
             this.errors = this.errors.errors;
-          } else if (_.includes(this.errors.name, 'The template name must be unique.')) {
+          } else if (_.includes(this.errors.name, "The template name must be unique.")) {
             this.showWarning = true;
             this.existingAssetId = error.response.data.id;
             this.existingAssetName = error.response.data.assetName;
@@ -146,44 +162,44 @@ export default {
             this.toggleButtons();
           }
         });
-      },
-      toggleButtons() {
-        if (this.assetType === 'process' || this.assetType === 'screen' && this.existingAssetOwnerId === this.currentUserId) {
-          this.customModalButtons[2].hidden = !this.customModalButtons[2].hidden;
-        }
+    },
+    toggleButtons() {
+      if (this.assetType === "process" || this.assetType === "screen" && this.existingAssetOwnerId === this.currentUserId) {
+        this.customModalButtons[2].hidden = !this.customModalButtons[2].hidden;
+      }
 
-        this.customModalButtons[1].hidden = !this.customModalButtons[1].hidden;
-        this.customModalButtons[3].hidden = !this.customModalButtons[3].hidden;
-      },
-      validateFormData(errors) {
-        if (!_.isEmpty(this.templateData.name) && !_.isEmpty(this.templateData.description) && !_.isEmpty(this.templateData.version)) {
-          this.customModalButtons[1].disabled = false;
-          if (this.showWarning) {
-            if (this.templateData.name !== this.existingAssetName) {
-              this.customModalButtons[2].disabled = true;
-              this.customModalButtons[3].disabled = false;  
-            } else {
-              this.customModalButtons[2].disabled = false;
-              this.customModalButtons[3].disabled = true;
-            }
-          }
-        } else {
-          this.customModalButtons[1].disabled = true;
-          if (this.showWarning) {
+      this.customModalButtons[1].hidden = !this.customModalButtons[1].hidden;
+      this.customModalButtons[3].hidden = !this.customModalButtons[3].hidden;
+    },
+    validateFormData(errors) {
+      if (!_.isEmpty(this.templateData.name) && !_.isEmpty(this.templateData.description) && !_.isEmpty(this.templateData.version)) {
+        this.customModalButtons[1].disabled = false;
+        if (this.showWarning) {
+          if (this.templateData.name !== this.existingAssetName) {
             this.customModalButtons[2].disabled = true;
-            this.customModalButtons[3].disabled = false;  
+            this.customModalButtons[3].disabled = false;
           } else {
             this.customModalButtons[2].disabled = false;
             this.customModalButtons[3].disabled = true;
           }
         }
-      },
-      updateTemplateData(data, errors) {
-        this.templateData = data;
-        this.validateFormData(errors);
+      } else {
+        this.customModalButtons[1].disabled = true;
+        if (this.showWarning) {
+          this.customModalButtons[2].disabled = true;
+          this.customModalButtons[3].disabled = false;
+        } else {
+          this.customModalButtons[2].disabled = false;
+          this.customModalButtons[3].disabled = true;
+        }
       }
-    }
-  };
+    },
+    updateTemplateData(data, errors) {
+      this.templateData = data;
+      this.validateFormData(errors);
+    },
+  },
+};
 </script>
 
   <style scoped>

@@ -3,7 +3,7 @@ const ListMixin = {
     const requestListCard = document.querySelector(".mobile-container");
     if (requestListCard) {
       requestListCard.addEventListener("scrollend", this.onScroll);
-    } 
+    }
   },
   beforeDestroy() {
     const requestListCard = document.querySelector(".mobile-container");
@@ -15,12 +15,12 @@ const ListMixin = {
     onScroll() {
       const container = document.querySelector(".mobile-container");
       if (container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
-        if(this.totalCards>=this.perPage) {
-         this.cardMessage = "show-page";
-         this.sumCards = this.sumCards + this.perPage;
-         this.fetch();
+        if (this.totalCards >= this.perPage) {
+          this.cardMessage = "show-page";
+          this.sumCards += this.perPage;
+          this.fetch();
         }
-       }
+      }
     },
     calculateTotalPages(totalItems, itemsPerPage) {
       if (itemsPerPage <= 0) return 0;

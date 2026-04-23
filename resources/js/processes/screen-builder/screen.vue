@@ -751,7 +751,7 @@ export default {
           this.preview.config = response.data;
         });
     },
-    // eslint-disable-next-line func-names
+
     updateDataInput: debounce(function () {
       if (this.previewInputValid) {
         // Copy data over
@@ -759,7 +759,7 @@ export default {
         this.updateDataPreview();
       }
     }, 1000),
-    // eslint-disable-next-line func-names
+
     updateDataPreview: debounce(function () {
       this.previewDataStringify = JSON.stringify(this.previewData, null, 2);
     }, 1000),
@@ -911,7 +911,7 @@ export default {
         this.$refs.menuScreen.sectionRight = true;
       }
       if (mode === "preview") {
-        this.changeDeviceScreen('desktop');
+        this.changeDeviceScreen("desktop");
         this.$refs.menuScreen.changeItem("button_design", {
           variant: "outline-secondary",
         });

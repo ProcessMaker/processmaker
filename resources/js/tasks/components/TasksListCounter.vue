@@ -4,8 +4,7 @@
       v-if="loading"
       class="spinner-border count-spinner"
       role="status"
-    >
-    </span>
+    />
     <span
       v-if="!loading"
       class="badge count-badge"
@@ -22,13 +21,13 @@ export default {
       type: Boolean,
       default() {
         return false;
-      }
+      },
     },
     count: {
       type: Number,
       default() {
         return null;
-      }
+      },
     },
   },
 };

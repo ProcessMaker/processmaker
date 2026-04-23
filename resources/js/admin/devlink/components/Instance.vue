@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted, getCurrentInstance } from 'vue';
-import debounce from 'lodash/debounce';
-import { useRouter, useRoute } from 'vue-router/composables';
-import InstanceTabs from './InstanceTabs.vue';
-import InstallProgress from './InstallProgress.vue';
+import { ref, onMounted, getCurrentInstance } from "vue";
+import debounce from "lodash/debounce";
+import { useRouter, useRoute } from "vue-router/composables";
+import InstanceTabs from "./InstanceTabs.vue";
+import InstallProgress from "./InstallProgress.vue";
 
 const vue = getCurrentInstance().proxy;
 const router = useRouter();
@@ -15,33 +15,33 @@ const filter = ref("");
 const warnings = ref([]);
 const showInstallModal = ref(false);
 const confirmUpdateVersion = ref(null);
-const selectedOption = ref('update');
+const selectedOption = ref("update");
 const bundleAttributes = {
   id: null,
-  name: '',
+  name: "",
   published: false,
 };
 const selected = ref(bundleAttributes);
 const fields = [
   {
-    key: 'name',
-    label: vue.$t('Name')
+    key: "name",
+    label: vue.$t("Name"),
   },
   {
-    key: 'version',
-    label: vue.$t('Version')
+    key: "version",
+    label: vue.$t("Version"),
   },
   {
-    key: 'created_at',
-    label: vue.$t('Creation Date')
+    key: "created_at",
+    label: vue.$t("Creation Date"),
   },
   {
-    key: 'updated_at',
-    label: vue.$t('Last Modified')
+    key: "updated_at",
+    label: vue.$t("Last Modified"),
   },
   {
-    key: 'menu',
-    label: ''
+    key: "menu",
+    label: "",
   },
 ];
 
@@ -66,10 +66,9 @@ const load = () => {
   ProcessMaker.apiClient
     .get(`/devlink/${route.params.id}/remote-bundles?filter=${filter.value}`)
     .then((result) => {
-      bundles.value = result.data.data.filter(bundle =>{
+      bundles.value = result.data.data.filter((bundle) =>
         // Do not show remote bundles
-        return bundle.dev_link_id === null;
-      });
+        bundle.dev_link_id === null);
       loading.value = false;
     });
 };
@@ -83,9 +82,9 @@ const handleFilterChange = () => {
 };
 
 const install = (bundle) => {
-  vue.$bvModal.msgBoxConfirm(vue.$t('Are you sure you want to install this bundle?'), {
-    okTitle: vue.$t('Ok'),
-    cancelTitle: vue.$t('Cancel')
+  vue.$bvModal.msgBoxConfirm(vue.$t("Are you sure you want to install this bundle?"), {
+    okTitle: vue.$t("Ok"),
+    cancelTitle: vue.$t("Cancel"),
   }).then((confirm) => {
     if (confirm) {
       showInstallModal.value = true;
@@ -112,61 +111,93 @@ const executeUpdate = (updateType) => {
 
 <template>
   <div>
-    <instance-tabs ><template #bundles>
-    <div class="top-options row">
-      <div class="col">
-        <input v-model="filter" class="form-control search-input" @input="handleFilterChange">
-      </div>
-    </div>
-    <div class="card instance-card">
-      <div v-if="loading" class="mt-3 ml-3">
-        {{ $t("Loading...") }}
-      </div>
-      <b-table
-        v-if="!loading"
-        :items="bundles"
-        :fields="fields"
-        class="instance-table"
-      >
-        <template #cell(menu)="data">
-          <div class="btn-menu-container">
-            <button
-              class="btn install-bundle-btn"
-              @click.prevent="install(data.item)"
-              v-if="!data.item.is_installed"
+    <instance-tabs>
+      <template #bundles>
+        <div class="top-options row">
+          <div class="col">
+            <input
+              v-model="filter"
+              class="form-control search-input"
+              @input="handleFilterChange"
             >
-              <i class="fp-cloud-download-outline"></i>
-            </button>
-          </div>
-        </template>
-      </b-table>
-    </div>
-    <div class="modal fade" id="warningsModal" tabindex="-1" role="dialog" aria-labelledby="warningsModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-body">
-            <h5>Warnings</h5>
-            <ul>
-              <li
-                v-for="(warning, index) in warnings"
-                :key="index"
-              >
-                {{ warning }}
-              </li>
-            </ul>
-          </div>
-          <div class="modal-footer">
-            <button type="button" @click="closeModal()" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
-      </div>
-    </div>
-    <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
-      <install-progress
-        @installation-complete="load"
-      />
-    </b-modal>
-    </template></instance-tabs>
+        <div class="card instance-card">
+          <div
+            v-if="loading"
+            class="mt-3 ml-3"
+          >
+            {{ $t("Loading...") }}
+          </div>
+          <b-table
+            v-if="!loading"
+            :items="bundles"
+            :fields="fields"
+            class="instance-table"
+          >
+            <template #cell(menu)="data">
+              <div class="btn-menu-container">
+                <button
+                  v-if="!data.item.is_installed"
+                  class="btn install-bundle-btn"
+                  @click.prevent="install(data.item)"
+                >
+                  <i class="fp-cloud-download-outline" />
+                </button>
+              </div>
+            </template>
+          </b-table>
+        </div>
+        <div
+          id="warningsModal"
+          class="modal fade"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="warningsModalLabel"
+          aria-hidden="true"
+        >
+          <div
+            class="modal-dialog"
+            role="document"
+          >
+            <div class="modal-content">
+              <div class="modal-body">
+                <h5>Warnings</h5>
+                <ul>
+                  <li
+                    v-for="(warning, index) in warnings"
+                    :key="index"
+                  >
+                    {{ warning }}
+                  </li>
+                </ul>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-dismiss="modal"
+                  @click="closeModal()"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <b-modal
+          id="install-progress"
+          v-model="showInstallModal"
+          size="lg"
+          :title="$t('Installation Progress')"
+          hide-footer
+        >
+          <install-progress
+            @installation-complete="load"
+          />
+        </b-modal>
+      </template>
+    </instance-tabs>
   </div>
 </template>
 

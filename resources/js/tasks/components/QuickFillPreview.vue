@@ -18,29 +18,29 @@
     >
       <span class="quick-fill-text">{{ $t("Quick Fill") }}</span>
       <b-button
-          class="close-button-prev button-cancel"
-          @click="$emit('close')"
-        >
-          {{ $t("Cancel") }}
-        </b-button>
+        class="close-button-prev button-cancel"
+        @click="$emit('close')"
+      >
+        {{ $t("Cancel") }}
+      </b-button>
     </div>
 
-      <div v-if="propFromButton === 'previewTask'" 
-        class="button-container">
-        
-        <b-button
-          class="close-button-prev button-cancel"
-          @click="$emit('close')"
-        >
-          {{ $t("Cancel") }}
-        </b-button>
-      </div>
-
+    <div
+      v-if="propFromButton === 'previewTask'"
+      class="button-container"
+    >
+      <b-button
+        class="close-button-prev button-cancel"
+        @click="$emit('close')"
+      >
+        {{ $t("Cancel") }}
+      </b-button>
+    </div>
 
     <div class="second-container">
       <div class="span-message">
-        {{ this.processName ? 
-          $t("Select a previous task to reuse its filled data on the current task") + ": " + this.processName : 
+        {{ processName ?
+          $t("Select a previous task to reuse its filled data on the current task") + ": " + processName :
           $t("Select a previous task to reuse its filled data on the current task.")
         }}
       </div>
@@ -51,14 +51,17 @@
           :columns="columns"
           :selected-row-quick="selectedRowQuick"
           :table-name="tasksListName"
-          @selected="selected"
           :pmql="pmql"
           :advanced-filter-prop="quickFilter"
           :from-button="propFromButton"
+          @selected="selected"
           @onWatchShowPreview="onWatchShowPreview"
         >
-          <template v-slot:preview-header="{ close, screenFilteredTaskData, taskReady }">
-            <div v-if="propFromButton === 'inboxRules'" style="width: 98%">
+          <template #preview-header="{ close, screenFilteredTaskData, taskReady }">
+            <div
+              v-if="propFromButton === 'inboxRules'"
+              style="width: 98%"
+            >
               <div class="header-container-quick">
                 <div style="display: block; width: 100%">
                   <span class="span-text">Data Preview</span>
@@ -74,7 +77,7 @@
                       src="../../../img/smartinbox-images/Stroke.svg"
                       class="img-styles"
                       :alt="$t('No Image')"
-                    />{{ $t("Use This Task Data") }}
+                    >{{ $t("Use This Task Data") }}
                   </b-button>
                 </div>
                 <b-button
@@ -89,7 +92,10 @@
                 <p>{{ disclaimer }}</p>
               </div>
             </div>
-            <div v-else style="width: 92%">
+            <div
+              v-else
+              style="width: 92%"
+            >
               <div class="header-container-quick">
                 <div style="display: block; width: 100%">
                   <span class="span-text">Data Preview</span>
@@ -105,7 +111,7 @@
                       src="../../../img/smartinbox-images/Stroke.svg"
                       class="img-styles"
                       :alt="$t('No Image')"
-                    />{{ $t("Use This Task Data") }}
+                    >{{ $t("Use This Task Data") }}
                   </b-button>
                   <b-button
                     v-if="propFromButton === 'fullTask'"
@@ -119,7 +125,7 @@
                       src="../../../img/smartinbox-images/Stroke.svg"
                       class="img-styles"
                       :alt="$t('No Image')"
-                    />{{ $t("Use This Task Data") }}
+                    >{{ $t("Use This Task Data") }}
                   </b-button>
                 </div>
                 <b-button
@@ -135,7 +141,7 @@
               </div>
             </div>
           </template>
-          <template v-slot:tooltip="{ tooltipRowData, previewTasks }">
+          <template #tooltip="{ tooltipRowData, previewTasks }">
             <b-button
               v-if="propFromButton === 'previewTask'"
               :aria-label="$t('Quick fill Preview')"
@@ -175,7 +181,7 @@
 <script>
 export default {
   components: {
-    TasksList: () => import('./TasksList.vue'),
+    TasksList: () => import("./TasksList.vue"),
   },
   props: ["task", "propColumns", "propFilters", "propFromButton", "screenFields"],
   data() {
@@ -240,7 +246,7 @@ export default {
     };
   },
   mounted() {
-    if (this.propFilters !== "" && !this.propFilters.filters.some(filter => filter.value === null)) {
+    if (this.propFilters !== "" && !this.propFilters.filters.some((filter) => filter.value === null)) {
       this.quickFilter = this.propFilters;
     } else {
       this.quickFilter = this.filter;
@@ -292,7 +298,7 @@ export default {
           quickFillValue = _.get(quickFillData, field, null);
         }
 
-        if(this.validateBase64(quickFillValue)) {
+        if (this.validateBase64(quickFillValue)) {
           _.set(draftData, field, existingValue);
           return;
         }
@@ -301,7 +307,7 @@ export default {
       });
 
       return ProcessMaker.apiClient
-        .put("drafts/" + this.task.id, draftData)
+        .put(`drafts/${this.task.id}`, draftData)
         .then((response) => {
           this.task.draft = _.merge({}, this.task.draft, response.data);
           window.location.href = `/tasks/${this.task.id}/edit`;
@@ -312,16 +318,16 @@ export default {
         });
     },
     /*
-     * To do: There's a global-search-bar class with a large z-index. We added a class 
-     * that modifies this class when this panel is displayed. If it's destroyed, we 
+     * To do: There's a global-search-bar class with a large z-index. We added a class
+     * that modifies this class when this panel is displayed. If it's destroyed, we
      * remove it to maintain compatibility.
      */
     reCalculateZIndex(sw) {
-      let names = [".global-search-bar", ".navbar-nav"];
-      for (let value of names) {
-        let searchBar = document.querySelector(value);
+      const names = [".global-search-bar", ".navbar-nav"];
+      for (const value of names) {
+        const searchBar = document.querySelector(value);
         if (searchBar) {
-          let obj = searchBar.classList;
+          const obj = searchBar.classList;
           if (sw === true) {
             obj.add("global-search-bar-z-index");
           } else {
@@ -332,7 +338,7 @@ export default {
     },
     onWatchShowPreview(value) {
       this.reCalculateZIndex(value);
-    }
+    },
   },
 };
 </script>

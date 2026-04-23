@@ -53,7 +53,6 @@ export default {
       },
     ];
 
-
     return {
       preview: {
         config: [

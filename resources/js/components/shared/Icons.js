@@ -1,3 +1,4 @@
+/* eslint-disable import/no-webpack-loader-syntax -- intentional inline loader for icon metadata */
 import icons from "js-yaml-loader!@fortawesome/fontawesome-free/metadata/icons.yml";
 
 const common = [

@@ -1,4 +1,3 @@
-/* eslint-disable func-names */
 // Our initial node types to register with our modeler
 import {
   association,

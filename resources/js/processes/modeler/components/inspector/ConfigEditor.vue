@@ -4,10 +4,10 @@
       <label>{{ $t(label) }}</label>
       <button
         v-b-toggle.tree-view-sidebar
-        @click="openSidebar()"
         type="button"
         :aria-label="$t('Expand Editor')"
         class="btn-sm float-right"
+        @click="openSidebar()"
       >
         <i class="fas fa-expand" />
       </button>
@@ -41,11 +41,22 @@
               </b-col>
               <b-col class="text-right">
                 <div class="mb-2 custom-control custom-switch">
-                  <input id="tree_view" type="checkbox" v-model="treeView"  class="custom-control-input">
-                  <label for="tree_view" class="custom-control-label">{{ $t('Tree View') }}</label>
+                  <input
+                    id="tree_view"
+                    v-model="treeView"
+                    type="checkbox"
+                    class="custom-control-input"
+                  >
+                  <label
+                    for="tree_view"
+                    class="custom-control-label"
+                  >{{ $t('Tree View') }}</label>
                 </div>
               </b-col>
-              <b-col md="auto" class="text-right">
+              <b-col
+                md="auto"
+                class="text-right"
+              >
                 <button
                   class="close"
                   @click="closeSidebar"
@@ -79,7 +90,10 @@
                 </div>
               </b-card-body>
             </b-card>
-            <b-card v-if="treeView" no-body>
+            <b-card
+              v-if="treeView"
+              no-body
+            >
               <template #header>
                 <div class="sidebar-subtitle">
                   <h6>{{ $t('Tree View') }}</h6>
@@ -87,7 +101,11 @@
               </template>
               <b-card-text>
                 <div class="editor-container">
-                  <tree-view v-model="code" :key="componentKey" style="border:1px; solid gray; min-height:700px;"></tree-view>
+                  <tree-view
+                    :key="componentKey"
+                    v-model="code"
+                    style="border:1px; solid gray; min-height:700px;"
+                  />
                 </div>
               </b-card-text>
             </b-card>

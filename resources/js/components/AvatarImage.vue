@@ -1,55 +1,59 @@
 <template>
   <span>
     <div :class="{ 'd-inline-flex': !vertical }">
-    <template v-for="(value, key) in options">
-      <div class="vertical-view">
-      <b-button
-        v-if="value.initials"
-        ref="button"
-        :variant="variant(value)"
-        class="avatar-button rounded-circle overflow-hidden p-0 m-0 d-inline-flex"
-        :href="href(value)"
-        :key="'link-' + key"
-        :title="value.tooltip"
-        :aria-label="value.tooltip"
-        :role="role(value)"
-        :aria-haspopup="ariaHasPopup(value)"
-        :disabled="disabled(value)"
-        :aria-expanded="ariaExpanded"
-        :style="customStyle"
-      >
-        <img
-          v-if="value.src"
-          :src="timestamp(value.src)"
-          :width="sizeImage"
-          :height="sizeImage"
-          :class="image"
-          :alt="value.tooltip"
-        >
-        <span
-          v-else
-          :key="'button-' + key"
-          class="border-0 d-inline-flex align-items-center justify-content-center text-white text-uppercase text-nowrap font-weight-normal"
-          :style="styleButton"
-        >
-          <span v-if="value.initials">{{value.initials}}</span>
-          <span v-else>PM</span>
-        </span>
-      </b-button>
-      <span v-if="!hideName" class="text-center text-capitalize new-wrap m-1" :key="'name-' + key">
-          <span v-if="value.name">
-            <template v-if="nameClickable">
-              <a :href="href(value)">{{ limitCharacters(value.name)}}</a>
-            </template>
-            <template v-else>
-              {{ limitCharacters(value.name) }}
-            </template>
-          </span> 
-          <span v-else-if="usePmDefaultLabel || usePmDefaultLabelProcess">{{ $t('ProcessMaker') }}</span>
-          <span v-else><b-badge class="status-alternative-a">{{ $t('Unclaimed') }}</b-badge></span>
-      </span>
-      </div>
-    </template>
+      <template v-for="(value, key) in options">
+        <div class="vertical-view">
+          <b-button
+            v-if="value.initials"
+            ref="button"
+            :key="'link-' + key"
+            :variant="variant(value)"
+            class="avatar-button rounded-circle overflow-hidden p-0 m-0 d-inline-flex"
+            :href="href(value)"
+            :title="value.tooltip"
+            :aria-label="value.tooltip"
+            :role="role(value)"
+            :aria-haspopup="ariaHasPopup(value)"
+            :disabled="disabled(value)"
+            :aria-expanded="ariaExpanded"
+            :style="customStyle"
+          >
+            <img
+              v-if="value.src"
+              :src="timestamp(value.src)"
+              :width="sizeImage"
+              :height="sizeImage"
+              :class="image"
+              :alt="value.tooltip"
+            >
+            <span
+              v-else
+              :key="'button-' + key"
+              class="border-0 d-inline-flex align-items-center justify-content-center text-white text-uppercase text-nowrap font-weight-normal"
+              :style="styleButton"
+            >
+              <span v-if="value.initials">{{ value.initials }}</span>
+              <span v-else>PM</span>
+            </span>
+          </b-button>
+          <span
+            v-if="!hideName"
+            :key="'name-' + key"
+            class="text-center text-capitalize new-wrap m-1"
+          >
+            <span v-if="value.name">
+              <template v-if="nameClickable">
+                <a :href="href(value)">{{ limitCharacters(value.name) }}</a>
+              </template>
+              <template v-else>
+                {{ limitCharacters(value.name) }}
+              </template>
+            </span>
+            <span v-else-if="usePmDefaultLabel || usePmDefaultLabelProcess">{{ $t('ProcessMaker') }}</span>
+            <span v-else><b-badge class="status-alternative-a">{{ $t('Unclaimed') }}</b-badge></span>
+          </span>
+        </div>
+      </template>
     </div>
   </span>
 </template>
@@ -93,7 +97,7 @@ export default {
     },
     customStyle: {
       type: String,
-      default: '',
+      default: "",
     },
     usePmDefaultLabel: {
       type: Boolean,
@@ -102,7 +106,7 @@ export default {
     usePmDefaultLabelProcess: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   data() {
     return {
@@ -110,7 +114,7 @@ export default {
       round: "circle",
       image: "",
       styleButton: "width: 25px; height: 25px;",
-      options: []
+      options: [],
     };
   },
   watch: {
@@ -125,7 +129,10 @@ export default {
     },
     classImage(value) {
       this.formatClassImage(value);
-    }
+    },
+  },
+  mounted() {
+    this.default();
   },
   methods: {
     getTarget() {
@@ -137,50 +144,45 @@ export default {
     href(value) {
       if (this.popover) {
         return null;
-      } else {
-        return value.id;
       }
+      return value.id;
     },
     role(value) {
       if (this.popover) {
-        return 'button';
-      } else {
-        if (! value.id) {
-          return 'img'
-        } else {
-          return 'link';
-        }
+        return "button";
       }
+      if (!value.id) {
+        return "img";
+      }
+      return "link";
     },
     ariaHasPopup(value) {
       if (this.popover) {
-        return 'menu';
-      } else {
-        return null;
+        return "menu";
       }
+      return null;
     },
     disabled(value) {
-      if (! this.popover) {
-        if (! value.id) {
+      if (!this.popover) {
+        if (!value.id) {
           return true;
         }
-      };
+      }
 
       return false;
     },
     variant(value) {
       if (value.src) {
-        return 'secondary';
-      } else {
-        return 'info';
+        return "secondary";
       }
+      return "info";
     },
     timestamp(src) {
-      if (src.startsWith('data:image')) {
+      if (src.startsWith("data:image")) {
         // Do not add cache buster to base64 encoded image
-        return src
+        return src;
       }
-      return src + '?' + new Date().getTime();
+      return `${src}?${new Date().getTime()}`;
     },
     default() {
       this.displayTitle = this.hideName === undefined ? false : this.hideName;
@@ -193,21 +195,20 @@ export default {
       this.image = value;
     },
     formatRounded(value) {
-      this.round = value ? value : "circle";
+      this.round = value || "circle";
     },
     formatSize(size) {
-      this.sizeImage = size ? size : "25";
+      this.sizeImage = size || "25";
       this.formatSizeButton(this.sizeImage);
     },
     formatSizeButton(size) {
-      this.styleButton =
-        "width: " +
-        size +
-        "px; height: " +
-        size +
-        "px; font-size:" +
-        size / 2.5 +
-        "px; padding:0; cursor: pointer;";
+      this.styleButton = `width: ${
+        size
+      }px; height: ${
+        size
+      }px; font-size:${
+        size / 2.5
+      }px; padding:0; cursor: pointer;`;
     },
     formatValue(value) {
       if (value === null) {
@@ -216,10 +217,10 @@ export default {
 
       let profileUrl = null;
       if (value.id) {
-        if (value.id === '#') {
-          profileUrl = '#';
+        if (value.id === "#") {
+          profileUrl = "#";
         } else {
-          profileUrl = "/profile/" + value.id
+          profileUrl = `/profile/${value.id}`;
         }
       }
       return {
@@ -228,30 +229,30 @@ export default {
         tooltip: value.tooltip
           ? value.tooltip
           : !this.displayTitle
-          ? value.title
-          : value.fullname
-          ? value.fullname
-          : "",
+            ? value.title
+            : value.fullname
+              ? value.fullname
+              : "",
         name:
           value.name
             ? value.name
             : value.fullname
-            ? value.fullname
-            : value.firstname && value.lastname
-            ? value.firstname + ' ' + value.lastname
-            : "",
+              ? value.fullname
+              : value.firstname && value.lastname
+                ? `${value.firstname} ${value.lastname}`
+                : "",
         initials: value.initials
           ? value.initials
           : value.firstname && value.lastname
-          ? value.firstname.match(/./u)[0] + value.lastname.match(/./u)[0]
-          : ""
+            ? value.firstname.match(/./u)[0] + value.lastname.match(/./u)[0]
+            : "",
       };
     },
     formatInputData(data) {
-      let options = [];
+      const options = [];
       if (data && Array.isArray(data)) {
-        let that = this;
-        data.forEach(value => {
+        const that = this;
+        data.forEach((value) => {
           options.push(that.formatValue(value));
         });
       } else {
@@ -260,21 +261,17 @@ export default {
       this.options = options;
     },
     buttonClick(url) {
-      if (url && url !== '#') {
+      if (url && url !== "#") {
         window.location.href = url;
       }
     },
     limitCharacters(text) {
       if (!this.characterLimit || text.length <= this.characterLimit) {
         return text;
-      } else {
-        return text.substring(0, this.characterLimit) + '...';
       }
-    }
+      return `${text.substring(0, this.characterLimit)}...`;
+    },
   },
-  mounted() {
-    this.default();
-  }
 };
 </script>
 

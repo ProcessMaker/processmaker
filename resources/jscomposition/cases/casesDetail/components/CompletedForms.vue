@@ -10,25 +10,30 @@
     >
       <template
         v-for="(item, index) in data"
-        #[`container-row-${index}`]>
+        #[`container-row-${index}`]
+      >
         <display-form
           :key="`display-${index}`"
-          :data="item" />
+          :data="item"
+        />
       </template>
 
       <template
         v-for="(item, index) in data"
-        #[`ellipsis-menu-${index}`]>
+        #[`ellipsis-menu-${index}`]
+      >
         <EllipsisMenu
           :key="`ellipsis-${index}`"
           :row="item"
-          :columns="columnsConfig" />
+          :columns="columnsConfig"
+        />
       </template>
 
       <template #placeholder>
         <TablePlaceholder
           :placeholder="placeholderType"
-          class="tw-grow" />
+          class="tw-grow"
+        />
       </template>
     </SortTable>
 
@@ -38,7 +43,8 @@
       :pages="dataPagination.pages"
       :per-page="dataPagination.perPage"
       @perPage="onPerPage"
-      @go="onGo" />
+      @go="onGo"
+    />
   </div>
 </template>
 

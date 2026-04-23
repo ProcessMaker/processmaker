@@ -133,16 +133,16 @@ export default {
      * prepare data screen
      */
     dataSummary() {
-      let options = {};
+      const options = {};
       this.request.summary.forEach((option) => {
-        if (option.type === 'datetime') {
-          options[option.key] = moment(option.value).
-                  tz(window.ProcessMaker.user.timezone).
-                  format("MM/DD/YYYY HH:mm");
-        } else if (option.type === 'date') {
-          options[option.key] = moment(option.value).
-                  tz(window.ProcessMaker.user.timezone).
-                  format("MM/DD/YYYY");
+        if (option.type === "datetime") {
+          options[option.key] = moment(option.value)
+            .tz(window.ProcessMaker.user.timezone)
+            .format("MM/DD/YYYY HH:mm");
+        } else if (option.type === "date") {
+          options[option.key] = moment(option.value)
+            .tz(window.ProcessMaker.user.timezone)
+            .format("MM/DD/YYYY");
         } else {
           options[option.key] = option.value;
         }

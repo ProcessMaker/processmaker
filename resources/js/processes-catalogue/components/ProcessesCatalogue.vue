@@ -8,7 +8,8 @@
       :template="guidedTemplates ? 'Guided Templates' : ''"
     />
     <div class="tw-flex tw-h-full tw-relative">
-      <component :is="isMobile ? 'mobile-drawer' : 'collapsable-container'"
+      <component
+        :is="isMobile ? 'mobile-drawer' : 'collapsable-container'"
         v-model="showMenu"
         :class="{
           'tw-w-80': !isMobile,
@@ -165,7 +166,7 @@ export default {
       this.updateUserConfiguration();
     },
     updateUserConfiguration() {
-      if(this.userConfiguration?.launchpad) {
+      if (this.userConfiguration?.launchpad) {
         this.userConfiguration.launchpad.isMenuCollapse = this.showMenu;
       }
       ProcessMaker.apiClient

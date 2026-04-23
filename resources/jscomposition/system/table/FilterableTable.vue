@@ -6,10 +6,12 @@
     :placeholder="placeholder"
     :config="config"
     class="tw-grow"
-    @stopResize="onStopResize">
+    @stopResize="onStopResize"
+  >
     <template
       v-for="(column, index) in columns"
-      #[`theader-filter-${column.field}`]>
+      #[`theader-filter-${column.field}`]
+    >
       <FilterColumn
         v-if="column.filter"
         :id="column.field"
@@ -18,7 +20,8 @@
         :value="getFilter(index, column)"
         @change="e=> onChangeFilter(column, e, index)"
         @clear="e=> onClear(column, e, index)"
-        @resetTable="e=> onResetTable()" />
+        @resetTable="e=> onResetTable()"
+      />
     </template>
     <template #placeholder>
       <slot name="placeholder" />

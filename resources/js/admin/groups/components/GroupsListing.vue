@@ -1,35 +1,44 @@
 <template>
   <div class="data-table">
     <data-loading
-            :for="/groups\?page/"
-            v-show="shouldShowLoader"
-            :empty="$t('No Data Available')"
-            :empty-desc="$t('')"
-            empty-icon="noData"
+      v-show="shouldShowLoader"
+      :for="/groups\?page/"
+      :empty="$t('No Data Available')"
+      :empty-desc="$t('')"
+      empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader"  class="card card-body table-card">
+    <div
+      v-show="!shouldShowLoader"
+      class="card card-body table-card"
+    >
       <vuetable
-        :dataManager="dataManager"
-        :sortOrder="sortOrder"
+        :data-manager="dataManager"
+        :sort-order="sortOrder"
         :css="css"
         :api-mode="false"
-        @vuetable:pagination-data="onPaginationData"
         :fields="fields"
         :data="data"
         data-path="data"
         pagination-path="meta"
-        :noDataTemplate="$t('No Data Available')"
+        :no-data-template="$t('No Data Available')"
+        @vuetable:pagination-data="onPaginationData"
       >
-        <template slot="name" slot-scope="props">
+        <template
+          slot="name"
+          slot-scope="props"
+        >
           <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.name }}</span>
         </template>
-        <template slot="actions" slot-scope="props">
-          <ellipsis-menu 
-            @navigate="onNavigate"
+        <template
+          slot="actions"
+          slot-scope="props"
+        >
+          <ellipsis-menu
             :actions="actions"
             :permission="permission"
             :data="props.rowData"
             :divider="true"
+            @navigate="onNavigate"
           />
         </template>
       </vuetable>
@@ -38,27 +47,28 @@
         :setting="true"
       />
       <pagination
+        ref="pagination"
         :single="$t('Group')"
         :plural="$t('Groups')"
-        :perPageSelectEnabled="true"
+        :per-page-select-enabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
-        ref="pagination"
-      ></pagination>
+      />
     </div>
   </div>
 </template>
 
 <script>
+import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import AddToBundle from "../../../components/shared/AddToBundle.vue";
-import { createUniqIdsMixin } from "vue-uniq-ids";
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: {EllipsisMenu, AddToBundle},
+  components: { EllipsisMenu, AddToBundle },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "permission"],
   data() {
@@ -69,90 +79,96 @@ export default {
         {
           field: "name",
           sortField: "name",
-          direction: "asc"
-        }
+          direction: "asc",
+        },
       ],
       actions: [
-        { value: "edit-item", content: "Edit Group", link: true, href: '/admin/groups/{{id}}/edit', icon: "fas fa-pen-square", permission:'edit-groups', ariaDescribedBy: 'data.id'},
-        { value: "add-to-bundle", content: "Add to Bundle", icon: "fp-add-outlined", permission: "admin", emit_on_root: 'add-to-bundle'},
-        { value: "delete-item", content: "Delete Group", icon: "fas fa-trash-alt", permission: 'delete-groups',  ariaDescribedBy: 'data.id'},
+        {
+          value: "edit-item", content: "Edit Group", link: true, href: "/admin/groups/{{id}}/edit", icon: "fas fa-pen-square", permission: "edit-groups", ariaDescribedBy: "data.id",
+        },
+        {
+          value: "add-to-bundle", content: "Add to Bundle", icon: "fp-add-outlined", permission: "admin", emit_on_root: "add-to-bundle",
+        },
+        {
+          value: "delete-item", content: "Delete Group", icon: "fas fa-trash-alt", permission: "delete-groups", ariaDescribedBy: "data.id",
+        },
       ],
       fields: [
         {
           title: () => this.$t("ID"),
           name: "id",
-          sortField: "id"
+          sortField: "id",
         },
         {
           title: () => this.$t("Name"),
           name: "__slot:name",
-          sortField: "Name"
+          sortField: "Name",
         },
         {
           title: () => this.$t("Description"),
           name: "description",
-          sortField: "description"
+          sortField: "description",
         },
         {
           title: () => this.$t("Status"),
           name: "status",
           sortField: "status",
-          callback: this.formatStatus
+          callback: this.formatStatus,
         },
         {
           title: () => this.$t("# Members"),
           name: "group_members_count",
-          sortField: "group_members_count"
+          sortField: "group_members_count",
         },
         {
           title: () => this.$t("Modified"),
           name: "updated_at",
           sortField: "updated_at",
-          callback: "formatDate"
+          callback: "formatDate",
         },
         {
           title: () => this.$t("Created"),
           name: "created_at",
           sortField: "created_at",
-          callback: "formatDate"
+          callback: "formatDate",
         },
 
         {
           name: "__slot:actions",
-          title: ""
-        }
-      ]
+          title: "",
+        },
+      ],
     };
   },
   methods: {
     formatStatus(status) {
       status = status.toLowerCase();
-      let bubbleColor = {
+      const bubbleColor = {
         active: "text-success",
         inactive: "text-danger",
         draft: "text-warning",
-        archived: "text-info"
+        archived: "text-info",
       };
       return (
-        '<i class="fas fa-circle ' +
-        bubbleColor[status] +
-        ' small"></i><span class="text-capitalize"> ' +
-        this.$t(status.charAt(0).toUpperCase() + status.slice(1)) +
-        '</span>'
+        `<i class="fas fa-circle ${
+          bubbleColor[status]
+        } small"></i><span class="text-capitalize"> ${
+          this.$t(status.charAt(0).toUpperCase() + status.slice(1))
+        }</span>`
       );
     },
     onDelete(data) {
-      let that = this;
+      const that = this;
       ProcessMaker.confirmModal(
-        this.$t('Caution!'),
-        "<b>" + this.$t('Are you sure you want to delete {{item}}?', {item: data.name}) + "</b>",
+        this.$t("Caution!"),
+        `<b>${this.$t("Are you sure you want to delete {{item}}?", { item: data.name })}</b>`,
         "",
-        function() {
-          ProcessMaker.apiClient.delete("groups/" + data.id).then(response => {
+        function () {
+          ProcessMaker.apiClient.delete(`groups/${data.id}`).then((response) => {
             ProcessMaker.alert(this.$t("The group was deleted."), "success");
             that.fetch();
           });
-        }
+        },
       );
     },
     onNavigate(action, data) {
@@ -167,24 +183,24 @@ export default {
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "groups?page=" +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&filter=" +
-            this.filter +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=" +
-            this.orderDirection +
-            "&include=membersCount"
+          `groups?page=${
+            this.page
+          }&per_page=${
+            this.perPage
+          }&filter=${
+            this.filter
+          }&order_by=${
+            this.orderBy
+          }&order_direction=${
+            this.orderDirection
+          }&include=membersCount`,
         )
-        .then(response => {
+        .then((response) => {
           this.data = this.transform(response.data);
           this.loading = false;
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

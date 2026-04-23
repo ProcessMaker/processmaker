@@ -1,102 +1,103 @@
 <template>
   <div>
-    <column-chooser v-model="currentColumns" 
-                    :available-columns="availableColumns"
-                    :default-columns="defaultColumns" 
-                    :data-columns="dataColumns">
-    </column-chooser>
+    <column-chooser
+      v-model="currentColumns"
+      :available-columns="availableColumns"
+      :default-columns="defaultColumns"
+      :data-columns="dataColumns"
+    />
   </div>
 </template>
 
 <script>
-import ColumnChooser from "../../components/shared/ColumnChooser.vue";
 import cloneDeep from "lodash/cloneDeep";
+import ColumnChooser from "../../components/shared/ColumnChooser.vue";
 
 export default {
   components: {
-    ColumnChooser
+    ColumnChooser,
   },
   props: {
     pmql: {
-      type: String
+      type: String,
     },
     advancedFilter: {
       type: Object,
-      default: null
+      default: null,
     },
     columns: {
       type: Array,
       default() {
         return [];
-      }
+      },
     },
     defaultColumns: {
       type: Array,
       default() {
         return [];
-      }
-    }
+      },
+    },
   },
   data() {
     return {
       availableColumns: [],
       dataColumns: [],
-      currentColumns: []
+      currentColumns: [],
     };
   },
   computed: {
     modifiedCurrentColumns() {
-      return this.currentColumns.map(column => {
-        const existingColumnDefinition = this.columns.find(c => c.field === column.field);
+      return this.currentColumns.map((column) => {
+        const existingColumnDefinition = this.columns.find((c) => c.field === column.field);
         if (existingColumnDefinition) {
           return existingColumnDefinition;
         }
 
         return {
           ...column,
-          filter_subject: {type: "Field", value: column.field},
-          order_column: column.field
+          filter_subject: { type: "Field", value: column.field },
+          order_column: column.field,
         };
       });
-    }
+    },
   },
   watch: {
     columns() {
       this.currentColumns = cloneDeep(this.columns);
-    }
+    },
   },
   mounted() {
     this.currentColumns = cloneDeep(this.columns);
     this.test = cloneDeep(this.columns);
 
-    let savedSearchIdRoute = '';
+    let savedSearchIdRoute = "";
     if (this.savedSearchId) {
-      savedSearchIdRoute = this.savedSearchId + '/';
+      savedSearchIdRoute = `${this.savedSearchId}/`;
     }
-    let url = "saved-searches/" + savedSearchIdRoute + "columns?include=available,data";
-    let parameters = {
+    const url = `saved-searches/${savedSearchIdRoute}columns?include=available,data`;
+    const parameters = {
       params: {
         pmql: this.pmql,
         advanced_filter: {
           ...this.advancedFilter,
           filters: this.advancedFilter?.filters.filter(
-                  f => !(f.subject.type === "Status" && f.value === "In Progress")
-          )
-        }
-      }
+            (f) => !(f.subject.type === "Status" && f.value === "In Progress"),
+          ),
+        },
+      },
     };
     ProcessMaker.apiClient.get(url, parameters)
-            .then(response => {
-              this.availableColumns = response.data.available.filter(this.filterAvailable);
-              this.dataColumns = response.data.data;
-            });
+      .then((response) => {
+        this.availableColumns = response.data.available.filter(this.filterAvailable);
+        this.dataColumns = response.data.data;
+      });
   },
   methods: {
     filterAvailable(column) {
-      return !this.currentColumns.find(c => c.field === column.field);
-    }
-  }
-}
+      return !this.currentColumns.find((c) => c.field === column.field);
+    },
+  },
+};
 </script>
 
 <style>

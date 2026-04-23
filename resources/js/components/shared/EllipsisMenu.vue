@@ -13,7 +13,10 @@
     @show="onShow"
     @hide="onHide"
   >
-    <template v-if="customButton" #button-content>
+    <template
+      v-if="customButton"
+      #button-content
+    >
       <i
         class="pr-1 ellipsis-menu-icon no-padding"
         :class="customButton.icon"
@@ -22,13 +25,19 @@
         {{ customButton.content }} <b v-if="showProgress && data && data.batch"> {{ getTotalProgress(data.batch, data.progress) }}%</b>
       </span>
     </template>
-    <template v-else-if="lauchpad" #button-content>
+    <template
+      v-else-if="lauchpad"
+      #button-content
+    >
       <i class="fas fa-ellipsis-v ellipsis-menu-icon p-0 ellipsis-icon-v" />
       <span>
         {{ $t('Options') }}
       </span>
     </template>
-    <template v-else #button-content>
+    <template
+      v-else
+      #button-content
+    >
       <span class="text-capitalize screen-toolbar-button">
         <i class="fas fa-ellipsis-h ellipsis-menu-icon p-0" />
       </span>
@@ -71,7 +80,11 @@
       <div>
         <b-input-group v-if="searchBar">
           <b-input-group-prepend>
-            <b-btn class="btn-search-run px-2" :title="$t('Search for an Asset')" @click="fetch()">
+            <b-btn
+              class="btn-search-run px-2"
+              :title="$t('Search for an Asset')"
+              @click="fetch()"
+            >
               <i class="fas fa-search search-icon" />
             </b-btn>
           </b-input-group-prepend>
@@ -82,16 +95,19 @@
           />
         </b-input-group>
       </div>
-      <div v-for="action in filterActions" :key="action.value">
+      <div
+        v-for="action in filterActions"
+        :key="action.value"
+      >
         <div v-if="action.value !== 'edit-launchpad' || isProcessesCatalogueInUrl()">
-          <b-dropdown-divider v-if="action.value == 'divider'"/>
+          <b-dropdown-divider v-if="action.value == 'divider'" />
           <b-dropdown-item
             v-else
             :key="action.value"
             :href="action.link ? itemLink(action, data) : null"
             class="ellipsis-dropdown-item mx-auto"
-            @click="!action.link ? onClick(action, data) : null"
             :data-test="action.dataTest"
+            @click="!action.link ? onClick(action, data) : null"
           >
             <div class="ellipsis-dropdown-content">
               <i
@@ -99,7 +115,11 @@
                 class="pr-1 fa-fw"
                 :class="action.icon"
               />
-              <img v-if="action.image" :src="action.image" :alt="$t('Priority')">
+              <img
+                v-if="action.image"
+                :src="action.image"
+                :alt="$t('Priority')"
+              >
               <span>{{ $t(action.content) }}</span>
             </div>
           </b-dropdown-item>
@@ -111,7 +131,7 @@
 
 <script>
 import { Parser } from "expr-eval";
-import Mustache from 'mustache';
+import Mustache from "mustache";
 import PmqlInput from "./PmqlInput.vue";
 
 export default {
@@ -133,7 +153,7 @@ export default {
     "redirectTo",
     "redirectId",
     "translation",
-    'isAdmin'
+    "isAdmin",
   ],
   data() {
     return {
@@ -185,10 +205,10 @@ export default {
       return Mustache.render(action.href, data);
     },
     onShow() {
-      this.$emit('show');
+      this.$emit("show");
     },
     onHide() {
-      this.$emit('hide');
+      this.$emit("hide");
     },
 
     getTotalProgress(batchProgress, chunkProgress) {
@@ -208,33 +228,32 @@ export default {
       return Math.trunc(totalProgress);
     },
     filterActionsByPermissions() {
-      return this.actions.filter(action => {
+      return this.actions.filter((action) => {
         // Check if the action has a 'permission' property and it's a non-empty string
-        if (!action.permission || typeof action.permission === 'string' && action.permission.trim() === '') {
+        if (!action.permission || typeof action.permission === "string" && action.permission.trim() === "") {
           return true; // No specific permission required or invalid format, so allow the action.
         }
         let requiredPermissions;
         // Check if this.permission is of type string
-        if (typeof action.permission === 'string') {
-          requiredPermissions = action.permission.split(',');
+        if (typeof action.permission === "string") {
+          requiredPermissions = action.permission.split(",");
         } else {
           requiredPermissions = action.permission;
         }
 
         // Check if this.permission is of type object
-        if (typeof this.permission === 'object' && this.permission !== null) {
+        if (typeof this.permission === "object" && this.permission !== null) {
           const keys = Object.keys(this.permission);
           if (keys[0] === "0") {
-            return requiredPermissions.some(permission => Object.values(this.permission).includes(permission));
-          } else {
-            return requiredPermissions.some(permission => this.permission.hasOwnProperty(permission) && this.permission[permission]);
+            return requiredPermissions.some((permission) => Object.values(this.permission).includes(permission));
           }
+          return requiredPermissions.some((permission) => this.permission.hasOwnProperty(permission) && this.permission[permission]);
         }
         // Check if this.permission is a string or an array
-        if (typeof this.permission === 'string') {
-            return requiredPermissions.some(permission => this.permission.split(',').includes(permission));
-        } else if (Array.isArray(this.permission)) {
-            return requiredPermissions.some(permission => this.permission.includes(permission));
+        if (typeof this.permission === "string") {
+          return requiredPermissions.some((permission) => this.permission.split(",").includes(permission));
+        } if (Array.isArray(this.permission)) {
+          return requiredPermissions.some((permission) => this.permission.includes(permission));
         }
 
         // Invalid permission format, exclude the action
@@ -242,16 +261,16 @@ export default {
       });
     },
     filterActionsByConditionals(btns) {
-      return btns.filter(btn => {
-        if (btn.hasOwnProperty('conditional') && btn.conditional === "isDocumenterInstalled") {
+      return btns.filter((btn) => {
+        if (btn.hasOwnProperty("conditional") && btn.conditional === "isDocumenterInstalled") {
           if (this.isDocumenterInstalled) {
             return true;
           }
-        } else if (btn.hasOwnProperty('conditional') && btn.conditional === 'isPackageInstalled') {
+        } else if (btn.hasOwnProperty("conditional") && btn.conditional === "isPackageInstalled") {
           if (this.isPackageInstalled) {
             return true;
           }
-        } else if (btn.hasOwnProperty('conditional')) {
+        } else if (btn.hasOwnProperty("conditional")) {
           const result = Parser.evaluate(btn.conditional, this.data);
           if (result) {
             return true;

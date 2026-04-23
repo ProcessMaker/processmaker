@@ -2,10 +2,10 @@
   <div class="py-5">
     <div class="d-flex justify-content-center my-5">
       <img
-          class="image d-flex empty-processes"
-          src="/img/launchpad-images/emptyResults.svg"
-          alt="Empty Results"
-        >
+        class="image d-flex empty-processes"
+        src="/img/launchpad-images/emptyResults.svg"
+        alt="Empty Results"
+      >
     </div>
     <p class="text-center title-empty">
       {{ $t("No results to show") }}

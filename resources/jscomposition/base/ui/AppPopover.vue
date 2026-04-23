@@ -3,7 +3,8 @@
     ref="tooltipWrapper"
     class=""
     @mouseenter="($event) => hover && showTooltip($event)"
-    @mouseleave="($event) => hover && hideTooltip($event)">
+    @mouseleave="($event) => hover && hideTooltip($event)"
+  >
     <slot name="default" />
     <div
       v-if="visible"
@@ -13,7 +14,8 @@
         top: `${tooltipPosition.top}px`,
         left: `${tooltipPosition.left}px`,
       }"
-      :class="calculatedPosition">
+      :class="calculatedPosition"
+    >
       <slot name="content">
         {{ content }}
       </slot>

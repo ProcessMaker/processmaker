@@ -1,5 +1,8 @@
 <template>
-  <div id="filters" class="tw-float-right tw-absolute tw-right-4 tw-top-0" />
+  <div
+    id="filters"
+    class="tw-float-right tw-absolute tw-right-4 tw-top-0"
+  />
 </template>
 
 <script setup>

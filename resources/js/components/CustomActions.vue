@@ -1,8 +1,29 @@
 <template>
   <div class="custom-actions">
-    <button type="button" class="btn btn-sm" :aria-label="$t('View')" @click="itemAction('view-item', rowData, rowIndex)"><i class="glyphicon glyphicon-zoom-in"></i></button>
-    <button type="button" class="btn btn-sm" :aria-label="$t('Edit')" @click="itemAction('edit-item', rowData, rowIndex)"><i class="glyphicon glyphicon-pencil"></i></button>
-    <button type="button" class="btn btn-sm" :aria-label="$t('Delete')" @click="itemAction('delete-item', rowData, rowIndex)"><i class="glyphicon glyphicon-trash"></i></button>
+    <button
+      type="button"
+      class="btn btn-sm"
+      :aria-label="$t('View')"
+      @click="itemAction('view-item', rowData, rowIndex)"
+    >
+      <i class="glyphicon glyphicon-zoom-in" />
+    </button>
+    <button
+      type="button"
+      class="btn btn-sm"
+      :aria-label="$t('Edit')"
+      @click="itemAction('edit-item', rowData, rowIndex)"
+    >
+      <i class="glyphicon glyphicon-pencil" />
+    </button>
+    <button
+      type="button"
+      class="btn btn-sm"
+      :aria-label="$t('Delete')"
+      @click="itemAction('delete-item', rowData, rowIndex)"
+    >
+      <i class="glyphicon glyphicon-trash" />
+    </button>
   </div>
 </template>
 
@@ -11,18 +32,18 @@ export default {
   props: {
     rowData: {
       type: Object,
-      required: true
+      required: true,
     },
     rowIndex: {
-      type: Number
-    }
+      type: Number,
+    },
   },
   methods: {
-    itemAction (action, data, index) {
-      console.log('custom-actions: ' + action, data.name, index)
-    }
-  }
-}
+    itemAction(action, data, index) {
+      console.log(`custom-actions: ${action}`, data.name, index);
+    },
+  },
+};
 </script>
 
 <style>
