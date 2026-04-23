@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "77c2d2379f9f2bdb2acf8ed7aa46bc72",
+    "content-hash": "6088d4affaf42d74115c474927d96aec",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -7125,16 +7125,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.50",
+            "version": "3.0.51",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "aa6ad8321ed103dc3624fb600a25b66ebf78ec7b"
+                "reference": "d59c94077f9c9915abb51ddb52ce85188ece1748"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/aa6ad8321ed103dc3624fb600a25b66ebf78ec7b",
-                "reference": "aa6ad8321ed103dc3624fb600a25b66ebf78ec7b",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/d59c94077f9c9915abb51ddb52ce85188ece1748",
+                "reference": "d59c94077f9c9915abb51ddb52ce85188ece1748",
                 "shasum": ""
             },
             "require": {
@@ -7215,7 +7215,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.50"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.51"
             },
             "funding": [
                 {
@@ -7231,7 +7231,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-19T02:57:58+00:00"
+            "time": "2026-04-10T01:33:53+00:00"
         },
         {
             "name": "phpstan/phpdoc-parser",
@@ -7621,6 +7621,47 @@
                 "source": "https://github.com/ProcessMaker/nayra/tree/v1.12.4"
             },
             "time": "2025-12-11T00:15:43+00:00"
+        },
+        {
+            "name": "processmaker/package-accessibility",
+            "version": "1.0.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://processmaker.repo.packagist.com/stm-enterprise/dists/processmaker/package-accessibility/1.0.0.0/df36405eb0e3b80f633e788ce0733eaf3f98bd05.zip",
+                "reference": "df36405eb0e3b80f633e788ce0733eaf3f98bd05",
+                "mirrors": [
+                    {
+                        "url": "https://processmaker.repo.packagist.com/stm-enterprise/dists/%package%/%version%/r%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\Accessibility\\PackageServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\Accessibility\\": "src"
+                }
+            },
+            "notification-url": "https://processmaker.repo.packagist.com/stm-enterprise/downloads/",
+            "authors": [
+                {
+                    "name": "Sanja Cornelius",
+                    "email": "sanja.cornelius@processmaker.com"
+                }
+            ],
+            "description": "ProcessMaker 4 Plugin that enhances ADA and WCAG compliance.",
+            "support": {
+                "source": "https://github.com/ProcessMaker/package-accessibility/tree/v1.0.0",
+                "issues": "https://github.com/ProcessMaker/package-accessibility/issues"
+            },
+            "time": "2024-08-23T20:15:01+00:00"
         },
         {
             "name": "processmaker/pmql",
@@ -9930,16 +9971,16 @@
         },
         {
             "name": "swagger-api/swagger-ui",
-            "version": "v5.32.1",
+            "version": "v5.32.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "d361f5b3570b8ade67fb1c02cf7a676fcb441479"
+                "reference": "5717343f5cd3afef84bf3e7aac47df079013638f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/d361f5b3570b8ade67fb1c02cf7a676fcb441479",
-                "reference": "d361f5b3570b8ade67fb1c02cf7a676fcb441479",
+                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/5717343f5cd3afef84bf3e7aac47df079013638f",
+                "reference": "5717343f5cd3afef84bf3e7aac47df079013638f",
                 "shasum": ""
             },
             "type": "library",
@@ -9985,9 +10026,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swagger-api/swagger-ui/issues",
-                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.32.1"
+                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.32.3"
             },
-            "time": "2026-03-17T14:00:38+00:00"
+            "time": "2026-04-14T12:08:03+00:00"
         },
         {
             "name": "symfony/cache",
