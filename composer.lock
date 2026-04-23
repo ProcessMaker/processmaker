@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6088d4affaf42d74115c474927d96aec",
+    "content-hash": "784c39d770a137904392c99bcf85b3d4",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -7496,16 +7496,16 @@
         },
         {
             "name": "processmaker/docker-executor-php",
-            "version": "1.4.2",
+            "version": "1.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/docker-executor-php.git",
-                "reference": "63f3e09f5c579873c27fb41658f041ccfb45a13e"
+                "reference": "c26a6be594e95e46459c4f45ad8b926e7c90fb32"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/63f3e09f5c579873c27fb41658f041ccfb45a13e",
-                "reference": "63f3e09f5c579873c27fb41658f041ccfb45a13e",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/c26a6be594e95e46459c4f45ad8b926e7c90fb32",
+                "reference": "c26a6be594e95e46459c4f45ad8b926e7c90fb32",
                 "shasum": ""
             },
             "type": "library",
@@ -7529,9 +7529,9 @@
             "description": "PHP script executor for processmaker 4",
             "support": {
                 "issues": "https://github.com/ProcessMaker/docker-executor-php/issues",
-                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.4.2"
+                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.4.3"
             },
-            "time": "2026-04-07T21:19:12+00:00"
+            "time": "2026-04-23T22:02:29+00:00"
         },
         {
             "name": "processmaker/laravel-i18next",
@@ -7624,11 +7624,11 @@
         },
         {
             "name": "processmaker/package-accessibility",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "dist": {
                 "type": "zip",
-                "url": "https://processmaker.repo.packagist.com/stm-enterprise/dists/processmaker/package-accessibility/1.0.0.0/df36405eb0e3b80f633e788ce0733eaf3f98bd05.zip",
-                "reference": "df36405eb0e3b80f633e788ce0733eaf3f98bd05",
+                "url": "https://processmaker.repo.packagist.com/stm-enterprise/dists/processmaker/package-accessibility/1.0.1.0/ec9dc9fed08bf26aee3b59f23a0a932d8cd50015.zip",
+                "reference": "ec9dc9fed08bf26aee3b59f23a0a932d8cd50015",
                 "mirrors": [
                     {
                         "url": "https://processmaker.repo.packagist.com/stm-enterprise/dists/%package%/%version%/r%reference%.%type%",
@@ -7658,10 +7658,10 @@
             ],
             "description": "ProcessMaker 4 Plugin that enhances ADA and WCAG compliance.",
             "support": {
-                "source": "https://github.com/ProcessMaker/package-accessibility/tree/v1.0.0",
+                "source": "https://github.com/ProcessMaker/package-accessibility/tree/v1.0.1",
                 "issues": "https://github.com/ProcessMaker/package-accessibility/issues"
             },
-            "time": "2024-08-23T20:15:01+00:00"
+            "time": "2026-04-23T21:37:55+00:00"
         },
         {
             "name": "processmaker/pmql",
