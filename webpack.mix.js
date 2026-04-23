@@ -35,12 +35,6 @@ mix.webpackConfig({
       ),
     },
   },
-  // Disable webpack minification (Terser). Pre-built vendor UMD chunks (e.g. screen-builder)
-  // stay minified in the bundle; use source maps to map stacks back to originals.
-  optimization: {
-    minimize: false,
-    minimizer: [],
-  },
 });
 
 mix.options({
