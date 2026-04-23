@@ -1,73 +1,79 @@
 <template>
   <div>
-    <div v-for="(item, index) in input" 
-         :key="index"
-         class="pm-column-filter-op-in">
-      <PMColumnFilterOpDatetime v-model="input[index]"
-                                @input="onInput"
-                                class="pm-column-filter-op-in-datetime">
-      </PMColumnFilterOpDatetime>
-      <b-icon icon="plus-square-dotted"
-              @click="onPlusIcon(index)"
-              class="pm-column-filter-op-in-plus-square">
-      </b-icon>
-      <b-icon icon="dash-square-dotted"
-              @click="onDashIcon(index)"
-              class="pm-column-filter-op-in-plus-square">
-      </b-icon>
+    <div
+      v-for="(item, index) in input"
+      :key="index"
+      class="pm-column-filter-op-in"
+    >
+      <PMColumnFilterOpDatetime
+        v-model="input[index]"
+        class="pm-column-filter-op-in-datetime"
+        @input="onInput"
+      />
+      <b-icon
+        icon="plus-square-dotted"
+        class="pm-column-filter-op-in-plus-square"
+        @click="onPlusIcon(index)"
+      />
+      <b-icon
+        icon="dash-square-dotted"
+        class="pm-column-filter-op-in-plus-square"
+        @click="onDashIcon(index)"
+      />
     </div>
   </div>
 </template>
 
 <script>
-  import PMColumnFilterOpDatetime from "./PMColumnFilterOpDatetime"
-  export default {
-    components: {
-      PMColumnFilterOpDatetime
+import PMColumnFilterOpDatetime from "./PMColumnFilterOpDatetime";
+
+export default {
+  components: {
+    PMColumnFilterOpDatetime,
+  },
+  props: [
+    "value",
+  ],
+  data() {
+    return {
+      input: [...this.value],
+    };
+  },
+  watch: {
+    value: {
+      handler(newValue) {
+        this.input = [...newValue];
+      },
+      immediate: true,
     },
-    props: [
-      "value"
-    ],
-    data() {
-      return {
-        input: [...this.value]
-      };
+  },
+  created() {
+    this.input = [""];
+    this.$emit("input", this.input);
+  },
+  methods: {
+    onPlusIcon(index) {
+      this.addInput(index + 1);
     },
-    watch: {
-      value: {
-        handler(newValue) {
-          this.input = [...newValue];
-        },
-        immediate: true
+    onDashIcon(index) {
+      if (this.input.length === 1) {
+        return;
       }
+      this.removeInput(index);
     },
-    created() {
-      this.input = [""];
+    addInput(index) {
+      this.input.splice(index, 0, "");
       this.$emit("input", this.input);
     },
-    methods: {
-      onPlusIcon(index) {
-        this.addInput(index + 1);
-      },
-      onDashIcon(index) {
-        if (this.input.length === 1) {
-          return;
-        }
-        this.removeInput(index);
-      },
-      addInput(index) {
-        this.input.splice(index, 0, "");
-        this.$emit("input", this.input);
-      },
-      removeInput(index) {
-        this.input.splice(index, 1);
-        this.$emit("input", this.input);
-      },
-      onInput() {
-        this.$emit("input", this.input);
-      }
-    }
-  };
+    removeInput(index) {
+      this.input.splice(index, 1);
+      this.$emit("input", this.input);
+    },
+    onInput() {
+      this.$emit("input", this.input);
+    },
+  },
+};
 </script>
 
 <style scoped>

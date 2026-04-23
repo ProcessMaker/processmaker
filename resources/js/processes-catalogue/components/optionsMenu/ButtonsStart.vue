@@ -4,7 +4,7 @@
       v-if="startEvent"
       class="btn btn-success start-button"
       type="button"
-      :disabled='isStartButtonDisabled'
+      :disabled="isStartButtonDisabled"
       @click="goToNewRequest(startEvent)"
     >
       <i class="fa fa-play-circle" />
@@ -17,7 +17,7 @@
       data-toggle="dropdown"
       aria-haspopup="true"
       aria-expanded="false"
-      :disabled='isStartButtonDisabled'
+      :disabled="isStartButtonDisabled"
     >
       <i class="fa fa-play-circle" />
       <span class="pl-2"> {{ displayTitle }} </span>
@@ -29,26 +29,30 @@
         class="dropdown-item dropdown-item-div"
         type="button"
       >
-        <div v-if="event.webEntry" 
-             class="start-event"
-             @click="copyLink(event)"
-             v-b-tooltip.hover.top.options="{ boundary: 'viewport' }" 
-             :title=" sizeEventName(event.name) ? event.name : '' ">
+        <div
+          v-if="event.webEntry"
+          v-b-tooltip.hover.top.options="{ boundary: 'viewport' }"
+          class="start-event"
+          :title=" sizeEventName(event.name) ? event.name : '' "
+          @click="copyLink(event)"
+        >
           <button class="btn button-start-event">
             <i class="fas fa-link pr-1" />
           </button>
           {{ formatEventName(event.name) }}
           <div class="start-event-label">
-            {{ $t('Copy link') }}  
+            {{ $t('Copy link') }}
           </div>
         </div>
-        <div v-else
-             class="start-event"
-             @click="goToNewRequest(event.id)"
-             v-b-tooltip.hover.top.options="{ boundary: 'viewport' }" 
-             :title=" sizeEventName(event.name) ? event.name: '' ">
+        <div
+          v-else
+          v-b-tooltip.hover.top.options="{ boundary: 'viewport' }"
+          class="start-event"
+          :title=" sizeEventName(event.name) ? event.name: '' "
+          @click="goToNewRequest(event.id)"
+        >
           <button class="btn button-start-event">
-            <i class="fas fa-play-circle pr-1" />  
+            <i class="fas fa-play-circle pr-1" />
           </button>
           {{ formatEventName(event.name) }}
           <div class="start-event-label">
@@ -78,7 +82,7 @@ export default {
     processEvents: {
       type: Array,
       default: () => [],
-    }
+    },
   },
   data() {
     return {
@@ -128,12 +132,12 @@ export default {
         ProcessMaker.alert(this.$t("Link copied"), "success");
       }
     },
-    sizeEventName(string){
+    sizeEventName(string) {
       return string.length > 25;
     },
     formatEventName(string) {
       if (this.sizeEventName(string)) {
-        string = string.slice(0, 25) + "...";
+        string = `${string.slice(0, 25)}...`;
       }
       return string;
     },

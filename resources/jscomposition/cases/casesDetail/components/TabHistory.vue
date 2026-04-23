@@ -6,7 +6,8 @@
       :commentable_type="comentableType"
       :adding="false"
       :readonly="status === 'COMPLETED'"
-      :timeline="false" />
+      :timeline="false"
+    />
   </div>
 </template>
 

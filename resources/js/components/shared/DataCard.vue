@@ -3,12 +3,17 @@
     <b-card class="data-card">
       <template #header>
         <div class="header">
-          <i class="text-secondary data-card-header fas nav-icon d-inline align-middle" :class="info.icon" />
-          <h5 class="mb-0 data-card-header d-inline align-middle">{{ $t(info.typeHumanPlural) }}</h5>
+          <i
+            class="text-secondary data-card-header fas nav-icon d-inline align-middle"
+            :class="info.icon"
+          />
+          <h5 class="mb-0 data-card-header d-inline align-middle">
+            {{ $t(info.typeHumanPlural) }}
+          </h5>
           <b-form-checkbox
+            v-model="includeAllByGroup"
             class="data-card-header export-all d-inline align-middle fw-semibold"
             :disabled="disabled"
-            v-model="includeAllByGroup"
           >
             {{ $t($root.operation) }} {{ $t('All') }}
           </b-form-checkbox>
@@ -18,24 +23,39 @@
         <div class="data-card-metadata mb-1">
           <div>
             <div>
-              <small v-if="hasSomeForcePasswordProtectAsset(info.items)" class="fw-semibold form-text text-muted mt-0">
-                <i class="fas fa-exclamation-triangle text-warning p-0"/>
+              <small
+                v-if="hasSomeForcePasswordProtectAsset(info.items)"
+                class="fw-semibold form-text text-muted mt-0"
+              >
+                <i class="fas fa-exclamation-triangle text-warning p-0" />
                 {{ $t(info.typeHumanPlural) }} {{ $t('may contain sensitive information.') }}
               </small>
             </div>
             <span>{{ $t('Status') }}:</span>
-            <b-badge v-if="$root.includeAllByGroup[info.type]" pill variant="success">
+            <b-badge
+              v-if="$root.includeAllByGroup[info.type]"
+              pill
+              variant="success"
+            >
               <i class="fas fa-check-circle export-status-label" />
               {{ $t('Full') }} {{ $t($root.operation) }}
             </b-badge>
-            <b-badge v-else pill variant="warning">
+            <b-badge
+              v-else
+              pill
+              variant="warning"
+            >
               <i class="fas fa-exclamation-triangle export-status-label" />
               Not {{ $root.operation }}ing
             </b-badge>
           </div>
         </div>
         <template v-if="$root.isImport">
-          <data-tree :data="elementsCount" :collapsable="false" :show-icon="false"/>
+          <data-tree
+            :data="elementsCount"
+            :collapsable="false"
+            :show-icon="false"
+          />
         </template>
         <template v-else>
           {{ $t('Total Elements') }}:
@@ -46,8 +66,11 @@
           </span>
         </template>
         <div class="mt-3">
-          <b-link v-if="$root.includeAllByGroup[info.type]" @click="onGroupDetailsClick">
-            <i class="fas fa-info-circle fa-fw mr-0 pr-0"></i>
+          <b-link
+            v-if="$root.includeAllByGroup[info.type]"
+            @click="onGroupDetailsClick"
+          >
+            <i class="fas fa-info-circle fa-fw mr-0 pr-0" />
             {{ $t('Details') }}
           </b-link>
         </div>
@@ -64,24 +87,11 @@ export default {
   components: {
     DataTree,
   },
-  props: ['info', 'isEnabled'],
   mixins: [],
+  props: ["info", "isEnabled"],
   data() {
     return {
-    }
-  },
-  methods: {
-    count(mode, items) {
-      return items.filter(item => item.importMode === mode).length
-    },
-    onGroupDetailsClick() {
-      window.ProcessMaker.EventBus.$emit("group-details-click", this.info.typePlural);
-    },
-    hasSomeForcePasswordProtectAsset(items) {
-      return items.some((item) => item.forcePasswordProtect);
-    },
-  },
-  mounted() {
+    };
   },
   computed: {
     includeAllByGroup: {
@@ -90,30 +100,43 @@ export default {
       },
       set(value) {
         this.$root.setForGroup(this.info.type, value);
-      }
+      },
     },
     elementsCount() {
       const type = this.info.items.length === 1 ? this.info.type : this.info.typePlural;
-      const label = 'Total Elements: ' +  this.info.items.length  + ' ' + type;
+      const label = `Total Elements: ${this.info.items.length} ${type}`;
       return {
-        label: label,
+        label,
         isRoot: true,
         icon: "",
         children: [
           {
-            label: `New Elements:  ${ this.count('copy', this.info.items) + this.count('new', this.info.items) }`,
+            label: `New Elements:  ${this.count("copy", this.info.items) + this.count("new", this.info.items)}`,
           },
           {
-            label: `Updated Elements:  ${ this.count('update', this.info.items) }`,
+            label: `Updated Elements:  ${this.count("update", this.info.items)}`,
           },
         ],
       };
     },
     disabled() {
       return !this.includeAllByGroup && !this.isEnabled;
-    }
-  }
-}
+    },
+  },
+  mounted() {
+  },
+  methods: {
+    count(mode, items) {
+      return items.filter((item) => item.importMode === mode).length;
+    },
+    onGroupDetailsClick() {
+      window.ProcessMaker.EventBus.$emit("group-details-click", this.info.typePlural);
+    },
+    hasSomeForcePasswordProtectAsset(items) {
+      return items.some((item) => item.forcePasswordProtect);
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

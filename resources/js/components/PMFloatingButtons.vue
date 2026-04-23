@@ -1,30 +1,32 @@
 <template>
-  <div v-show="vShow" class="pm-floating-buttons">
-    <slot name="content">
-    </slot>
+  <div
+    v-show="vShow"
+    class="pm-floating-buttons"
+  >
+    <slot name="content" />
   </div>
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        vShow: false
-      };
+export default {
+  data() {
+    return {
+      vShow: false,
+    };
+  },
+  mounted() {
+    const parent = this.$parent.$el;
+    parent.style.position = "relative";
+  },
+  methods: {
+    show() {
+      this.vShow = true;
     },
-    mounted() {
-      let parent = this.$parent.$el;
-      parent.style.position = "relative";
+    close() {
+      this.vShow = false;
     },
-    methods: {
-      show() {
-        this.vShow = true;
-      },
-      close() {
-        this.vShow = false;
-      }
-    }
-  };
+  },
+};
 </script>
 
 <style scoped>

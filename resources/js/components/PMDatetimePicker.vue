@@ -1,44 +1,53 @@
 <template>
   <b-input-group class="pm-datetime-picker position-static">
-    <b-form-input v-model="input"
-                  type="text"
-                  autocomplete="off"
-                  readonly
-                  :placeholder="placeholder"
-                  :size="size"
-                  class="pm-datetime-picker-input">
-    </b-form-input>
+    <b-form-input
+      v-model="input"
+      type="text"
+      autocomplete="off"
+      readonly
+      :placeholder="placeholder"
+      :size="size"
+      class="pm-datetime-picker-input"
+    />
     <b-input-group-append>
-      <b-form-datepicker v-model="selectedDate"
-                         button-only
-                         right
-                         :size="size"
-                         boundary="window"
-                         button-variant="light"
-                         class="pm-datetime-picker-button-datetime"
-                         :class="{'pm-datetime-picker-button-border-right': !withTime}"
-                         label-help=""
-                         :hide-header="true">
-        <template v-slot:button-content
-                  v-if="$slots['button-content-datepicker']">
-          <slot name="button-content-datepicker"></slot>
+      <b-form-datepicker
+        v-model="selectedDate"
+        button-only
+        right
+        :size="size"
+        boundary="window"
+        button-variant="light"
+        class="pm-datetime-picker-button-datetime"
+        :class="{'pm-datetime-picker-button-border-right': !withTime}"
+        label-help=""
+        :hide-header="true"
+      >
+        <template
+          v-if="$slots['button-content-datepicker']"
+          #button-content
+        >
+          <slot name="button-content-datepicker" />
         </template>
       </b-form-datepicker>
     </b-input-group-append>
     <b-input-group-append v-if="withTime">
-      <b-form-timepicker v-model="selectedTime"
-                         button-only
-                         right
-                         :size="size"
-                         boundary="window"
-                         button-variant="light"
-                         class="pm-datetime-picker-button-datetime"
-                         :class="{'pm-datetime-picker-button-border-right': withTime}"
-                         :hour12="false"
-                         show-seconds>
-        <template v-slot:button-content
-                  v-if="$slots['button-content-timepicker']">
-          <slot name="button-content-timepicker"></slot>
+      <b-form-timepicker
+        v-model="selectedTime"
+        button-only
+        right
+        :size="size"
+        boundary="window"
+        button-variant="light"
+        class="pm-datetime-picker-button-datetime"
+        :class="{'pm-datetime-picker-button-border-right': withTime}"
+        :hour12="false"
+        show-seconds
+      >
+        <template
+          v-if="$slots['button-content-timepicker']"
+          #button-content
+        >
+          <slot name="button-content-timepicker" />
         </template>
       </b-form-timepicker>
     </b-input-group-append>
@@ -46,110 +55,109 @@
 </template>
 
 <script>
-  export default {
-    props: {
-      value: {
-        type: null,
-        default: ""
-      },
-      placeholder: {
-        type: null,
-        default: "YYYY-MM-DD"
-      },
-      size: {
-        type: null,
-        default: ""
-      },
-      withTime: {
-        type: null,
-        default: true
-      },
-      currentDatetime: {
-        type: null,
-        default: true
-      },
-      format: {
-        type: null,
-        default: "YYYY-MM-DD HH:mm:ss"
-      },
-      timeZone: {
-        type: null,
-        default: Intl.DateTimeFormat().resolvedOptions().timeZone
-      },
-      guestTimeZone: {
-        type: null,
-        default: Intl.DateTimeFormat().resolvedOptions().timeZone
-      }
+export default {
+  props: {
+    value: {
+      type: null,
+      default: "",
     },
-    data() {
-      return {
-        input: "",
-        selectedDate: "",
-        selectedTime: ""
-      };
+    placeholder: {
+      type: null,
+      default: "YYYY-MM-DD",
     },
-    watch: {
-      value: {
-        handler(newValue) {
-          this.input = this.convertFromISOString(newValue);
-          this.selectedDate = this.getValueFromFormat(this.input, "YYYY-MM-DD");
-          this.selectedTime = this.getValueFromFormat(this.input, "HH:mm:ss", "00:00:00");
-        },
-        immediate: true
-      },
-      input() {
-        this.emitInput();
-      },
-      selectedDate() {
-        this.setInput();
-      },
-      selectedTime() {
-        this.setInput();
-      }
+    size: {
+      type: null,
+      default: "",
     },
-    methods: {
-      emitInput() {
-        this.$emit("input", this.convertToISOString(this.input));
+    withTime: {
+      type: null,
+      default: true,
+    },
+    currentDatetime: {
+      type: null,
+      default: true,
+    },
+    format: {
+      type: null,
+      default: "YYYY-MM-DD HH:mm:ss",
+    },
+    timeZone: {
+      type: null,
+      default: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    },
+    guestTimeZone: {
+      type: null,
+      default: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    },
+  },
+  data() {
+    return {
+      input: "",
+      selectedDate: "",
+      selectedTime: "",
+    };
+  },
+  watch: {
+    value: {
+      handler(newValue) {
+        this.input = this.convertFromISOString(newValue);
+        this.selectedDate = this.getValueFromFormat(this.input, "YYYY-MM-DD");
+        this.selectedTime = this.getValueFromFormat(this.input, "HH:mm:ss", "00:00:00");
       },
-      setInput() {
-        let datetime = this.selectedDate + " " + this.selectedTime;
-        datetime = datetime.trim();
-        this.input = moment(datetime).tz(this.guestTimeZone).format(this.format);
-      },
-      getValueFromFormat(string, format, defaultValue) {
-        if (string === "") {
-          return string;
-        }
-        if (this.isDatetime(string)) {
-          return moment(string, this.format).tz(this.guestTimeZone).format(format);
-        } else {
-          if (defaultValue !== undefined) {
-            return defaultValue;
-          }
-          return moment().tz(this.guestTimeZone).format(format);
-        }
-      },
-      convertFromISOString(dateString) {
-        if (!this.isDatetime(dateString)) {
-          return dateString;
-        }
-        return moment(dateString).tz(this.timeZone).format(this.format);
-      },
-      convertToISOString(dateString) {
-        if (!this.isDatetime(dateString)) {
-          return dateString;
-        }
-        return moment(dateString, this.format).tz("UTC").toISOString();
-      },
-      isDatetime(string) {
-        if (!string) {
-          return false;
-        }
-        let date = new Date(string);
-        return !isNaN(date) && isFinite(date);
+      immediate: true,
+    },
+    input() {
+      this.emitInput();
+    },
+    selectedDate() {
+      this.setInput();
+    },
+    selectedTime() {
+      this.setInput();
+    },
+  },
+  methods: {
+    emitInput() {
+      this.$emit("input", this.convertToISOString(this.input));
+    },
+    setInput() {
+      let datetime = `${this.selectedDate} ${this.selectedTime}`;
+      datetime = datetime.trim();
+      this.input = moment(datetime).tz(this.guestTimeZone).format(this.format);
+    },
+    getValueFromFormat(string, format, defaultValue) {
+      if (string === "") {
+        return string;
       }
-    }
-  };
+      if (this.isDatetime(string)) {
+        return moment(string, this.format).tz(this.guestTimeZone).format(format);
+      }
+      if (defaultValue !== undefined) {
+        return defaultValue;
+      }
+      return moment().tz(this.guestTimeZone).format(format);
+    },
+    convertFromISOString(dateString) {
+      if (!this.isDatetime(dateString)) {
+        return dateString;
+      }
+      return moment(dateString).tz(this.timeZone).format(this.format);
+    },
+    convertToISOString(dateString) {
+      if (!this.isDatetime(dateString)) {
+        return dateString;
+      }
+      return moment(dateString, this.format).tz("UTC").toISOString();
+    },
+    isDatetime(string) {
+      if (!string) {
+        return false;
+      }
+      const date = new Date(string);
+      return !isNaN(date) && isFinite(date);
+    },
+  },
+};
 </script>
 
 <style>

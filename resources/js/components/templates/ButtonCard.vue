@@ -1,16 +1,49 @@
 <template>
   <div :class="{'d-flex': button.helperEnabled}">
-    <b-card no-body class="button-card" :class="{'col-6 p-0': button.helperEnabled}" @mouseenter="addHoverClass" @mouseleave="removeHoverClass" @click="$emit('card-button-clicked')">
+    <b-card
+      no-body
+      class="button-card"
+      :class="{'col-6 p-0': button.helperEnabled}"
+      @mouseenter="addHoverClass"
+      @mouseleave="removeHoverClass"
+      @click="$emit('card-button-clicked')"
+    >
       <div class="card-body text-center d-flex justify-content-center flex-column">
-        <i v-if="button.icon" class="icon mb-2 text-primary" :class="button.icon" :style="button.iconStyle"></i>
-        <img v-if="button.svgIcon" :src="button.svgIcon" class="mb-2" :style="button.svgIconStyle" :alt="button.title">
-        <h5 class="m-0">{{ button.title }}</h5>
-        <div v-if="button.description" class="mb-2">
-          <div class="mt-1 description text-secondary">{{ button.description }}</div>
+        <i
+          v-if="button.icon"
+          class="icon mb-2 text-primary"
+          :class="button.icon"
+          :style="button.iconStyle"
+        />
+        <img
+          v-if="button.svgIcon"
+          :src="button.svgIcon"
+          class="mb-2"
+          :style="button.svgIconStyle"
+          :alt="button.title"
+        >
+        <h5 class="m-0">
+          {{ button.title }}
+        </h5>
+        <div
+          v-if="button.description"
+          class="mb-2"
+        >
+          <div class="mt-1 description text-secondary">
+            {{ button.description }}
+          </div>
         </div>
       </div>
-      <div v-if="button.showAiSlogan" class="ai-slogan-container mb-2">
-        <div class="ai-slogan"><img src="/img/favicon.svg" :alt="$t('ProcessMaker')"> {{ $t("Powered by ProcessMaker AI") }}</div>
+      <div
+        v-if="button.showAiSlogan"
+        class="ai-slogan-container mb-2"
+      >
+        <div class="ai-slogan">
+          <img
+            src="/img/favicon.svg"
+            :alt="$t('ProcessMaker')"
+          > {{ $t("Powered by ProcessMaker AI") }}
+        </div>
       </div>
     </b-card>
   </div>

@@ -1,7 +1,12 @@
 <template>
-    <ul class="tree">
-      <data-node :node="data" :collapsable="collapsable" :show-icon="showIcon" :show-children-icon="showChildrenIcon"></data-node>
-    </ul>
+  <ul class="tree">
+    <data-node
+      :node="data"
+      :collapsable="collapsable"
+      :show-icon="showIcon"
+      :show-children-icon="showChildrenIcon"
+    />
+  </ul>
 </template>
 
 <script>

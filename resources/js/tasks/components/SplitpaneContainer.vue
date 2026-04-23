@@ -1,16 +1,22 @@
-
 <template>
-  <splitpanes 
+  <splitpanes
     ref="inspectorSplitPanes"
     class="splitpane default-theme"
     :class="[classInbox ? 'splitpane-inbox' : 'splitpane', 'default-theme']"
     :dbl-click-splitter="false"
-    @resize="sizeListener($event)">
+    @resize="sizeListener($event)"
+  >
     <pane style="opacity: 0">
       <div />
     </pane>
-    <pane class="pane-task-preview" :min-size="paneMinSize" :size="size" max-size="99" style="background-color: white">
-      <slot></slot>
+    <pane
+      class="pane-task-preview"
+      :min-size="paneMinSize"
+      :size="size"
+      max-size="99"
+      style="background-color: white"
+    >
+      <slot />
     </pane>
   </splitpanes>
 </template>
@@ -26,21 +32,13 @@ export default {
       default: 50,
     },
     classInbox: {
-      default: false
+      default: false,
     },
   },
   data() {
     return {
-      paneMinSize: 0
-    }
-  },
-  methods: {
-    setPaneMinSize(splitpanesWidth, minPixelWidth) {
-      this.paneMinSize = (minPixelWidth * 100) / splitpanesWidth;
-    },
-    sizeListener(event) {
-      this.$root.$emit('pane-size', event[1].size);
-    },
+      paneMinSize: 0,
+    };
   },
   updated() {
     const resizeOb = new ResizeObserver((entries) => {
@@ -50,6 +48,14 @@ export default {
     if (this.$refs.inspectorSplitPanes) {
       resizeOb.observe(this.$refs.inspectorSplitPanes.container);
     }
+  },
+  methods: {
+    setPaneMinSize(splitpanesWidth, minPixelWidth) {
+      this.paneMinSize = (minPixelWidth * 100) / splitpanesWidth;
+    },
+    sizeListener(event) {
+      this.$root.$emit("pane-size", event[1].size);
+    },
   },
 };
 </script>

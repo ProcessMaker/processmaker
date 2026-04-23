@@ -13,7 +13,8 @@
       type="text"
       :placeholder="$t('Total Amount')"
       :value="agregationVariable"
-      @input="saveVariableDebounced">
+      @input="saveVariableDebounced"
+    >
   </div>
 </template>
 

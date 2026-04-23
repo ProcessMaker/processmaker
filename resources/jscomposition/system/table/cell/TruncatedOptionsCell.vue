@@ -3,17 +3,20 @@
     <!-- First Option -->
     <div
       v-if="optionsModel.length"
-      class="tw-overflow-hidden tw-text-ellipsis">
+      class="tw-overflow-hidden tw-text-ellipsis"
+    >
       <a
         v-if="href !== null"
         class="hover:tw-text-blue-400 tw-text-gray-500"
-        :href="firstOptionHref">
+        :href="firstOptionHref"
+      >
         {{ firstOptionValue }}
       </a>
       <span
         v-else
         class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer"
-        @click.prevent.stop="onClickOption(optionsModel[0], 0)">
+        @click.prevent.stop="onClickOption(optionsModel[0], 0)"
+      >
         {{ firstOptionValue }}
       </span>
     </div>
@@ -24,10 +27,12 @@
       v-model="show"
       :hover="false"
       position="bottom"
-      class="!tw-absolute tw-right-0 tw-top-0 tw-h-full tw-flex tw-items-center">
+      class="!tw-absolute tw-right-0 tw-top-0 tw-h-full tw-flex tw-items-center"
+    >
       <div
         class="tw-self-center tw-px-2 tw-rounded-md hover:tw-cursor-pointer hover:tw-bg-gray-200 tw-bg-white"
-        @click.prevent="onClick">
+        @click.prevent="onClick"
+      >
         <i class="fas fa-ellipsis-v" />
       </div>
       <template #content>
@@ -35,17 +40,20 @@
           <li
             v-for="(option, index) in additionalOptions"
             :key="index"
-            class="hover:tw-bg-gray-100">
+            class="hover:tw-bg-gray-100"
+          >
             <a
               v-if="href !== null"
               class="tw-flex tw-py-2 tw-px-4 transition duration-300 tw-text-gray-500 hover:tw-bg-gray-200 hover:tw-text-blue-400"
-              :href="getOptionHref(option)">
+              :href="getOptionHref(option)"
+            >
               {{ optionValues[index + 1] }}
             </a>
             <span
               v-else
               class="tw-flex tw-py-2 tw-px-4 transition duration-300 hover:tw-bg-gray-200 hover:tw-cursor-pointer"
-              @click.prevent.stop="onClickOption(option, index + 1)">
+              @click.prevent.stop="onClickOption(option, index + 1)"
+            >
               {{ optionValues[index + 1] }}
             </span>
           </li>

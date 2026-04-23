@@ -9,12 +9,12 @@ export default {
         borderColor: [],
         pointBackgroundColor: [],
         pointBorderColor: [],
-      }
+      },
     };
   },
   methods: {
     transformChartData(chart) {
-      let transformed = this.copy(chart);
+      const transformed = this.copy(chart);
       if (transformed.chart_data) {
         transformed.chart_data.header = this.transformHeader(transformed);
         transformed.chart_data.rows = this.transformRows(transformed);
@@ -22,12 +22,12 @@ export default {
       }
     },
     transformHeader(chart) {
-      return chart.chart_data.header.map(column => {
+      return chart.chart_data.header.map((column) => {
         column.key = column.label;
         column.transform = null;
-        if (chart.type !== 'list' || chart.config.display.pivot) {
-          ['series', 'category'].forEach(field => {
-            if (['date', 'datetime'].includes(column.format)) {
+        if (chart.type !== "list" || chart.config.display.pivot) {
+          ["series", "category"].forEach((field) => {
+            if (["date", "datetime"].includes(column.format)) {
               if (chart.config.pivot[field] === column.label) {
                 if (chart.config.pivot[`${field}Function`]) {
                   column.transform = chart.config.pivot[`${field}Function`];
@@ -40,17 +40,17 @@ export default {
       });
     },
     transformRows(chart) {
-      let columns = {};
+      const columns = {};
 
-      chart.chart_data.header.forEach(column => {
+      chart.chart_data.header.forEach((column) => {
         columns[column.label] = column;
       });
 
-      return chart.chart_data.rows.map(row => {
-        let transformed = {};
+      return chart.chart_data.rows.map((row) => {
+        const transformed = {};
 
-        let keys = Object.keys(row);
-        let values = Object.values(row);
+        const keys = Object.keys(row);
+        const values = Object.values(row);
 
         keys.forEach((key, index) => {
           transformed[key] = this.transformValue(values[index], columns[key]);
@@ -63,17 +63,17 @@ export default {
       if (column) {
         if (column.transform) {
           switch (column.transform) {
-            case 'month':
-              value = moment().month(value - 1).format('MMM');
+            case "month":
+              value = moment().month(value - 1).format("MMM");
               break;
-            case 'dayOfWeek':
-              value = moment().day(value - 1).format('ddd');
+            case "dayOfWeek":
+              value = moment().day(value - 1).format("ddd");
               break;
           }
         } else {
           switch (column.format) {
-            case 'date':
-            case 'datetime':
+            case "date":
+            case "datetime":
               value = moment(value).format();
               break;
           }
@@ -85,17 +85,16 @@ export default {
     getColor(colors, index) {
       if (colors[index]) {
         return colors[index];
-      } else {
-        let count = colors.length;
-        if (index > (count - 1)) {
-          let div = parseInt(Math.floor(index / count));
-          return this.getColor(colors, index - (count * div));
-        }
+      }
+      const count = colors.length;
+      if (index > (count - 1)) {
+        const div = parseInt(Math.floor(index / count));
+        return this.getColor(colors, index - (count * div));
       }
     },
     fillColorArray(colors, length) {
       let i;
-      let filled = [];
+      const filled = [];
 
       for (i = 0; i < length; i++) {
         filled[i] = this.getColor(colors, i);
@@ -107,13 +106,13 @@ export default {
       return JSON.parse(JSON.stringify(data));
     },
     conformData(chart) {
-      let data = chart.chart_data;
-      let config = chart.config;
+      const data = chart.chart_data;
+      const { config } = chart;
 
-      if (chart.type === 'list') {
+      if (chart.type === "list") {
         return this.conformList(data, config);
       }
-      if (chart.type === 'count') {
+      if (chart.type === "count") {
         return this.conformCount(data, config);
       }
       if (config.pivot.category) {
@@ -125,10 +124,10 @@ export default {
       if (!config.display.pivot) {
         data.header.push({
           default: false,
-          field: 'ProcessMaker.url',
-          format: 'link',
-          key: 'actions',
-          label: '',
+          field: "ProcessMaker.url",
+          format: "link",
+          key: "actions",
+          label: "",
           mask: null,
           sortable: false,
           transform: null,
@@ -143,16 +142,16 @@ export default {
           icon: config.display.icon,
           data: Object.values(data.rows[0]),
           backgroundColor: config.colorScheme.colors,
-        }]
+        }],
       };
     },
     conformSimple(data, config) {
-      let parsed = {
+      const parsed = {
         labels: [],
         datasets: [this.copy(this.datasetTemplate)],
       };
 
-      data.rows.forEach(dataPoint => {
+      data.rows.forEach((dataPoint) => {
         dataPoint = Object.values(dataPoint);
         parsed.labels.push(dataPoint[0]);
         parsed.datasets[0].data.push(dataPoint[1]);
@@ -166,7 +165,7 @@ export default {
       return parsed;
     },
     conformComplex(data, config) {
-      let parsed = {
+      const parsed = {
         labels: [],
         datasets: {},
       };
@@ -178,7 +177,7 @@ export default {
           parsed.datasets[dataPoint[1]] = this.copy(this.datasetTemplate);
         }
 
-        let label = dataPoint[0];
+        const label = dataPoint[0];
         if (!parsed.labels.includes(label)) {
           parsed.labels.push(label);
         }
@@ -200,6 +199,6 @@ export default {
       });
 
       return parsed;
-    }
-  }
+    },
+  },
 };

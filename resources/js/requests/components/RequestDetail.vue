@@ -197,19 +197,19 @@ export default {
      */
     getColumnsParam() {
       const fields = [
-        'id',
-        'element_id',           // Required by assignableUsers relationship (TokenAssignableUsers::match uses element_id)
-        'element_name',
-        'user_id',
-        'process_id',
-        'process_request_id',
-        'status',
-        'due_at',
-        'is_self_service',
-        'is_actionbyemail',
-        'self_service_groups',  // Required by Task resource's addAssignableUsers() method when recalculating assignable users
+        "id",
+        "element_id", // Required by assignableUsers relationship (TokenAssignableUsers::match uses element_id)
+        "element_name",
+        "user_id",
+        "process_id",
+        "process_request_id",
+        "status",
+        "due_at",
+        "is_self_service",
+        "is_actionbyemail",
+        "self_service_groups", // Required by Task resource's addAssignableUsers() method when recalculating assignable users
       ];
-      return `&fields=${fields.join(',')}`;
+      return `&fields=${fields.join(",")}`;
     },
     getSortParam() {
       if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {

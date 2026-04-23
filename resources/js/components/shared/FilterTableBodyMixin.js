@@ -1,14 +1,14 @@
-import { get } from 'lodash';
+import { get } from "lodash";
 
 export default {
   methods: {
     containsHTML(text) {
-      const doc = new DOMParser().parseFromString(text, 'text/html');
-      return Array.from(doc.body.childNodes).some(node => node.nodeType === Node.ELEMENT_NODE);
+      const doc = new DOMParser().parseFromString(text, "text/html");
+      return Array.from(doc.body.childNodes).some((node) => node.nodeType === Node.ELEMENT_NODE);
     },
     isComponent(content) {
-      if (content && typeof content === 'object') {
-        return content.component && typeof content.props === 'object';
+      if (content && typeof content === "object") {
+        return content.component && typeof content.props === "object";
       }
       return false;
     },
@@ -16,14 +16,14 @@ export default {
       return this.removeScripts(html);
     },
     removeScripts(input) {
-      const doc = new DOMParser().parseFromString(input, 'text/html');
+      const doc = new DOMParser().parseFromString(input, "text/html");
 
-      const scripts = doc.querySelectorAll('script');
+      const scripts = doc.querySelectorAll("script");
       scripts.forEach((script) => {
         script.remove();
       });
 
-      const styles = doc.querySelectorAll('style');
+      const styles = doc.querySelectorAll("style");
       styles.forEach((style) => {
         style.remove();
       });
@@ -47,18 +47,18 @@ export default {
           "input-data": user,
           "hide-name": false,
           "name-clickable": true,
-          'use-pm-default-label': $usePmDefaultLabel,
-          'use-pm-default-label-process': $usePmDefaultLabelProcess
+          "use-pm-default-label": $usePmDefaultLabel,
+          "use-pm-default-label-process": $usePmDefaultLabelProcess,
         },
       };
     },
     formatCategory(categories) {
-      return categories?.map(item => item.name).join(', ');
+      return categories?.map((item) => item.name).join(", ");
     },
     getNestedPropertyValue(obj, header) {
       const value = get(obj, header.field);
 
-      if (typeof header.cb === 'function') {
+      if (typeof header.cb === "function") {
         return header.cb(value, obj);
       }
 
@@ -68,11 +68,11 @@ export default {
       let config = "";
       if (header.format === "datetime") {
         config = ProcessMaker.user.datetime_format;
-        value = this.convertUTCToLocal(value, config)
+        value = this.convertUTCToLocal(value, config);
       }
       if (header.format === "date") {
         config = ProcessMaker.user.datetime_format.replace(/[\sHh:msaAzZ]/g, "");
-        value = this.convertUTCToLocal(value, config)
+        value = this.convertUTCToLocal(value, config);
       }
       return value;
     },
@@ -86,7 +86,7 @@ export default {
       }
       return "-";
     },
-    checkIfTooltipIsNeeded(e,v){
+    checkIfTooltipIsNeeded(e, v) {
       if (e.target.offsetWidth >= e.target.scrollWidth) {
         e.preventDefault();
       }

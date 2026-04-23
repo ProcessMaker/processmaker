@@ -5,16 +5,18 @@
     <Dropdown
       v-model="operator"
       :options="operatorsModel"
-      @change="onChangeOperator" />
+      @change="onChangeOperator"
+    />
 
     <component
       :is="operatorType?.component()"
+      id="filter-value"
       :value="modelValue"
       :config="config"
       placeholder="Type value"
       class="tw-flex-1"
-      id="filter-value"
-      @change="onChangeValue" />
+      @change="onChangeValue"
+    />
   </div>
 </template>
 <script>

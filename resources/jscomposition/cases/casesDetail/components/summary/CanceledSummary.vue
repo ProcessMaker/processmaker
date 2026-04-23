@@ -1,24 +1,28 @@
 <template>
   <div
     v-if="summaryScreen"
-    class="tw-flex tw-w-full">
+    class="tw-flex tw-w-full"
+  >
     <vue-form-renderer
       ref="screen"
       v-model="dataSummary"
       :config="summaryScreen?.config"
       :custom-css="summaryScreen?.custom_css"
-      :computed="summaryScreen?.computed" />
+      :computed="summaryScreen?.computed"
+    />
   </div>
 
   <MessageDefault
     v-else-if="request?.summary.length === 0"
     :title="$t('No Data Found')"
-    :message="$t('Sorry, this request doesn\'t contain any information.')" />
+    :message="$t('Sorry, this request doesn\'t contain any information.')"
+  />
 
   <DataSummary
     v-else-if="request?.summary.length"
     class="tw-mt-3"
-    :summary="dataSummary" />
+    :summary="dataSummary"
+  />
 </template>
 
 <script setup>

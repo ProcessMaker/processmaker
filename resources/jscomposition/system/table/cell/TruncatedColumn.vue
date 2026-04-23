@@ -11,23 +11,27 @@
       v-model="show"
       :hover="false"
       position="bottom"
-      class="!tw-absolute tw-right-0 tw-top-0  tw-h-full tw-flex tw-items-center">
+      class="!tw-absolute tw-right-0 tw-top-0  tw-h-full tw-flex tw-items-center"
+    >
       <div
         class="tw-text-xs tw-py-1 tw-px-1 hover:tw-cursor-pointer
         hover:tw-bg-gray-200 tw-rounded"
-        @click.prevent="onClick">
+        @click.prevent="onClick"
+      >
         <i class="fas fa-ellipsis-v" />
       </div>
 
       <template #content>
         <ul
           class="tw-bg-white tw-list-none
-            tw-overflow-hidden tw-rounded-lg tw-w-50 tw-text-sm tw-border tw-border-gray-300">
+            tw-overflow-hidden tw-rounded-lg tw-w-50 tw-text-sm tw-border tw-border-gray-300"
+        >
           <template v-for="(option, index) in optionsModel">
             <li
               v-if="index > 0"
               :key="index"
-              class="hover:tw-bg-gray-100">
+              class="hover:tw-bg-gray-100"
+            >
               <span class="tw-flex tw-py-2 tw-px-4 transition duration-300">
                 {{ getValueOption(option, index) }}
               </span>
@@ -85,13 +89,13 @@ export default defineComponent({
 
       // Safely access nested properties
       const fieldValue = get(props.row, props.column.field, []);
-      
+
       // Check if it's an array with at least one element
       if (Array.isArray(fieldValue) && fieldValue.length > 0) {
-        return fieldValue[0]?.name || '';
+        return fieldValue[0]?.name || "";
       }
 
-      return '';
+      return "";
     });
 
     const getValueOption = (option) => {

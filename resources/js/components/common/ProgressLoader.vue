@@ -11,7 +11,10 @@
         class="progress-circle"
         :style="`width: ${width};`"
       >
-        <svg :width="width" viewBox="0 0 100 100">
+        <svg
+          :width="width"
+          viewBox="0 0 100 100"
+        >
           <circle
             class="bg"
             :style="`stroke: ${backgroundColor};`"

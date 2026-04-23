@@ -4,18 +4,26 @@
       <button
         ref="optionsButton"
         class="btn btn-outline-secondary mr-1 mt-3 d-flex align-items-center"
+        data-test="translation-translate-option"
         @click="toggleOptionsPopup"
-        data-test="translation-translate-option">
-        <font-awesome-icon :icon="['fpm', 'fa-translations']" class="mr-1" />
-        <span class="text-capitalize">{{$t('Translation Options')}}</span>
+      >
+        <font-awesome-icon
+          :icon="['fpm', 'fa-translations']"
+          class="mr-1"
+        />
+        <span class="text-capitalize">{{ $t('Translation Options') }}</span>
       </button>
-      <div v-if="showOptionsPopup" class="filter-dropdown-panel-container card" v-click-outside="closeOptionsPopup">
+      <div
+        v-if="showOptionsPopup"
+        v-click-outside="closeOptionsPopup"
+        class="filter-dropdown-panel-container card"
+      >
         <div class="card-body">
           <b-form-group>
             <b-form-radio
-              class="mb-3"
-              v-model="selectedTranslateOption"
               :key="'all'"
+              v-model="selectedTranslateOption"
+              class="mb-3"
               value="all"
               :disabled="false"
               data-test="translation-auto-all"
@@ -29,8 +37,8 @@
             </b-form-radio>
 
             <b-form-radio
-              v-model="selectedTranslateOption"
               :key="'empty'"
+              v-model="selectedTranslateOption"
               value="empty"
               :disabled="false"
               data-test="translation-auto-empty"
@@ -45,8 +53,19 @@
           </b-form-group>
         </div>
         <div class="card-footer bg-white text-right">
-          <button class="btn btn-white btn-sm" @click="toggleOptionsPopup">Cancel</button>
-          <button class="btn btn-primary btn-sm" @click="reTranslate" data-test="translation-translate-button">Translate</button>
+          <button
+            class="btn btn-white btn-sm"
+            @click="toggleOptionsPopup"
+          >
+            Cancel
+          </button>
+          <button
+            class="btn btn-primary btn-sm"
+            data-test="translation-translate-button"
+            @click="reTranslate"
+          >
+            Translate
+          </button>
         </div>
       </div>
     </div>

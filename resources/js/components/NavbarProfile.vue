@@ -144,7 +144,7 @@ export default {
     window.ProcessMaker.events.$on("update-profile-avatar", this.updateAvatar);
   },
   methods: {
-    // eslint-disable-next-line no-underscore-dangle
+
     __(variable) {
       // eslint-disable-next-line no-undef
       return __(variable);

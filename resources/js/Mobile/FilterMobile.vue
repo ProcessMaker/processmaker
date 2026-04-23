@@ -154,7 +154,7 @@ export default {
   props: {
     type: String,
     outRef: null,
-    outName: null
+    outName: null,
   },
   data() {
     return {

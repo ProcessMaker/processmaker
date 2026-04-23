@@ -1,146 +1,179 @@
 <template>
-    <div class="p-3">
-        <b-card-group deck v-if="!showCssPreview" class="template-preview-card">
-            <b-card
-                class="preview-card"
-                header-tag="header"
-                footer-tag="footer"
+  <div class="p-3">
+    <b-card-group
+      v-if="!showCssPreview"
+      deck
+      class="template-preview-card"
+    >
+      <b-card
+        class="preview-card"
+        header-tag="header"
+        footer-tag="footer"
+      >
+        <template #header>
+          <h4>
+            <b-button
+              v-if="!hideBackArrow"
+              variant="link"
+              class="p-0 back-btn mr-2"
+              @click="hidePreview"
             >
-                <template #header>
-                    <h4>
-                        <b-button v-if="!hideBackArrow" @click="hidePreview" variant="link" class="p-0 back-btn mr-2">
-                            <i class="fas fa-arrow-circle-left text-secondary"></i>
-                        </b-button>
-                        {{ templateData?.name }}
-                    </h4>
-                </template>
-                <div class="thumbnail-preview">
-                    <div v-if="templateHasThumbnails" class="text-center">
-                        <img 
-                            v-for="thumbnail in allThumbnails"
-                            class="thumb mb-2"
-                            :src="thumbnail?.url"
-                            fluid
-                            :alt="templateData?.name + $t('thumbnail preview')"
-                        />
-                    </div> 
-                    <div v-else>
-                        {{ $t('No preview images available for this template.') }}
-                    </div>
-                </div>
-                <template #footer>
-                    <b-row class="d-flex p-2" align-h="between" align-v="center">
-                        <b-button variant="outline-secondary" @click="showTemplateCss" class="text-uppercase"> 
-                            <i class="fas fa-file-code"></i> 
-                            {{ $t('View CSS') }}
-                        </b-button>
-
-                        <b-form-group v-if="!hideTemplateOptions" class="template-options-group">
-                            <b-form-checkbox-group
-                                id="template-options"
-                                v-model="selectedTemplateOptions"
-                                :options="templateOptions"
-                                name="template-options"
-                            ></b-form-checkbox-group>
-                        </b-form-group>
-                    </b-row>
-                </template>
-            </b-card>
-        </b-card-group>
-
-        <b-card-group deck v-if="showCssPreview" class="css-preview-card p-0">
-            <b-card
-                class="preview-card"
-                header-tag="header"
+              <i class="fas fa-arrow-circle-left text-secondary" />
+            </b-button>
+            {{ templateData?.name }}
+          </h4>
+        </template>
+        <div class="thumbnail-preview">
+          <div
+            v-if="templateHasThumbnails"
+            class="text-center"
+          >
+            <img
+              v-for="thumbnail in allThumbnails"
+              class="thumb mb-2"
+              :src="thumbnail?.url"
+              fluid
+              :alt="templateData?.name + $t('thumbnail preview')"
             >
-                <template #header>
-                    <b-row class="d-flex m-0" align-h="between" align-v="center">
-                        <h4>
-                            <b-button @click="hideTemplateCss" variant="link" class="p-0 back-btn mr-2">
-                                <i class="fas fa-arrow-circle-left text-secondary"></i>
-                            </b-button>
-                            {{ $t('Custom CSS') }}
-                        </h4>
-                    </b-row>
-                </template>
-                <div class="css-preview">
-                    <monaco-editor
-                        v-if="templateHasCss"
-                        ref="monacoEditor"
-                        v-model="code"
-                        :options="monacoOptions"
-                        language="css"
-                        class="editor"
-                    />
-                    <div v-else>
-                        {{ $t('There\'s no custom CSS for this template.') }}
-                    </div>
-                </div>
-            </b-card>
-        </b-card-group>
-    </div>
+          </div>
+          <div v-else>
+            {{ $t('No preview images available for this template.') }}
+          </div>
+        </div>
+        <template #footer>
+          <b-row
+            class="d-flex p-2"
+            align-h="between"
+            align-v="center"
+          >
+            <b-button
+              variant="outline-secondary"
+              class="text-uppercase"
+              @click="showTemplateCss"
+            >
+              <i class="fas fa-file-code" />
+              {{ $t('View CSS') }}
+            </b-button>
+
+            <b-form-group
+              v-if="!hideTemplateOptions"
+              class="template-options-group"
+            >
+              <b-form-checkbox-group
+                id="template-options"
+                v-model="selectedTemplateOptions"
+                :options="templateOptions"
+                name="template-options"
+              />
+            </b-form-group>
+          </b-row>
+        </template>
+      </b-card>
+    </b-card-group>
+
+    <b-card-group
+      v-if="showCssPreview"
+      deck
+      class="css-preview-card p-0"
+    >
+      <b-card
+        class="preview-card"
+        header-tag="header"
+      >
+        <template #header>
+          <b-row
+            class="d-flex m-0"
+            align-h="between"
+            align-v="center"
+          >
+            <h4>
+              <b-button
+                variant="link"
+                class="p-0 back-btn mr-2"
+                @click="hideTemplateCss"
+              >
+                <i class="fas fa-arrow-circle-left text-secondary" />
+              </b-button>
+              {{ $t('Custom CSS') }}
+            </h4>
+          </b-row>
+        </template>
+        <div class="css-preview">
+          <monaco-editor
+            v-if="templateHasCss"
+            ref="monacoEditor"
+            v-model="code"
+            :options="monacoOptions"
+            language="css"
+            class="editor"
+          />
+          <div v-else>
+            {{ $t('There\'s no custom CSS for this template.') }}
+          </div>
+        </div>
+      </b-card>
+    </b-card-group>
+  </div>
 </template>
 
 <script>
-    export default {
-        components: {},
-        props: ["template", "hideBackArrow", "hideTemplateOptions"],
-        data: function() {
-            return {
-                type: null,
-                templateData: null,
-                selectedTemplateOptions: ['CSS', 'Layout', 'Fields'],
-                templateOptions: [ 'CSS', 'Layout', 'Fields'],
-                showCssPreview: false,
-                code: "",
-                monacoOptions: {
-                    automaticLayout: true,
-                    fontSize: 12,
-                    readOnly: true,
-                },
-            }
-        },
-        computed: {
-            templateHasCss() {
-                return this.templateData.screen_custom_css !== null;
-            },
-            templateHasThumbnails() {
-                return _.isArray(this.allThumbnails) && this.allThumbnails.length > 0 || !_.isEmpty(this.allThumbnails);
-            },
-            allThumbnails() {
-               if (this.templateData?.template_media) {
-                    if (this.templateData.template_media?.previewThumbs) {
-                        return this.templateData.template_media?.previewThumbs;
-                    } else {
-                        return this.templateData.template_media;
-                    }
-               } else {
-                return [];
-               }
-            },
-        },
-        watch: {
-            selectedTemplateOptions() {
-                this.$emit('template-options-selected', this.selectedTemplateOptions);
-            }
-        },
-        methods: {
-            hidePreview() {
-                this.$emit('hide-template-preview');
-            },
-            showTemplateCss() {
-                this.showCssPreview = true;
-                this.code = this.templateData?.screen_custom_css;
-            },
-            hideTemplateCss() {
-                this.showCssPreview = false;
-            }
-        },
-        mounted() {
-            this.templateData = this.template.template ? this.template.template : this.template;
-            this.type = this.template.type;
+export default {
+  components: {},
+  props: ["template", "hideBackArrow", "hideTemplateOptions"],
+  data() {
+    return {
+      type: null,
+      templateData: null,
+      selectedTemplateOptions: ["CSS", "Layout", "Fields"],
+      templateOptions: ["CSS", "Layout", "Fields"],
+      showCssPreview: false,
+      code: "",
+      monacoOptions: {
+        automaticLayout: true,
+        fontSize: 12,
+        readOnly: true,
+      },
+    };
+  },
+  computed: {
+    templateHasCss() {
+      return this.templateData.screen_custom_css !== null;
+    },
+    templateHasThumbnails() {
+      return _.isArray(this.allThumbnails) && this.allThumbnails.length > 0 || !_.isEmpty(this.allThumbnails);
+    },
+    allThumbnails() {
+      if (this.templateData?.template_media) {
+        if (this.templateData.template_media?.previewThumbs) {
+          return this.templateData.template_media?.previewThumbs;
         }
-    }
+        return this.templateData.template_media;
+      }
+      return [];
+    },
+  },
+  watch: {
+    selectedTemplateOptions() {
+      this.$emit("template-options-selected", this.selectedTemplateOptions);
+    },
+  },
+  mounted() {
+    this.templateData = this.template.template ? this.template.template : this.template;
+    this.type = this.template.type;
+  },
+  methods: {
+    hidePreview() {
+      this.$emit("hide-template-preview");
+    },
+    showTemplateCss() {
+      this.showCssPreview = true;
+      this.code = this.templateData?.screen_custom_css;
+    },
+    hideTemplateCss() {
+      this.showCssPreview = false;
+    },
+  },
+};
 </script>
 
 <style type="text/css" scoped>

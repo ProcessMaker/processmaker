@@ -1,20 +1,22 @@
 <script setup>
-import { getCurrentInstance, onMounted, ref, defineProps, onBeforeUnmount } from 'vue';
-import BackendSelect from './BackendSelect.vue';
+import {
+  getCurrentInstance, onMounted, ref, defineProps, onBeforeUnmount,
+} from "vue";
+import BackendSelect from "./BackendSelect.vue";
 
 const props = defineProps({
   assetType: {
     type: String,
-    required: true
+    required: true,
   },
   setting: {
     type: Boolean,
-    default: false
+    default: false,
   },
   settingType: {
     type: String,
-    default: null
-  }
+    default: null,
+  },
 });
 
 const vue = getCurrentInstance().proxy;
@@ -24,7 +26,7 @@ const assetId = ref(null);
 const error = ref(null);
 const assetName = ref(null);
 onMounted(() => {
-  vue.$root.$on('add-to-bundle', (data) => {
+  vue.$root.$on("add-to-bundle", (data) => {
     selected.value = null;
     error.value = null;
     assetId.value = data.id;
@@ -36,7 +38,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  vue.$root.$off('add-to-bundle');
+  vue.$root.$off("add-to-bundle");
 });
 
 const save = (event) => {
@@ -46,52 +48,52 @@ const save = (event) => {
       window.ProcessMaker.apiClient.post(`devlink/local-bundles/${selected.value.id}/add-settings`, {
         setting: props.assetType,
         config: assetId.value,
-        type: props.settingType || null
+        type: props.settingType || null,
       })
         .then(() => {
-          window.ProcessMaker.alert(vue.$t('Added successfully to bundle'), 'success');
+          window.ProcessMaker.alert(vue.$t("Added successfully to bundle"), "success");
         });
     } else {
       const asset = {
-        'type': props.assetType,
-        'id': assetId.value
+        type: props.assetType,
+        id: assetId.value,
       };
       window.ProcessMaker.apiClient.post(`devlink/local-bundles/${selected.value.id}/add-assets`, asset).then(() => {
         modal.value.hide();
-        window.ProcessMaker.alert(vue.$t('Added successfully to bundle'), 'success');
-      }).catch(e => {
+        window.ProcessMaker.alert(vue.$t("Added successfully to bundle"), "success");
+      }).catch((e) => {
         error.value = e.response?.data?.error?.message || e.message;
-      })
+      });
     }
   }
   if (Array.isArray(selected.value)) {
-    let bundles = [];
+    const bundles = [];
     selected.value.forEach((item) => {
       bundles.push(item.id);
     });
     if (props.setting) {
       const setting = {
-        'setting': props.assetType,
-        'config': assetId.value,
-        'bundles': bundles,
-        'type': props.settingType || null
+        setting: props.assetType,
+        config: assetId.value,
+        bundles,
+        type: props.settingType || null,
       };
-      window.ProcessMaker.apiClient.post(`devlink/local-bundles/add-setting-to-bundles`, setting).then(() => {
+      window.ProcessMaker.apiClient.post("devlink/local-bundles/add-setting-to-bundles", setting).then(() => {
         modal.value.hide();
-        window.ProcessMaker.alert(vue.$t('Added successfully to bundle'), 'success');
-      }).catch(e => {
+        window.ProcessMaker.alert(vue.$t("Added successfully to bundle"), "success");
+      }).catch((e) => {
         error.value = e.response?.data?.error?.message || e.message;
       });
     } else {
       const asset = {
-        'type': props.assetType,
-        'id': assetId.value,
-        'bundles': bundles
+        type: props.assetType,
+        id: assetId.value,
+        bundles,
       };
-      window.ProcessMaker.apiClient.post(`devlink/local-bundles/add-asset-to-bundles`, asset).then(() => {
+      window.ProcessMaker.apiClient.post("devlink/local-bundles/add-asset-to-bundles", asset).then(() => {
         modal.value.hide();
-        window.ProcessMaker.alert(vue.$t('Added successfully to bundle'), 'success');
-      }).catch(e => {
+        window.ProcessMaker.alert(vue.$t("Added successfully to bundle"), "success");
+      }).catch((e) => {
         error.value = e.response?.data?.error?.message || e.message;
       });
     }
@@ -101,17 +103,20 @@ const save = (event) => {
 </script>
 
 <template>
-  <b-modal ref="modal" @ok="save"
-           :ok-title="vue.$t('Save')" 
-           cancel-variant="light" 
-           modal-class="add-to-bundle-modal">
+  <b-modal
+    ref="modal"
+    :ok-title="vue.$t('Save')"
+    cancel-variant="light"
+    modal-class="add-to-bundle-modal"
+    @ok="save"
+  >
     <template #modal-title>
       <b>{{ vue.$t('Add asset to bundle') }}</b>
     </template>
     <b-form-group
       :invalid-feedback="error"
       :state="!error"
-      >
+    >
       <p>
         {{ vue.$t('The asset') }}
         <b>{{ assetName }}</b>
@@ -119,12 +124,12 @@ const save = (event) => {
       </p>
       <b>{{ vue.$t('Bundles') }}</b>
       <BackendSelect
+        v-model="selected"
         url="devlink/local-bundles?editable=true"
         value-field="id"
         text-field="name"
-        v-model="selected"
-        ></BackendSelect>
-      </b-form-group>
+      />
+    </b-form-group>
   </b-modal>
 </template>
 

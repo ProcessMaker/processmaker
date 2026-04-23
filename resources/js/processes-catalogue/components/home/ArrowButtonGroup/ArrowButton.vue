@@ -1,7 +1,8 @@
 <template>
   <div
     :class="`tw-flex tw-relative ${color}`"
-    @click="click">
+    @click="click"
+  >
     <div class=" tw-flex tw-flex-col tw-w-full tw-h-full">
       <div class="tw-flex tw-flex-col tw-justify-center tw-px-6 tw-py-2 tw-gap-0 tw-h-full">
         <slot name="header">
@@ -15,7 +16,10 @@
           </div>
         </slot>
         <slot name="helper">
-          <div v-if="helper" class="tw-text-sm tw-truncate">
+          <div
+            v-if="helper"
+            class="tw-text-sm tw-truncate"
+          >
             {{ helper }}
           </div>
         </slot>
@@ -23,7 +27,8 @@
     </div>
     <div
       :class="`tw-h-full tw-w-[20px] tw-absolute
-          tw-right-[-20px] tw-z-10`">
+          tw-right-[-20px] tw-z-10`"
+    >
       <div :class="`tw-h-full tw-w-[20px] clip-path-triangle-right ${color}`">
         &nbsp;
       </div>

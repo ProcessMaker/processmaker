@@ -6,11 +6,13 @@
         <div
           v-if="isOpen"
           class="tw-absolute tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-z-40 tw-transition-opacity tw-duration-300"
-          @click.prevent="closeDrawer">
+          @click.prevent="closeDrawer"
+        >
           <button
             class="tw-absolute tw-top-2 tw-right-2 tw-size-8 tw-flex tw-items-center tw-justify-center tw-rounded-md tw-bg-white hover:tw-bg-gray-100 tw-transition-colors tw-duration-200 tw-cursor-pointer"
+            aria-label="Close drawer"
             @click.prevent="closeDrawer"
-            aria-label="Close drawer">
+          >
             <i class="fa fa-times tw-text-base tw-text-gray-600" />
           </button>
         </div>
@@ -20,17 +22,19 @@
       <div
         v-if="isOpen"
         class="tw-absolute tw-w-[80%] tw-z-50 tw-shadow-2xl tw-overflow-y-auto tw-transition-transform tw-duration-300"
-        :class="drawerClass">
+        :class="drawerClass"
+      >
         <!-- Main Drawer Content -->
         <div class="tw-h-full">
-          <slot name="default"/>
+          <slot name="default" />
         </div>
 
         <!-- Drawer Footer if slot provided -->
         <div
           v-if="$slots.footer"
-          class="tw-p-4 tw-border-t tw-border-solid tw-border-gray-200">
-          <slot name="footer"/>
+          class="tw-p-4 tw-border-t tw-border-solid tw-border-gray-200"
+        >
+          <slot name="footer" />
         </div>
       </div>
     </div>
@@ -45,7 +49,7 @@ const validButtonPositions = [
   "top-left",
   "top-right",
   "bottom-left",
-  "bottom-right"
+  "bottom-right",
 ];
 
 export default defineComponent({
@@ -58,7 +62,7 @@ export default defineComponent({
     position: {
       type: String,
       default: "left",
-      validator: val => validPositions.includes(val),
+      validator: (val) => validPositions.includes(val),
     },
     title: {
       type: String,
@@ -67,7 +71,7 @@ export default defineComponent({
     buttonPosition: {
       type: String,
       default: "top-left",
-      validator: val => validButtonPositions.includes(val),
+      validator: (val) => validButtonPositions.includes(val),
     },
   },
   setup(props, { emit }) {
@@ -78,7 +82,7 @@ export default defineComponent({
      */
     const isOpen = computed({
       get: () => value.value,
-      set: val => emit("input", val),
+      set: (val) => emit("input", val),
     });
 
     /**
@@ -129,7 +133,7 @@ export default defineComponent({
       openDrawer,
       closeDrawer,
     };
-  }
+  },
 });
 </script>
 

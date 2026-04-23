@@ -1,13 +1,15 @@
 <script setup>
-import { ref, onMounted, getCurrentInstance, computed, reactive, set } from 'vue';
-import debounce from 'lodash/debounce';
-import Origin from './Origin.vue';
-import VersionCheck from './VersionCheck.vue';
-import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
-import BundleModal from './BundleModal.vue';
-import DeleteModal from './DeleteModal.vue';
-import { useRouter, useRoute } from 'vue-router/composables';
-import UpdateBundle from './UpdateBundle.vue';
+import {
+  ref, onMounted, getCurrentInstance, computed, reactive, set,
+} from "vue";
+import debounce from "lodash/debounce";
+import { useRouter, useRoute } from "vue-router/composables";
+import Origin from "./Origin.vue";
+import VersionCheck from "./VersionCheck.vue";
+import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+import BundleModal from "./BundleModal.vue";
+import DeleteModal from "./DeleteModal.vue";
+import UpdateBundle from "./UpdateBundle.vue";
 
 const vue = getCurrentInstance().proxy;
 const router = useRouter();
@@ -31,9 +33,9 @@ const actions = [
   { value: "reinstall-item", content: "Reinstall Bundle", conditional: "if(dev_link_id, true, false)" },
   { value: "edit-item", content: "Edit", conditional: "if(not(dev_link_id) , true, false)" },
   { value: "delete-item", content: "Delete" },
-]
+];
 const updateBundleAction = {
-  value: "increase-item", content: "Publish New Version", conditional: "if(not(dev_link_id), true, false)"
+  value: "increase-item", content: "Publish New Version", conditional: "if(not(dev_link_id), true, false)",
 };
 const customButton = {
   icon: "fas fa-ellipsis-v",
@@ -46,7 +48,7 @@ const setUpdateAvailable = (bundle, updateAvailable) => {
 
 onMounted(() => {
   load();
-})
+});
 
 const load = () => {
   ProcessMaker.apiClient
@@ -59,35 +61,35 @@ const load = () => {
 
 const fields = [
   {
-    key: 'name',
-    label: vue.$t('Name')
+    key: "name",
+    label: vue.$t("Name"),
   },
   {
-    key: 'origin',
-    label: vue.$t('Origin'),
+    key: "origin",
+    label: vue.$t("Origin"),
   },
   {
-    key: 'published',
-    label: vue.$t('Published'),
+    key: "published",
+    label: vue.$t("Published"),
   },
   {
-    key: 'asset_count',
-    label: vue.$t('Assets'),
+    key: "asset_count",
+    label: vue.$t("Assets"),
   },
   {
-    key: 'version',
-    label: vue.$t('Version'),
+    key: "version",
+    label: vue.$t("Version"),
   },
   {
-    key: 'menu',
-    label: ''
+    key: "menu",
+    label: "",
   },
 ];
 
 const bundleAttributes = {
   id: null,
-  name: '',
-  description: '',
+  name: "",
+  description: "",
   published: false,
 };
 
@@ -102,7 +104,7 @@ const createNewBundle = () => {
   if (bundleModal.value) {
     bundleModal.value.show();
   }
-}
+};
 
 const onNavigate = (action, data, index) => {
   switch (action.value) {
@@ -129,7 +131,7 @@ const onNavigate = (action, data, index) => {
 
 const create = () => {
   ProcessMaker.apiClient
-    .post('/devlink/local-bundles', selected.value)
+    .post("/devlink/local-bundles", selected.value)
     .then((result) => {
       load();
     });
@@ -200,22 +202,18 @@ const handleFilterChange = () => {
   debouncedLoad();
 };
 
-const canEdit = (bundle) => {
-  return bundle.dev_link === null;
-}
+const canEdit = (bundle) => bundle.dev_link === null;
 
 const goToBundleAssets = (bundle) => {
-  router.push({ name: 'bundle-detail', params: { id: bundle.id } });
-}
+  router.push({ name: "bundle-detail", params: { id: bundle.id } });
+};
 
 const deleteWarning = computed(() => {
   const name = selected?.value.name;
-  return vue.$t('Are you sure you want to delete <strong>{{name}}</strong>? The action is irreversible.', { name });
+  return vue.$t("Are you sure you want to delete <strong>{{name}}</strong>? The action is irreversible.", { name });
 });
 
-const confirmPublishNewVersionText = computed(() => {
-  return vue.$t('Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?', { selectedBundleName: selected.value?.name });
-});
+const confirmPublishNewVersionText = computed(() => vue.$t("Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?", { selectedBundleName: selected.value?.name }));
 
 const handleInstallationComplete = () => {
   load();
@@ -227,23 +225,39 @@ const handleInstallationComplete = () => {
   <div>
     <div class="top-options row">
       <div class="col">
-        <input v-model="filter" class="form-control search-input" @input="handleFilterChange">
+        <input
+          v-model="filter"
+          class="form-control search-input"
+          @input="handleFilterChange"
+        >
       </div>
       <div class="col-2">
         <b-button
           variant="primary"
-          @click="createNewBundle"
           class="new-button"
+          @click="createNewBundle"
         >
-          <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>
+          <i
+            class="fas fa-plus-circle"
+            style="padding-right: 8px;"
+          />
           {{ $t('Create Bundle') }}
         </b-button>
       </div>
     </div>
 
-    <DeleteModal ref="confirmDeleteModal" :message="deleteWarning" :title="deleteWarningTitle" @delete="executeDelete" />
+    <DeleteModal
+      ref="confirmDeleteModal"
+      :message="deleteWarning"
+      :title="deleteWarningTitle"
+      @delete="executeDelete"
+    />
 
-    <BundleModal ref="bundleModal" :bundle="selected" @update="update" />
+    <BundleModal
+      ref="bundleModal"
+      :bundle="selected"
+      @update="update"
+    />
 
     <b-modal
       ref="confirmPublishNewVersion"
@@ -252,13 +266,13 @@ const handleInstallationComplete = () => {
       title="Publish New Version"
       @ok="executeIncrease"
     >
-      <p v-html="confirmPublishNewVersionText"></p>
+      <p v-html="confirmPublishNewVersionText" />
     </b-modal>
 
     <UpdateBundle
       ref="updateBundle"
       @installation-complete="handleInstallationComplete"
-    ></UpdateBundle>
+    />
 
     <div class="card local-bundles-card">
       <b-table
@@ -270,21 +284,28 @@ const handleInstallationComplete = () => {
       >
         <template #cell(name)="data">
           {{ data.item.name }}
-          <i v-if="!canEdit(data.item)" class="ml-2 fa fa-lock"></i>
+          <i
+            v-if="!canEdit(data.item)"
+            class="ml-2 fa fa-lock"
+          />
         </template>
         <template #cell(published)="data">
-          <b-form-checkbox v-if="canEdit(data.item)" v-model="data.item.published" switch @change="updatePublished(data.item)">
-          </b-form-checkbox>
+          <b-form-checkbox
+            v-if="canEdit(data.item)"
+            v-model="data.item.published"
+            switch
+            @change="updatePublished(data.item)"
+          />
         </template>
         <template #cell(origin)="data">
-          <Origin :dev-link="data.item.dev_link"></Origin>
+          <Origin :dev-link="data.item.dev_link" />
         </template>
         <template #cell(version)="data">
-          {{ data.item.version }} <VersionCheck 
-            :key="`version-check-${data.item.id}-${refreshKey}`" 
-            @updateAvailable="setUpdateAvailable(data.item, $event)" 
-            :dev-link="data.item">
-          </VersionCheck>
+          {{ data.item.version }} <VersionCheck
+            :key="`version-check-${data.item.id}-${refreshKey}`"
+            :dev-link="data.item"
+            @updateAvailable="setUpdateAvailable(data.item, $event)"
+          />
         </template>
         <template #cell(menu)="data">
           <EllipsisMenu
@@ -296,8 +317,13 @@ const handleInstallationComplete = () => {
           />
         </template>
       </b-table>
-      <div v-if="bundles.length === 0" class="div-message d-flex flex-column justify-content-center align-items-center">
-        <div class="div-message-title">{{ $t("No bundles of assets to display") }}</div>
+      <div
+        v-if="bundles.length === 0"
+        class="div-message d-flex flex-column justify-content-center align-items-center"
+      >
+        <div class="div-message-title">
+          {{ $t("No bundles of assets to display") }}
+        </div>
         <div>{{ $t("Create a bundle to easily share assets and settings between ProcessMaker instances.") }}</div>
       </div>
     </div>

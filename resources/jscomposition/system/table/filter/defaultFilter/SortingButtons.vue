@@ -5,7 +5,8 @@
       class="tw-space-x-2 tw-inline-flex tw-items-center
         tw-rounded-l-md tw-px-3 tw-py-2 tw-ring-1 tw-ring-inset
         tw-ring-gray-300 hover:tw-bg-gray-100 focus:tw-z-10"
-      @click="$emit('asc')">
+      @click="$emit('asc')"
+    >
       <i class="fas fa-sort-amount-up-alt" />
 
       <span>{{ $t("Sort Ascending") }}</span>
@@ -16,7 +17,8 @@
       class="tw-space-x-2 -tw-ml-px tw-inline-flex tw-items-center
         tw-rounded-r-md tw-px-3 tw-py-2 tw-ring-1 tw-ring-inset tw-ring-gray-300
         hover:tw-bg-gray-100 focus:tw-z-10"
-      @click="$emit('desc')">
+      @click="$emit('desc')"
+    >
       <i class="fas fa-sort-amount-down" />
 
       <span>{{ $t("Sort Descending") }}</span>

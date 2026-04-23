@@ -1,11 +1,11 @@
 import TasksList from "./components/TasksList.vue";
 import TasksListCounter from "./components/TasksListCounter.vue";
 import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
-import ParticipantHomeScreen from './components/ParticipantHomeScreen.vue';
+import ParticipantHomeScreen from "./components/ParticipantHomeScreen.vue";
 import PmqlInput from "../components/shared/PmqlInput.vue";
 
 Vue.component("TasksList", TasksList);
-Vue.component('participant-home-screen', ParticipantHomeScreen);
+Vue.component("ParticipantHomeScreen", ParticipantHomeScreen);
 
 // Component used in the tasks list
 Vue.component("PmqlInput", PmqlInput);

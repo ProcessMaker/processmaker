@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted, defineEmits } from 'vue';
-import { useRouter, useRoute } from 'vue-router/composables';
+import { ref, onMounted, defineEmits } from "vue";
+import { useRouter, useRoute } from "vue-router/composables";
 
 const router = useRouter();
-const emit = defineEmits(['updateAvailable']);
+const emit = defineEmits(["updateAvailable"]);
 
 const checkNewVersion = ref(false);
 
@@ -17,9 +17,9 @@ const remote = () => {
     .then((response) => {
       if (Number(response.data.version) > Number(props.devLink.version)) {
         checkNewVersion.value = true;
-        emit('updateAvailable', true);
+        emit("updateAvailable", true);
       } else {
-        emit('updateAvailable', false);
+        emit("updateAvailable", false);
       }
     });
 };
@@ -29,7 +29,6 @@ onMounted(() => {
     remote();
   }
 });
-
 
 </script>
 

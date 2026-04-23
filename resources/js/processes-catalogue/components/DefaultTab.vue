@@ -4,7 +4,7 @@
       <img
         :src="imageSrc"
         :alt="altText"
-      />
+      >
       <span class="title">{{ titleText }}</span>
       <span class="title-section">{{ descriptionText }}</span>
     </div>

@@ -1,34 +1,38 @@
 <template>
-    <FormInput :value="propertyGetter" @input="propertySetter" :label="$t(label)" :helper="helper" />
+  <FormInput
+    :value="propertyGetter"
+    :label="$t(label)"
+    :helper="helper"
+    @input="propertySetter"
+  />
 </template>
-
 
 <script>
 export default {
-    props: ["value", "label", "helper", "property"],
-    data() {
-        return {};
-    },
-    computed: {
-        /**
+  props: ["value", "label", "helper", "property"],
+  data() {
+    return {};
+  },
+  computed: {
+    /**
          * Get the value of the edited property
          */
-        propertyGetter() {
-            const node = this.$root.$children[0].$refs.modeler.highlightedNode.definition;
-            const value = _.get(node, this.property);
-            return value;
-        }
+    propertyGetter() {
+      const node = this.$root.$children[0].$refs.modeler.highlightedNode.definition;
+      const value = _.get(node, this.property);
+      return value;
     },
-    methods: {
-        /**
+  },
+  methods: {
+    /**
          * Update the value of the editer property
          */
-        propertySetter (value) {
-            const node = this.$root.$children[0].$refs.modeler.highlightedNode.definition;
-            _.set(node, this.property, value);
-            this.$emit('input', this.value);
-        },
-    }
+    propertySetter(value) {
+      const node = this.$root.$children[0].$refs.modeler.highlightedNode.definition;
+      _.set(node, this.property, value);
+      this.$emit("input", this.value);
+    },
+  },
 };
 </script>
 

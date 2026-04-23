@@ -5,8 +5,8 @@ import FilterMixin from "../Mobile/FilterMixin";
 
 new Vue({
   el: "#tasks-mobile",
-  mixins: [FilterMixin],
   components: { MobileTasks, FilterMobile },
+  mixins: [FilterMixin],
   data: {
     filter: "",
     pmql: "",

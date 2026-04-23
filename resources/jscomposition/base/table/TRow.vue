@@ -2,11 +2,13 @@
   <tr
     class="tw-border-b tw-relative tw-border-[#EBEDEF]"
     @mouseover="menu = true"
-    @mouseleave="menu = false">
+    @mouseleave="menu = false"
+  >
     <slot :name="`cell`" />
     <td
       v-if="menu"
-      class="tw-sticky tw-w-0 tw-right-0 tw-top-0">
+      class="tw-sticky tw-w-0 tw-right-0 tw-top-0"
+    >
       <slot :name="`menu`" />
     </td>
   </tr>

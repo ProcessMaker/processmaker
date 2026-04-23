@@ -1,28 +1,28 @@
 <script>
-import { Bar } from "vue-chartjs"
+import { Bar } from "vue-chartjs";
 
 export default {
   extends: Bar,
   props: ["data", "options", "preview"],
   computed: {
-    chartData: function() {
+    chartData() {
       return this.data;
     },
-    previewData: function() {
+    previewData() {
       return {
         datasets: [{
           data: [
-            5, 10, 15
-          ]
+            5, 10, 15,
+          ],
         }],
         labels: [
           1,
           2,
-          3
-        ]
+          3,
+        ],
       };
     },
-    previewOptions: function() {
+    previewOptions() {
       return {
         layout: {
           padding: {
@@ -38,7 +38,7 @@ export default {
         maintainAspectRatio: true,
         responsive: true,
         tooltips: {
-          enabled: false
+          enabled: false,
         },
         scales: {
           xAxes: [{
@@ -48,18 +48,23 @@ export default {
             display: false,
             ticks: {
               max: 15,
-            }
+            },
           }],
-        }
-      }
-    }
+        },
+      };
+    },
   },
-  mounted () {
+  watch: {
+    data() {
+      this.render();
+    },
+  },
+  mounted() {
     this.render();
   },
   methods: {
     render() {
-      if (! this.preview) {
+      if (!this.preview) {
         this.renderChart(this.chartData, this.options);
       } else {
         this.renderChart(this.previewData, this.previewOptions);
@@ -68,12 +73,7 @@ export default {
     },
     describe() {
       return this.$t("Vertical Bar Graph");
-    }
+    },
   },
-  watch: {
-    data: function() {
-      this.render();
-    }
-  }
-}
+};
 </script>

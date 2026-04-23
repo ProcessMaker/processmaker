@@ -1,12 +1,14 @@
 <script setup>
-import { ref, onMounted, computed, getCurrentInstance } from 'vue';
-import { useRouter, useRoute } from 'vue-router/composables';
-import debounce from 'lodash/debounce';
-import Status from './Status.vue';
-import EllipsisMenu from '../../../components/shared/EllipsisMenu.vue';
-import DeleteModal from './DeleteModal.vue';
-import CreateDevLinkModal from './CreateDevLinkModal.vue';
-import { store } from '../common';
+import {
+  ref, onMounted, computed, getCurrentInstance,
+} from "vue";
+import { useRouter, useRoute } from "vue-router/composables";
+import debounce from "lodash/debounce";
+import Status from "./Status.vue";
+import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+import DeleteModal from "./DeleteModal.vue";
+import CreateDevLinkModal from "./CreateDevLinkModal.vue";
+import { store } from "../common";
 
 const vue = getCurrentInstance().proxy;
 const router = useRouter();
@@ -28,24 +30,24 @@ const customButton = {
 
 const fields = [
   {
-    key: 'id',
-    label: vue.$t('ID'),
+    key: "id",
+    label: vue.$t("ID"),
   },
   {
-    key: 'name',
-    label: vue.$t('Name')
+    key: "name",
+    label: vue.$t("Name"),
   },
   {
-    key: 'url',
-    label: vue.$t('URL')
+    key: "url",
+    label: vue.$t("URL"),
   },
   {
-    key: 'status',
-    label: vue.$t('Status'),
+    key: "status",
+    label: vue.$t("Status"),
   },
   {
-    key: 'menu',
-    label: ''
+    key: "menu",
+    label: "",
   },
 ];
 
@@ -53,9 +55,9 @@ onMounted(() => {
   load();
 });
 
-const newName = ref('');
-const newUrl = ref('');
-const status = ref('');
+const newName = ref("");
+const newUrl = ref("");
+const status = ref("");
 
 const load = () => {
   ProcessMaker.apiClient
@@ -77,16 +79,16 @@ const onNavigate = (action, data, index) => {
 };
 
 const clear = () => {
-  newName.value = '';
-  newUrl.value = '';
-}
+  newName.value = "";
+  newUrl.value = "";
+};
 
 const create = (name, url) => {
-  status.value = '';
+  status.value = "";
   ProcessMaker.apiClient
-    .post('/devlink', {
-      name: name,
-      url: url
+    .post("/devlink", {
+      name,
+      url,
     })
     .then((result) => {
       const newUrl = result.data.url;
@@ -101,15 +103,15 @@ const create = (name, url) => {
       ProcessMaker.apiClient
         .get(`devlink/${newId}/ping`)
         .then((response) => {
-          status.value = 'success';
+          status.value = "success";
           window.location.href = fullUrl;
         })
         .catch((e) => {
           if (e.response.status === 401) {
-            status.value = 'success';
+            status.value = "success";
             window.location.href = fullUrl;
           } else {
-            status.value = 'error';
+            status.value = "error";
           }
         });
     });
@@ -124,7 +126,7 @@ const editDevLink = (devlink) => {
 const updateDevLink = () => {
   ProcessMaker.apiClient
     .put(`/devlink/${selected.value.id}`, {
-      name: selected.value.name
+      name: selected.value.name,
     })
     .then((result) => {
       editModal.value.hide();
@@ -134,7 +136,7 @@ const updateDevLink = () => {
 
 const deleteWarning = computed(() => {
   const name = selected.value?.name;
-  return vue.$t('Are you sure you want to delete <strong>{{name}}</strong>? The action is irreversible.', { name });
+  return vue.$t("Are you sure you want to delete <strong>{{name}}</strong>? The action is irreversible.", { name });
 });
 
 const deleteDevLink = (devlink) => {
@@ -149,7 +151,7 @@ const destroyDevLink = async () => {
 
 const select = (devlink) => {
   store.selectedInstance = devlink;
-  router.push({ name: 'instance', params: { id: devlink.id } });
+  router.push({ name: "instance", params: { id: devlink.id } });
 };
 
 // Debounced function
@@ -161,7 +163,7 @@ const handleFilterChange = () => {
 };
 
 const showCreateModal = () => {
-  status.value = '';
+  status.value = "";
   createDevLinkModal.value.show();
 };
 
@@ -169,9 +171,7 @@ const handleNewUrlUpdate = (newValue) => {
   newUrl.value = newValue;
 };
 
-const urlIsValid = computed(() => {
-  return /^(https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(:\d{1,5})?$/.test(newUrl.value);
-});
+const urlIsValid = computed(() => /^(https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(:\d{1,5})?$/.test(newUrl.value));
 
 </script>
 
@@ -179,15 +179,22 @@ const urlIsValid = computed(() => {
   <div>
     <div class="top-options row">
       <div class="col">
-        <input v-model="filter" class="form-control search-input" @input="handleFilterChange">
+        <input
+          v-model="filter"
+          class="form-control search-input"
+          @input="handleFilterChange"
+        >
       </div>
       <div class="col-2">
         <b-button
           variant="primary"
-          @click="showCreateModal"
           class="new-button"
+          @click="showCreateModal"
         >
-          <i class="fas fa-plus-circle" style="padding-right: 8px;"></i>{{ $t('Add Instance') }}
+          <i
+            class="fas fa-plus-circle"
+            style="padding-right: 8px;"
+          />{{ $t('Add Instance') }}
         </b-button>
       </div>
     </div>
@@ -214,9 +221,9 @@ const urlIsValid = computed(() => {
     </b-modal> -->
     <CreateDevLinkModal
       ref="createDevLinkModal"
-      :newName="newName"
-      :newUrl="newUrl"
-      :urlIsValid="urlIsValid"
+      :new-name="newName"
+      :new-url="newUrl"
+      :url-is-valid="urlIsValid"
       :status="status"
       @clear="clear"
       @create="create"
@@ -227,26 +234,31 @@ const urlIsValid = computed(() => {
       ref="editModal"
       centered
       :title="$t('Edit DevLink')"
-      @ok="updateDevLink"
       :ok-title="$t('Ok')"
       :cancel-title="$t('Cancel')"
+      @ok="updateDevLink"
     >
       <template v-if="selected">
         <b-form-group :label="$t('Name')">
-          <b-form-input v-model="selected.name"></b-form-input>
+          <b-form-input v-model="selected.name" />
         </b-form-group>
       </template>
     </b-modal>
 
-    <DeleteModal ref="deleteModal" :title="deleteWarningTitle" :message="deleteWarning" @delete="destroyDevLink" />
+    <DeleteModal
+      ref="deleteModal"
+      :title="deleteWarningTitle"
+      :message="deleteWarning"
+      @delete="destroyDevLink"
+    />
 
     <div class="card linked-instances-card">
       <b-table
         hover
-        @row-clicked="select"
         :items="devlinks"
         :fields="fields"
         class="clickable"
+        @row-clicked="select"
       >
         <template #cell(name)="data">
           {{ data.item.name }}
@@ -264,8 +276,13 @@ const urlIsValid = computed(() => {
           />
         </template>
       </b-table>
-      <div v-if="devlinks.length === 0" class="div-message d-flex flex-column justify-content-center align-items-center">
-        <div class="div-message-title">{{ $t("No linked instances of ProcessMaker") }}</div>
+      <div
+        v-if="devlinks.length === 0"
+        class="div-message d-flex flex-column justify-content-center align-items-center"
+      >
+        <div class="div-message-title">
+          {{ $t("No linked instances of ProcessMaker") }}
+        </div>
         <div>{{ $t("Use the button Add Instance") }}</div>
       </div>
     </div>

@@ -4,7 +4,10 @@
       <b-navbar-brand class="title-designer">
         {{ $t("RECENT ASSETS") }}
       </b-navbar-brand>
-      <div class="d-flex" align="end">
+      <div
+        class="d-flex"
+        align="end"
+      >
         <div class="dropdown">
           <button
             v-if="!showInput"

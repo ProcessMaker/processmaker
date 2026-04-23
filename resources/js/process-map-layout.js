@@ -123,7 +123,7 @@ window.ProcessMaker.apiClient.interceptors.response.use(
 // Display any uncaught promise rejections from axios in the Process Maker alert box
 window.addEventListener("unhandledrejection", (event) => {
   const error = event.reason;
-  // eslint-disable-next-line no-underscore-dangle
+
   if (error.config && error.config._defaultErrorShown) {
     // Already handeled
     event.preventDefault(); // stops the unhandled rejection error

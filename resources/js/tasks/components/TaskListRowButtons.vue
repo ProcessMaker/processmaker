@@ -1,22 +1,30 @@
 <template>
   <div class="pm-task-row-buttons">
     <PMFloatingButtons ref="pmFloatingButtons">
-      <template v-slot:content>
+      <template #content>
         <slot name="body">
-          <span v-for="(button, index) in buttons" :key="index">
-            <b-button :id="button.id + rowIndex"
-                      v-if="button.show"
-                      aria-label="button.title"
-                      @click="onClick(button)"
-                      variant="light"
-                      size="sm">
-              <i v-if="button.icon"
-                 :class="button.icon"
-                 class="task-row-icon"
+          <span
+            v-for="(button, index) in buttons"
+            :key="index"
+          >
+            <b-button
+              v-if="button.show"
+              :id="button.id + rowIndex"
+              aria-label="button.title"
+              variant="light"
+              size="sm"
+              @click="onClick(button)"
+            >
+              <i
+                v-if="button.icon"
+                :class="button.icon"
+                class="task-row-icon"
               />
-              <img v-else-if="button.imgSrc"
-                   :src="button.imgSrc"
-                   :alt="button.title"/>
+              <img
+                v-else-if="button.imgSrc"
+                :src="button.imgSrc"
+                :alt="button.title"
+              >
             </b-button>
             <b-tooltip
               :target="button.id + rowIndex"
@@ -26,10 +34,11 @@
               :delay="1"
               boundary="viewport"
               :no-fade="true"
-              />
-            <div v-if="index < buttons.length - 1 && button.show"
-                 class="task-vertical-separator">
-            </div>
+            />
+            <div
+              v-if="index < buttons.length - 1 && button.show"
+              class="task-vertical-separator"
+            />
           </span>
         </slot>
       </template>
@@ -38,50 +47,51 @@
 </template>
 
 <script>
-  import PMFloatingButtons from "../../components/PMFloatingButtons.vue";
-  export default {
-    components: {
-      PMFloatingButtons
-    },
-    props: {
-      buttons: null,
-      row: null,
-      rowIndex: null,
-      colIndex: null,
-      showButtons: null
-    },
-    methods: {
-      show() {
-        this.triggerFloatingButtons(() => {
-          if (!this.showButtons) {
-            return;
-          }
-          this.$refs.pmFloatingButtons.show();
-        });
-      },
-      close() {
-        this.triggerFloatingButtons(() => {
-          this.$refs.pmFloatingButtons.close();
-        });
-      },
-      setMargin(size) {
-        this.$refs.pmFloatingButtons.$el.style.marginRight = `${size}px`;
-      },
-      disableFloatingButtons(state) {
-        this.$root["inbox-rule-row-button-floating-disable"] = state;
-      },
-      triggerFloatingButtons(callback) {
-        if (this.$root["inbox-rule-row-button-floating-disable"] === true) {
+import PMFloatingButtons from "../../components/PMFloatingButtons.vue";
+
+export default {
+  components: {
+    PMFloatingButtons,
+  },
+  props: {
+    buttons: null,
+    row: null,
+    rowIndex: null,
+    colIndex: null,
+    showButtons: null,
+  },
+  methods: {
+    show() {
+      this.triggerFloatingButtons(() => {
+        if (!this.showButtons) {
           return;
         }
-        callback();
-      },
-      onClick(button) {
-        this.disableFloatingButtons(false);
-        button.click(this.row);
+        this.$refs.pmFloatingButtons.show();
+      });
+    },
+    close() {
+      this.triggerFloatingButtons(() => {
+        this.$refs.pmFloatingButtons.close();
+      });
+    },
+    setMargin(size) {
+      this.$refs.pmFloatingButtons.$el.style.marginRight = `${size}px`;
+    },
+    disableFloatingButtons(state) {
+      this.$root["inbox-rule-row-button-floating-disable"] = state;
+    },
+    triggerFloatingButtons(callback) {
+      if (this.$root["inbox-rule-row-button-floating-disable"] === true) {
+        return;
       }
-    }
-  };
+      callback();
+    },
+    onClick(button) {
+      this.disableFloatingButtons(false);
+      button.click(this.row);
+    },
+  },
+};
 </script>
 
 <style scoped>

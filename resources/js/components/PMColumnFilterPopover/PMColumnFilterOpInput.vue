@@ -1,32 +1,33 @@
 <template>
-  <b-form-input v-model="input" 
-                :placeholder="$t('Type value')"
-                size="sm">
-  </b-form-input>
+  <b-form-input
+    v-model="input"
+    :placeholder="$t('Type value')"
+    size="sm"
+  />
 </template>
 
 <script>
-  export default {
-    props: [
-      "value"
-    ],
-    data() {
-      return {
-        input: ""
-      };
-    },
-    watch: {
-      value: {
-        handler(newValue) {
-          this.input = newValue;
-        },
-        immediate: true
+export default {
+  props: [
+    "value",
+  ],
+  data() {
+    return {
+      input: "",
+    };
+  },
+  watch: {
+    value: {
+      handler(newValue) {
+        this.input = newValue;
       },
-      input() {
-        this.$emit("input", this.input);
-      }
-    }
-  };
+      immediate: true,
+    },
+    input() {
+      this.$emit("input", this.input);
+    },
+  },
+};
 </script>
 
 <style scoped>

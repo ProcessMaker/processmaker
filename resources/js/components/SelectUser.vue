@@ -3,7 +3,6 @@
     <multiselect
       :id="'user-select-' + _uid"
       :value="value"
-      @input="change"
       :placeholder="$t('Select')"
       :options="users"
       :multiple="multiple"
@@ -12,20 +11,31 @@
       :searchable="true"
       :internal-search="false"
       label="fullname"
+      @input="change"
       @search-change="loadUsers"
       @open="loadUsers(null)"
     >
       <template slot="noResult">
-        <slot name="noResult">{{ $t('No elements found. Consider changing the search query.') }}</slot>
+        <slot name="noResult">
+          {{ $t('No elements found. Consider changing the search query.') }}
+        </slot>
       </template>
       <template slot="noOptions">
-        <slot name="noOptions">{{ $t('No Data Available') }}</slot>
+        <slot name="noOptions">
+          {{ $t('No Data Available') }}
+        </slot>
       </template>
     </multiselect>
-    <div v-if="selectionInfo" class="text-muted small mt-1">
+    <div
+      v-if="selectionInfo"
+      class="text-muted small mt-1"
+    >
       {{ selectionInfo }}
     </div>
-    <div v-if="limitReachedMessage" class="text-warning small mt-1">
+    <div
+      v-if="limitReachedMessage"
+      class="text-warning small mt-1"
+    >
       {{ limitReachedMessage }}
     </div>
   </div>
@@ -37,16 +47,16 @@ export default {
     value: null,
     multiple: {
       type: Boolean,
-      default: false
+      default: false,
     },
     maxSelection: {
       type: Number,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
-      users: []
+      users: [],
     };
   },
   computed: {
@@ -54,16 +64,16 @@ export default {
       if (this.multiple && this.maxSelection && Array.isArray(this.value)) {
         const selected = this.value.length;
         const max = this.maxSelection;
-        return `${selected}/${max} ${this.$t('selected')}`;
+        return `${selected}/${max} ${this.$t("selected")}`;
       }
       return null;
     },
     limitReachedMessage() {
       if (this.multiple && this.maxSelection && Array.isArray(this.value) && this.value.length >= this.maxSelection) {
-        return this.$t('Maximum of {{max}} users can be selected', { max: this.maxSelection });
+        return this.$t("Maximum of {{max}} users can be selected", { max: this.maxSelection });
       }
       return null;
-    }
+    },
   },
   methods: {
     change(value) {
@@ -74,15 +84,15 @@ export default {
           value = value.slice(0, this.maxSelection);
         }
       }
-      this.$emit('input', value);
+      this.$emit("input", value);
     },
     loadUsers(filter) {
       window.ProcessMaker.apiClient
-        .get("users" + (typeof filter === "string" ? "?filter=" + filter : ""))
-        .then(response => {
+        .get(`users${typeof filter === "string" ? `?filter=${filter}` : ""}`)
+        .then((response) => {
           this.users = response.data.data;
         });
-    }
-  }
+    },
+  },
 };
 </script>

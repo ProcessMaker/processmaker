@@ -1,5 +1,8 @@
 <template>
-  <div v-if="defaultSelected === 'generate'" class="h-100">
+  <div
+    v-if="defaultSelected === 'generate'"
+    class="h-100"
+  >
     <generate-script-text-prompt
       v-if="showPromptArea || defaultSelected === 'generate'"
       :default-prompt="defaultPrompt"
@@ -9,9 +12,17 @@
   </div>
   <div v-else>
     <b-list-group-item class="script-toggle border-0 mb-0">
-      <b-row v-b-toggle.assistant data-test="cornea-tab-toggle">
+      <b-row
+        v-b-toggle.assistant
+        data-test="cornea-tab-toggle"
+      >
         <b-col v-if="!showPromptArea">
-          <img class="mb-1 ai-icon" :src="proceC2Icon" width="18" :alt="$t('AI Assistant Icon')"/>
+          <img
+            class="mb-1 ai-icon"
+            :src="proceC2Icon"
+            width="18"
+            :alt="$t('AI Assistant Icon')"
+          >
           {{ $t("AI Assistant") }}
         </b-col>
         <b-col
@@ -22,12 +33,20 @@
           <i class="mr-2 fa fa-arrow-left" />
           {{ $t("Generate Script From Text") }}
         </b-col>
-        <b-col v-if="!showPromptArea" class="p-0 text-right" cols="3">
+        <b-col
+          v-if="!showPromptArea"
+          class="p-0 text-right"
+          cols="3"
+        >
           <span class="text-center px-2 bg-warning rounded small">
             {{ $t("NEW") }}
           </span>
         </b-col>
-        <b-col align-self="end" cols="1" class="mr-2">
+        <b-col
+          align-self="end"
+          cols="1"
+          class="mr-2"
+        >
           <i class="fas fa-chevron-down accordion-icon" />
         </b-col>
       </b-row>
@@ -36,20 +55,23 @@
     <b-list-group-item
       class="p-0 border-left-0 border-right-0 border-top-0 mb-0"
     >
-      <b-collapse id="assistant" :visible="true">
+      <b-collapse
+        id="assistant"
+        :visible="true"
+      >
         <div v-if="!showPromptArea">
           <div class="card-header m-0 d-flex border-0 pb-1 px-2">
             <div class="d-flex w-50 p-2 ai-button-container">
               <div
+                v-b-tooltip.hover.bottom
                 role="button"
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
                 data-test="generate-script-btn"
-                @click="showPromptArea = true"
-                v-b-tooltip.hover.bottom
                 :title="$t('An AI generated scripts will be inserted as part of your code.')"
+                @click="showPromptArea = true"
               >
                 <div>
-                  <img :src="penSparkleIcon" />
+                  <img :src="penSparkleIcon">
                 </div>
                 <div class="text-center">
                   {{ $t("Generate Script From Text") }}
@@ -58,15 +80,15 @@
             </div>
             <div class="d-flex w-50 p-2 ai-button-container">
               <div
+                v-b-tooltip.hover.bottom
                 role="button"
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
                 data-test="document-script-btn"
-                @click="documentScript()"
-                v-b-tooltip.hover.bottom
                 :title="$t('AI will document all your code.')"
+                @click="documentScript()"
               >
                 <div>
-                  <img :src="bookIcon" />
+                  <img :src="bookIcon">
                 </div>
                 <div class="text-center">
                   {{ $t("Document") }}
@@ -78,15 +100,15 @@
           <div class="card-header m-0 d-flex border-0 pt-0 px-2">
             <div class="d-flex w-50 p-2 ai-button-container">
               <div
+                v-b-tooltip.hover.bottom
                 role="button"
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
                 data-test="clean-script-btn"
-                @click="cleanScript()"
-                v-b-tooltip.hover.bottom
                 :title="$t('AI will clean and define the portion of code you have selected.')"
+                @click="cleanScript()"
               >
                 <div>
-                  <img :src="brushIcon" />
+                  <img :src="brushIcon">
                 </div>
                 <div class="text-center">
                   {{ $t("Clean") }}
@@ -95,15 +117,15 @@
             </div>
             <div class="d-flex w-50 p-2 ai-button-container">
               <div
+                v-b-tooltip.hover.bottom
                 role="button"
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
                 data-test="list-steps-btn"
-                @click="explainScript()"
-                v-b-tooltip.hover.bottom
                 :title="$t('AI will generate an explanation of the portion of code you have selected.')"
+                @click="explainScript()"
               >
                 <div>
-                  <img :src="listIcon" />
+                  <img :src="listIcon">
                 </div>
                 <div class="text-center">
                   {{ $t("Explain") }}
@@ -120,8 +142,13 @@
           @generate-script="onGenerateScript"
         />
 
-        <div v-if="error" class="pb-3 px-3 bg-assistant-buttons">
-          <div class="alert alert-error m-0 text-center px-2  ">{{ error }}</div>
+        <div
+          v-if="error"
+          class="pb-3 px-3 bg-assistant-buttons"
+        >
+          <div class="alert alert-error m-0 text-center px-2  ">
+            {{ error }}
+          </div>
         </div>
       </b-collapse>
     </b-list-group-item>
@@ -151,13 +178,13 @@ export default {
   data() {
     return {
       showPromptArea: false,
-      proceC2Icon: require("./../../../../img/proceC2Black.svg"),
-      penSparkleIcon: require("./../../../../img/pen_sparkle_icon.svg"),
-      bookIcon: require("./../../../../img/book_icon.svg"),
-      brushIcon: require("./../../../../img/brush_icon.svg"),
-      listIcon: require("./../../../../img/list_icon.svg"),
+      proceC2Icon: require("../../../../img/proceC2Black.svg"),
+      penSparkleIcon: require("../../../../img/pen_sparkle_icon.svg"),
+      bookIcon: require("../../../../img/book_icon.svg"),
+      brushIcon: require("../../../../img/brush_icon.svg"),
+      listIcon: require("../../../../img/list_icon.svg"),
       changesApplied: false,
-      newCode: `\n $a = 3+4; \n $b = $a / 2;`,
+      newCode: "\n $a = 3+4; \n $b = $a / 2;",
       loading: false,
       promptSessionId: "",
       prompt: "",
@@ -186,7 +213,7 @@ export default {
   },
   methods: {
     showMenu() {
-      this.showPromptArea = false
+      this.showPromptArea = false;
     },
     getSelection() {
       this.$emit("get-selection");
@@ -209,9 +236,9 @@ export default {
       };
 
       if (
-        this.promptSessionId &&
-        this.promptSessionId !== null &&
-        this.promptSessionId !== ""
+        this.promptSessionId
+        && this.promptSessionId !== null
+        && this.promptSessionId !== ""
       ) {
         params = {
           promptSessionId: this.promptSessionId,
@@ -249,11 +276,11 @@ export default {
 
       await this.$nextTick();
 
-      const startColumn = this.selection.startColumn;
-      const endColumn = this.selection.endColumn;
-      const startLineNumber = this.selection.startLineNumber;
-      const endLineNumber = this.selection.endLineNumber;
-      const newStartColumn = this.selection.newStartColumn;
+      const { startColumn } = this.selection;
+      const { endColumn } = this.selection;
+      const { startLineNumber } = this.selection;
+      const { endLineNumber } = this.selection;
+      const { newStartColumn } = this.selection;
 
       if (startLineNumber === endLineNumber && startColumn === endColumn) {
         ProcessMaker.confirmModal(
@@ -261,10 +288,10 @@ export default {
           `<div class="mb-4 font-weight-bold">${this.$t("Ensure the cursor is positioned where you intend to place the generated script.")}</div>
           <div class="mb-2">${this.$t("Current cursor position:")}</div>
           <pre class="d-flex mb-0 text-muted flex-column code-preview">
-            ${this.lineContext.previousLine === null ? "" : '<div class="w-100 text-center pb-3">...</div>'}
+            ${this.lineContext.previousLine === null ? "" : "<div class=\"w-100 text-center pb-3\">...</div>"}
             <div class="d-flex">
-              <div class="line-number-preview">${(startLineNumber - 1) > 0 ? startLineNumber - 1 : ''}</div>
-              <div>${this.lineContext.previousLine !== null ? this.lineContext.previousLine : ''}</div>
+              <div class="line-number-preview">${(startLineNumber - 1) > 0 ? startLineNumber - 1 : ""}</div>
+              <div>${this.lineContext.previousLine !== null ? this.lineContext.previousLine : ""}</div>
             </div>
             <div class="d-flex align-items-center">
               <div class="line-number-preview">${startLineNumber}</div>
@@ -273,10 +300,10 @@ export default {
               <div>${this.lineContext.currentLine.substring(newStartColumn)}</div>
             </div>
             <div class="d-flex">
-              <div class="line-number-preview">${this.lineContext.nextLine !== null ? startLineNumber + 1 : ''}</div>
-              <div>${this.lineContext.nextLine ? this.lineContext.nextLine : ''}</div>
+              <div class="line-number-preview">${this.lineContext.nextLine !== null ? startLineNumber + 1 : ""}</div>
+              <div>${this.lineContext.nextLine ? this.lineContext.nextLine : ""}</div>
             </div>
-            ${this.lineContext.nextLine === null ? '' : '<div class="w-100 text-center pt-3">...</div>'}
+            ${this.lineContext.nextLine === null ? "" : "<div class=\"w-100 text-center pt-3\">...</div>"}
           </pre>`,
           "",
           () => {

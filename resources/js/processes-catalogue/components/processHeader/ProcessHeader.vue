@@ -3,7 +3,8 @@
     <div class="tw-flex tw-flex-row tw-space-x-4 tw-items-center">
       <i
         class="fas fa-chevron-left tw-p-2 hover:tw-bg-gray-200 tw-rounded-lg hover:tw-cursor-pointer"
-        @click="$emit('goBackCategory')" />
+        @click="$emit('goBackCategory')"
+      />
 
       <div class="tw-truncate tw-text-lg tw-font-semibold">
         {{ process.name }}
@@ -15,7 +16,8 @@
         class="tw-size-8 hover:tw-bg-gray-200 tw-font-bold tw-rounded-lg tw-cursor-pointer tw-text-white"
         :class="{ 'tw-bg-blue-400': showProcessInfo,
                   'tw-bg-gray-400': !showProcessInfo }"
-        @click.stop="handleInfoClick">
+        @click.stop="handleInfoClick"
+      >
         <span>i</span>
       </button>
       <div class="card-bookmark mx-3">
@@ -25,7 +27,8 @@
           class="fas fa-bookmark tw-text-lg"
           :class="{ 'tw-text-amber-400': isBookmarked,
                     'tw-text-gray-200': !isBookmarked }"
-          @click="updateBookmark" />
+          @click="updateBookmark"
+        />
       </div>
       <span class="ellipsis-border">
         <ellipsis-menu
@@ -36,7 +39,8 @@
           variant="none"
           :is-documenter-installed="$root.isDocumenterInstalled"
           :permission="$root.permission || ellipsisPermission"
-          @navigate="ellipsisNavigate" />
+          @navigate="ellipsisNavigate"
+        />
       </span>
       <!-- <buttons-start
         :process="process"

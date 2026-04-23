@@ -1,3 +1,3 @@
-import DraggableFileUpload from '../../components/shared/DraggableFileUpload';
+import DraggableFileUpload from "../../components/shared/DraggableFileUpload";
 
 Vue.component("DraggableFileUpload", DraggableFileUpload);

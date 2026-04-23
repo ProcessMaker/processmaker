@@ -1,28 +1,63 @@
 <template>
   <div class="setting-text">
-    <div v-if="input === null || !input.length" class="font-italic text-black-50">
+    <div
+      v-if="input === null || !input.length"
+      class="font-italic text-black-50"
+    >
       Empty
     </div>
     <div v-else>
       {{ trimmed(text) }}
     </div>
-    <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden" @show="onShowModal">
-      <template v-slot:modal-header>
+    <b-modal
+      v-model="showModal"
+      class="setting-object-modal"
+      size="lg"
+      @hidden="onModalHidden"
+      @show="onShowModal"
+    >
+      <template #modal-header>
         <div>
-          <h5 class="mb-0" v-if="setting.name">{{ $t(setting.name) }}</h5>
-          <h5 class="mb-0" v-else>{{ setting.key }}</h5>
-          <small class="form-text text-muted" v-if="setting.helper">{{ $t(setting.helper) }}</small>
+          <h5
+            v-if="setting.name"
+            class="mb-0"
+          >
+            {{ $t(setting.name) }}
+          </h5>
+          <h5
+            v-else
+            class="mb-0"
+          >
+            {{ setting.key }}
+          </h5>
+          <small
+            v-if="setting.helper"
+            class="form-text text-muted"
+          >{{ $t(setting.helper) }}</small>
         </div>
-        <button type="button" :aria-label="$t('Close')" class="close" @click="onCancel">×</button>
+        <button
+          type="button"
+          :aria-label="$t('Close')"
+          class="close"
+          @click="onCancel"
+        >
+          ×
+        </button>
       </template>
-      <div v-if="error" class="alert alert-danger">
+      <div
+        v-if="error"
+        class="alert alert-danger"
+      >
         {{ $t('Unable to load options.') }}
       </div>
       <div v-else-if="loaded">
         <!-- Search Input - Only show when pagination is enabled -->
-        <div v-if="isPaginated" class="mb-3 search-container">
+        <div
+          v-if="isPaginated"
+          class="mb-3 search-container"
+        >
           <div class="search-input-wrapper">
-            <i class="fas fa-search search-icon"></i>
+            <i class="fas fa-search search-icon" />
             <input
               id="search-input"
               v-model="searchQuery"
@@ -30,17 +65,26 @@
               class="search-input"
               :placeholder="$t('Search here')"
               @keyup.enter="onSearchSubmit"
+            >
+            <i
+              class="fas fa-times clear-icon"
+              @click="clearSearch"
             />
-            <i class="fas fa-times clear-icon" @click="clearSearch"></i>
           </div>
         </div>
-        
+
         <!-- No results message -->
-        <div v-if="isPaginated && searchQuery && options.length === 0 && loaded" class="text-center py-3">
-          <i class="fas fa-search text-muted mb-2" style="font-size: 2rem;"></i>
+        <div
+          v-if="isPaginated && searchQuery && options.length === 0 && loaded"
+          class="text-center py-3"
+        >
+          <i
+            class="fas fa-search text-muted mb-2"
+            style="font-size: 2rem;"
+          />
           <small class="text-muted">{{ $t('No Data Available') }}</small>
         </div>
-        
+
         <b-form-group
           v-else
           :invalid-feedback="$t(message)"
@@ -54,47 +98,62 @@
             @change="onChanged"
           />
         </b-form-group>
-        
+
         <!-- Pagination Controls -->
-        <div v-if="isPaginated && totalPages > 1" class="d-flex justify-content-between align-items-center mt-3">
+        <div
+          v-if="isPaginated && totalPages > 1"
+          class="d-flex justify-content-between align-items-center mt-3"
+        >
           <div class="pagination-info">
             <small class="text-muted">
-              {{ $t('Display') }} {{ (currentPage - 1) * perPage + 1 }} - {{ Math.min(currentPage * perPage, totalItems) }} 
+              {{ $t('Display') }} {{ (currentPage - 1) * perPage + 1 }} - {{ Math.min(currentPage * perPage, totalItems) }}
               {{ $t('of') }} {{ totalItems }} {{ $t('items') }}
             </small>
           </div>
           <div class="pagination-controls">
-            <button 
-              type="button" 
-              class="btn btn-sm btn-outline-secondary me-2" 
-              @click="onPageChange(currentPage - 1)"
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary me-2"
               :disabled="currentPage <= 1"
+              @click="onPageChange(currentPage - 1)"
             >
-              <i class="fas fa-chevron-left"></i> {{ $t('Previous') }}
+              <i class="fas fa-chevron-left" /> {{ $t('Previous') }}
             </button>
             <span class="mx-2">
               {{ $t('Page') }} {{ currentPage }} {{ $t('of') }} {{ totalPages }}
             </span>
-            <button 
-              type="button" 
-              class="btn btn-sm btn-outline-secondary ms-2" 
-              @click="onPageChange(currentPage + 1)"
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary ms-2"
               :disabled="currentPage >= totalPages"
+              @click="onPageChange(currentPage + 1)"
             >
-              {{ $t('Next') }} <i class="fas fa-chevron-right"></i>
+              {{ $t('Next') }} <i class="fas fa-chevron-right" />
             </button>
           </div>
         </div>
       </div>
       <div v-else>
-        <i class="fas fa-cog fa-spin text-secondary"></i> {{ $t('Loading...') }}
+        <i class="fas fa-cog fa-spin text-secondary" /> {{ $t('Loading...') }}
       </div>
-      <div slot="modal-footer" class="w-100 m-0 d-flex">
-        <button type="button" class="btn btn-outline-secondary ml-auto" @click="onCancel">
-            {{ $t('Cancel') }}
+      <div
+        slot="modal-footer"
+        class="w-100 m-0 d-flex"
+      >
+        <button
+          type="button"
+          class="btn btn-outline-secondary ml-auto"
+          @click="onCancel"
+        >
+          {{ $t('Cancel') }}
         </button>
-        <button type="button" class="btn btn-secondary ml-3" @click="onSave" :disabled="invalid || ! changed">
-            {{ $t('Save')}}
+        <button
+          type="button"
+          class="btn btn-secondary ml-3"
+          :disabled="invalid || ! changed"
+          @click="onSave"
+        >
+          {{ $t('Save') }}
         </button>
       </div>
     </b-modal>
@@ -105,12 +164,12 @@
 import settingMixin from "../mixins/setting";
 
 export default {
-  name: 'SettingCheckboxes',
+  name: "SettingCheckboxes",
   mixins: [settingMixin],
-  props: ['value', 'setting'],
+  props: ["value", "setting"],
   data() {
     return {
-      message: '',
+      message: "",
       invalid: false,
       error: false,
       input: null,
@@ -126,55 +185,63 @@ export default {
       totalItems: 0,
       isPaginated: false,
       // Search data
-      searchQuery: '',
+      searchQuery: "",
     };
   },
   computed: {
     variant() {
       if (this.disabled) {
-        return 'secondary';
-      } else {
-        return 'success';
+        return "secondary";
       }
+      return "success";
     },
     changed() {
       return JSON.stringify(this.input) !== JSON.stringify(this.transformed);
     },
     display() {
-      const options = this.ui('options');
+      const options = this.ui("options");
       const keys = Object.keys(options);
       if (keys.includes(this.input)) {
         return options[this.input];
-      } else {
-        return this.input;
       }
+      return this.input;
     },
     text() {
       if (this.input && this.input.length) {
-        return this.input.join(', ');
-      } else {
-        return '';
+        return this.input.join(", ");
       }
+      return "";
     },
     switches() {
-      if (this.ui('switches')) {
+      if (this.ui("switches")) {
         return true;
-      } else {
-        return false;
       }
+      return false;
     },
   },
   watch: {
     value: {
-      handler: function(value) {
+      handler(value) {
         this.input = value;
       },
+    },
+  },
+  mounted() {
+    if (this.value === null) {
+      this.input = [];
+    } else {
+      this.input = this.value;
     }
+    if (!this.ui("dynamic")) {
+      this.options = this.ui("options");
+      this.loaded = true;
+    }
+    this.transformed = this.copy(this.input);
   },
   methods: {
     onChanged() {
       this.invalid = false;
-      this.message = '';
+      this.message = "";
     },
     onCancel() {
       this.showModal = false;
@@ -185,7 +252,7 @@ export default {
     onModalHidden() {
       this.transformed = this.copy(this.input);
       this.error = false;
-      if (this.ui('dynamic')) {
+      if (this.ui("dynamic")) {
         this.loaded = false;
         this.options = [];
         // Reset pagination state
@@ -194,23 +261,23 @@ export default {
         this.totalItems = 0;
         this.isPaginated = false;
         // Reset search state
-        this.searchQuery = '';
+        this.searchQuery = "";
       }
       this.invalid = false;
-      this.message = '';
+      this.message = "";
     },
     onShowModal() {
-      if (! this.loaded && this.ui('dynamic')) {
+      if (!this.loaded && this.ui("dynamic")) {
         this.loadOptions();
       }
     },
     loadOptions(page = 1) {
-      let settings = this.ui('dynamic');
-      let url = settings.url;
-      
+      const settings = this.ui("dynamic");
+      let { url } = settings;
+
       // Check if pagination is enabled
-      this.isPaginated = this.ui('pagination') || false;
-      
+      this.isPaginated = this.ui("pagination") || false;
+
       if (this.isPaginated) {
         // Add pagination and search parameters to URL
         // Expected API parameters:
@@ -218,24 +285,24 @@ export default {
         // - per_page: Number of items per page (default: 10)
         // - search: Search query string (optional)
         const params = new URLSearchParams();
-        params.append('page', page);
-        params.append('per_page', this.perPage);
-        
+        params.append("page", page);
+        params.append("per_page", this.perPage);
+
         // Add search parameter if there's a search query
         if (this.searchQuery && this.searchQuery.trim()) {
-          params.append('search', this.searchQuery.trim());
+          params.append("search", this.searchQuery.trim());
         }
-        
+
         // Add existing query parameters if any
-        if (url.includes('?')) {
-          url += '&' + params.toString();
+        if (url.includes("?")) {
+          url += `&${params.toString()}`;
         } else {
-          url += '?' + params.toString();
+          url += `?${params.toString()}`;
         }
       }
-      
-      ProcessMaker.apiClient.get(url).then(response => {
-        let data = _.get(response, settings.response);
+
+      ProcessMaker.apiClient.get(url).then((response) => {
+        const data = _.get(response, settings.response);
         if (data) {
           if (this.isPaginated) {
             // Handle paginated response
@@ -252,9 +319,9 @@ export default {
           }
           this.loaded = true;
         }
-      }).catch(error => {
+      }).catch((error) => {
         this.error = true;
-        console.error('Error loading options:', error);
+        console.error("Error loading options:", error);
       });
     },
     onPageChange(page) {
@@ -274,11 +341,11 @@ export default {
       this.loadOptions(1);
     },
     clearSearch() {
-      this.searchQuery = '';
+      this.searchQuery = "";
       this.performSearch();
     },
     async onSave() {
-      const testSettingEndpoint = this.ui('testSettingEndpoint');
+      const testSettingEndpoint = this.ui("testSettingEndpoint");
       const enabled = this.copy(this.transformed);
       if (testSettingEndpoint) {
         try {
@@ -294,18 +361,6 @@ export default {
       this.emitSaved(this.input);
     },
   },
-  mounted() {
-    if (this.value === null) {
-      this.input = [];
-    } else {
-      this.input = this.value;
-    }
-    if (! this.ui('dynamic')) {
-      this.options = this.ui('options');
-      this.loaded = true;
-    }
-    this.transformed = this.copy(this.input);
-  }
 };
 </script>
 
@@ -353,19 +408,19 @@ export default {
       padding: 0 12px;
       height: 40px;
       transition: border-color 0.2s ease;
-      
+
       &:focus-within {
         border-color: #007bff;
         box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
       }
-      
+
       .search-icon {
         color: #6c757d;
         font-size: 14px;
         margin-right: 8px;
         flex-shrink: 0;
       }
-      
+
       .search-input {
         flex: 1;
         border: none;
@@ -373,12 +428,12 @@ export default {
         background: transparent;
         color: #333;
         padding: 0;
-        
+
         &::placeholder {
           color: #999;
         }
       }
-      
+
       .clear-icon {
         color: #6c757d;
         font-size: 14px;
@@ -386,7 +441,7 @@ export default {
         margin-left: 8px;
         flex-shrink: 0;
         transition: color 0.2s ease;
-        
+
         &:hover {
           color: #333;
         }

@@ -1,6 +1,7 @@
 <template>
   <div
-    class="tw-w-auto tw-flex tw-flex-col sm:tw-flex-row tw-space-y-2 sm:tw-space-y-0 sm:tw-space-x-4 sm:tw-py-0">
+    class="tw-w-auto tw-flex tw-flex-col sm:tw-flex-row tw-space-y-2 sm:tw-space-y-0 sm:tw-space-x-4 sm:tw-py-0"
+  >
     <BaseCardButton
       v-for="(item, index) in data"
       :id="item.id"
@@ -11,7 +12,8 @@
       :color="item.color"
       :class="`tw-w-full ${item.className}`"
       :icon="item.icon"
-      :content="item.content" />
+      :content="item.content"
+    />
   </div>
 </template>
 

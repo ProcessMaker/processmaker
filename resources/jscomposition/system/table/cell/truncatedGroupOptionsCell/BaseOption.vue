@@ -3,14 +3,16 @@
     <a
       v-if="href !== null"
       class="hover:tw-text-blue-400 tw-text-gray-500 tw-text-ellipsis tw-text-nowrap tw-overflow-hidden"
-      :href="href(option)">
+      :href="href(option)"
+    >
       {{ getValueOption(option) }}
     </a>
     <span
       v-else
       class="hover:tw-text-blue-400 tw-text-gray-500 hover:tw-cursor-pointer
         tw-text-ellipsis tw-text-nowrap tw-overflow-hidden"
-      @click.prevent.stop="onClickOption(option)">
+      @click.prevent.stop="onClickOption(option)"
+    >
       {{ getValueOption(option) }}
     </span>
   </li>

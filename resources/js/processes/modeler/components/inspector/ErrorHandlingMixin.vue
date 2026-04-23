@@ -1,26 +1,42 @@
 <script>
 export default {
-  props: ['type'],
+  props: ["type"],
   data() {
     return {
       value: "",
       valueFromModel: "",
       userHasUpdated: false,
-    }
+    };
+  },
+  computed: {
+    helper() {
+      if (this.type === "script") {
+        return this.$t(this.scriptHelperText);
+      } if (this.type === "data-connector") {
+        return this.$t(this.dataConnectorHelperText);
+      }
+    },
   },
   watch: {
     value: {
       handler() {
         this.emitValue();
-      }
+      },
     },
+  },
+  mounted() {
+    this.value = this.valueFromNode();
+    this.$root.$on("contentChanged", this.getNodeConfig);
+  },
+  beforeDestroy() {
+    this.$root.$off("contentChanged", this.getNodeConfig);
   },
   methods: {
     node() {
       return this.$root.$children[0].$refs.modeler.highlightedNode.definition;
     },
     valueFromNode() {
-      const configString = _.get(this.node(), 'errorHandling', null);
+      const configString = _.get(this.node(), "errorHandling", null);
       const config = JSON.parse(configString);
       return _.get(config, this.configKey, null);
     },
@@ -35,29 +51,13 @@ export default {
       if (!this.userHasUpdated) {
         return;
       }
-      const existingSetting = JSON.parse(_.get(this.node(), 'errorHandling', '{}'));
+      const existingSetting = JSON.parse(_.get(this.node(), "errorHandling", "{}"));
       const json = JSON.stringify({ ...existingSetting, [this.configKey]: this.value });
-      Vue.set(this.node(), 'errorHandling', json);
+      Vue.set(this.node(), "errorHandling", json);
     },
     userHasUpdatedValue() {
       this.userHasUpdated = true;
     },
   },
-  mounted() {
-    this.value = this.valueFromNode();
-    this.$root.$on("contentChanged", this.getNodeConfig);
-  },
-  beforeDestroy() {
-    this.$root.$off("contentChanged", this.getNodeConfig);
-  },
-  computed: {
-    helper() {
-      if (this.type === 'script') {
-        return this.$t(this.scriptHelperText);
-      } else if (this.type === 'data-connector') {
-        return this.$t(this.dataConnectorHelperText);
-      }
-    }
-  }
-}
+};
 </script>

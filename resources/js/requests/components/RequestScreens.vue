@@ -1,8 +1,8 @@
 <template>
   <div class="data-table">
     <data-loading
-      :for="/details-screen-request\?page/"
       v-show="shouldShowLoader"
+      :for="/details-screen-request\?page/"
       :empty="$t('No Data Available')"
       :empty-desc="$t('')"
       empty-icon="noData"
@@ -13,56 +13,61 @@
       data-cy="screen-requested-table"
     >
       <vuetable
-        :dataManager="dataManager"
-        :noDataTemplate="$t('No Data Available')"
-        :sortOrder="sortOrder"
+        :data-manager="dataManager"
+        :no-data-template="$t('No Data Available')"
+        :sort-order="sortOrder"
         :css="css"
+        ref="screens"
         :api-mode="false"
-        @vuetable:pagination-data="onPaginationData"
         :fields="fields"
         :data="data"
         data-path="data"
         detail-row-component="screen-detail"
-        @vuetable:cell-clicked="previewScreen"
-        ref="screens"
         pagination-path="meta"
+        @vuetable:pagination-data="onPaginationData"
+        @vuetable:cell-clicked="previewScreen"
       >
-        <template slot="actions" slot-scope="props">
+        <template
+          slot="actions"
+          slot-scope="props"
+        >
           <div class="actions">
             <div class="popout">
               <b-btn
-                variant="link"
-                @click="previewScreen(props.rowData)"
                 v-b-tooltip.hover
+                variant="link"
                 :title="$t('Details')"
+                @click="previewScreen(props.rowData)"
               >
                 <i
                   v-if="!props.rowData.view"
                   class="fas fa-search-plus fa-lg fa-fw"
-                ></i>
-                <i v-else class="fas fa-search-minus fa-lg fa-fw"></i>
+                />
+                <i
+                  v-else
+                  class="fas fa-search-minus fa-lg fa-fw"
+                />
               </b-btn>
               <b-btn
-                variant="link"
-                @click="preview(props.rowData)"
                 v-b-tooltip.hover
+                variant="link"
                 :title="$t('Print')"
+                @click="preview(props.rowData)"
               >
-                <i class="fas fa-print fa-lg fa-fw"></i>
+                <i class="fas fa-print fa-lg fa-fw" />
               </b-btn>
             </div>
           </div>
         </template>
       </vuetable>
       <pagination
+        ref="pagination"
         :single="$t('Screen')"
         :plural="$t('Screens')"
-        :perPageSelectEnabled="true"
+        :per-page-select-enabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
-        ref="pagination"
-      >
-      </pagination>
+      />
     </div>
   </div>
 </template>
@@ -73,7 +78,7 @@ import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import ScreenDetail from "../components/screenDetail";
 
-Vue.component("screen-detail", ScreenDetail);
+Vue.component("ScreenDetail", ScreenDetail);
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
@@ -119,12 +124,12 @@ export default {
   methods: {
     preview(data) {
       window.open(
-        "/requests/" +
-          this.id +
-          "/task/" +
-          data.id +
-          "/screen/" +
-          data.screen_id
+        `/requests/${
+          this.id
+        }/task/${
+          data.id
+        }/screen/${
+          data.screen_id}`,
       );
     },
     previewScreen(data) {
@@ -133,19 +138,19 @@ export default {
     },
     fetch() {
       this.loading = true;
-      let endpoint = `/requests/${this.id}/details-screen-request`;
+      const endpoint = `/requests/${this.id}/details-screen-request`;
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          `${endpoint}?page=` +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&filter=" +
-            this.filter +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=asc"
+          `${endpoint}?page=${
+            this.page
+          }&per_page=${
+            this.perPage
+          }&filter=${
+            this.filter
+          }&order_by=${
+            this.orderBy
+          }&order_direction=asc`,
         )
         .then((response) => {
           this.data = this.transform(response.data);
@@ -162,7 +167,7 @@ export default {
           if (_.has(error, "response.data.message")) {
             ProcessMaker.alert(error.response.data.message, "danger");
           } else if (_.has(error, "response.data.error")) {
-            return;
+
           } else {
             throw error;
           }

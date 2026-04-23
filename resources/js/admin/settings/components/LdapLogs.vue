@@ -1,45 +1,53 @@
 <template>
   <div class="data-table">
     <data-loading
-      :for="/logs\?page/"
       v-show="shouldShowLoader"
+      :for="/logs\?page/"
       :empty="$t('No Data Available')"
       :empty-desc="$t('')"
       empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader"  class="card card-body table-card">
+    <div
+      v-show="!shouldShowLoader"
+      class="card card-body table-card"
+    >
       <vuetable
-        :dataManager="dataManager"
-        :sortOrder="sortOrder"
+        :data-manager="dataManager"
+        :sort-order="sortOrder"
         :css="css"
         :api-mode="false"
-        @vuetable:pagination-data="onPaginationData"
         :fields="fields"
         :data="data"
         data-path="data"
-        :noDataTemplate="$t('No Data Available')"
+        :no-data-template="$t('No Data Available')"
         pagination-path="meta"
+        @vuetable:pagination-data="onPaginationData"
       >
-        <template slot="message" slot-scope="props">
-            <ul>
-                <li v-for="(item, key) in props.rowData.message" :key="key">
-                    {{ key + ": " + item }}
-                </li>
-            </ul>
+        <template
+          slot="message"
+          slot-scope="props"
+        >
+          <ul>
+            <li
+              v-for="(item, key) in props.rowData.message"
+              :key="key"
+            >
+              {{ key + ": " + item }}
+            </li>
+          </ul>
         </template>
       </vuetable>
       <pagination
+        ref="pagination"
         :single="$t('Log')"
         :plural="$t('Logs')"
-        :perPageSelectEnabled="true"
+        :per-page-select-enabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
-        ref="pagination"
-      ></pagination>
+      />
     </div>
   </div>
 </template>
-
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
@@ -58,46 +66,46 @@ export default {
         {
           field: "created_at",
           sortField: "created_at",
-          direction: "desc"
+          direction: "desc",
         },
       ],
       fields: [
         {
           title: () => this.$t("ID"),
           name: "id",
-          sortField: "id"
+          sortField: "id",
         },
         {
           title: () => this.$t("Tag"),
           name: "tag",
-          sortField: "tag"
+          sortField: "tag",
         },
         {
           title: () => this.$t("Service"),
           name: "service",
-          sortField: "service"
+          sortField: "service",
         },
         {
           title: () => this.$t("Message"),
           name: "__slot:message",
-          field: "message"
+          field: "message",
         },
         {
           title: () => this.$t("Created"),
           name: "created_at",
           sortField: "created_at",
-          callback: "formatDate"
-        }
-      ]
+          callback: "formatDate",
+        },
+      ],
     };
   },
   created() {
-      ProcessMaker.EventBus.$on("api-data-logs", (val) => {
-        this.localLoadOnStart = val;
-        this.fetch();
-        this.apiDataLoading = false;
-        this.apiNoResults = false;
-      });
+    ProcessMaker.EventBus.$on("api-data-logs", (val) => {
+      this.localLoadOnStart = val;
+      this.fetch();
+      this.apiDataLoading = false;
+      this.apiNoResults = false;
+    });
   },
   methods: {
     fetch() {
@@ -105,23 +113,23 @@ export default {
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "logs?page=" +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&filter=" +
-            this.filter +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=" +
-            this.orderDirection
+          `logs?page=${
+            this.page
+          }&per_page=${
+            this.perPage
+          }&filter=${
+            this.filter
+          }&order_by=${
+            this.orderBy
+          }&order_direction=${
+            this.orderDirection}`,
         )
-        .then(response => {
+        .then((response) => {
           this.data = this.transform(response.data);
           this.loading = false;
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

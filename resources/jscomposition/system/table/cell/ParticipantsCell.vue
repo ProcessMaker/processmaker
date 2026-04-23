@@ -3,16 +3,19 @@
     <div
       v-for="(participant, index) in participants"
       :key="index"
-      class="tw-group">
+      class="tw-group"
+    >
       <AppPopover
         position="bottom"
-        :hover="true">
+        :hover="true"
+      >
         <AppAvatar
           :class="`tw-bg-gray-500`"
           :initials="initials(participant, row, column, columns) || ''"
           :src="src(participant, row, column, columns)"
           class="tw-cursor-pointer"
-          @click="onClick(participant)" />
+          @click="onClick(participant)"
+        />
         <template #content>
           <div class="tw-p-2 tw-rounded-lg tw-border tw-border-gray-300 tw-bg-white">
             {{ formatter(participant, row, column, columns) || "" }}
@@ -23,7 +26,8 @@
 
     <span
       v-if="participants.length == 1"
-      class="tw-px-2">
+      class="tw-px-2"
+    >
       {{ formatter(participants[0], row, column, columns) }}
     </span>
   </div>

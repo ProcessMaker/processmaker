@@ -10,7 +10,7 @@ Vue.component("AvatarImage", AvatarImage);
 new Vue({
   el: "#requests-listing",
   components: {
-    CounterCard, CounterCardGroup, RequestsListing
+    CounterCard, CounterCardGroup, RequestsListing,
   },
   data: {
     columns: window.Processmaker.defaultColumns || null,
@@ -47,7 +47,7 @@ new Vue({
     this.urlPmql = urlParams.get("pmql");
   },
   mounted() {
-    ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
+    ProcessMaker.EventBus.$on("advanced-search-addition", (component) => {
       this.additions.push(component);
     });
   },

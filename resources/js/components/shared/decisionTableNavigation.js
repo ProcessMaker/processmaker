@@ -12,11 +12,11 @@ export default {
       switch (action.value) {
         case "edit-item":
           this.editDecisionTable(data);
-          break;  
+          break;
         case "configure-item":
           this.configDecisionTable(data);
           break;
-        case 'add-to-project':
+        case "add-to-project":
           this.showAddToProjectModal(data.title, data.id);
           break;
         case "export-item":

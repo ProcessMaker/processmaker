@@ -1,7 +1,8 @@
 <template>
   <tr
     v-if="showRow"
-    class="tw-border-b">
+    class="tw-border-b"
+  >
     <td :colspan="columns.length">
       <slot />
     </td>

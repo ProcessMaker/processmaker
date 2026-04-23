@@ -51,7 +51,7 @@
               @click="focusIcon(index)"
             >
               <div>
-                  <i class="fas fa-trash-alt p-0 custom-color" />
+                <i class="fas fa-trash-alt p-0 custom-color" />
               </div>
               <b-popover
                 ref="popover"
@@ -193,14 +193,14 @@
         class="justify-content-center align-items-center"
       >
         <div
+          id="dropdownMenuUpload"
           :class="{'small-text': longText.includes(lang)}"
           class="input-file-custom dropdown-toggle"
-          @dragover.prevent
           type="button"
-          id="dropdownMenuUpload"
           data-toggle="dropdown"
           aria-haspopup="true"
           aria-expanded="false"
+          @dragover.prevent
         >
           <i class="fa fa-plus mr-1" />
           <span class="font-weight-bold mr-1">
@@ -208,7 +208,10 @@
           </span>
           {{ $t("to upload an image") }}
         </div>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuUpload">
+        <div
+          class="dropdown-menu dropdown-menu-right"
+          aria-labelledby="dropdownMenuUpload"
+        >
           <a
             class="dropdown-item"
             href="#"
@@ -242,7 +245,11 @@
         <div
           class="input-file-custom"
         >
-          <b-icon icon="exclamation-triangle-fill" class="mr-1" variant="warning" />
+          <b-icon
+            icon="exclamation-triangle-fill"
+            class="mr-1"
+            variant="warning"
+          />
           {{ $t("Image not valid, try another") }}
         </div>
       </div>
@@ -351,7 +358,7 @@ export default {
      * Adding File embed url
      */
     addEmbedFile(media) {
-      const customProperties = JSON.parse(media.custom_properties)
+      const customProperties = JSON.parse(media.custom_properties);
       const mediaURL = customProperties.url;
       this.images.push({
         url: mediaURL,
@@ -521,10 +528,10 @@ export default {
      */
     isValidFileExtension(fileName) {
       const allowedExtensions = [".jpg", ".jpeg", ".png"];
-      let response = allowedExtensions.includes(
+      const response = allowedExtensions.includes(
         fileName.slice(fileName.lastIndexOf(".")).toLowerCase(),
       );
-      if(!response) {
+      if (!response) {
         ProcessMaker.alert(
           this.$t("Only PNG and JPG extensions are allowed."),
           "danger",
@@ -533,12 +540,12 @@ export default {
       return response;
     },
     isValidSize(file) {
-      let fileSize = file.size;
+      const fileSize = file.size;
       // Convert the bytes to Kilobytes (1 KB = 1024 Bytes)
-      let sizekiloBytes = parseInt(fileSize / 1024);
+      const sizekiloBytes = parseInt(fileSize / 1024);
       // Convert the KB to MegaBytes (1 MB = 1024 KBytes)
-      let sizeMegaBytes = sizekiloBytes / 1024;
-      let response = sizeMegaBytes <= this.validSizeImageMB;
+      const sizeMegaBytes = sizekiloBytes / 1024;
+      const response = sizeMegaBytes <= this.validSizeImageMB;
       if (!response) {
         ProcessMaker.alert(
           this.$t("Only images smaller than 2MB are allowed."),
@@ -618,13 +625,13 @@ export default {
     /**
      * Method to delete image from carousel container
      */
-     deleteEmbedMedia(index) {
+    deleteEmbedMedia(index) {
       const { uuid } = this.images[index];
       this.images.splice(index, 1);
       this.$set(this.showDeleteIcons, index, false);
       this.$set(this.focusIcons, index, false);
 
-      this.embedUrls[index] = '';
+      this.embedUrls[index] = "";
       this.notURL = false;
 
       // Call API to delete
@@ -746,7 +753,7 @@ label {
   height: 80px;
   border-radius: 4px;
   background-color: #00000080;
-  
+
 }
 .delete-icon i {
   font-size: 24px;

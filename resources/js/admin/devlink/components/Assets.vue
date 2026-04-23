@@ -1,8 +1,8 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import InstanceTabs from './InstanceTabs.vue';
-import { useRouter, useRoute } from 'vue-router/composables';
-import types from './assetTypes';
+import { ref, onMounted, computed } from "vue";
+import { useRouter, useRoute } from "vue-router/composables";
+import InstanceTabs from "./InstanceTabs.vue";
+import types from "./assetTypes";
 
 const router = useRouter();
 const route = useRoute();
@@ -18,14 +18,10 @@ const getAssets = () => {
 };
 
 const navigate = (typeConfig) => {
-  router.push({ name: 'asset-listing', params: { type: typeConfig.type } });
+  router.push({ name: "asset-listing", params: { type: typeConfig.type } });
 };
 
-const filteredTypes = computed(() => {
-  return types.filter(type => 
-    assets.value.some(asset => asset.config === type.class) 
-  );
-});
+const filteredTypes = computed(() => types.filter((type) => assets.value.some((asset) => asset.config === type.class)));
 
 onMounted(() => {
   getAssets();
@@ -35,26 +31,35 @@ onMounted(() => {
 
 <template>
   <div>
-    <instance-tabs><template #assets>
-    <div class="card-grid">
-      <div v-for="(type, index) in filteredTypes" :key="index" class="card">
-        <!-- Icon -->
-        <div class="icon-container">
-          <i :class="type.icon"></i>
+    <instance-tabs>
+      <template #assets>
+        <div class="card-grid">
+          <div
+            v-for="(type, index) in filteredTypes"
+            :key="index"
+            class="card"
+          >
+            <!-- Icon -->
+            <div class="icon-container">
+              <i :class="type.icon" />
+            </div>
+            <!-- Content -->
+            <div class="content">
+              <h3>{{ $t(type.name) }}</h3>
+            </div>
+            <!-- Button -->
+            <div class="button-container">
+              <button
+                class="view-button"
+                @click.prevent="navigate(type)"
+              >
+                {{ $t('View') }}
+              </button>
+            </div>
+          </div>
         </div>
-        <!-- Content -->
-        <div class="content">
-          <h3>{{ $t(type.name) }}</h3>
-        </div>
-        <!-- Button -->
-        <div class="button-container">
-          <button @click.prevent="navigate(type)" class="view-button">
-            {{ $t('View') }}
-          </button>
-        </div>
-      </div>
-    </div>
-    </template></instance-tabs>
+      </template>
+    </instance-tabs>
   </div>
 </template>
 

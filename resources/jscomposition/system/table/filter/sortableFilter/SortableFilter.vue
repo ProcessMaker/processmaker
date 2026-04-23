@@ -1,21 +1,25 @@
 <template>
   <div
     :class="{ 'tw-text-blue-500': order }"
-    class="hover:tw-text-blue-600 tw-cursor-pointer">
+    class="hover:tw-text-blue-600 tw-cursor-pointer"
+  >
     <i
       v-if="!order"
       class="fas fa-sort"
-      @click.prevent="onChange('asc')" />
+      @click.prevent="onChange('asc')"
+    />
 
     <i
       v-if="order == 'asc'"
       class="fas fa-sort-up"
-      @click.prevent="onChange('desc')" />
+      @click.prevent="onChange('desc')"
+    />
 
     <i
       v-if="order == 'desc'"
       class="fas fa-sort-down"
-      @click.prevent="onChange('asc')" />
+      @click.prevent="onChange('asc')"
+    />
   </div>
 </template>
 

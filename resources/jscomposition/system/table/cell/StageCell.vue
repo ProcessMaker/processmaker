@@ -40,18 +40,18 @@ const defaultStages = {
 
 const value = computed(() => {
   const fieldValue = get(props.row, props.column?.field) || "";
-  
+
   if (!fieldValue) {
     return "";
   }
 
   // Check if the value matches any of the default stages
   const matchedStage = defaultStages[fieldValue];
-  
+
   if (matchedStage) {
     return matchedStage.label;
   }
-  
+
   // If no match found, return the original value
   return fieldValue;
 });

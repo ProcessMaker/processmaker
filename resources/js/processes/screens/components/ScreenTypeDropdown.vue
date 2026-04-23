@@ -16,21 +16,45 @@
     class="screen-type-select mt-2"
     @input="emitSelectedType"
   >
-    <template slot="singleLabel" slot-scope="props">
-      <div class="type-container" :data-cy="`type-container-${props.option.typeHuman}`">
-        <i class="type-icon-placeholder pr-3" :class="props.option.icon" />
+    <template
+      slot="singleLabel"
+      slot-scope="props"
+    >
+      <div
+        class="type-container"
+        :data-cy="`type-container-${props.option.typeHuman}`"
+      >
+        <i
+          class="type-icon-placeholder pr-3"
+          :class="props.option.icon"
+        />
         <span class="type-desc">
           <span class="type-title-placeholder">{{ props.option.typeHuman }}</span>
-          <span v-if="!hideDescription" class="type-desc-placeholder">{{ props.option.description }}</span>
+          <span
+            v-if="!hideDescription"
+            class="type-desc-placeholder"
+          >{{ props.option.description }}</span>
         </span>
       </div>
     </template>
-    <template slot="option" slot-scope="props">
-      <div class="type-container" :data-cy="`type-container-${props.option.typeHuman}`">
-        <i class="type-icon p-3" :class="props.option.icon" />
+    <template
+      slot="option"
+      slot-scope="props"
+    >
+      <div
+        class="type-container"
+        :data-cy="`type-container-${props.option.typeHuman}`"
+      >
+        <i
+          class="type-icon p-3"
+          :class="props.option.icon"
+        />
         <span class="type-desc">
           <span class="type-title-option">{{ props.option.typeHuman }}</span>
-          <span v-if="!hideDescription" class="type-desc-option">{{ props.option.description }}</span>
+          <span
+            v-if="!hideDescription"
+            class="type-desc-option"
+          >{{ props.option.description }}</span>
         </span>
       </div>
     </template>
@@ -57,8 +81,8 @@ export default {
       // Check if this.screenTypes is an array or an object and map accordingly
       let optionsArray;
       if (Array.isArray(this.screenTypes)) {
-        optionsArray = this.screenTypes.map(screenType => this.createScreenTypeOption(screenType));
-      } else if (typeof this.screenTypes === 'object' && this.screenTypes !== null) {
+        optionsArray = this.screenTypes.map((screenType) => this.createScreenTypeOption(screenType));
+      } else if (typeof this.screenTypes === "object" && this.screenTypes !== null) {
         optionsArray = Object.entries(this.screenTypes).map(([key, value]) => this.createScreenTypeOption(key));
       }
 
@@ -72,7 +96,7 @@ export default {
 
     // Find the matching value in screenTypeOptions or default to FORM
     if (this.value) {
-      this.selectedType = this.screenTypeOptions.find(item => item.type === this.value);
+      this.selectedType = this.screenTypeOptions.find((item) => item.type === this.value);
     }
     this.$emit("input", this.selectedType.type);
   },

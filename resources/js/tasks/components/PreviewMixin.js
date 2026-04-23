@@ -81,21 +81,21 @@ const PreviewMixin = {
       }
 
       // Set Task as read upon preview
-      this.$emit('onSetViewed', info);
+      this.$emit("onSetViewed", info);
 
-      let param = "";
+      const param = "";
       this.stopFrame = false;
       this.taskTitle = info.element_name;
       this.showFrame1 = firstTime ? true : this.showFrame1;
       this.task = info;
       this.customFilter();
       if (this.showFrame === 1) {
-        this.linkTasks1 = `/tasks/${info.id}/edit/preview`+param;
+        this.linkTasks1 = `/tasks/${info.id}/edit/preview${param}`;
         this.showFrame1 = true;
       }
       if (this.showFrame === 2) {
         this.showFrame2 = true;
-        this.linkTasks2 = `/tasks/${info.id}/edit/preview`+param;
+        this.linkTasks2 = `/tasks/${info.id}/edit/preview${param}`;
       }
       this.showPreview = true;
       this.data = data;
@@ -106,18 +106,18 @@ const PreviewMixin = {
     customFilter() {
       this.propFilters = {
         order: { by: "created_at", direction: "desc" },
-        filters:[
-        {
-          subject: { type: "Field", value: "process_id" },
-          operator: "=",
-          value: this.task.process_id,
-        },
-        {
-          subject: { type: "Field", value: "element_id" },
-          operator: "=",
-          value: this.task.element_id
-        }],
-      }
+        filters: [
+          {
+            subject: { type: "Field", value: "process_id" },
+            operator: "=",
+            value: this.task.process_id,
+          },
+          {
+            subject: { type: "Field", value: "element_id" },
+            operator: "=",
+            value: this.task.element_id,
+          }],
+      };
     },
     showButton() {
       this.isMouseOver = true;
@@ -126,7 +126,7 @@ const PreviewMixin = {
       this.isMouseOver = false;
     },
     onClose() {
-      this.$emit('mark-selected-row', 0);
+      this.$emit("mark-selected-row", 0);
       this.showPreview = false;
       this.resetToDefault();
     },
@@ -197,11 +197,11 @@ const PreviewMixin = {
       this.linkTasks = "";
       this.loading = true;
       if (action === "Next") {
-        this.$emit('mark-selected-row', this.nextTask.id);
+        this.$emit("mark-selected-row", this.nextTask.id);
         this.showSideBar(this.nextTask, this.data);
       }
       if (action === "Prev") {
-        this.$emit('mark-selected-row', this.prevTask.id);
+        this.$emit("mark-selected-row", this.prevTask.id);
         this.showSideBar(this.prevTask, this.data);
       }
     },
@@ -209,7 +209,7 @@ const PreviewMixin = {
      * Show the frame when this is loaded
      */
     frameLoaded(iframe) {
-      const successMessage = this.$t('Task Filled successfully');
+      const successMessage = this.$t("Task Filled successfully");
       this.loading = false;
       clearTimeout(this.isLoading);
       this.stopFrame = false;
@@ -222,11 +222,10 @@ const PreviewMixin = {
       this.showFrame2 = true;
       this.showFrame1 = false;
       this.showFrame = 1;
-      if(this.useThisDataButton) {
-        ProcessMaker.alert(successMessage, 'success');
+      if (this.useThisDataButton) {
+        ProcessMaker.alert(successMessage, "success");
         this.useThisDataButton = false;
       }
-
     },
     addPriority() {
       ProcessMaker.apiClient
@@ -239,23 +238,23 @@ const PreviewMixin = {
       switch (action.value) {
         case "clear-draft":
           ProcessMaker.apiClient
-          .delete("drafts/" + this.task.id)
-          .then(response => {
-            this.isLoading = setTimeout(() => {
-              this.stopFrame = true;
-              this.taskTitle = this.$t("Task Lorem");
-            }, 4900);
-            this.showSideBar(this.task, this.data);
-            this.task.draft = null;
-            this.userHasInteracted = false;
-          });
+            .delete(`drafts/${this.task.id}`)
+            .then((response) => {
+              this.isLoading = setTimeout(() => {
+                this.stopFrame = true;
+                this.taskTitle = this.$t("Task Lorem");
+              }, 4900);
+              this.showSideBar(this.task, this.data);
+              this.task.draft = null;
+              this.userHasInteracted = false;
+            });
           break;
         case "quick-fill":
           this.showQuickFillPreview = true;
           this.size = 50;
           break;
         case "mark-priority":
-            this.addPriority();
+          this.addPriority();
           break;
         case "open-task":
           this.openTask();

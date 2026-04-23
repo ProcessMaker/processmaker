@@ -1,13 +1,17 @@
 <template>
   <div class="data-table">
     <data-loading
-            :for="/\/screens\?page/"
-            v-show="shouldShowLoader"
-            :empty="$t('No Data Available')"
-            :empty-desc="$t('')"
-            empty-icon="noData"
+      v-show="shouldShowLoader"
+      :for="/\/screens\?page/"
+      :empty="$t('No Data Available')"
+      :empty-desc="$t('')"
+      empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader" class="screen-table-card" data-cy="screens-table">
+    <div
+      v-show="!shouldShowLoader"
+      class="screen-table-card"
+      data-cy="screens-table"
+    >
       <filter-table
         :headers="fields"
         :data="data"
@@ -15,7 +19,10 @@
         style="height: calc(100vh - 355px);"
       >
         <!-- Slot Table Header filter Button -->
-        <template v-for="(column, index) in fields" v-slot:[`filter-${column.field}`]>
+        <template
+          v-for="(column, index) in fields"
+          #[`filter-${column.field}`]
+        >
           <div
             v-if="column.sortable"
             :key="index"
@@ -27,21 +34,23 @@
                 'fa-sort-up': column.direction === 'asc',
                 'fa-sort-down': column.direction === 'desc',
               }]"
-            ></i>
+            />
           </div>
         </template>
-        <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
+        <template
+          v-for="(row, rowIndex) in data.data"
+          #[`row-${rowIndex}`]
+        >
           <td
             v-for="(header, colIndex) in fields"
             :key="colIndex"
             :data-cy="`screens-table-td-${rowIndex}-${colIndex}`"
           >
             <div
-              :data-cy="`screens-table-html-${rowIndex}-${colIndex}`"
               v-if="containsHTML(row[header.field])"
+              :data-cy="`screens-table-html-${rowIndex}-${colIndex}`"
               v-html="sanitize(row[header.field])"
-            >
-            </div>
+            />
             <template v-else>
               <template
                 v-if="isComponent(row[header.field])"
@@ -50,8 +59,7 @@
                 <component
                   :is="row[header.field].component"
                   v-bind="row[header.field].props"
-                >
-                </component>
+                />
               </template>
               <template
                 v-else
@@ -59,10 +67,15 @@
               >
                 <template v-if="header.field === 'title'">
                   <b-link
-                    :href="onScreenNavigate('edit-screen', row, rowIndex)"
                     v-if="permission.includes('edit-screens')"
-                  ><span v-uni-id="row.id.toString()">{{row.title}}</span></b-link>
-                  <span v-uni-id="row.id.toString()" v-else="permission.includes('edit-screens')">{{ row.title }}</span>
+                    :href="onScreenNavigate('edit-screen', row, rowIndex)"
+                  >
+                    <span v-uni-id="row.id.toString()">{{ row.title }}</span>
+                  </b-link>
+                  <span
+                    v-else="permission.includes('edit-screens')"
+                    v-uni-id="row.id.toString()"
+                  >{{ row.title }}</span>
                 </template>
                 <template v-if="header.field === 'actions'">
                   <ellipsis-menu
@@ -86,48 +99,92 @@
         </template>
       </filter-table>
 
-      <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="screen" :assetId="screenId" :assetName="assetName" :assignedProjects="assignedProjects"/>
+      <add-to-project-modal
+        id="add-to-project-modal"
+        ref="add-to-project-modal"
+        asset-type="screen"
+        :asset-id="screenId"
+        :asset-name="assetName"
+        :assigned-projects="assignedProjects"
+      />
     </div>
     <pagination-table
       :meta="data.meta"
       @page-change="changePage"
       @per-page-change="changePerPage"
     />
-    <b-modal ref="myModalRef" :title="$t('Copy Screen')" centered header-close-content="&times;">
+    <b-modal
+      ref="myModalRef"
+      :title="$t('Copy Screen')"
+      centered
+      header-close-content="&times;"
+    >
       <form>
         <div class="form-group">
-          <label for="title">{{$t('Name')}}<small class="ml-1">*</small></label>
-          <input id="title"
+          <label for="title">{{ $t('Name') }}<small class="ml-1">*</small></label>
+          <input
+            id="title"
+            v-model="dupScreen.title"
             type="text"
             class="form-control"
-            v-model="dupScreen.title"
-            v-bind:class="{ 'is-invalid': errors.title }"
-          />
-          <div class="invalid-feedback" role="alert" v-if="errors.title">{{errors.title[0]}}</div>
+            :class="{ 'is-invalid': errors.title }"
+          >
+          <div
+            v-if="errors.title"
+            class="invalid-feedback"
+            role="alert"
+          >
+            {{ errors.title[0] }}
+          </div>
         </div>
         <div class="form-group">
-          <label for="type">{{$t('Type')}}</label>
-          <select class="form-control" id="type" disabled>
-            <option>{{dupScreen.type}}</option>
+          <label for="type">{{ $t('Type') }}</label>
+          <select
+            id="type"
+            class="form-control"
+            disabled
+          >
+            <option>{{ dupScreen.type }}</option>
           </select>
         </div>
         <div class="form-group">
           <category-select
-          :label="$t('Category')"
-          api-get="screen_categories"
-          api-list="screen_categories"
-          v-model="dupScreen.screen_category_id"
-          :errors="errors.screen_category_id">
-          </category-select>
+            v-model="dupScreen.screen_category_id"
+            :label="$t('Category')"
+            api-get="screen_categories"
+            api-list="screen_categories"
+            :errors="errors.screen_category_id"
+          />
         </div>
         <div class="form-group">
-          <label for="description">{{$t('Description')}}</label>
-          <textarea class="form-control" id="description" rows="3" v-model="dupScreen.description"></textarea>
+          <label for="description">{{ $t('Description') }}</label>
+          <textarea
+            id="description"
+            v-model="dupScreen.description"
+            class="form-control"
+            rows="3"
+          />
         </div>
       </form>
-      <div slot="modal-footer" class="w-100" align="right">
-        <button type="button" class="btn btn-outline-secondary" @click="hideModal">{{$t('Cancel')}}</button>
-        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{$t('Save')}}</button>
+      <div
+        slot="modal-footer"
+        class="w-100"
+        align="right"
+      >
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          @click="hideModal"
+        >
+          {{ $t('Cancel') }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary ml-2"
+          @click="onSubmit"
+        >
+          {{ $t('Save') }}
+        </button>
       </div>
     </b-modal>
 
@@ -138,11 +195,11 @@
       :current-user-id="currentUserId"
       :asset-name="screenTemplateName"
       :asset-id="screenId"
-      :screenType="screenType"
+      :screen-type="screenType"
       :permission="permission"
       :types="types"
-      headerClass="border-0"
-      footerClass="border-0"
+      header-class="border-0"
+      footer-class="border-0"
       modal-size="lg"
     />
     <add-to-bundle asset-type="ProcessMaker\Models\Screen" />
@@ -150,6 +207,7 @@
 </template>
 
 <script>
+import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
@@ -160,12 +218,14 @@ import PaginationTable from "../../../components/shared/PaginationTable.vue";
 import { ellipsisSortClick } from "../../../components/shared/UtilsTable";
 import AddToBundle from "../../../components/shared/AddToBundle.vue";
 
-import { createUniqIdsMixin } from "vue-uniq-ids";
 import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { EllipsisMenu, AddToProjectModal, CreateTemplateModal, PaginationTable, AddToBundle },
+  components: {
+    EllipsisMenu, AddToProjectModal, CreateTemplateModal, PaginationTable, AddToBundle,
+  },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, screenNavigationMixin],
   props: ["filter", "id", "permission", "currentUserId", "types"],
   data() {
@@ -257,8 +317,8 @@ export default {
           title: "",
           label: "",
           field: "actions",
-        }
-      ]
+        },
+      ],
     };
   },
   computed: {
@@ -268,11 +328,11 @@ export default {
         content: "Add to Bundle",
         icon: "fp-add-outlined",
         permission: "admin",
-        emit_on_root: 'add-to-bundle',
+        emit_on_root: "add-to-bundle",
       });
-    }
+    },
   },
-  created () {
+  created() {
     ProcessMaker.EventBus.$on("api-data-process", () => {
       this.fetch();
       this.apiDataLoading = false;
@@ -291,13 +351,13 @@ export default {
     },
     onSubmit() {
       ProcessMaker.apiClient
-        .put("screens/" + this.dupScreen.id + "/duplicate", this.dupScreen)
-        .then(response => {
+        .put(`screens/${this.dupScreen.id}/duplicate`, this.dupScreen)
+        .then((response) => {
           ProcessMaker.alert(this.$t("The screen was duplicated."), "success");
           this.hideModal();
           this.fetch();
         })
-        .catch(error => {
+        .catch((error) => {
           if (error.response.status && error.response.status === 422) {
             this.errors = error.response.data.errors;
           }
@@ -311,26 +371,26 @@ export default {
     },
     fetch() {
       this.loading = true;
-      //change method sort by slot name
+      // change method sort by slot name
       this.orderBy = this.orderBy === "__slot:updated_at" ? "updated_at" : this.orderBy;
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "screens" +
-            "?page=" +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&filter=" +
-            this.filter +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=" +
-            this.orderDirection +
-            "&include=categories,category" +
-            "&exclude=config"
+          "screens"
+            + `?page=${
+              this.page
+            }&per_page=${
+              this.perPage
+            }&filter=${
+              this.filter
+            }&order_by=${
+              this.orderBy
+            }&order_direction=${
+              this.orderDirection
+            }&include=categories,category`
+            + "&exclude=config",
         )
-        .then(response => {
+        .then((response) => {
           this.data = this.transform(response.data);
           this.loading = false;
         });

@@ -12,19 +12,18 @@
       :internal-search="true"
       :allow-empty="false"
       :disabled="disabled"
-      >
-    </multiselect>
+    />
   </div>
 </template>
 
 <script>
-import DataFormats from '../../data-formats';
+import DataFormats from "../../data-formats";
 
 export default {
   props: {
     value: {
       type: String,
-      default: 'string'
+      default: "string",
     },
     disabled: {
       type: Boolean,
@@ -37,34 +36,34 @@ export default {
       formats: DataFormats.formats(),
     };
   },
-  mounted() {
-    this.format = DataFormats.format(this.value);
-    this.formats.map(format => format.content = this.$t(format.content));
-  },
   watch: {
     format() {
-      this.$emit('input', this.format.value);
-    }
-  }
-}
+      this.$emit("input", this.format.value);
+    },
+  },
+  mounted() {
+    this.format = DataFormats.format(this.value);
+    this.formats.map((format) => format.content = this.$t(format.content));
+  },
+};
 </script>
 
 <style lang="scss">
   .data-format-selector {
-    
+
     $multiselect-height: 38px;
-    
+
     .multiselect {
       display: inline-block !important;
     }
-    
+
     .multiselect,
     .multiselect__tags {
       height: $multiselect-height;
       min-height: $multiselect-height;
       max-height: $multiselect-height;
     }
-    
+
     .multiselect__placeholder {
       display: block;
       line-height: 20px;
@@ -83,12 +82,12 @@ export default {
     .multiselect__tags {
       font-size: 16px;
     }
-    
+
     .multiselect__option--highlight {
       background: #ddd;
       color: #222;
     }
-    
+
     .form-control-multiselect {
       position: relative;
       -webkit-box-flex: 1;

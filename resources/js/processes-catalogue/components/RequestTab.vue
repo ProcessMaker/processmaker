@@ -1,8 +1,8 @@
 <template>
   <div>
     <div
-      class="bg-white class-container"
       v-if="!showTabRequests"
+      class="bg-white class-container"
     >
       <filter-table
         :headers="tableHeadersRequests"
@@ -29,6 +29,7 @@
 
 <script>
 import Vue from "vue";
+import { createUniqIdsMixin } from "vue-uniq-ids";
 import AvatarImage from "../../components/AvatarImage";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
 import paginationTable from "../../components/shared/PaginationTable.vue";
@@ -36,8 +37,8 @@ import DefaultTab from "./DefaultTab.vue";
 import SearchTab from "./utils/SearchTab.vue";
 import ListMixin from "../../requests/components/ListMixin";
 import { FilterTable } from "../../components/shared";
-import { createUniqIdsMixin } from "vue-uniq-ids";
 import { methodsTabMixin } from "./TabMixing.js";
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 Vue.component("AvatarImage", AvatarImage);
@@ -149,13 +150,13 @@ export default {
       data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
       data.meta.to = data.meta.from + data.meta.count;
       data.data = this.jsonRows(data.data);
-      for (let record of data.data) {
-        //format Status
-        record["case_number"] = this.formatCaseNumber(record);
-        record["case_title"] = this.formatCaseTitle(record);
-        record["status"] = this.formatStatus(record["status"]);
-        record["participants"] = this.formatParticipants(
-          record["participants"]
+      for (const record of data.data) {
+        // format Status
+        record.case_number = this.formatCaseNumber(record);
+        record.case_title = this.formatCaseTitle(record);
+        record.status = this.formatStatus(record.status);
+        record.participants = this.formatParticipants(
+          record.participants,
         );
       }
       return data;
@@ -193,7 +194,7 @@ export default {
     },
     queryBuilder() {
       let pmql = `process_id = "${this.process.id}"`;
-      let filter = this.filter;
+      let { filter } = this;
       if (filter?.length) {
         if (filter.isPMQL()) {
           pmql = `(${pmql}) AND (${filter})`;
@@ -211,15 +212,14 @@ export default {
       this.tabRequests(pmql);
     },
     tabRequests(pmql) {
-      this.queryRequest =
-        "requests?page=" +
-        this.page +
-        "&per_page=" +
-        this.perPage +
-        "&include=process,participants,activeTasks,data" +
-        "&pmql=" +
-        `${encodeURIComponent(pmql)}` +
-        "&filter&order_by=id&order_direction=DESC";
+      this.queryRequest = `requests?page=${
+        this.page
+      }&per_page=${
+        this.perPage
+      }&include=process,participants,activeTasks,data`
+        + "&pmql="
+        + `${encodeURIComponent(pmql)}`
+        + "&filter&order_by=id&order_direction=DESC";
       this.getData(this.queryRequest);
     },
     getData(query, type) {
@@ -231,9 +231,9 @@ export default {
           this.dataRequests = this.transform(response.data);
           this.showTabRequests = false;
           if (
-            dataResponse &&
-            Array.isArray(dataResponse.data) &&
-            dataResponse.data.length === 0
+            dataResponse
+            && Array.isArray(dataResponse.data)
+            && dataResponse.data.length === 0
           ) {
             this.showTabRequests = true;
           }
@@ -245,7 +245,7 @@ export default {
           if (_.has(error, "response.data.message")) {
             ProcessMaker.alert(error.response.data.message, "danger");
           } else if (_.has(error, "response.data.error")) {
-            return;
+
           } else {
             throw error;
           }

@@ -11,14 +11,14 @@ export default {
   computed: {
     currentTaskUserId() {
       return this.task?.user_id ?? this.task?.user?.id;
-    }
+    },
   },
   methods: {
     setAllowReassignment() {
       if (!this.task?.id) {
         return;
       }
-      window.ProcessMaker.apiClient.get('tasks/user-can-reassign?tasks=' + this.task.id)
+      window.ProcessMaker.apiClient.get(`tasks/user-can-reassign?tasks=${this.task.id}`)
         .then((response) => {
           this.allowReassignment = response.data[this.task.id];
         });
@@ -29,7 +29,7 @@ export default {
           filter,
           this.task?.id,
           this.task?.request_data,
-          this.currentTaskUserId
+          this.currentTaskUserId,
         );
 
         this.reassignUsers = [];
@@ -38,12 +38,12 @@ export default {
             this.reassignUsers.push({
               text: user.fullname,
               value: user.id,
-              active_tasks_count: user.active_tasks_count
+              active_tasks_count: user.active_tasks_count,
             });
           });
         }
       } catch (error) {
-        console.error('Error loading reassign users:', error);
+        console.error("Error loading reassign users:", error);
       }
     },
     onReassignInput: _.debounce(function (filter) {
@@ -53,15 +53,15 @@ export default {
     reassignUser(redirect = false) {
       if (this.selectedUser) {
         ProcessMaker.apiClient
-          .put("tasks/" + this.task.id, {
-            user_id: this.selectedUser
+          .put(`tasks/${this.task.id}`, {
+            user_id: this.selectedUser,
           })
-          .then(response => {
+          .then((response) => {
             this.$emit("on-reassign-user", this.selectedUser);
             this.showReassignment = false;
             this.selectedUser = null;
             if (redirect) {
-              this.redirect('/tasks');
+              this.redirect("/tasks");
             }
             if (this.showPreview) {
               this.showPreview = false;
@@ -69,5 +69,5 @@ export default {
           });
       }
     },
-  }
-}
+  },
+};

@@ -8,11 +8,11 @@ new Vue({
     return {
       filter: "",
       filterComments: null,
-    }
+    };
   },
   methods: {
     setFilterComments(filter) {
       this.filterComments = filter;
-    }
-  }
+    },
+  },
 });

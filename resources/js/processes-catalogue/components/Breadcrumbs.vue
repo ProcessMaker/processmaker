@@ -1,5 +1,8 @@
 <template>
-  <nav class="breadcrum-main" aria-label="breadcrumb">
+  <nav
+    class="breadcrum-main"
+    aria-label="breadcrumb"
+  >
     <ol class="breadcrumb bg-transparent">
       <li class="breadcrumb-item">
         <a

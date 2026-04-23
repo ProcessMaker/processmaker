@@ -1,12 +1,14 @@
 <template>
   <div
     id="tasks"
-    class="tw-flex tw-w-full tw-h-full tw-px-4">
+    class="tw-flex tw-w-full tw-h-full tw-px-4"
+  >
     <CollapsableContainer
       v-model="showMenu"
       class="tw-w-80"
       position="right"
-      @change="toggleMenu">
+      @change="toggleMenu"
+    >
       <template #default>
         <div class="tw-flex tw-flex-col tw-h-full tw-w-full tw-pr-4">
           <button
@@ -15,29 +17,34 @@
               'button-transparent': selectedProcess !== 'inbox',
               'menu-title-inbox': selectedProcess !== 'inbox',
             }"
-            @click="getAllTasks">
+            @click="getAllTasks"
+          >
             <i
               class="fp-inbox me-2"
-              style="color: #2773f3; font-size: 20px" />
+              style="color: #2773f3; font-size: 20px"
+            />
             <span>{{ $t("Inbox") }}</span>
           </button>
           <ProcessesDashboardsMenu
             ref="processesDashboardsMenu"
             @processDashboardSelected="processDashboardSelected"
-            @get-all-tasks="getAllTasks" />
+            @get-all-tasks="getAllTasks"
+          />
         </div>
       </template>
     </CollapsableContainer>
 
     <div
       ref="processInfo"
-      class="tw-overflow-hidden tw-flex-1 tw-pb-4">
+      class="tw-overflow-hidden tw-flex-1 tw-pb-4"
+    >
       <div v-if="selectedProcess === 'inbox'">
         <div class="px-3 page-content mb-0">
           <div class="row">
             <div
               class="col"
-              align="right">
+              align="right"
+            >
               <b-alert
                 v-if="inOverdueMessage.length > 0"
                 v-cloak
@@ -45,7 +52,8 @@
                 show
                 variant="danger"
                 style="text-align: center"
-                data-cy="tasks-alert">
+                data-cy="tasks-alert"
+              >
                 {{ inOverdueMessage }}
               </b-alert>
             </div>
@@ -56,7 +64,8 @@
               <ul
                 id="requestTab"
                 class="nav nav-tabs task-nav"
-                role="tablist">
+                role="tablist"
+              >
                 <li class="nav-item">
                   <a
                     id="inbox-tab"
@@ -69,7 +78,8 @@
                     :class="{ active: tab === 'inbox' }"
                     @click.prevent="
                       !isDataLoading ? switchTab('inbox') : null
-                    ">
+                    "
+                  >
                     {{ $t("Inbox") }}
                   </a>
                 </li>
@@ -85,7 +95,8 @@
                     :class="{ active: tab === 'priority' }"
                     @click.prevent="
                       !isDataLoading ? switchTab('priority') : null
-                    ">
+                    "
+                  >
                     {{ $t("Priority") }}
                   </a>
                 </li>
@@ -102,7 +113,8 @@
                     :class="{ active: tab === 'draft' }"
                     @click.prevent="
                       !isDataLoading ? switchTab('draft') : null
-                    ">
+                    "
+                  >
                     {{ $t("Drafts") }}
                   </a>
                 </li>
@@ -110,16 +122,19 @@
 
               <div
                 id="task-tabContent"
-                class="tab-content">
+                class="tab-content"
+              >
                 <div
                   id="inbox"
                   class="tab-pane fade show active"
                   role="tabpanel"
-                  aria-labelledby="inbox-tab">
+                  aria-labelledby="inbox-tab"
+                >
                   <div class="card card-body task-list-body">
                     <div
                       id="search-bar"
-                      class="search advanced-search mb-2">
+                      class="search advanced-search mb-2"
+                    >
                       <div class="d-flex">
                         <div class="flex-grow-1">
                           <pmql-input
@@ -136,18 +151,21 @@
                               userPermissions.hasPermissionsForUsersGroups
                             "
                             @submit="onNLQConversion"
-                            @filterspmqlchange="onFiltersPmqlChange">
+                            @filterspmqlchange="onFiltersPmqlChange"
+                          >
                             <template #left-buttons>
                               <div class="d-flex">
                                 <div
                                   v-for="addition in additions"
-                                  class="d-flex mr-1">
+                                  class="d-flex mr-1"
+                                >
                                   <component
                                     :is="addition"
                                     class="d-flex"
                                     :permission="
                                       userPermissions.hasPermissionsForUsersGroups
-                                    " />
+                                    "
+                                  />
                                 </div>
                               </div>
                             </template>
@@ -157,18 +175,21 @@
                                 id="idPopoverInboxRules"
                                 class="ml-md-1 task-inbox-rules"
                                 variant="primary"
-                                @click="onInboxRules">
+                                @click="onInboxRules"
+                              >
                                 {{ $t("Inbox Rules") }}
                               </b-button>
                               <b-popover
                                 target="idPopoverInboxRules"
                                 triggers="hover focus"
-                                placement="bottomleft">
+                                placement="bottomleft"
+                              >
                                 <div class="task-inbox-rules-content">
                                   <div>
                                     <img
                                       src="/img/inbox-rule-suggest.svg"
-                                      :alt="$t('Inbox Rules')">
+                                      :alt="$t('Inbox Rules')"
+                                    >
                                   </div>
                                   <span
                                     class="task-inbox-rules-content-text"
@@ -176,7 +197,8 @@
                                       $t(
                                         'Inbox Rules act as your personal task manager. You tell them what to look for, and they <strong>take care of things automatically.</strong>'
                                       )
-                                    " />
+                                    "
+                                  />
                                 </div>
                               </b-popover>
                               <b-button
@@ -185,7 +207,8 @@
                                     userPermissions.canEditScreens
                                 "
                                 class="ml-md-2"
-                                :href="savedsearchDefaultsEditRoute">
+                                :href="savedsearchDefaultsEditRoute"
+                              >
                                 <i class="fas fw fa-cog" />
                               </b-button>
                             </template>
@@ -205,7 +228,8 @@
                       @in-overdue="setInOverdueMessage"
                       @data-loading="dataLoading"
                       @tab-count="handleTabCount"
-                      @on-fetch-task="onFetchTask" />
+                      @on-fetch-task="onFetchTask"
+                    />
                   </div>
                 </div>
               </div>
@@ -215,7 +239,8 @@
       </div>
       <router-view
         v-else
-        :key="$route.fullPath" />
+        :key="$route.fullPath"
+      />
     </div>
   </div>
 </template>

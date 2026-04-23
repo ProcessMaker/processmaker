@@ -147,49 +147,49 @@
       </div>
 
       <div style="display: flex;">
-      <div
-        v-if="filterBadges.length > 0"
-        class="selected-filters-bar d-flex pt-2"
-      >
-        <span
-          v-for="filter in filterBadges"
-          class="selected-filter-item d-flex align-items-center"
+        <div
+          v-if="filterBadges.length > 0"
+          class="selected-filters-bar d-flex pt-2"
         >
-          <span class="selected-filter-key mr-1">{{ $t(capitalizeString(filter[0])) }}<template v-if="!get(filter, '1.0.advanced_filter', false)">:</template></span>
-          {{ filter[1][0].operator ?? '' }}
-          <template v-if="filter[0] === 'Status'">
-            <!-- translate status label -->
-            {{ $t(filter[1][0].name) }}
-          </template>
-          <template v-else>
-            {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }}
-          </template>
           <span
-            v-if="filter[1].length > 1"
-            class="badge badge-pill ml-2 filter-counter"
+            v-for="filter in filterBadges"
+            class="selected-filter-item d-flex align-items-center"
           >
-            +{{ filter[1].length - 1 }}
+            <span class="selected-filter-key mr-1">{{ $t(capitalizeString(filter[0])) }}<template v-if="!get(filter, '1.0.advanced_filter', false)">:</template></span>
+            {{ filter[1][0].operator ?? '' }}
+            <template v-if="filter[0] === 'Status'">
+              <!-- translate status label -->
+              {{ $t(filter[1][0].name) }}
+            </template>
+            <template v-else>
+              {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }}
+            </template>
+            <span
+              v-if="filter[1].length > 1"
+              class="badge badge-pill ml-2 filter-counter"
+            >
+              +{{ filter[1].length - 1 }}
+            </span>
+            <i
+              v-if="!get(filter, '1.0.advanced_filter', false)"
+              role="button"
+              class="fa fa-times pl-2 pr-0"
+              @click="removeFilter(filter)"
+            />
           </span>
-          <i
-            role="button"
-            class="fa fa-times pl-2 pr-0"
-            @click="removeFilter(filter)"
-            v-if="!get(filter, '1.0.advanced_filter', false)"
-          />
-        </span>
-      </div>
-      <div style="margin-left: auto">
-        <slot name="right-of-badges" />
-      </div>
+        </div>
+        <div style="margin-left: auto">
+          <slot name="right-of-badges" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script>
 import { MustacheHelper } from "@processmaker/screen-builder";
+import { get } from "lodash";
 import PmqlInputFilters from "./PmqlInputFilters.vue";
 import advancedFilterStatusMixin from "../../common/advancedFilterStatusMixin";
-import { get } from "lodash";
 
 export default {
   components: { MustacheHelper, PmqlInputFilters },
@@ -261,8 +261,8 @@ export default {
       const result = [];
       if (this.value && this.showPmqlBadge === true) {
         result.push([
-          'pmql',
-          [{name: this.value, operator: '', advanced_filter: true}]
+          "pmql",
+          [{ name: this.value, operator: "", advanced_filter: true }],
         ]);
       }
       return result;
@@ -492,9 +492,9 @@ export default {
       if (string === "") {
         return "";
       }
-      let str = string.toLowerCase();
+      const str = string.toLowerCase();
       return str.charAt(0).toUpperCase() + str.slice(1);
-    }
+    },
   },
 };
 </script>

@@ -1,8 +1,8 @@
 <template>
   <div>
     <div
-      class="bg-white class-container"
       v-if="!showTabTasks"
+      class="bg-white class-container"
     >
       <filter-table
         :headers="tableHeadersTasks"
@@ -28,6 +28,7 @@
 
 <script>
 import Vue from "vue";
+import { createUniqIdsMixin } from "vue-uniq-ids";
 import AvatarImage from "../../components/AvatarImage";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
 import paginationTable from "../../components/shared/PaginationTable.vue";
@@ -35,8 +36,8 @@ import DefaultTab from "./DefaultTab.vue";
 import SearchTab from "./utils/SearchTab.vue";
 import ListMixin from "../../tasks/components/ListMixin";
 import { FilterTable } from "../../components/shared";
-import { createUniqIdsMixin } from "vue-uniq-ids";
 import { methodsTabMixin } from "./TabMixing.js";
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 Vue.component("AvatarImage", AvatarImage);
@@ -145,14 +146,14 @@ export default {
       data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
       data.meta.to = data.meta.from + data.meta.count;
       data.data = this.jsonRows(data.data);
-      for (let record of data.data) {
-        //format Status
-        record["case_number"] = this.formatCaseNumber(record.process_request);
-        record["case_title"] = this.formatCaseTitle(record.process_request);
-        record["name"] = record.process.name;
-        record["status"] = this.formatStatus(record);
-        record["participants"] = this.formatParticipants(
-          record["participants"]
+      for (const record of data.data) {
+        // format Status
+        record.case_number = this.formatCaseNumber(record.process_request);
+        record.case_title = this.formatCaseTitle(record.process_request);
+        record.name = record.process.name;
+        record.status = this.formatStatus(record);
+        record.participants = this.formatParticipants(
+          record.participants,
         );
       }
       return data;
@@ -184,11 +185,11 @@ export default {
       if (props.status === "ACTIVE" && props.isSelfService) {
         color = "danger";
         label = "Self Service";
-      } 
+      }
       if (props.status === "ACTIVE") {
         color = "success";
         label = "In Progress";
-      } 
+      }
       if (props.status === "CLOSED") {
         color = "primary";
         label = "Completed";
@@ -216,9 +217,9 @@ export default {
     queryBuilder() {
       let pmql = "";
       if (this.pmqlTask !== undefined) {
-        pmql = `(${this.pmqlTask}) AND (process_id = ${this.process.id})`
+        pmql = `(${this.pmqlTask}) AND (process_id = ${this.process.id})`;
       }
-      let filter = this.filter;
+      let { filter } = this;
       if (filter?.length) {
         if (filter.isPMQL()) {
           pmql = `(${pmql}) and (${filter})`;
@@ -236,15 +237,14 @@ export default {
       this.tabTasks(pmql);
     },
     tabTasks(pmql) {
-      this.queryTask =
-        "tasks?page=" +
-        this.page +
-        "&include=process,processRequest,processRequest.user,user,data" +
-        "&pmql=" +
-        `${encodeURIComponent(pmql)}` +
-        "&per_page="+
-        `${this.perPage}`+
-        "&order_by=ID&order_direction=DESC&non_system=true";
+      this.queryTask = `tasks?page=${
+        this.page
+      }&include=process,processRequest,processRequest.user,user,data`
+        + "&pmql="
+        + `${encodeURIComponent(pmql)}`
+        + "&per_page="
+        + `${this.perPage}`
+        + "&order_by=ID&order_direction=DESC&non_system=true";
       this.getData(this.queryTask);
     },
     getData(query) {
@@ -256,9 +256,9 @@ export default {
           this.dataTasks = this.transform(response.data);
           this.showTabTasks = false;
           if (
-            dataResponse &&
-            Array.isArray(dataResponse.data) &&
-            dataResponse.data.length === 0
+            dataResponse
+            && Array.isArray(dataResponse.data)
+            && dataResponse.data.length === 0
           ) {
             this.showTabTasks = true;
           }
@@ -270,7 +270,7 @@ export default {
           if (_.has(error, "response.data.message")) {
             ProcessMaker.alert(error.response.data.message, "danger");
           } else if (_.has(error, "response.data.error")) {
-            return;
+
           } else {
             throw error;
           }

@@ -55,7 +55,7 @@ export default {
           pmql = this.pmql;
         }
 
-        let { filter } = this;
+        const { filter } = this;
 
         if (filter?.length) {
           if (filter.isPMQL()) {
@@ -128,7 +128,7 @@ export default {
       return data;
     },
     handleEllipsisClick(processColumn) {
-      this.fields.forEach(column => {
+      this.fields.forEach((column) => {
         if (column.field !== processColumn.field) {
           column.direction = "none";
           column.filterApplied = false;

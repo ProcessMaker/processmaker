@@ -1,12 +1,14 @@
 <template>
   <div
-    class="tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis tw-p-3">
+    class="tw-text-nowrap tw-whitespace-nowrap tw-overflow-hidden tw-text-ellipsis tw-p-3"
+  >
     <span @click="onClick">
       <i
         :class="{
           'far fa-flag': active,
           'fas fa-flag': !active,
-        }" />
+        }"
+      />
     </span>
   </div>
 </template>

@@ -26,11 +26,11 @@
                 {{ menu.menu_group }}
               </span>
               <ellipsis-menu
-                @navigate="onNavigate"
                 :actions="actions"
                 :data="menu"
                 :custom-button="{icon: 'fas fa-ellipsis-v', content: ''}"
                 class="settings-ellipsis-menu"
+                @navigate="onNavigate"
               />
             </div>
           </h5>
@@ -130,9 +130,7 @@ export default {
       }
       // Check if a Email Server was deleted
       if (oldEmailMenu.length > newEmailMenu.length) {
-        const emailDefaultItem = this.menuGroups[0].groups.find((group) => {
-          return group.name === "Email Default Settings"
-        })
+        const emailDefaultItem = this.menuGroups[0].groups.find((group) => group.name === "Email Default Settings");
         this.selectItem(emailDefaultItem);
       }
       this.firstTime = false;
@@ -184,7 +182,7 @@ export default {
       switch (action.value) {
         case "add-to-bundle":
           this.selectedMenu = data;
-          this.$root.$emit('add-to-bundle', data);
+          this.$root.$emit("add-to-bundle", data);
           break;
         default:
           break;

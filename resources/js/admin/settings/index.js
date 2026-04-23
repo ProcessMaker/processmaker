@@ -1,5 +1,5 @@
 import SettingsGroups from "./components/SettingsGroups";
-import SettingsMain from "./components/SettingsMain"
+import SettingsMain from "./components/SettingsMain";
 
 new Vue({
   el: "#settings",

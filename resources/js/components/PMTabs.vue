@@ -1,55 +1,59 @@
 <template>
-  <b-card no-body
-          class="pm-tabs">
-    <b-tabs ref="bTabs"
-            v-model="activeTab"
-            @changed="$emit('changed', $event)"
-            lazy
-            :nav-class="{'pl-2': true, 'pm-tabs-nav-class': true, 'pm-tabs-nav-link': true, 'pm-tabs-nav-class-mobile': mobileApp, 'pm-tabs-nav-link-mobile': mobileApp}"
-            :active-nav-item-class="{'font-weight-bold': true, 'pm-tabs-nav-class': true, 'pm-tabs-nav-class-mobile': mobileApp}"
-            content-class="m-2">
+  <b-card
+    no-body
+    class="pm-tabs"
+  >
+    <b-tabs
+      ref="bTabs"
+      v-model="activeTab"
+      lazy
+      :nav-class="{'pl-2': true, 'pm-tabs-nav-class': true, 'pm-tabs-nav-link': true, 'pm-tabs-nav-class-mobile': mobileApp, 'pm-tabs-nav-link-mobile': mobileApp}"
+      :active-nav-item-class="{'font-weight-bold': true, 'pm-tabs-nav-class': true, 'pm-tabs-nav-class-mobile': mobileApp}"
+      content-class="m-2"
+      @changed="$emit('changed', $event)"
+    >
       <template #tabs-start>
-        <slot name="tabs-start"></slot>
+        <slot name="tabs-start" />
       </template>
-      <slot></slot>
+      <slot />
       <template #tabs-end>
-        <slot name="tabs-end"></slot>
+        <slot name="tabs-end" />
       </template>
     </b-tabs>
   </b-card>
 </template>
 
 <script>
-  export default {
-    props: {
-      value: {
-        type: Number,
-        default: 0
-      }
+export default {
+  props: {
+    value: {
+      type: Number,
+      default: 0,
     },
-    data() {
-      return {
-        activeTab: this.value,
-        mobileApp: window.ProcessMaker.mobileApp
-      };
+  },
+  data() {
+    return {
+      activeTab: this.value,
+      mobileApp: window.ProcessMaker.mobileApp,
+    };
+  },
+  watch: {
+    value(newValue) {
+      this.activeTab = newValue;
     },
-    watch: {
-      value(newValue) {
-        this.activeTab = newValue;
-      },
-      activeTab(newValue) {
-        this.$emit("input", newValue);
-      }
+    activeTab(newValue) {
+      this.$emit("input", newValue);
     },
-    methods: {
-      getTabs() {
-        return this.$refs.bTabs.tabs;
-      },
-      getButtons() {
-        return this.$refs.bTabs.$refs.buttons;
-      }
-    }
-  };
+  },
+  methods: {
+    getTabs() {
+      return this.$refs.bTabs.tabs;
+    },
+    getButtons() {
+      return this.$refs.bTabs.$refs.buttons;
+    },
+  },
+};
 </script>
 
 <style>

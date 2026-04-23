@@ -1,15 +1,15 @@
 const IsViewMixin = {
   data() {
     return {
-      currentView: "main"
+      currentView: "main",
     };
   },
   watch: {
     currentView: {
       handler() {
         this.$emit("onChangeViews", this.currentView);
-      }
-    }
+      },
+    },
   },
   methods: {
     viewIs(...views) {
@@ -17,7 +17,7 @@ const IsViewMixin = {
     },
     viewsTo(view) {
       this.currentView = view;
-    }
-  }
+    },
+  },
 };
 export default IsViewMixin;

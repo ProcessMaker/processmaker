@@ -123,7 +123,6 @@ if (window.Processmaker && window.Processmaker.apiTimeout !== undefined) {
 }
 window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
 
-
 // click an active tab after all components have mounted
 Vue.use({
   install(vue) {
@@ -131,7 +130,7 @@ Vue.use({
       mounted() {
         if (this.$parent) {
           // only run on root
-          return;
+
         }
       },
     });

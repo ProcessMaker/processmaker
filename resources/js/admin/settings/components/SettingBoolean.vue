@@ -1,6 +1,11 @@
 <template>
   <span>
-    <b-form-checkbox :key="key" @input="emitSaved(input)" v-model="input" switch></b-form-checkbox>
+    <b-form-checkbox
+      :key="key"
+      v-model="input"
+      switch
+      @input="emitSaved(input)"
+    />
   </span>
 </template>
 
@@ -9,7 +14,7 @@ import settingMixin from "../mixins/setting";
 
 export default {
   mixins: [settingMixin],
-  props: ['value', 'setting'],
+  props: ["value", "setting"],
   data() {
     return {
       input: this.value,
@@ -18,20 +23,20 @@ export default {
   },
   watch: {
     value: {
-      handler: function(value) {
+      handler(value) {
         this.regenerateKey();
         this.input = value;
       },
-    }
-  },
-  methods: {
-    regenerateKey() {
-      this.key = Math.random().toString(36).substring(7);
-    }
+    },
   },
   mounted() {
     this.regenerateKey();
     this.input = this.value;
-  }
+  },
+  methods: {
+    regenerateKey() {
+      this.key = Math.random().toString(36).substring(7);
+    },
+  },
 };
 </script>

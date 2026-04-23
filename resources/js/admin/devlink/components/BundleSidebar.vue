@@ -29,7 +29,7 @@ defineProps({
   },
 });
 
-defineEmits(['update:modelValue']);
+defineEmits(["update:modelValue"]);
 
 </script>
 

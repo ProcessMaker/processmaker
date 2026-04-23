@@ -1,86 +1,96 @@
 <template>
-    <b-modal
-      ref="createDevLinkModal"
-      id="create"
-      centered
-      size="lg"
-      :title="$t('Create new DevLink')"
-      @hidden="clear"
-      @ok="create"
-      :ok-title="$t('Create')"
-      :cancel-title="$t('Cancel')"
+  <b-modal
+    id="create"
+    ref="createDevLinkModal"
+    centered
+    size="lg"
+    :title="$t('Create new DevLink')"
+    :ok-title="$t('Create')"
+    :cancel-title="$t('Cancel')"
+    @hidden="clear"
+    @ok="create"
+  >
+    <div
+      v-if="status === 'error'"
+      class="alert alert-danger"
+      role="alert"
     >
-      <div v-if="status === 'error'" class="alert alert-danger" role="alert">
-        <div class="alert-header">
-          <span class="icon">!</span>
-          <strong>Connection Error</strong>
-        </div>
-        <a href="#" @click.prevent="toggleDetails">{{ showDetails ? 'See Less Details' : 'See More Details' }}</a>
-        <ul v-show="showDetails">
-          <li>Please check your internet connection.</li>
-          <li>Verify if the server is available or try again later.</li>
-          <li>If the issue persists, contact support for assistance.</li>
-        </ul>
+      <div class="alert-header">
+        <span class="icon">!</span>
+        <strong>Connection Error</strong>
       </div>
-      <div>
-        <b-form-group :label="$t('Please assign a name to the desired linked instance')">
-          <b-form-input v-model="newName" :readonly="status === 'error'" />
-        </b-form-group>
-        <p>{{ $t('We require the access token of the instance you want to connect. If the token is correct, you will have to log-in in the corresponding instance.') }}</p>
-        <b-form-group
-          :label="$t('Instance URL')"
-          :invalid-feedback="$t('Invalid URL')"
-          :state="urlIsValid"
-        >
-          <b-form-input v-model="newUrl"></b-form-input>
-        </b-form-group>
-      </div>
-    </b-modal>
+      <a
+        href="#"
+        @click.prevent="toggleDetails"
+      >{{ showDetails ? 'See Less Details' : 'See More Details' }}</a>
+      <ul v-show="showDetails">
+        <li>Please check your internet connection.</li>
+        <li>Verify if the server is available or try again later.</li>
+        <li>If the issue persists, contact support for assistance.</li>
+      </ul>
+    </div>
+    <div>
+      <b-form-group :label="$t('Please assign a name to the desired linked instance')">
+        <b-form-input
+          v-model="newName"
+          :readonly="status === 'error'"
+        />
+      </b-form-group>
+      <p>{{ $t('We require the access token of the instance you want to connect. If the token is correct, you will have to log-in in the corresponding instance.') }}</p>
+      <b-form-group
+        :label="$t('Instance URL')"
+        :invalid-feedback="$t('Invalid URL')"
+        :state="urlIsValid"
+      >
+        <b-form-input v-model="newUrl" />
+      </b-form-group>
+    </div>
+  </b-modal>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch } from "vue";
 
 const props = defineProps({
   newName: {
     type: String,
-    required: true
+    required: true,
   },
   newUrl: {
     type: String,
-    required: true
+    required: true,
   },
   urlIsValid: {
     type: Boolean,
-    required: true
+    required: true,
   },
   status: {
     type: String,
-    default: ''
+    default: "",
   },
   showDetails: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 const createDevLinkModal = ref(null);
 
 const newName = ref(props.newName);
 const newUrl = ref(props.newUrl);
-const emit = defineEmits(['clear', 'create', 'update:newUrl']);
+const emit = defineEmits(["clear", "create", "update:newUrl"]);
 
 const showDetails = ref(false);
 
 const clear = () => {
-  newName.value = '';
-  newUrl.value = '';
+  newName.value = "";
+  newUrl.value = "";
 };
 
 const create = (e) => {
   e.preventDefault();
   if (props.urlIsValid) {
-    emit('create', newName.value, newUrl.value);
-    if (props.status === 'success') {
+    emit("create", newName.value, newUrl.value);
+    if (props.status === "success") {
       hide();
     }
   }
@@ -103,7 +113,7 @@ const toggleDetails = () => {
 };
 
 watch(newUrl, (newValue) => {
-  emit('update:newUrl', newValue);
+  emit("update:newUrl", newValue);
 });
 
 defineExpose({

@@ -76,8 +76,8 @@ export default {
   },
   computed: {
     isDefaultTemplatePublic() {
-      return this.templateType === 'Shared Templates' ? 1 : 0;
-    }
+      return this.templateType === "Shared Templates" ? 1 : 0;
+    },
   },
   watch: {
     selectedScreenType() {
@@ -85,7 +85,7 @@ export default {
     },
     templateType(newVal) {
       this.fetch(newVal);
-      this.$emit('default-template-type-changed', newVal);
+      this.$emit("default-template-type-changed", newVal);
     },
   },
   mounted() {
@@ -93,7 +93,7 @@ export default {
   },
   methods: {
     getDefaultTemplates() {
-      const defaultTemplate = this.screenTemplates.find((template) => template.is_default_template === 1 && template.screen_type == this.selectedScreenType && template.hasOwnProperty('id') && template.is_public === this.isDefaultTemplatePublic);
+      const defaultTemplate = this.screenTemplates.find((template) => template.is_default_template === 1 && template.screen_type == this.selectedScreenType && template.hasOwnProperty("id") && template.is_public === this.isDefaultTemplatePublic);
       if (defaultTemplate) {
         this.defaultTemplateId = defaultTemplate.id;
       } else {
@@ -130,12 +130,13 @@ export default {
         .get(
           `${url}&per_page=1000`
             + `&filter=${this.filter}&order_by=${this.orderBy}&order_direction=${this.orderDirection}`,
-            {
-              cancelToken: new CancelToken((c) => {
-                this.cancelToken = c;
-              }),
-          })
-        .then(response => {
+          {
+            cancelToken: new CancelToken((c) => {
+              this.cancelToken = c;
+            }),
+          },
+        )
+        .then((response) => {
           this.blankTemplate[0].screen_type = this.selectedScreenType;
           this.blankTemplate[0].is_public = this.isDefaultTemplatePublic;
           this.screenTemplates = this.blankTemplate.concat(response.data.data);
@@ -143,8 +144,8 @@ export default {
           this.apiNoResults = false;
           this.getDefaultTemplates();
         })
-        .catch(error => {
-          console.log("error: " + error);
+        .catch((error) => {
+          console.log(`error: ${error}`);
         })
         .finally(() => {
           this.loading = false;
@@ -195,16 +196,14 @@ export default {
       this.$emit("selected-default-template", this.defaultTemplateId);
     },
     getBlankTemplate() {
-      return this.screenTemplates.find(template => !template.hasOwnProperty('id') && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic);
+      return this.screenTemplates.find((template) => !template.hasOwnProperty("id") && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic);
     },
     getTemplateById(templateId) {
-      return this.screenTemplates.find(template => template.id === templateId && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic);
+      return this.screenTemplates.find((template) => template.id === templateId && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic);
     },
     getPreviousDefaultTemplate(currentTemplateId) {
-      return this.screenTemplates.find(template =>
-        (template.id !== currentTemplateId && template.is_default_template === 1 && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic) ||
-        (!template.hasOwnProperty('id') && template.is_default_template === 1 && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic)
-      );
+      return this.screenTemplates.find((template) => (template.id !== currentTemplateId && template.is_default_template === 1 && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic)
+        || (!template.hasOwnProperty("id") && template.is_default_template === 1 && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic));
     },
     updateTemplateInArray(updatedTemplate) {
       const index = this.screenTemplates.indexOf(updatedTemplate);

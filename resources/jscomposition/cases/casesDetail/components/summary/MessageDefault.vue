@@ -1,7 +1,8 @@
 <template>
   <div
     class="tw-flex tw-border-l-4 tw-border-gray-400 tw-bg-gray-50
-      tw-p-4 tw-h-fit tw-w-full">
+      tw-p-4 tw-h-fit tw-w-full"
+  >
     <div class="tw-ml-3">
       <p class="tw-text tw-font-bold">
         {{ title }}

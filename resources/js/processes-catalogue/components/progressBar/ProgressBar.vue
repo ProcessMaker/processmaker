@@ -6,7 +6,8 @@
       :style="{ width: percentage + '%' }"
       :aria-valuenow="percentage"
       aria-valuemin="0"
-      aria-valuemax="100">
+      aria-valuemax="100"
+    >
       &nbsp;
     </div>
   </div>

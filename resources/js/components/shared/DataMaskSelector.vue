@@ -10,20 +10,19 @@
       :multiple="false"
       :searchable="true"
       :internal-search="true"
-      >
-    </multiselect>
+    />
   </div>
 </template>
 
 <script>
-import DataFormats from '../../data-formats';
+import DataFormats from "../../data-formats";
 
 export default {
   props: {
     value: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
@@ -31,33 +30,33 @@ export default {
       masks: DataFormats.masks(),
     };
   },
+  watch: {
+    mask() {
+      this.$emit("input", this.mask);
+    },
+  },
   mounted() {
     this.mask = DataFormats.mask(this.value);
   },
-  watch: {
-    mask() {
-      this.$emit('input', this.mask);
-    }
-  }
-}
+};
 </script>
 
 <style lang="scss">
   .data-mask-selector {
-    
+
     $multiselect-height: 38px;
-    
+
     .multiselect {
       display: inline-block !important;
     }
-    
+
     .multiselect,
     .multiselect__tags {
       height: $multiselect-height;
       min-height: $multiselect-height;
       max-height: $multiselect-height;
     }
-    
+
     .multiselect__placeholder {
       display: block;
       line-height: 20px;
@@ -76,12 +75,12 @@ export default {
     .multiselect__tags {
       font-size: 16px;
     }
-    
+
     .multiselect__option--highlight {
       background: #ddd;
       color: #222;
     }
-    
+
     .form-control-multiselect {
       position: relative;
       -webkit-box-flex: 1;

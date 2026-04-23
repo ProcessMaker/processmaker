@@ -1,33 +1,41 @@
 <template>
   <div>
-    <h4 class="ml-3">{{$t('Inbox Rules')}}</h4>
-    <b-tabs class="m-3" 
-            content-class="p-3 pm-tab-content">
-      <b-tab :title="$t('Rules')" 
-             @click="$refs.inboxRules.requestData()"
-             active
-             data-cy="rules">
-        <InboxRules ref="inboxRules"></InboxRules>
+    <h4 class="ml-3">
+      {{ $t('Inbox Rules') }}
+    </h4>
+    <b-tabs
+      class="m-3"
+      content-class="p-3 pm-tab-content"
+    >
+      <b-tab
+        :title="$t('Rules')"
+        active
+        data-cy="rules"
+        @click="$refs.inboxRules.requestData()"
+      >
+        <InboxRules ref="inboxRules" />
       </b-tab>
-      <b-tab :title="$t('Execution Log')" 
-             @click="$refs.executionLog.load()"
-             data-cy="executionLog">
-        <ExecutionLog ref="executionLog"></ExecutionLog>
+      <b-tab
+        :title="$t('Execution Log')"
+        data-cy="executionLog"
+        @click="$refs.executionLog.load()"
+      >
+        <ExecutionLog ref="executionLog" />
       </b-tab>
     </b-tabs>
   </div>
 </template>
 
 <script>
-  import InboxRules from "./InboxRules.vue";
-  import ExecutionLog from "./ExecutionLog.vue";
+import InboxRules from "./InboxRules.vue";
+import ExecutionLog from "./ExecutionLog.vue";
 
-  export default {
-    components: {
-      InboxRules,
-      ExecutionLog
-    }
-  }
+export default {
+  components: {
+    InboxRules,
+    ExecutionLog,
+  },
+};
 </script>
 
 <style>

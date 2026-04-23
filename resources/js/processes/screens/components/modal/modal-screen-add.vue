@@ -1,56 +1,73 @@
 <template>
-    <b-modal v-model="opened" size="md" centered @hidden="onClose" @show="onReset" @close="onClose"
-             title="Create New Screen" v-cloak header-close-content="&times;">
-        <create-screen ref="fieldsScreen" v-on:save="afterSave"></create-screen>
+  <b-modal
+    v-model="opened"
+    v-cloak
+    size="md"
+    centered
+    title="Create New Screen"
+    header-close-content="&times;"
+    @hidden="onClose"
+    @show="onReset"
+    @close="onClose"
+  >
+    <create-screen
+      ref="fieldsScreen"
+      @save="afterSave"
+    />
 
-        <div slot="modal-footer">
-            <b-button @click="onClose" class="btn btn-outline-success btn-sm text-uppercase">
-                CANCEL
-            </b-button>
-            <b-button @click="onSave" class="btn btn-success btn-sm text-uppercase">
-                SAVE
-            </b-button>
-        </div>
-
-    </b-modal>
+    <div slot="modal-footer">
+      <b-button
+        class="btn btn-outline-success btn-sm text-uppercase"
+        @click="onClose"
+      >
+        CANCEL
+      </b-button>
+      <b-button
+        class="btn btn-success btn-sm text-uppercase"
+        @click="onSave"
+      >
+        SAVE
+      </b-button>
+    </div>
+  </b-modal>
 </template>
 
 <script>
-    import CreateScreen from "../fields-screen";
+import CreateScreen from "../fields-screen";
 
-    export default {
-        components: {CreateScreen},
-        props: ['show'],
-        data() {
-            return {
-                'opened': this.show
-            }
-        },
-        watch: {
-            show(value) {
-                this.opened = value;
-            }
-        },
-        methods: {
-            onHidden() {
-                this.$emit('hidden')
-            },
-            onClose() {
-                this.$emit('close');
-            },
-            onReset() {
-                this.$refs.fieldsScreen.resetData();
-            },
-            onSave() {
-                this.$refs.fieldsScreen.onSave();
-            },
-            afterSave() {
-                this.onClose();
-                ProcessMaker.alert(this.$t('The screen was created.'), 'success');
-                this.$emit('reload');
-            }
-        }
+export default {
+  components: { CreateScreen },
+  props: ["show"],
+  data() {
+    return {
+      opened: this.show,
     };
+  },
+  watch: {
+    show(value) {
+      this.opened = value;
+    },
+  },
+  methods: {
+    onHidden() {
+      this.$emit("hidden");
+    },
+    onClose() {
+      this.$emit("close");
+    },
+    onReset() {
+      this.$refs.fieldsScreen.resetData();
+    },
+    onSave() {
+      this.$refs.fieldsScreen.onSave();
+    },
+    afterSave() {
+      this.onClose();
+      ProcessMaker.alert(this.$t("The screen was created."), "success");
+      this.$emit("reload");
+    },
+  },
+};
 </script>
 <style lang="scss" scoped>
     .inline-input {

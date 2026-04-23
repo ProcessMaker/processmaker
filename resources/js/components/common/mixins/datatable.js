@@ -6,8 +6,9 @@
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import Pagination from "../../../components/common/Pagination";
 import FilterTableBodyMixin from "../../shared/FilterTableBodyMixin";
+
 export default {
-  mixins:[FilterTableBodyMixin],
+  mixins: [FilterTableBodyMixin],
   props: {
     fetchOnCreated: {
       default: true,

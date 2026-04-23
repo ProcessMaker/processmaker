@@ -40,8 +40,8 @@
             <div
               v-if="index !== visibleHeaders.length - 1"
               class="pm-table-column-resizer"
-              @dblclick="resetSize(index)"
               :class="{ 'resizable': column.resizable === undefined || column.resizable }"
+              @dblclick="resetSize(index)"
               @mousedown="column.resizable === undefined || column.resizable ? startResize($event, index) : null"
             />
             <b-tooltip
@@ -64,71 +64,76 @@
       </thead>
       <tbody>
         <template v-if="!loading">
-        <tr
-          v-for="(row, rowIndex) in data.data"
-          :key="rowIndex"
-          :id="`row-${row.id}`"
-          :class="{ 
+          <tr
+            v-for="(row, rowIndex) in data.data"
+            :id="`row-${row.id}`"
+            :key="rowIndex"
+            :class="{
               'pm-table-unread-row': isUnread(row, unread),
               'pm-table-selected-row': selectedRow !== 0 && selectedRow === row.id
-          }"
-          @click="handleRowClick(row, $event)"
-          @mouseover="$emit('table-row-mouseover', row, rowIndex)"
-          @mouseleave="$emit('table-tr-mouseleave', row, rowIndex)"
-        >
-          <slot :name="`row-${rowIndex}`">
-            <td
-              v-for="(header, index) in visibleHeaders"
-              :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
-              :key="index"
-            >
-              <template v-if="containsHTML(getNestedPropertyValue(row, header))">
-                <div
-                  :id="`${tableName}-element-${rowIndex}-${index}`"
-                  :class="{ 'pm-table-truncate': header.truncate }"
-                  :style="{ maxWidth: header.width + 'px' }"
-                >
-                  <div v-html="sanitize(getNestedPropertyValue(row, header))"></div>
-                </div>
-                <b-tooltip
-                  v-if="header.truncate"
-                  :target="`${tableName}-element-${rowIndex}-${index}`"
-                  custom-class="pm-table-tooltip"
-                  @show="checkIfTooltipIsNeeded"
-                >
-                  {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
-                </b-tooltip>
-              </template>
-              <template v-else>
-                <template v-if="isComponent(row[header.field])">
-                  <component
-                    :is="row[header.field].component"
-                    v-bind="row[header.field].props"
-                  />
+            }"
+            @click="handleRowClick(row, $event)"
+            @mouseover="$emit('table-row-mouseover', row, rowIndex)"
+            @mouseleave="$emit('table-tr-mouseleave', row, rowIndex)"
+          >
+            <slot :name="`row-${rowIndex}`">
+              <td
+                v-for="(header, index) in visibleHeaders"
+                :key="index"
+                :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
+              >
+                <template v-if="containsHTML(getNestedPropertyValue(row, header))">
+                  <div
+                    :id="`${tableName}-element-${rowIndex}-${index}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    <div v-html="sanitize(getNestedPropertyValue(row, header))" />
+                  </div>
+                  <b-tooltip
+                    v-if="header.truncate"
+                    :target="`${tableName}-element-${rowIndex}-${index}`"
+                    custom-class="pm-table-tooltip"
+                    @show="checkIfTooltipIsNeeded"
+                  >
+                    {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
+                  </b-tooltip>
                 </template>
                 <template v-else>
-                  <slot :name="'cell-' + header.field" :row="row" :header="header" :rowIndex="rowIndex">
-                    <div
-                      :id="`${tableName}-element-${rowIndex}-${index}`"
-                      :class="{ 'pm-table-truncate': header.truncate }"
-                      :style="{ maxWidth: header.width + 'px' }"
+                  <template v-if="isComponent(row[header.field])">
+                    <component
+                      :is="row[header.field].component"
+                      v-bind="row[header.field].props"
+                    />
+                  </template>
+                  <template v-else>
+                    <slot
+                      :name="'cell-' + header.field"
+                      :row="row"
+                      :header="header"
+                      :row-index="rowIndex"
                     >
-                      {{ getNestedPropertyValue(row, header) }}
-                      <b-tooltip
-                        v-if="header.truncate"
-                        :target="`${tableName}-element-${rowIndex}-${index}`"
-                        custom-class="pm-table-tooltip"
-                        @show="checkIfTooltipIsNeeded"
+                      <div
+                        :id="`${tableName}-element-${rowIndex}-${index}`"
+                        :class="{ 'pm-table-truncate': header.truncate }"
+                        :style="{ maxWidth: header.width + 'px' }"
                       >
                         {{ getNestedPropertyValue(row, header) }}
-                      </b-tooltip>
-                    </div>
-                  </slot> 
+                        <b-tooltip
+                          v-if="header.truncate"
+                          :target="`${tableName}-element-${rowIndex}-${index}`"
+                          custom-class="pm-table-tooltip"
+                          @show="checkIfTooltipIsNeeded"
+                        >
+                          {{ getNestedPropertyValue(row, header) }}
+                        </b-tooltip>
+                      </div>
+                    </slot>
+                  </template>
                 </template>
-              </template>
-            </td>
-          </slot>
-        </tr>
+              </td>
+            </slot>
+          </tr>
         </template>
       </tbody>
     </table>
@@ -156,19 +161,19 @@ export default {
       type: String,
       default() {
         return "";
-      }
+      },
     },
     loading: {
       type: Boolean,
       default() {
         return false;
-      }
+      },
     },
     tableName: {
       type: String,
       default() {
         return "";
-      }
+      },
     },
     selectedRow: {
       type: Number,
@@ -177,7 +182,7 @@ export default {
     filterTableId: {
       type: String,
       default: "table-container",
-    }
+    },
   },
   data() {
     return {
@@ -244,7 +249,7 @@ export default {
     doResize(event) {
       if (this.isResizing) {
         const diff = event.pageX - this.startX;
-        let min = 64;
+        const min = 64;
         const currentWidth = Math.max(min, this.startWidth + diff);
         const contentWidth = this.calculateContent(this.resizingColumnIndex);
         if ((contentWidth - currentWidth) <= 80) {

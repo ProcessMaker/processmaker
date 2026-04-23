@@ -1,30 +1,35 @@
 <template>
   <div
     v-if="selectedProcess"
-    class="tw-relative tw-w-full tw-h-full">
+    class="tw-relative tw-w-full tw-h-full"
+  >
     <div class="mobile-process-nav bg-primary">
       <div class="left">
         <a
           href="#"
-          @click.prevent="goBackCategory">
+          @click.prevent="goBackCategory"
+        >
           <i class="fas fa-arrow-left" />
         </a>
       </div>
       <div class="center">
         <a
           href="#"
-          @click.prevent="showDetails = !showDetails">
+          @click.prevent="showDetails = !showDetails"
+        >
           <i class="fas fa-info-circle" />
         </a>
       </div>
       <div class="right">
         <bookmark
-          :process="selectedProcess" />
+          :process="selectedProcess"
+        />
       </div>
     </div>
     <div
       class="mobile-process-details"
-      :class="{ 'active' : showDetails }">
+      :class="{ 'active' : showDetails }"
+    >
       <process-description :process="selectedProcess" />
       <process-counter :process="selectedProcess" />
     </div>
@@ -33,17 +38,20 @@
       v-if="verifyScreen == 'default'"
       :process="selectedProcess"
       :ellipsis-permission="ellipsisPermission"
-      @goBackCategory="goBackCategory" />
+      @goBackCategory="goBackCategory"
+    />
     <ProcessScreen
       v-if="verifyScreen == 'screen'"
       :process="selectedProcess"
       :ellipsis-permission="ellipsisPermission"
-      @goBackCategory="goBackCategory" />
+      @goBackCategory="goBackCategory"
+    />
     <CustomHomeScreen
       v-if="verifyScreen == 'custom'"
       :process="selectedProcess"
       :ellipsis-permission="ellipsisPermission"
-      @goBackCategory="goBackCategory" />
+      @goBackCategory="goBackCategory"
+    />
   </div>
 </template>
 

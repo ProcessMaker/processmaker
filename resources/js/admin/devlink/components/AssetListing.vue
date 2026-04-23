@@ -1,12 +1,14 @@
 <script setup>
-import { ref, watch, onMounted, getCurrentInstance } from 'vue';
-import { useRoute } from 'vue-router/composables';
-import debounce from 'lodash/debounce';
-import InstanceTabs from './InstanceTabs.vue';
-import types from './assetTypes';
-import moment from 'moment';
-import Header from './Header.vue';
-import InstallProgress from './InstallProgress.vue';
+import {
+  ref, watch, onMounted, getCurrentInstance,
+} from "vue";
+import { useRoute } from "vue-router/composables";
+import debounce from "lodash/debounce";
+import moment from "moment";
+import InstanceTabs from "./InstanceTabs.vue";
+import types from "./assetTypes";
+import Header from "./Header.vue";
+import InstallProgress from "./InstallProgress.vue";
 
 const route = useRoute();
 const vue = getCurrentInstance().proxy;
@@ -19,7 +21,7 @@ const filter = ref("");
 const showInstallModal = ref(false);
 const showConfirmModal = ref(false);
 const selectedAsset = ref(null);
-const installMode = ref('update');
+const installMode = ref("update");
 const page = ref(1);
 const perPage = ref(15);
 
@@ -31,7 +33,7 @@ const load = () => {
     url: typeConfig.url,
     filter: filter.value,
     per_page: perPage.value,
-    page: page.value
+    page: page.value,
   };
   ProcessMaker.apiClient
     .get(`devlink/${route.params.id}/remote-assets-listing`, { params: queryParams })
@@ -51,36 +53,35 @@ watch(perPage, () => {
 
 const dateFormatter = (value) => {
   if (!value) {
-    return '';
+    return "";
   }
   return moment(value).format(ProcessMaker.user.datetime_format);
-}
+};
 
 const fields = [
   {
-    key: 'id',
-    label: vue.$t('ID'),
+    key: "id",
+    label: vue.$t("ID"),
   },
   {
-    key: typeConfig?.nameField || 'name',
-    label: vue.$t('Name'),
+    key: typeConfig?.nameField || "name",
+    label: vue.$t("Name"),
   },
   {
-    key: 'created_at',
-    label: vue.$t('Created'),
+    key: "created_at",
+    label: vue.$t("Created"),
     formatter: dateFormatter,
   },
   {
-    key: 'updated_at',
-    label: vue.$t('Last Modified'),
+    key: "updated_at",
+    label: vue.$t("Last Modified"),
     formatter: dateFormatter,
   },
   {
-    key: 'menu',
-    label: '',
+    key: "menu",
+    label: "",
   },
 ];
-
 
 const install = (asset) => {
   selectedAsset.value = asset;
@@ -94,7 +95,7 @@ const confirmInstall = () => {
     const params = {
       class: typeConfig.class,
       id: selectedAsset.value.id,
-      updateType: installMode.value
+      updateType: installMode.value,
     };
     ProcessMaker.apiClient
       .post(`/devlink/${route.params.id}/install-remote-asset`, params)
@@ -124,83 +125,102 @@ const handleFilterChange = () => {
 
 <template>
   <div>
-    <instance-tabs><template #assets>
-    <div>
-      <Header back="assets">{{ typeConfig.name }}</Header>
-      <div class="top-options row">
-        <div class="col">
-          <input v-model="filter" class="form-control search-input" @input="handleFilterChange">
-        </div>
-      </div>
-      <div class="card asset-listing-card">
-        <div v-if="!typeConfig">
-          Invalid asset type
-        </div>
-        <b-table
-          v-else
-          :items="items"
-          :fields="fields"
-          class="asset-listing-table"
-        >
-          <template #cell(menu)="data">
-            <div class="btn-menu-container">
-              <button
-                class="btn install-asset-btn"
-                @click.prevent="install(data.item)"
+    <instance-tabs>
+      <template #assets>
+        <div>
+          <Header back="assets">
+            {{ typeConfig.name }}
+          </Header>
+          <div class="top-options row">
+            <div class="col">
+              <input
+                v-model="filter"
+                class="form-control search-input"
+                @input="handleFilterChange"
               >
-                <i class="fp-cloud-download-outline"></i>
-              </button>
             </div>
-          </template>
-        </b-table>
-      </div>
-    </div>
-    </template></instance-tabs>
+          </div>
+          <div class="card asset-listing-card">
+            <div v-if="!typeConfig">
+              Invalid asset type
+            </div>
+            <b-table
+              v-else
+              :items="items"
+              :fields="fields"
+              class="asset-listing-table"
+            >
+              <template #cell(menu)="data">
+                <div class="btn-menu-container">
+                  <button
+                    class="btn install-asset-btn"
+                    @click.prevent="install(data.item)"
+                  >
+                    <i class="fp-cloud-download-outline" />
+                  </button>
+                </div>
+              </template>
+            </b-table>
+          </div>
+        </div>
+      </template>
+    </instance-tabs>
     <pagination-table
-        :meta="meta"
-        data-cy="process-pagination"
-        @page-change="page = $event"
-        @per-page-change="perPage = $event"
-      />
+      :meta="meta"
+      data-cy="process-pagination"
+      @page-change="page = $event"
+      @per-page-change="perPage = $event"
+    />
     <!-- Confirmation Modal -->
-    <b-modal 
-      id="install-confirm" 
-      v-model="showConfirmModal" 
-      :title="$t('Install Asset')" 
-      @ok="confirmInstall"
-      @cancel="cancelInstall"
+    <b-modal
+      id="install-confirm"
+      v-model="showConfirmModal"
+      :title="$t('Install Asset')"
       :ok-title="$t('Install')"
       :cancel-title="$t('Cancel')"
+      @ok="confirmInstall"
+      @cancel="cancelInstall"
     >
       <div class="mb-3">
         <p>{{ $t('Do you want to proceed with installing the asset on your instance?') }}</p>
-        <p v-if="selectedAsset" class="font-weight-bold">{{ selectedAsset.name || selectedAsset.title }}</p>
+        <p
+          v-if="selectedAsset"
+          class="font-weight-bold"
+        >
+          {{ selectedAsset.name || selectedAsset.title }}
+        </p>
       </div>
-      
+
       <div class="form-group">
         <label class="font-weight-bold mb-2">{{ $t('Installation Mode:') }}</label>
         <div class="custom-control custom-radio">
-          <input 
-            id="update-mode" 
-            v-model="installMode" 
-            type="radio" 
-            value="update" 
+          <input
+            id="update-mode"
+            v-model="installMode"
+            type="radio"
+            value="update"
             class="custom-control-input"
           >
-          <label for="update-mode" class="custom-control-label">
+          <label
+            for="update-mode"
+            class="custom-control-label"
+          >
             <strong>{{ $t('Update') }}</strong>
             <div class="text-muted small">{{ $t('Update existing asset with the same name (recommended)') }}</div>
           </label>
         </div>
         <div class="custom-control custom-radio mt-2">
-          <input 
-            id="copy-mode" 
-            v-model="installMode" 
-            type="radio" 
-            value="copy" 
+          <input
+            id="copy-mode"
+            v-model="installMode"
+            type="radio"
+            value="copy"
             class="custom-control-input"
           >
-          <label for="copy-mode" class="custom-control-label">
+          <label
+            for="copy-mode"
+            class="custom-control-label"
+          >
             <strong>{{ $t('Copy') }}</strong>
             <div class="text-muted small">{{ $t('Create a new asset even if one with the same name exists') }}</div>
           </label>
@@ -209,7 +229,13 @@ const handleFilterChange = () => {
     </b-modal>
 
     <!-- Progress Modal -->
-    <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
+    <b-modal
+      id="install-progress"
+      v-model="showInstallModal"
+      size="lg"
+      :title="$t('Installation Progress')"
+      hide-footer
+    >
       <install-progress />
     </b-modal>
   </div>

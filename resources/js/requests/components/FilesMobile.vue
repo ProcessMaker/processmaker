@@ -55,7 +55,10 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body" style="padding: 0 !important;">
+          <div
+            class="modal-body"
+            style="padding: 0 !important;"
+          >
             <table
               class="table b-table m-0"
               aria-label="fileDetails"
@@ -64,32 +67,50 @@
               <!-- Need header for Sonar problems, it is not needed in the view-->
               <thead>
                 <tr>
-                  <th class="p-0 m-0 border-0"></th>
-                  <th class="p-0 m-0 border-0"></th>
+                  <th class="p-0 m-0 border-0" />
+                  <th class="p-0 m-0 border-0" />
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td aria-colindex="1" role="cell">
+                  <td
+                    aria-colindex="1"
+                    role="cell"
+                  >
                     <span class="font-weight-bold"> {{ $t("Name of the File") }}: </span>
                   </td>
-                  <td aria-colindex="2" role="cell">
+                  <td
+                    aria-colindex="2"
+                    role="cell"
+                  >
                     {{ fileName }}
                   </td>
                 </tr>
                 <tr>
-                  <td aria-colindex="1" role="cell">
+                  <td
+                    aria-colindex="1"
+                    role="cell"
+                  >
                     <span class="font-weight-bold"> {{ $t("Uploaded") }}: </span>
                   </td>
-                  <td aria-colindex="2" role="cell">
-                    {{ moment(uploadDate).format()}}
+                  <td
+                    aria-colindex="2"
+                    role="cell"
+                  >
+                    {{ moment(uploadDate).format() }}
                   </td>
                 </tr>
                 <tr>
-                  <td aria-colindex="1" role="cell">
+                  <td
+                    aria-colindex="1"
+                    role="cell"
+                  >
                     <span class="font-weight-bold"> {{ $t("Uploaded By") }}: </span>
                   </td>
-                  <td aria-colindex="2" role="cell">
+                  <td
+                    aria-colindex="2"
+                    role="cell"
+                  >
                     <avatar-image
                       id="avatarMenu"
                       ref="userMenuButton"

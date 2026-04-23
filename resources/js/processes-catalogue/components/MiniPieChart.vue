@@ -1,6 +1,9 @@
 <template>
   <div class="chart">
-    <div class="pie" :style="style"></div>
+    <div
+      class="pie"
+      :style="style"
+    />
     <div>{{ percent.toLocaleString() }}% {{ name }}</div>
   </div>
 </template>
@@ -22,7 +25,7 @@ export default {
     },
     color: {
       type: String,
-      default: '#000',
+      default: "#000",
     },
   },
   computed: {
@@ -35,7 +38,7 @@ export default {
     percent() {
       return this.total === 0 ? 0 : Math.round((this.count / this.total) * 100);
     },
-  }
+  },
 };
 </script>
 

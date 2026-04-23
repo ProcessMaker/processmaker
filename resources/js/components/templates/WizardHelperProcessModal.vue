@@ -1,46 +1,46 @@
 <template>
   <div>
-      <modal
-          id="processWizard"
-          class="wizard-template-modal"
-          size="huge"
-          :hide-footer="true"
-          @close="close"
-      >
-          <task
-              v-if="showHelperProcess"
-              ref="task"
-              class="card border-0"
-              v-model="formData"
-              :initial-task-id="task.id"
-              :initial-request-id="task.process_request_id"
-              :user-id="currentUserId"
-              @task-updated="taskUpdated"
-              @submit="submit"
-              @completed="completed"
-          ></task>
-      </modal>
+    <modal
+      id="processWizard"
+      class="wizard-template-modal"
+      size="huge"
+      :hide-footer="true"
+      @close="close"
+    >
+      <task
+        v-if="showHelperProcess"
+        ref="task"
+        v-model="formData"
+        class="card border-0"
+        :initial-task-id="task.id"
+        :initial-request-id="task.process_request_id"
+        :user-id="currentUserId"
+        @task-updated="taskUpdated"
+        @submit="submit"
+        @completed="completed"
+      />
+    </modal>
   </div>
 </template>
 
 <script>
-import Modal from "../../components/shared/Modal.vue";
-import {Task} from "@processmaker/screen-builder";
+import { Task } from "@processmaker/screen-builder";
+import Modal from "../shared/Modal.vue";
 import wizardHelperProcessModalMixin from "./mixins/wizardHelperProcessModal";
 
 export default {
+  components: { Modal, Task },
   mixins: [wizardHelperProcessModalMixin],
-  components: { Modal, Task},
   props: ["wizardTemplateUuid", "processLaunchpadId"],
   data() {
-      return {
-          helperProcessId: null,
-          startEvents: null,
-          shouldImportProcessTemplate: false,
-          showHelperProcess: false,
-      }
-  }
-}
+    return {
+      helperProcessId: null,
+      startEvents: null,
+      shouldImportProcessTemplate: false,
+      showHelperProcess: false,
+    };
+  },
+};
 </script>
 
 <style scoped>

@@ -1,7 +1,8 @@
 <template>
   <div
     class="tw-flex tw-px-4 tw-text-gray-400
-      tw-text-xs tw-italic tw-space-x-2 tw-items-center">
+      tw-text-xs tw-italic tw-space-x-2 tw-items-center"
+  >
     <i class="fp-play-outline tw-text-base" />
     <span class="tw-text-ellipsis tw-text-nowrap tw-overflow-hidden">{{ getValueOption(option) }}</span>
   </div>

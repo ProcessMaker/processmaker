@@ -1,8 +1,10 @@
 <template>
   <div
-    class="tw-w-auto tw-flex tw-flex-col sm:tw-flex-row tw-space-y-2 sm:tw-space-y-0 sm:tw-space-x-4 sm:tw-py-0">
+    class="tw-w-auto tw-flex tw-flex-col sm:tw-flex-row tw-space-y-2 sm:tw-space-y-0 sm:tw-space-x-4 sm:tw-py-0"
+  >
     <ThreeSectionCard
       v-for="(counter, index) in data"
+      :id="counter.id"
       :key="index"
       :header="counter.header"
       :body="counter.body"
@@ -10,8 +12,8 @@
       class="tw-w-full"
       :color="counter.color"
       :icon="counter.icon"
-      :id="counter.id"
-      @click="onClick(counter, index)" />
+      @click="onClick(counter, index)"
+    />
   </div>
 </template>
 

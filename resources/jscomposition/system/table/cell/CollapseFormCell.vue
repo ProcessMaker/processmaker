@@ -5,10 +5,12 @@
       type="button"
       class="tw-rounded-lg tw-bg-white tw-px-2.5 tw-py-1 tw-text-sm tw-font-semibold
         tw-shadow-sm tw-ring-1 tw-ring-inset tw-ring-gray-300 hover:tw-bg-gray-50"
-      @click="showScreen">
+      @click="showScreen"
+    >
       <i
         class="fas"
-        :class="viewScreen ? 'fa-angle-down' : 'fa-angle-right'" />
+        :class="viewScreen ? 'fa-angle-down' : 'fa-angle-right'"
+      />
     </button>
   </div>
 </template>
@@ -40,9 +42,9 @@ const props = defineProps({
 const viewScreen = ref(false);
 
 const showScreen = () => {
-  const requestIdNode = document.head.querySelector('meta[name="request-id"]');
+  const requestIdNode = document.head.querySelector("meta[name=\"request-id\"]");
   if (requestIdNode) {
-    requestIdNode.setAttribute('content', props.row.process_request_id);
+    requestIdNode.setAttribute("content", props.row.process_request_id);
   }
   viewScreen.value = !viewScreen.value;
   emit("collapseContainer", viewScreen.value);

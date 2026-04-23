@@ -1,13 +1,20 @@
 <template>
   <div>
     <div class="position-relative">
-      <div v-if="showFilterPopup" class="filter-dropdown-panel-container card" v-click-outside="closeFiltersPopup">
-        <div v-if="type == 'requests'" class="card-body">
-          <label for="process_name_filter">{{$t('Process')}}</label>
-          <multiselect id="process_name_filter" v-model="process"
+      <div
+        v-if="showFilterPopup"
+        v-click-outside="closeFiltersPopup"
+        class="filter-dropdown-panel-container card"
+      >
+        <div
+          v-if="type == 'requests'"
+          class="card-body"
+        >
+          <label for="process_name_filter">{{ $t('Process') }}</label>
+          <multiselect
+            id="process_name_filter"
+            v-model="process"
             class="mb-3"
-            @search-change="getProcesses"
-            @input="buildPmql"
             :show-labels="true"
             :loading="isLoading.process"
             open-direction="bottom"
@@ -15,160 +22,33 @@
             :options="processOptions"
             :track-by="'id'"
             :multiple="true"
+            @search-change="getProcesses"
             :aria-label="$t('Process')"
-            :placeholder="$t('Process')">
-            <template slot="noResult">
-                {{ $t('No Results') }}
-            </template>
-            <template slot="noOptions">
-                {{ $t('No Data Available') }}
-            </template>
-            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('processes') }}</span>
-            </template>
-          </multiselect>
-        <label for="process_status_filter">{{$t('Status')}}</label>
-        <multiselect id="process_status_filter" v-model="status"
-          class="mb-3"
-          :show-labels="true"
-          @input="buildPmql"
-          :loading="isLoading.status"
-          open-direction="bottom"
-          label="name"
-          :options="statusOptions"
-          track-by="value"
-          :multiple="true"
-          :aria-label="$t('Status')"
-          :placeholder="$t('Status')">
-            <template slot="noResult">
-                {{ $t('No Results') }}
-            </template>
-            <template slot="noOptions">
-                {{ $t('No Data Available') }}
-            </template>
-            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('statuses') }}</span>
-            </template>
-          </multiselect>
-        <label for="process_requester_filter">{{$t('Requester')}}</label>
-        <multiselect id="process_requester_filter"
-          v-model="requester"
-          @search-change="getRequesters"
-          @input="buildPmql"
-          class="mb-3"
-          :show-labels="true"
-          :loading="isLoading.requester"
-          open-direction="bottom"
-          label="fullname"
-          :options="requesterOptions"
-          :track-by="'id'"
-          :multiple="true"
-          :aria-label="$t('Requester')"
-          :placeholder="$t('Requester')">
-            <template slot="noResult">
-                {{ $t('No Results') }}
-            </template>
-            <template slot="noOptions">
-                {{ $t('No Data Available') }}
-            </template>
-            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requesters') }}</span>
-            </template>
-            <template slot="option" slot-scope="props">
-                <img v-if="props.option.avatar && props.option.avatar.length > 0" class="option__image"
-                    :src="props.option.avatar">
-                <span v-else class="initials bg-warning text-white p-1"> {{getInitials(props.option.firstname, props.option.lastname)}}</span>
-                <span class="ml-1">{{props.option.fullname}}</span>
-            </template>
-          </multiselect>
-        <label for="process_participant_filter">{{$t('Participants')}}</label>
-        <multiselect id="process_participant_filter" v-model="participants"
-          @search-change="getParticipants"
-          @input="buildPmql"
-          class="mb-3"
-          :show-labels="true"
-          :loading="isLoading.participants"
-          open-direction="bottom"
-          label="fullname"
-          :options="participantsOptions"
-          :track-by="'id'"
-          :multiple="true"
-          :aria-label="$t('Participants')"
-          :placeholder="$t('Participants')">
-            <template slot="noResult">
-                {{ $t('No Results') }}
-            </template>
-            <template slot="noOptions">
-                {{ $t('No Data Available') }}
-            </template>
-            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requesters') }}</span>
-            </template>
-            <template slot="option" slot-scope="props">
-                <img v-if="props.option.avatar && props.option.avatar.length > 0" class="option__image"
-                    :src="props.option.avatar">
-                <span v-else class="initials bg-warning text-white p-1"> {{getInitials(props.option.firstname, props.option.lastname)}}</span>
-                <span class="ml-1">{{props.option.fullname}}</span>
-            </template>
-          </multiselect>
-        </div>
-        <div v-if="type == 'tasks'" class="card-body">
-          <label for="process_request_filter">{{$t('Request')}}</label>
-          <multiselect id="process_request_filter"
-            v-model="request"
-            @search-change="getRequests"
             @input="buildPmql"
-            class="mb-3"
-            :show-labels="true"
-            :loading="isLoading.request"
-            open-direction="bottom"
-            label="name"
-            :options="requestOptions"
-            :track-by="'id'"
-            :multiple="true"
-            :aria-label="$t('Request')"
-            :placeholder="$t('Request')">
-              <template slot="noResult">
-                  {{ $t('No Results') }}
-              </template>
-              <template slot="noOptions">
-                  {{ $t('No Data Available') }}
-              </template>
-              <template slot="selection" slot-scope="{ values, search, isOpen }">
-                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requests') }}</span>
-              </template>
-            </multiselect>
-          <label for="process_task_filter">{{$t('Task')}}</label>
-          <multiselect id="process_task_filter"
-            v-model="name"
-            @search-change="getNames"
-            @input="buildPmql"
-            class="mb-3"
-            :show-labels="true"
-            :loading="isLoading.name"
-            open-direction="bottom"
-            label="name"
-            :options="nameOptions"
-            :track-by="'name'"
-            :multiple="true"
-            :aria-label="$t('Task')"
-            :placeholder="$t('Task')">
-              <template slot="noResult">
-                  {{ $t('No Results') }}
-              </template>
-              <template slot="noOptions">
-                  {{ $t('No Data Available') }}
-              </template>
-              <template slot="selection" slot-scope="{ values, search, isOpen }">
-                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('names') }}</span>
-              </template>
-            </multiselect>
-          <label for="process_status_options_filter">{{$t('Status')}}</label>
-          <multiselect id="process_status_options_filter"
+            :placeholder="$t('Process')"
+          >
+            <template slot="noResult">
+              {{ $t('No Results') }}
+            </template>
+            <template slot="noOptions">
+              {{ $t('No Data Available') }}
+            </template>
+            <template
+              slot="selection"
+              slot-scope="{ values, search, isOpen }"
+            >
+              <span
+                v-if="values.length > 1 && !isOpen"
+                class="multiselect__single"
+              >{{ values.length }} {{ $t('processes') }}</span>
+            </template>
+          </multiselect>
+          <label for="process_status_filter">{{ $t('Status') }}</label>
+          <multiselect
+            id="process_status_filter"
             v-model="status"
             class="mb-3"
             :show-labels="true"
-            @input="buildPmql"
             :loading="isLoading.status"
             open-direction="bottom"
             label="name"
@@ -176,24 +56,233 @@
             track-by="value"
             :multiple="true"
             :aria-label="$t('Status')"
-            :placeholder="$t('Status')">
-              <template slot="noResult">
-                  {{ $t('No Results') }}
-              </template>
-              <template slot="noOptions">
-                  {{ $t('No Data Available') }}
-              </template>
-              <template slot="selection" slot-scope="{ values, search, isOpen }">
-                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('statuses') }}</span>
-              </template>
-            </multiselect>
-        </div>
-        <div v-if="type == 'projects'" class="card-body">
-          <label for="project_title_filter">{{$t('Title')}}</label>
-          <multiselect id="project_title_filter"
-            v-model="projects"
-            @search-change="getProjects"
+            :placeholder="$t('Status')"
             @input="buildPmql"
+          >
+            <template slot="noResult">
+              {{ $t('No Results') }}
+            </template>
+            <template slot="noOptions">
+              {{ $t('No Data Available') }}
+            </template>
+            <template
+              slot="selection"
+              slot-scope="{ values, search, isOpen }"
+            >
+              <span
+                v-if="values.length > 1 && !isOpen"
+                class="multiselect__single"
+              >{{ values.length }} {{ $t('statuses') }}</span>
+            </template>
+          </multiselect>
+          <label for="process_requester_filter">{{ $t('Requester') }}</label>
+          <multiselect
+            id="process_requester_filter"
+            v-model="requester"
+            class="mb-3"
+            :show-labels="true"
+            :loading="isLoading.requester"
+            open-direction="bottom"
+            label="fullname"
+            :options="requesterOptions"
+            :track-by="'id'"
+            @search-change="getRequesters"
+            :multiple="true"
+            @input="buildPmql"
+            :aria-label="$t('Requester')"
+            :placeholder="$t('Requester')"
+          >
+            <template slot="noResult">
+              {{ $t('No Results') }}
+            </template>
+            <template slot="noOptions">
+              {{ $t('No Data Available') }}
+            </template>
+            <template
+              slot="selection"
+              slot-scope="{ values, search, isOpen }"
+            >
+              <span
+                v-if="values.length > 1 && !isOpen"
+                class="multiselect__single"
+              >{{ values.length }} {{ $t('requesters') }}</span>
+            </template>
+            <template
+              slot="option"
+              slot-scope="props"
+            >
+              <img
+                v-if="props.option.avatar && props.option.avatar.length > 0"
+                class="option__image"
+                :src="props.option.avatar"
+              >
+              <span
+                v-else
+                class="initials bg-warning text-white p-1"
+              > {{ getInitials(props.option.firstname, props.option.lastname) }}</span>
+              <span class="ml-1">{{ props.option.fullname }}</span>
+            </template>
+          </multiselect>
+          <label for="process_participant_filter">{{ $t('Participants') }}</label>
+          <multiselect
+            id="process_participant_filter"
+            v-model="participants"
+            class="mb-3"
+            :show-labels="true"
+            :loading="isLoading.participants"
+            open-direction="bottom"
+            label="fullname"
+            :options="participantsOptions"
+            :track-by="'id'"
+            @search-change="getParticipants"
+            :multiple="true"
+            @input="buildPmql"
+            :aria-label="$t('Participants')"
+            :placeholder="$t('Participants')"
+          >
+            <template slot="noResult">
+              {{ $t('No Results') }}
+            </template>
+            <template slot="noOptions">
+              {{ $t('No Data Available') }}
+            </template>
+            <template
+              slot="selection"
+              slot-scope="{ values, search, isOpen }"
+            >
+              <span
+                v-if="values.length > 1 && !isOpen"
+                class="multiselect__single"
+              >{{ values.length }} {{ $t('requesters') }}</span>
+            </template>
+            <template
+              slot="option"
+              slot-scope="props"
+            >
+              <img
+                v-if="props.option.avatar && props.option.avatar.length > 0"
+                class="option__image"
+                :src="props.option.avatar"
+              >
+              <span
+                v-else
+                class="initials bg-warning text-white p-1"
+              > {{ getInitials(props.option.firstname, props.option.lastname) }}</span>
+              <span class="ml-1">{{ props.option.fullname }}</span>
+            </template>
+          </multiselect>
+        </div>
+        <div
+          v-if="type == 'tasks'"
+          class="card-body"
+        >
+          <label for="process_request_filter">{{ $t('Request') }}</label>
+          <multiselect
+            id="process_request_filter"
+            v-model="request"
+            class="mb-3"
+            :show-labels="true"
+            :loading="isLoading.request"
+            open-direction="bottom"
+            label="name"
+            :options="requestOptions"
+            :track-by="'id'"
+            @search-change="getRequests"
+            :multiple="true"
+            @input="buildPmql"
+            :aria-label="$t('Request')"
+            :placeholder="$t('Request')"
+          >
+            <template slot="noResult">
+              {{ $t('No Results') }}
+            </template>
+            <template slot="noOptions">
+              {{ $t('No Data Available') }}
+            </template>
+            <template
+              slot="selection"
+              slot-scope="{ values, search, isOpen }"
+            >
+              <span
+                v-if="values.length > 1 && !isOpen"
+                class="multiselect__single"
+              >{{ values.length }} {{ $t('requests') }}</span>
+            </template>
+          </multiselect>
+          <label for="process_task_filter">{{ $t('Task') }}</label>
+          <multiselect
+            id="process_task_filter"
+            v-model="name"
+            class="mb-3"
+            :show-labels="true"
+            :loading="isLoading.name"
+            open-direction="bottom"
+            label="name"
+            :options="nameOptions"
+            :track-by="'name'"
+            @search-change="getNames"
+            :multiple="true"
+            @input="buildPmql"
+            :aria-label="$t('Task')"
+            :placeholder="$t('Task')"
+          >
+            <template slot="noResult">
+              {{ $t('No Results') }}
+            </template>
+            <template slot="noOptions">
+              {{ $t('No Data Available') }}
+            </template>
+            <template
+              slot="selection"
+              slot-scope="{ values, search, isOpen }"
+            >
+              <span
+                v-if="values.length > 1 && !isOpen"
+                class="multiselect__single"
+              >{{ values.length }} {{ $t('names') }}</span>
+            </template>
+          </multiselect>
+          <label for="process_status_options_filter">{{ $t('Status') }}</label>
+          <multiselect
+            id="process_status_options_filter"
+            v-model="status"
+            class="mb-3"
+            :show-labels="true"
+            :loading="isLoading.status"
+            open-direction="bottom"
+            label="name"
+            :options="statusOptions"
+            track-by="value"
+            :multiple="true"
+            :aria-label="$t('Status')"
+            :placeholder="$t('Status')"
+            @input="buildPmql"
+          >
+            <template slot="noResult">
+              {{ $t('No Results') }}
+            </template>
+            <template slot="noOptions">
+              {{ $t('No Data Available') }}
+            </template>
+            <template
+              slot="selection"
+              slot-scope="{ values, search, isOpen }"
+            >
+              <span
+                v-if="values.length > 1 && !isOpen"
+                class="multiselect__single"
+              >{{ values.length }} {{ $t('statuses') }}</span>
+            </template>
+          </multiselect>
+        </div>
+        <div
+          v-if="type == 'projects'"
+          class="card-body"
+        >
+          <label for="project_title_filter">{{ $t('Title') }}</label>
+          <multiselect
+            id="project_title_filter"
+            v-model="projects"
             class="mb-3"
             :show-labels="true"
             :loading="isLoading.projects"
@@ -201,77 +290,111 @@
             label="title"
             :options="projectOptions"
             :track-by="'id'"
+            @search-change="getProjects"
             :multiple="true"
+            @input="buildPmql"
             :aria-label="$t('Project')"
-            :placeholder="$t('Project')">
-              <template slot="noResult">
-                  {{ $t('No Results') }}
-              </template>
-              <template slot="noOptions">
-                  {{ $t('No Data Available') }}
-              </template>
-              <template slot="selection" slot-scope="{ values, search, isOpen }">
-                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('projects') }}</span>
-              </template>
-            </multiselect>
-          
-          <label for="project_member_filter">{{$t('Members')}}</label>
-            <multiselect id="project_member_filter"
-                v-model="members"
-                @input="buildPmql"
-                class="mb-3"
-                :loading="isLoading.projects"
-                open-direction="bottom"
-                group-values="items"
-                group-label="type"
-                label="name"
-                :options="memberOptions"
-                track-by="id"
-                :multiple="true"
-                :show-labels="false"
-                :internal-search="true"
-                >
-                :aria-label="$t('Member')"
-                :placeholder="$t('Member')">
-                  <template slot="noResult">
-                      {{ $t('No Results') }}
-                  </template>
-                  <template slot="noOptions">
-                      {{ $t('No Data Available') }}
-                  </template>
-                  <template slot="selection" slot-scope="{ values, search, isOpen }">
-                      <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('members') }}</span>
-                  </template>
-              </multiselect>
+            :placeholder="$t('Project')"
+          >
+            <template slot="noResult">
+              {{ $t('No Results') }}
+            </template>
+            <template slot="noOptions">
+              {{ $t('No Data Available') }}
+            </template>
+            <template
+              slot="selection"
+              slot-scope="{ values, search, isOpen }"
+            >
+              <span
+                v-if="values.length > 1 && !isOpen"
+                class="multiselect__single"
+              >{{ values.length }} {{ $t('projects') }}</span>
+            </template>
+          </multiselect>
 
-            <label for="project_category_filter">{{$t('Category')}}</label>
-            <multiselect id="project_category_filter"
-                v-model="categories"
-                @input="buildPmql"
-                class="mb-3"
-                :show-labels="true"
-                :loading="isLoading.projects"
-                open-direction="bottom"
-                label="name"
-                :options="categoriesOptions"
-                :track-by="'id'"
-                :multiple="true"
-                :aria-label="$t('Category')"
-                :placeholder="$t('Category')">
-                  <template slot="noResult">
-                      {{ $t('No Results') }}
-                  </template>
-                  <template slot="noOptions">
-                      {{ $t('No Data Available') }}
-                  </template>
-                  <template slot="selection" slot-scope="{ values, search, isOpen }">
-                      <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('categories') }}</span>
-                  </template>
-            </multiselect>
+          <label for="project_member_filter">{{ $t('Members') }}</label>
+          <multiselect
+            id="project_member_filter"
+            v-model="members"
+            class="mb-3"
+            :loading="isLoading.projects"
+            open-direction="bottom"
+            group-values="items"
+            group-label="type"
+            label="name"
+            :options="memberOptions"
+            track-by="id"
+            @input="buildPmql"
+            :multiple="true"
+            :show-labels="false"
+            :internal-search="true"
+          >
+            :aria-label="$t('Member')"
+            :placeholder="$t('Member')">
+            <template slot="noResult">
+              {{ $t('No Results') }}
+            </template>
+            <template slot="noOptions">
+              {{ $t('No Data Available') }}
+            </template>
+            <template
+              slot="selection"
+              slot-scope="{ values, search, isOpen }"
+            >
+              <span
+                v-if="values.length > 1 && !isOpen"
+                class="multiselect__single"
+              >{{ values.length }} {{ $t('members') }}</span>
+            </template>
+          </multiselect>
+
+          <label for="project_category_filter">{{ $t('Category') }}</label>
+          <multiselect
+            id="project_category_filter"
+            v-model="categories"
+            class="mb-3"
+            :show-labels="true"
+            :loading="isLoading.projects"
+            open-direction="bottom"
+            label="name"
+            :options="categoriesOptions"
+            :track-by="'id'"
+            :multiple="true"
+            @input="buildPmql"
+            :aria-label="$t('Category')"
+            :placeholder="$t('Category')"
+          >
+            <template slot="noResult">
+              {{ $t('No Results') }}
+            </template>
+            <template slot="noOptions">
+              {{ $t('No Data Available') }}
+            </template>
+            <template
+              slot="selection"
+              slot-scope="{ values, search, isOpen }"
+            >
+              <span
+                v-if="values.length > 1 && !isOpen"
+                class="multiselect__single"
+              >{{ values.length }} {{ $t('categories') }}</span>
+            </template>
+          </multiselect>
         </div>
         <div class="card-footer bg-white text-right">
-          <button class="btn btn-secondary-outline btn-sm" @click="resetFilters">Reset</button>
-          <button class="btn btn-primary btn-sm" @click="applyFilters">Apply</button>
+          <button
+            class="btn btn-secondary-outline btn-sm"
+            @click="resetFilters"
+          >
+            Reset
+          </button>
+          <button
+            class="btn btn-primary btn-sm"
+            @click="applyFilters"
+          >
+            Apply
+          </button>
         </div>
       </div>
     </div>
@@ -310,8 +433,8 @@ export default {
     "paramRequest",
     "paramName",
     "paramProjects",
-    'paramProjectMembers',
-    'paramProjectCategories',
+    "paramProjectMembers",
+    "paramProjectCategories",
     "permission",
   ],
   data() {
@@ -381,7 +504,7 @@ export default {
     if (this.paramProjectMembers && Array.isArray(this.paramProjectMembers)) {
       this.projectMembers = this.paramProjectMembers;
     }
-    
+
     this.buildPmql();
     this.getAll();
   },
@@ -453,7 +576,7 @@ export default {
           this.pmql = `(user_id = ${userId})`;
         }
       }
-      this.$emit('filterspmqlchange', [this.pmql, this.getSelectedFilters()]);
+      this.$emit("filterspmqlchange", [this.pmql, this.getSelectedFilters()]);
       this.showFilterPopup = false;
     },
 
@@ -489,164 +612,164 @@ export default {
 
     buildPmql() {
       switch (this.type) {
-        case 'requests':
+        case "requests":
           this.buildRequestPmql();
           break;
-        case 'tasks':
+        case "tasks":
           this.buildTaskPmql(this.advancedFilter);
           break;
-        case 'projects':
+        case "projects":
           this.buildProjectPmql();
           break;
       }
     },
     buildProjectPmql() {
-      let clauses = [];
-      //Parse projects
+      const clauses = [];
+      // Parse projects
       if (this.projects.length) {
-        let string = '';
+        let string = "";
         this.projects.forEach((project, key) => {
-          string += 'title = "' + project.title + '"';
-          if (key < this.projects.length - 1) string += ' OR ';
+          string += `title = "${project.title}"`;
+          if (key < this.projects.length - 1) string += " OR ";
         });
         clauses.push(string);
       }
 
       if (this.members.length) {
-        let string = '';
+        let string = "";
         this.members.forEach((member, key) => {
-          string += 'participant = "' + member.name + '"';
-          if (key < this.members.length - 1) string += ' OR ';
+          string += `participant = "${member.name}"`;
+          if (key < this.members.length - 1) string += " OR ";
         });
         clauses.push(string);
       }
 
       if (this.categories.length) {
-        let string = '';
+        let string = "";
         this.categories.forEach((category, key) => {
-          string += 'category = "' + category.name + '"';
-          if (key < this.categories.length - 1) string += ' OR ';
+          string += `category = "${category.name}"`;
+          if (key < this.categories.length - 1) string += " OR ";
         });
         clauses.push(string);
       }
 
-      this.pmql = '';
+      this.pmql = "";
       clauses.forEach((string, key) => {
-        this.pmql += '(';
+        this.pmql += "(";
         this.pmql += string;
-        this.pmql += ')';
-        if (key < clauses.length - 1) this.pmql += ' AND ';
+        this.pmql += ")";
+        if (key < clauses.length - 1) this.pmql += " AND ";
       });
     },
     buildRequestPmql() {
-      let clauses = [];
+      const clauses = [];
 
-      //Parse process
+      // Parse process
       if (this.process.length) {
-        let string = '';
+        let string = "";
         this.process.forEach((process, key) => {
-          string += 'request = "' + process.name + '"';
-          if (key < this.process.length - 1) string += ' OR ';
+          string += `request = "${process.name}"`;
+          if (key < this.process.length - 1) string += " OR ";
         });
         clauses.push(string);
       }
-      
-      //Parse status
+
+      // Parse status
       if (this.status.length) {
-        let string = '';
+        let string = "";
         this.status.forEach((status, key) => {
-          string += 'status = "' + status.value + '"';
-          if (key < this.status.length - 1) string += ' OR ';
+          string += `status = "${status.value}"`;
+          if (key < this.status.length - 1) string += " OR ";
         });
         clauses.push(string);
       }
-      
-      //Parse requester
+
+      // Parse requester
       if (this.requester.length) {
-        let string = '';
+        let string = "";
         this.requester.forEach((requester, key) => {
-          string += 'requester = "' + requester.username + '"';
-          if (key < this.requester.length - 1) string += ' OR ';
+          string += `requester = "${requester.username}"`;
+          if (key < this.requester.length - 1) string += " OR ";
         });
         clauses.push(string);
       }
-      
-      //Parse participants
+
+      // Parse participants
       if (this.participants.length) {
-        let string = '';
+        let string = "";
         this.participants.forEach((participants, key) => {
-          string += 'participant = "' + participants.username + '"';
-          if (key < this.participants.length - 1) string += ' OR ';
+          string += `participant = "${participants.username}"`;
+          if (key < this.participants.length - 1) string += " OR ";
         });
         clauses.push(string);
       }
-      
-      this.pmql = '';
+
+      this.pmql = "";
       clauses.forEach((string, key) => {
-        this.pmql += '(';
+        this.pmql += "(";
         this.pmql += string;
-        this.pmql += ')';
-        if (key < clauses.length - 1) this.pmql += ' AND ';
+        this.pmql += ")";
+        if (key < clauses.length - 1) this.pmql += " AND ";
       });
     },
     buildTaskPmql(advancedFilter = null) {
-        let clauses = [];
-        const isSelfService = this.status.find(status => status.value === 'Self Service');
+      const clauses = [];
+      const isSelfService = this.status.find((status) => status.value === "Self Service");
 
-        let selfServiceFilterFound = advancedFilter.some(filter => filter.subject?.type === 'Status' && filter.value === 'Self Service');
+      const selfServiceFilterFound = advancedFilter.some((filter) => filter.subject?.type === "Status" && filter.value === "Self Service");
 
-        if (!selfServiceFilterFound && !isSelfService) {
-          const userId = parseInt(window.ProcessMaker.user.id);
-          clauses.push('user_id = ' + userId); 
-        }
+      if (!selfServiceFilterFound && !isSelfService) {
+        const userId = parseInt(window.ProcessMaker.user.id);
+        clauses.push(`user_id = ${userId}`);
+      }
 
-        //Parse request
-        if (this.request.length) {
-          let string = '';
-          this.request.forEach((request, key) => {
-            string += 'request = "' + request.name + '"';
-            if (key < this.request.length - 1) string += ' OR ';
-          });
-          clauses.push(string);
-        }
-
-        //Parse names
-        if (this.name.length) {
-          let string = '';
-          this.name.forEach((name, key) => {
-            string += 'task = "' + name.name + '"';
-            if (key < this.name.length - 1) string += ' OR ';
-          });
-          clauses.push(string);
-        }
-
-        //Parse status
-        if (this.status.length) {
-          let string = '';
-          this.status.forEach((status, key) => {
-            string += 'status = "' + status.value + '"';
-            if (key < this.status.length - 1) string += ' OR ';
-          });
-          clauses.push(string);
-        }
-
-        this.pmql = '';
-        clauses.forEach((string, key) => {
-          this.pmql += '(';
-          this.pmql += string;
-          this.pmql += ')';
-          if (key < clauses.length - 1) this.pmql += ' AND ';
+      // Parse request
+      if (this.request.length) {
+        let string = "";
+        this.request.forEach((request, key) => {
+          string += `request = "${request.name}"`;
+          if (key < this.request.length - 1) string += " OR ";
         });
+        clauses.push(string);
+      }
+
+      // Parse names
+      if (this.name.length) {
+        let string = "";
+        this.name.forEach((name, key) => {
+          string += `task = "${name.name}"`;
+          if (key < this.name.length - 1) string += " OR ";
+        });
+        clauses.push(string);
+      }
+
+      // Parse status
+      if (this.status.length) {
+        let string = "";
+        this.status.forEach((status, key) => {
+          string += `status = "${status.value}"`;
+          if (key < this.status.length - 1) string += " OR ";
+        });
+        clauses.push(string);
+      }
+
+      this.pmql = "";
+      clauses.forEach((string, key) => {
+        this.pmql += "(";
+        this.pmql += string;
+        this.pmql += ")";
+        if (key < clauses.length - 1) this.pmql += " AND ";
+      });
     },
     getInitials(firstname, lastname) {
-        let initials = "";
-        if (firstname) {
-            initials += firstname.match(/./u)[0];
-        }
-        if (lastname) {
-            initials += lastname.match(/./u)[0];
-        }
-        return initials || null;
+      let initials = "";
+      if (firstname) {
+        initials += firstname.match(/./u)[0];
+      }
+      if (lastname) {
+        initials += lastname.match(/./u)[0];
+      }
+      return initials || null;
     },
     allLoading(value) {
       this.isLoading.process = value;
@@ -657,39 +780,39 @@ export default {
     },
     getAll() {
       switch (this.type) {
-          case 'requests':
-              this.getAllRequests();
-              break;
-          case 'tasks':
-              this.getAllTasks();
-              break;
-          case 'projects':
-              this.getAllProjects();
-              break;
+        case "requests":
+          this.getAllRequests();
+          break;
+        case "tasks":
+          this.getAllTasks();
+          break;
+        case "projects":
+          this.getAllProjects();
+          break;
       }
     },
-    getAllRequests(){
+    getAllRequests() {
       this.allLoading(true);
       ProcessMaker.apiClient
-          .get("/requests/search?type=all", { baseURL: '' })
-          .then(response => {
-              this.processOptions = response.data.process;
-              this.statusOptions = response.data.status;
-              this.requesterOptions = response.data.requester;
-              this.participantsOptions = response.data.participants;
-              this.allLoading(false);
-          });
+        .get("/requests/search?type=all", { baseURL: "" })
+        .then((response) => {
+          this.processOptions = response.data.process;
+          this.statusOptions = response.data.status;
+          this.requesterOptions = response.data.requester;
+          this.participantsOptions = response.data.participants;
+          this.allLoading(false);
+        });
     },
     getAllTasks() {
       this.allLoading(true);
       ProcessMaker.apiClient
-        .get("/tasks/search?type=task_all", { baseURL: '' })
-        .then(response => {
+        .get("/tasks/search?type=task_all", { baseURL: "" })
+        .then((response) => {
           this.requestOptions = response.data.request;
           this.statusOptions = response.data.status;
           this.nameOptions = response.data.name;
           this.allLoading(false);
-          setTimeout(3000)
+          setTimeout(3000);
         });
     },
     async getAllProjects() {
@@ -697,24 +820,24 @@ export default {
         this.allLoading(true);
 
         const { data } = await ProcessMaker.apiClient.get("/projects/search?type=project_all");
-        
+
         this.projectOptions = data.projects ? data.projects : [];
-        
+
         if (data.members?.users) {
           const usersWithMappedNames = data.members.users
-            .filter(user => !!user)
-            .map(({fullname, ...user}) => ({...user, name: fullname }));
-          
+            .filter((user) => !!user)
+            .map(({ fullname, ...user }) => ({ ...user, name: fullname }));
+
           this.memberOptions.push({
-            type: this.$t('Users'),
-            items: usersWithMappedNames
+            type: this.$t("Users"),
+            items: usersWithMappedNames,
           });
         }
 
         if (data.members?.groups) {
-          const groups = data.members.groups.map(({name, ...group}) => ({...group, name: name }));
+          const groups = data.members.groups.map(({ name, ...group }) => ({ ...group, name }));
           this.memberOptions.push({
-            type: this.$t('Groups'),
+            type: this.$t("Groups"),
             items: groups,
           });
         }
@@ -729,93 +852,92 @@ export default {
       }
     },
     addUsernameToFullName(user) {
-      if (!user.fullname || ! user.username)
-      {
+      if (!user.fullname || !user.username) {
         return user;
       }
-      return {...user, fullname: `${user.fullname}`};
+      return { ...user, fullname: `${user.fullname}` };
     },
     getStatus() {
       this.isLoading.status = true;
       ProcessMaker.apiClient
-          .get("/requests/search?type=status", { baseURL: '' })
-          .then(response => {
-              this.statusOptions = response.data;
-              this.isLoading.status = false
-              setTimeout(3000)
-          });
+        .get("/requests/search?type=status", { baseURL: "" })
+        .then((response) => {
+          this.statusOptions = response.data;
+          this.isLoading.status = false;
+          setTimeout(3000);
+        });
     },
     getProcesses(query) {
-        this.isLoading.process = true
-        ProcessMaker.apiClient
-            .get("/requests/search?type=process&filter=" + query, { baseURL: '' })
-            .then(response => {
-                this.processOptions = response.data;
-                this.isLoading.process = false
-                setTimeout(3000)
-            });
+      this.isLoading.process = true;
+      ProcessMaker.apiClient
+        .get(`/requests/search?type=process&filter=${query}`, { baseURL: "" })
+        .then((response) => {
+          this.processOptions = response.data;
+          this.isLoading.process = false;
+          setTimeout(3000);
+        });
     },
     getProjects(query) {
-      this.isLoading.projects = true;     
+      this.isLoading.projects = true;
       ProcessMaker.apiClient
-        .get("/projects/search?type=projects&filter=" + query)
-        .then(response => {
-            this.projectOptions = response.data;
-            this.isLoading.projects = false
-            setTimeout(3000)
+        .get(`/projects/search?type=projects&filter=${query}`)
+        .then((response) => {
+          this.projectOptions = response.data;
+          this.isLoading.projects = false;
+          setTimeout(3000);
         });
     },
     getRequesters(query) {
-        this.isLoading.requester = true
-        ProcessMaker.apiClient
-            .get("/requests/search?type=requester&filter=" + query, { baseURL: '' })
-            .then(response => {
-                this.requesterOptions = response.data;
-                this.isLoading.requester = false
-                setTimeout(3000)
-            });
+      this.isLoading.requester = true;
+      ProcessMaker.apiClient
+        .get(`/requests/search?type=requester&filter=${query}`, { baseURL: "" })
+        .then((response) => {
+          this.requesterOptions = response.data;
+          this.isLoading.requester = false;
+          setTimeout(3000);
+        });
     },
     getParticipants(query) {
-        this.isLoading.participants = true
-        ProcessMaker.apiClient
-            .get("/requests/search?type=participants&filter=" + query, { baseURL: '' })
-            .then(response => {
-                this.participantsOptions = response.data;
-                this.isLoading.participants = false
-                setTimeout(3000)
-            });
+      this.isLoading.participants = true;
+      ProcessMaker.apiClient
+        .get(`/requests/search?type=participants&filter=${query}`, { baseURL: "" })
+        .then((response) => {
+          this.participantsOptions = response.data;
+          this.isLoading.participants = false;
+          setTimeout(3000);
+        });
     },
 
     getTaskStatus() {
       this.isLoading.status = true;
       ProcessMaker.apiClient
-        .get("/tasks/search?type=task_status", { baseURL: '' })
-        .then(response => {
+        .get("/tasks/search?type=task_status", { baseURL: "" })
+        .then((response) => {
           this.statusOptions = response.data;
-          this.isLoading.status = false
-          setTimeout(3000)
+          this.isLoading.status = false;
+          setTimeout(3000);
         });
     },
     getRequests(query) {
-      this.isLoading.request = true
+      this.isLoading.request = true;
       ProcessMaker.apiClient
-        .get("/tasks/search?type=request&filter=" + query, { baseURL: '' })
-        .then(response => {
+        .get(`/tasks/search?type=request&filter=${query}`, { baseURL: "" })
+        .then((response) => {
           this.requestOptions = response.data;
-          this.isLoading.request = false
-          setTimeout(3000)
+          this.isLoading.request = false;
+          setTimeout(3000);
         });
     },
     getNames(query) {
-      this.isLoading.name = true
+      this.isLoading.name = true;
       ProcessMaker.apiClient
-        .get("/tasks/search?type=name&filter=" + query, { baseURL: '' })
-        .then(response => {
+        .get(`/tasks/search?type=name&filter=${query}`, { baseURL: "" })
+        .then((response) => {
           this.nameOptions = response.data;
-          this.isLoading.name = false
-          setTimeout(3000)
+          this.isLoading.name = false;
+          setTimeout(3000);
         });
-    }
+    },
   },
 };
 </script>

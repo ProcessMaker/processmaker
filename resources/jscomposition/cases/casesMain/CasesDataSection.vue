@@ -2,18 +2,21 @@
   <div class="tw-w-full tw-flex tw-flex-col tw-overflow-hidden tw-grow">
     <CaseFilter
       class="tw-pb-3"
-      @enter="onChangeSearch" />
+      @enter="onChangeSearch"
+    />
     <BadgesSection
       v-model="badgesData"
       class="tw-pb-3"
-      @remove="onRemoveBadge">
+      @remove="onRemoveBadge"
+    >
       <template #endsection>
         <div
           id="reset-table-btn"
           class="tw-flex tw-text-gray-500 tw-space-x-2 tw-bg-transparent
             tw-text-xs tw-border-l tw-border-gray-300 tw-pl-2
             hover:tw-opacity-80 hover:tw-cursor-pointer tw-justify-center tw-items-center"
-          @click="onResetTable">
+          @click="onResetTable"
+        >
           <i class="fas fa-reply" />
           <span>{{ $t("Reset Table") }}</span>
         </div>
@@ -27,11 +30,13 @@
       :placeholder="showPlaceholder"
       @changeFilter="onChangeFilter"
       @stopResize="onStopResize"
-      @resetFilters="onChangeFilter">
+      @resetFilters="onChangeFilter"
+    >
       <template #placeholder>
         <TablePlaceholder
           :placeholder="placeholderType"
-          class="tw-grow" />
+          class="tw-grow"
+        />
       </template>
     </FilterableTable>
     <Pagination
@@ -45,7 +50,8 @@
       :pages="dataPagination.pages"
       :per-page="dataPagination.perPage"
       @perPage="onPerPage"
-      @go="onGo" />
+      @go="onGo"
+    />
   </div>
 </template>
 <script setup>

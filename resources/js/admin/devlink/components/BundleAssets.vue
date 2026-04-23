@@ -1,9 +1,13 @@
 <template>
   <div class="card-grid">
-    <div v-for="(type, index) in assetTypes" :key="index" class="card">
+    <div
+      v-for="(type, index) in assetTypes"
+      :key="index"
+      class="card"
+    >
       <!-- Icon -->
       <div class="icon-container">
-        <i :class="type.icon"></i>
+        <i :class="type.icon" />
       </div>
       <!-- Content -->
       <div class="content">
@@ -12,7 +16,10 @@
       </div>
       <!-- Button -->
       <div class="button-container">
-        <button @click.prevent="navigate(type)" class="view-button">
+        <button
+          class="view-button"
+          @click.prevent="navigate(type)"
+        >
           {{ $t('View') }}
         </button>
       </div>
@@ -21,8 +28,8 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router/composables';
-import assetTypes from './assetTypes';
+import { useRouter } from "vue-router/composables";
+import assetTypes from "./assetTypes";
 
 const router = useRouter();
 
@@ -32,19 +39,15 @@ const props = defineProps({
   },
 });
 
-defineEmits(['view']);
+defineEmits(["view"]);
 
-const getAssetCount = (type) => {
-  return props.assets?.filter(asset => asset.type.toUpperCase() === type.toUpperCase()).length;
-};
+const getAssetCount = (type) => props.assets?.filter((asset) => asset.type.toUpperCase() === type.toUpperCase()).length;
 
 const navigate = (type) => {
-  router.push({ 
-    name: 'bundle-asset-listing', 
+  router.push({
+    name: "bundle-asset-listing",
     params: { type: type.type },
-    state: { assets: props.assets.filter(asset => 
-      asset.type.toUpperCase() === type.type.toUpperCase()
-    )}
+    state: { assets: props.assets.filter((asset) => asset.type.toUpperCase() === type.type.toUpperCase()) },
   });
 };
 </script>

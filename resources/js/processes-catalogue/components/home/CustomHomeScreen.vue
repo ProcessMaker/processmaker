@@ -3,7 +3,8 @@
     <component
       :is="view"
       :process="process"
-      @goBackCategory="emit('goBackCategory')" />
+      @goBackCategory="emit('goBackCategory')"
+    />
   </div>
 </template>
 

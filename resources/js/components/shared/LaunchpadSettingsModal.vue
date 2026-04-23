@@ -492,7 +492,7 @@ export default {
             indexImage: null,
             type: "add",
           };
-          
+
           if (this.oldScreen !== this.selectedScreen.id || this.refresh) {
             ProcessMaker.EventBus.$emit(
               "reloadByNewScreen",
@@ -640,7 +640,7 @@ export default {
         .then((response) => {
           this.columnListing.currentColumns = type === "tasks" ? this.myTasksColumns : this.myCasesColumns;
           if (this.columnListing.currentColumns.length === 0) {
-              this.columnListing.currentColumns = this.getDefaultColumns();
+            this.columnListing.currentColumns = this.getDefaultColumns();
           }
           if (this.isTCEScreen) {
             if (response.data) {
@@ -649,44 +649,42 @@ export default {
               }
               if (response.data.available) {
                 const current = this.columnListing.currentColumns;
-                const available = response.data.available;
-                const result = available.filter(b => !current.some(a => a.field === b.field));
+                const { available } = response.data;
+                const result = available.filter((b) => !current.some((a) => a.field === b.field));
                 this.columnListing.availableColumns = result;
               }
               if (response.data.data) {
                 this.columnListing.dataColumns = response.data.data;
               }
             }
-          } else {
-            if (response.data) {
-              if (response.data.default) {
-                this.columnListing.defaultColumns = response.data.default;
-                this.columnListing.defaultColumns.push({
-                  field: "options",
-                  label: "",
-                  sortable: false,
-                  width: 180,
-                });
-              }
-              if (response.data.available) {
-                this.columnListing.availableColumns = response.data.available;
+          } else if (response.data) {
+            if (response.data.default) {
+              this.columnListing.defaultColumns = response.data.default;
+              this.columnListing.defaultColumns.push({
+                field: "options",
+                label: "",
+                sortable: false,
+                width: 180,
+              });
+            }
+            if (response.data.available) {
+              this.columnListing.availableColumns = response.data.available;
 
-                // Merge all available and default columns; we use map to avoid duplicates.
-                const allColumns = new Map([
-                  ...this.columnListing.defaultColumns.map((col) => [col.field, col]),
-                  ...this.columnListing.availableColumns.map((col) => [col.field, col]),
-                ]);
+              // Merge all available and default columns; we use map to avoid duplicates.
+              const allColumns = new Map([
+                ...this.columnListing.defaultColumns.map((col) => [col.field, col]),
+                ...this.columnListing.availableColumns.map((col) => [col.field, col]),
+              ]);
 
-                // Filter only those that are not in `currentColumns`.
-                this.columnListing.availableColumns = [...allColumns.values()].filter(
-                  (column) => !this.columnListing.currentColumns.some(
-                    (currentColumn) => currentColumn.field === column.field,
-                  ),
-                );
-              }
-              if (response.data.data) {
-                this.columnListing.dataColumns = response.data.data;
-              }
+              // Filter only those that are not in `currentColumns`.
+              this.columnListing.availableColumns = [...allColumns.values()].filter(
+                (column) => !this.columnListing.currentColumns.some(
+                  (currentColumn) => currentColumn.field === column.field,
+                ),
+              );
+            }
+            if (response.data.data) {
+              this.columnListing.dataColumns = response.data.data;
             }
           }
         });
@@ -700,15 +698,15 @@ export default {
       }
     },
     changeSelectedScreen() {
-      if (this.selectedScreen.id === 'tce-student') {
+      if (this.selectedScreen.id === "tce-student") {
         this.myCases.currentColumns = this.getTceStudent();
         return;
       }
-      if (this.selectedScreen.id === 'tce-college') {
+      if (this.selectedScreen.id === "tce-college") {
         this.myCases.currentColumns = this.getTceCollege();
         return;
       }
-      if (this.selectedScreen.id === 'tce-grants') {
+      if (this.selectedScreen.id === "tce-grants") {
         this.myCases.currentColumns = this.getTceGrants();
         return;
       }

@@ -1,9 +1,11 @@
 <template>
-  <div :class="{'show-on-mobile' : $root.mobileSearchVisible && !sizeChange, 
-                'search-wide' : sizeChange, 
-                'search': !sizeChange }">
+  <div
+    :class="{'show-on-mobile' : $root.mobileSearchVisible && !sizeChange,
+             'search-wide' : sizeChange,
+             'search': !sizeChange }"
+  >
     <b-input-group class="search-input-group">
-      <b-input-group-prepend >
+      <b-input-group-prepend>
         <b-button
           :title="$t('Search Processes')"
           @click="fetch()"
@@ -14,8 +16,8 @@
       </b-input-group-prepend>
 
       <b-form-input
-        class="search-box"
         v-model="filter"
+        class="search-box"
         :placeholder="placeholder"
         @keyup.enter="fetch()"
       />
@@ -29,16 +31,19 @@
         </b-button>
       </b-input-group-append>
     </b-input-group>
-    <div v-if="$root.filteredCategories !== null"
-         class="category-button-container">
+    <div
+      v-if="$root.filteredCategories !== null"
+      class="category-button-container"
+    >
       <template v-if="$root.filteredCategories.length > 0">
-        <b-button v-for="category in $root.filteredCategories"
+        <b-button
+          v-for="category in $root.filteredCategories"
           :key="category.id"
           class="category-button"
           variant="light"
           @click="selectCategory(category)"
         >
-        {{ category.name }}
+          {{ category.name }}
         </b-button>
       </template>
       <template v-else>
@@ -62,7 +67,7 @@ export default {
   computed: {
     searchWide() {
       const classes = {
-        'search-wide': true,
+        "search-wide": true,
       };
       return classes;
     },
@@ -99,7 +104,7 @@ export default {
     selectCategory(category) {
       // Do not set the query if we are already on the route
       if (this.$route.query.categoryId !== category.id) {
-        this.$router.push({name: "index", query: {categoryId: category.id}});
+        this.$router.push({ name: "index", query: { categoryId: category.id } });
       }
       this.clearSearch();
     },
@@ -120,7 +125,7 @@ export default {
   @media (max-width: $lp-breakpoint) {
     display: none;
     margin-right: 0;
-    
+
     .input-group {
       width: 100%;
     }
@@ -186,7 +191,7 @@ export default {
     border-color: #E5EDF3;
     color: #5C5C63;
   }
-    
+
   .fa-search {
     display: block;
   }
@@ -194,7 +199,7 @@ export default {
   .fa-arrow-left {
     display: none;
   }
-  
+
   @media (max-width: $lp-breakpoint) {
     .input-group-prepend .btn {
       border-radius: 10px;
@@ -226,7 +231,7 @@ export default {
   border-radius: 6px;
   border: 1px solid #CDDDEE;
   text-transform: inherit;
-  
+
   margin-top: 10px;
   margin-right: 5px;
 }

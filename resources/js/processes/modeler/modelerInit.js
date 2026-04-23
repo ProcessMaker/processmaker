@@ -13,17 +13,17 @@ export const configureTaskNotifications = ({ modeler }) => {
           due: true,
           default: false,
         },
-        requester : {
+        requester: {
           assigned: false,
           completed: false,
           due: false,
         },
-        participants : {
+        participants: {
           assigned: false,
           completed: false,
           due: false,
         },
-        manager : {
+        manager: {
           assigned: false,
           completed: false,
           due: false,

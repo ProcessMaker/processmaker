@@ -1,7 +1,6 @@
 <template>
   <div class="d-flex justify-content-center align-items-center flex-column pm-message-screen">
-    <slot name="content">
-    </slot>
+    <slot name="content" />
   </div>
 </template>
 

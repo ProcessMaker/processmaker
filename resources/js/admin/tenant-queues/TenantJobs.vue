@@ -12,8 +12,8 @@
                 <b-button
                   variant="outline-secondary"
                   size="sm"
-                  @click="$router.push('/')"
                   class="mr-2"
+                  @click="$router.push('/')"
                 >
                   <b-icon icon="arrow-left" />
                   Back to Dashboard
@@ -87,7 +87,7 @@
                 {{ getStatusText(data.item.status) }}
               </b-badge>
             </template>
-            
+
             <template #cell(pushed)="data">
               {{ formatTimestamp(data.item.pushed_at) }}
             </template>
@@ -200,7 +200,7 @@ export default {
           footerClass: "p-2",
           hideHeaderClose: false,
           centered: true,
-        }
+        },
       );
 
       if (confirmed) {

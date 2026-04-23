@@ -95,7 +95,7 @@ const loadReassignUsers = async (filter) => {
       filter,
       props.task?.id,
       props.formData,
-      props.currentTaskUserId
+      props.currentTaskUserId,
     );
 
     reassignUsers.value = [];
@@ -109,7 +109,7 @@ const loadReassignUsers = async (filter) => {
       });
     }
   } catch (error) {
-    console.error('Error loading reassign users:', error);
+    console.error("Error loading reassign users:", error);
   }
 };
 

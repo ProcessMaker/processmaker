@@ -5,31 +5,38 @@
     :data="data"
     :config="config"
     :placeholder="placeholder"
-    class="tw-grow">
+    class="tw-grow"
+  >
     <template
       v-for="(column, index) in columns"
-      #[`theader-filter-${column.field}`]>
+      #[`theader-filter-${column.field}`]
+    >
       <SortableFilter
         v-if="column.filter"
         :key="`sortable-${index}`"
         :state="indexFilter == index ? 'asc': ''"
-        @change="e=> onChangeFilter(column, e, index)" />
+        @change="e=> onChangeFilter(column, e, index)"
+      />
     </template>
 
     <template
       v-for="(item, indexRow) in data"
-      #[`container-row-${indexRow}`]>
+      #[`container-row-${indexRow}`]
+    >
       <slot
-        :name="`container-row-${indexRow}`" />
+        :name="`container-row-${indexRow}`"
+      />
     </template>
 
     <template
       v-for="(item, index) in data"
-      #[`ellipsis-menu-${index}`]="{row, columns}">
+      #[`ellipsis-menu-${index}`]="{row, columns}"
+    >
       <slot
         :name="`ellipsis-menu-${index}`"
         :row="row"
-        :columns="columns" />
+        :columns="columns"
+      />
     </template>
 
     <template #placeholder>

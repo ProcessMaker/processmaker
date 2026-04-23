@@ -108,7 +108,7 @@ import ProjectSelect from "../../components/shared/ProjectSelect.vue";
 
 export default {
   components: { Modal, Required, ProjectSelect },
-  mixins: [ FormErrorsMixin, AssetRedirectMixin ],
+  mixins: [FormErrorsMixin, AssetRedirectMixin],
   props: [
     "countCategories",
     "blankTemplate",
@@ -121,9 +121,9 @@ export default {
     "callFromAiModeler",
     "isProjectSelectionRequired",
     "projectId",
-    "isAiGenerated"
+    "isAiGenerated",
   ],
-  data: function() {
+  data() {
     return {
       showModal: false,
       name: "",
@@ -140,8 +140,12 @@ export default {
       bpmn: "",
       disabled: false,
       customModalButtons: [
-          {"content": "Cancel", "action": "hide()", "variant": "outline-secondary", "disabled": false, "hidden": false},
-          {"content": "Create", "action": "createTemplate", "variant": "primary", "disabled": false, "hidden": false},
+        {
+          content: "Cancel", action: "hide()", variant: "outline-secondary", disabled: false, hidden: false,
+        },
+        {
+          content: "Create", action: "createTemplate", variant: "primary", disabled: false, hidden: false,
+        },
       ],
       manager: [],
     };
@@ -229,7 +233,7 @@ export default {
       }
       this.disabled = true;
 
-      let managerIds = this.manager && Array.isArray(this.manager) ? [...this.manager.map(manager => manager.id)] : [];
+      const managerIds = this.manager && Array.isArray(this.manager) ? [...this.manager.map((manager) => manager.id)] : [];
       const formData = new FormData();
       formData.append("name", this.name);
       formData.append("description", this.description);
@@ -298,7 +302,7 @@ export default {
           },
         },
       )
-        .then(response => {
+        .then((response) => {
           if (this.generativeProcessData) {
             this.$emit("clear-ai-history");
           }
@@ -323,7 +327,7 @@ export default {
         });
     },
     getRedirectUrlForAi(processId) {
-      let redirectUrl = `/modeler/${processId}`;
+      const redirectUrl = `/modeler/${processId}`;
 
       return this.redirectUrlWithAi(redirectUrl);
     },

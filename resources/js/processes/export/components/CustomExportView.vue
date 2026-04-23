@@ -1,7 +1,10 @@
 <template>
   <div class="d-flex justify-content-center">
-    <p-tabs :sidenav="sidenav" class="custom-export-container mx-4">
-      <template v-slot:default="slotProps">
+    <p-tabs
+      :sidenav="sidenav"
+      class="custom-export-container mx-4"
+    >
+      <template #default="slotProps">
         <p-tab :active="slotProps.activeIndex === 0">
           <MainAssetView
             :process-info="$root.rootAsset"
@@ -19,7 +22,11 @@
             :existingAssets="existingAssets"
           /> -->
         </p-tab>
-        <p-tab v-for="(group, i) in $root.groups" :key="i" :active="slotProps.activeIndex === i + 1">
+        <p-tab
+          v-for="(group, i) in $root.groups"
+          :key="i"
+          :active="slotProps.activeIndex === i + 1"
+        >
           <DependentAssetView
             :group="group"
             :items="group.items"
@@ -52,12 +59,12 @@ export default {
     PTab,
     PTabs,
   },
+  mixins: [],
   props: {
     processName: {},
     processId: {},
     projectId: null,
   },
-  mixins: [],
   data() {
     return {
     };
@@ -74,7 +81,7 @@ export default {
           icon: group.icon,
         });
       });
-    
+
       return items;
     },
     // TODO: Complete Changelog
@@ -88,13 +95,13 @@ export default {
   //   existingAssets() {
   //     if (this.$root.manifest) {
   //       return Object.entries(this.$root.ioState).filter(([uuid, settings]) => {
-  //         const asset = this.$root.manifest[uuid];           
+  //         const asset = this.$root.manifest[uuid];
   //         return asset && asset.existing_id !== null && settings.mode !== 'discard' && !settings.discardedByParent;
   //       }).map(([uuid, _]) => {
   //         const asset = this.$root.manifest[uuid];
   //         return {
   //           type: asset.type,
-  //           existingName: asset.existing_name, 
+  //           existingName: asset.existing_name,
   //           importingName: asset.name,
   //           existingId: asset.existing_id,
   //           existingAttributes: asset.existing_attributes,

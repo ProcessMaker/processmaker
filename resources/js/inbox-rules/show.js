@@ -7,7 +7,6 @@ import QuickFillPreview from "../tasks/components/QuickFillPreview.vue";
 import TasksList from "../tasks/components/TasksList.vue";
 import TasksPreview from "../tasks/components/TasksPreview.vue";
 
-
 Vue.use(Vuex);
 Vue.use("task", Task);
 Vue.component("MonacoEditor", MonacoEditor);

@@ -1,7 +1,13 @@
 <template>
   <div class="flex-container">
-    <i width="16" height="15">
-      <img :src="codeViewIcon" alt="codeViewIcon">
+    <i
+      width="16"
+      height="15"
+    >
+      <img
+        :src="codeViewIcon"
+        alt="codeViewIcon"
+      >
     </i>
     <div class="mb-2 custom-control custom-switch switch-padding">
       <input
@@ -13,10 +19,19 @@
         :checked="value"
         @input="emitSwitchValue"
       >
-      <label for="show_tree" class="custom-control-label"></label>
+      <label
+        for="show_tree"
+        class="custom-control-label"
+      />
     </div>
-    <i width="16" height="15">
-      <img :src="treeViewIcon" alt="treeViewIcon">
+    <i
+      width="16"
+      height="15"
+    >
+      <img
+        :src="treeViewIcon"
+        alt="treeViewIcon"
+      >
     </i>
   </div>
 </template>

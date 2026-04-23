@@ -49,7 +49,7 @@
         <!-- Slot Table Body -->
         <template
           v-for="(row, rowIndex) in data.data"
-          v-slot:[`row-${rowIndex}`]
+          #[`row-${rowIndex}`]
         >
           <td
             v-for="(header, colIndex) in fields"
@@ -117,8 +117,8 @@
           >
             <slot
               name="tooltip"
-              :tooltipRowData="tooltipRowData"
-              :previewTemplate="previewTemplate"
+              :tooltip-row-data="tooltipRowData"
+              :preview-template="previewTemplate"
             >
               <span>
                 <b-button

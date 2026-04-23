@@ -1,6 +1,7 @@
 <template>
-  <div class="container-lang"
-       :class="{'is-invalid': invalid_feedback !== ''}"
+  <div
+    class="container-lang"
+    :class="{'is-invalid': invalid_feedback !== ''}"
   >
     <label class="choose-lang m-2 text-uppercase">
       {{ $t("Choose an Executor") }}
@@ -90,7 +91,7 @@ export default {
       for (const item in this.$refs) {
         this.$refs[item][0].className = "card mb-2 card-lang";
       }
-      this.$refs[lang.title + '-' + index][0].className = "card mb-2 card-lang selected";
+      this.$refs[`${lang.title}-${index}`][0].className = "card mb-2 card-lang selected";
     },
   },
 };

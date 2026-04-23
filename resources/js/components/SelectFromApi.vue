@@ -2,7 +2,6 @@
   <multiselect
     :id="'api-select-' + _uid"
     :value="selectedOption"
-    @input="change"
     :placeholder="placeholder"
     :options="options"
     :multiple="multiple"
@@ -11,14 +10,19 @@
     :searchable="true"
     :internal-search="false"
     :label="label"
+    @input="change"
     @search-change="loadOptions"
     @open="loadOptions(null)"
   >
     <template slot="noResult">
-      <slot name="noResult">{{ $t('Not found') }}</slot>
+      <slot name="noResult">
+        {{ $t('Not found') }}
+      </slot>
     </template>
     <template slot="noOptions">
-      <slot name="noOptions">{{ $t('No Data Available') }}</slot>
+      <slot name="noOptions">
+        {{ $t('No Data Available') }}
+      </slot>
     </template>
   </multiselect>
 </template>
@@ -32,23 +36,23 @@ export default {
     placeholder: String,
     trackBy: {
       type: String,
-      default: "id"
+      default: "id",
     },
     label: {
       type: String,
-      default: "name"
+      default: "name",
     },
     api: {
       type: String,
-      default: "process"
+      default: "process",
     },
     multiple: {
       type: Boolean,
-      default: false
+      default: false,
     },
     storeId: {
       type: Boolean,
-      default: true
+      default: true,
     },
     exclude_ids: {
       type: Array,
@@ -61,7 +65,7 @@ export default {
   data() {
     return {
       options: [],
-      selectedOption: null
+      selectedOption: null,
     };
   },
   watch: {
@@ -69,11 +73,11 @@ export default {
       immediate: true,
       handler(value) {
         this.selectedOption = this.storeId
-          ? this.options.find(option => get(option, this.trackBy) == value)
+          ? this.options.find((option) => get(option, this.trackBy) == value)
           : value;
         value && !this.selectedOption ? this.loadSelected(value) : null;
-      }
-    }
+      },
+    },
   },
   methods: {
     change(value) {
@@ -81,27 +85,26 @@ export default {
     },
     loadOptions(filter) {
       const query = {
-        filter: typeof filter === "string" ? filter : '',
-        exclude_ids: this.exclude_ids.join(','),
+        filter: typeof filter === "string" ? filter : "",
+        exclude_ids: this.exclude_ids.join(","),
       };
-      const separator = this.api.includes('?') ? '&' : '?';
+      const separator = this.api.includes("?") ? "&" : "?";
       window.ProcessMaker.apiClient
-        .get(this.api + separator +
-          Object.keys(query).
-          filter(par => query[par], '').
-          map(par => `${par}=${encodeURIComponent(query[par])}`).
-          join('&')
-        ).then(response => {
+        .get(this.api + separator
+          + Object.keys(query)
+            .filter((par) => query[par], "")
+            .map((par) => `${par}=${encodeURIComponent(query[par])}`)
+            .join("&")).then((response) => {
           this.options = response.data.data || [];
         });
     },
     loadSelected(value) {
       window.ProcessMaker.apiClient
-        .get(this.api + "/" + value)
-        .then(response => {
+        .get(`${this.api}/${value}`)
+        .then((response) => {
           this.selectedOption = response.data;
         });
-    }
-  }
+    },
+  },
 };
 </script>

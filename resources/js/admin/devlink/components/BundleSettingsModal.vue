@@ -4,10 +4,10 @@
     centered
     size="lg"
     :title="modalTitle"
-    @ok="onOk"
     ok-title="Save"
     :cancel-title="'Cancel'"
     :ok-disabled="!editable"
+    @ok="onOk"
   >
     <p>
       {{ $t("These settings will be saved as they are now in the platform. Future changes to the platform's settings won't affect them, as this is a snapshot of the current configuration.") }}
@@ -23,16 +23,16 @@
           <b-form-checkbox
             v-model="allSelected"
             :disabled="!editable"
-            @change="toggleAll"
             switch
+            @change="toggleAll"
           />
         </template>
         <template #cell(toggle)="data">
           <b-form-checkbox
             v-model="data.item.enabled"
             :disabled="!editable"
-            @change="toggleSetting(data.item.key)"
             switch
+            @change="toggleSetting(data.item.key)"
           />
         </template>
       </b-table>
@@ -47,10 +47,10 @@
   </b-modal>
 </template>
 <script setup>
-import { ref, computed } from 'vue';
-import { useRoute } from 'vue-router/composables';
+import { ref, computed } from "vue";
+import { useRoute } from "vue-router/composables";
 
-const emit = defineEmits(['settings-saved']);
+const emit = defineEmits(["settings-saved"]);
 
 const props = defineProps({
   editable: {
@@ -60,26 +60,26 @@ const props = defineProps({
 });
 
 const computedFields = computed(() => [
-  { 
-    key: 'name', 
-    label: 'Name',
+  {
+    key: "name",
+    label: "Name",
     formatter: (value, key, item) => {
-      if (settingKey.value === 'ui_settings') {
+      if (settingKey.value === "ui_settings") {
         return item.key;
       }
       // Concatena el nombre con el grupo si existe
       return item.group ? `${value} (${item.group})` : value;
-    }
+    },
   },
-  { key: 'toggle', label: '', class: 'text-center' },
+  { key: "toggle", label: "", class: "text-center" },
 ]);
 
 const bundleSettingsModal = ref(null);
 const route = useRoute();
 const bundleId = route.params.id;
 const settings = ref([]);
-const modalTitle = ref('');
-const settingKey = ref('');
+const modalTitle = ref("");
+const settingKey = ref("");
 const configs = ref({});
 const selectedIds = ref([]);
 const allSelected = ref(false);
@@ -92,15 +92,15 @@ const onOk = async () => {
     setting: settingKey.value,
     config: JSON.stringify(configs.value),
     type: null,
-    replaceIds: true
+    replaceIds: true,
   });
-  window.ProcessMaker.alert('Settings saved', 'success');
-  emit('settings-saved');
+  window.ProcessMaker.alert("Settings saved", "success");
+  emit("settings-saved");
   hide();
 };
 
 const show = (config) => {
-  modalTitle.value = config.key === 'ui_settings' ? 'UI Settings' : config.key;
+  modalTitle.value = config.key === "ui_settings" ? "UI Settings" : config.key;
   settingKey.value = config.key;
   if (bundleSettingsModal.value) {
     bundleSettingsModal.value.show();
@@ -128,31 +128,31 @@ const loadSettings = async () => {
   }));
 
   // Update the state of allSelected
-  allSelected.value = settings.value.every(setting => setting.enabled);
+  allSelected.value = settings.value.every((setting) => setting.enabled);
 };
 
 const refreshUi = async () => {
-  await window.ProcessMaker.apiClient.post(`devlink/local-bundles/setting/refresh-ui`);
-  window.ProcessMaker.alert('UI refreshed', 'success');
-  emit('settings-saved');
+  await window.ProcessMaker.apiClient.post("devlink/local-bundles/setting/refresh-ui");
+  window.ProcessMaker.alert("UI refreshed", "success");
+  emit("settings-saved");
 };
 
 const toggleSetting = (key) => {
   if (selectedIds.value.includes(key)) {
-    selectedIds.value = selectedIds.value.filter(id => id !== key);
+    selectedIds.value = selectedIds.value.filter((id) => id !== key);
   } else {
     selectedIds.value.push(key);
   }
-  allSelected.value = settings.value.every(setting => setting.enabled);
+  allSelected.value = settings.value.every((setting) => setting.enabled);
 };
 
 const toggleAll = () => {
-  settings.value.forEach(setting => {
+  settings.value.forEach((setting) => {
     setting.enabled = allSelected.value;
     if (allSelected.value && !selectedIds.value.includes(setting.key)) {
       selectedIds.value.push(setting.key);
     } else if (!allSelected.value) {
-      selectedIds.value = selectedIds.value.filter(id => id !== setting.key);
+      selectedIds.value = selectedIds.value.filter((id) => id !== setting.key);
     }
   });
 };

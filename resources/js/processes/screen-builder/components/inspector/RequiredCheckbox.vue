@@ -1,21 +1,23 @@
 <template>
   <div>
-    <b-form-checkbox v-model="required">{{ $t('Required') }}</b-form-checkbox>
+    <b-form-checkbox v-model="required">
+      {{ $t('Required') }}
+    </b-form-checkbox>
   </div>
 </template>
 
 <script>
 export default {
-  props: ['value'],
+  props: ["value"],
   data() {
     return {
-      required: false
+      required: false,
     };
   },
   watch: {
     value: {
       handler() {
-        if (this.value && this.value === 'required') {
+        if (this.value && this.value === "required") {
           this.required = true;
         } else {
           this.required = false;
@@ -25,9 +27,9 @@ export default {
     },
     required: {
       handler() {
-        this.$emit('input', this.required ? 'required' : '');
-      }
-    }
-  }
+        this.$emit("input", this.required ? "required" : "");
+      },
+    },
+  },
 };
 </script>

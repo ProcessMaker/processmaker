@@ -3,7 +3,8 @@
     <div
       v-for="(element, index) in inputs"
       :key="index"
-      class="tw-flex tw-space-x-1 tw-items-center">
+      class="tw-flex tw-space-x-1 tw-items-center"
+    >
       <input
         v-model="inputs[index].value"
         type="text"
@@ -11,24 +12,29 @@
           tw-py-2 tw-text-gray-900 tw-shadow-sm tw-ring-1 tw-ring-inset
           tw-ring-gray-300 placeholder:tw-text-gray-400 focus:tw-ring-2
           focus:tw-ring-inset focus:tw-ring-indigo-600"
-        @change="onChange">
+        @change="onChange"
+      >
 
       <span
         class="tw-h-5 tw-w-6 tw-text-[10px] tw-justify-center
           tw-flex tw-items-center tw-rounded-md hover:tw-bg-gray-300
-          tw-border tw-border-color-gray-400">
+          tw-border tw-border-color-gray-400"
+      >
         <i
           class="fas fa-plus"
-          @click.prevent.stop="addInput" />
+          @click.prevent.stop="addInput"
+        />
       </span>
 
       <span
         class="tw-h-5 tw-w-6 tw-text-[10px] tw-justify-center
         tw-flex tw-items-center tw-rounded-md hover:tw-bg-gray-300
-        tw-border tw-border-color-gray-400">
+        tw-border tw-border-color-gray-400"
+      >
         <i
           class="fas fa-minus"
-          @click.prevent.stop="removeInput(index)" />
+          @click.prevent.stop="removeInput(index)"
+        />
       </span>
     </div>
   </div>

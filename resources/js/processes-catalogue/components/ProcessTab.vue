@@ -390,12 +390,10 @@ export default {
       if (this.process.launchpad) {
         const properties = JSON.parse(this.process.launchpad.properties);
         if ("tabs" in properties && properties.tabs.length > 0) {
-          const formatedTabs = properties.tabs.map(tab => {
-            return {
-              ...tab,
-              pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`
-            };
-          });
+          const formatedTabs = properties.tabs.map((tab) => ({
+            ...tab,
+            pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
+          }));
           this.tabsList = formatedTabs;
         }
       }

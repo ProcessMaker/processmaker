@@ -10,8 +10,8 @@
       :size="size"
     >
       <progress-loader
-        ref="progressLoader"
         v-if="startingRequest"
+        ref="progressLoader"
         :type="'radial'"
       />
 
@@ -30,8 +30,8 @@
         >
           <b-input-group class="search">
             <b-form-input
-              data-test="new-request-modal-search-input"
               v-model="filter"
+              data-test="new-request-modal-search-input"
               :placeholder="$t('Search') + '...'"
             />
             <b-input-group-append>
@@ -58,7 +58,10 @@
           class="mt-3"
         >
           <h5 class="mb-n2">
-            <span data-test="new-request-modal-category-name" :data-test-by-key="`new-request-modal-category-name-${index}`">
+            <span
+              data-test="new-request-modal-category-name"
+              :data-test-by-key="`new-request-modal-category-name-${index}`"
+            >
               {{ index }}
             </span>
             <span
@@ -126,9 +129,9 @@
         :single="$t('Process')"
         :plural="$t('Processes')"
         :per-page-select-enabled="true"
+        data-test="new-request-modal-pagination"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
-        data-test="new-request-modal-pagination"
       />
     </b-modal>
   </div>

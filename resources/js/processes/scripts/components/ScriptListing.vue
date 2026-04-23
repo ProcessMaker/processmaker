@@ -1,13 +1,17 @@
 <template>
   <div class="data-table">
     <data-loading
-            :for="/scripts\?page/"
-            v-show="shouldShowLoader"
-            :empty="$t('No Data Available')"
-            :empty-desc="$t('')"
-            empty-icon="noData"
+      v-show="shouldShowLoader"
+      :for="/scripts\?page/"
+      :empty="$t('No Data Available')"
+      :empty-desc="$t('')"
+      empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader" class="scripts-table-card" data-cy="scripts-table">
+    <div
+      v-show="!shouldShowLoader"
+      class="scripts-table-card"
+      data-cy="scripts-table"
+    >
       <filter-table
         :headers="fields"
         :data="data"
@@ -15,7 +19,10 @@
         style="height: calc(100vh - 355px);"
       >
         <!-- Slot Table Header filter Button -->
-        <template v-for="(column, index) in fields" v-slot:[`filter-${column.field}`]>
+        <template
+          v-for="(column, index) in fields"
+          #[`filter-${column.field}`]
+        >
           <div
             v-if="column.sortable"
             :key="index"
@@ -27,21 +34,23 @@
                 'fa-sort-up': column.direction === 'asc',
                 'fa-sort-down': column.direction === 'desc',
               }]"
-            ></i>
+            />
           </div>
         </template>
-        <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
+        <template
+          v-for="(row, rowIndex) in data.data"
+          #[`row-${rowIndex}`]
+        >
           <td
             v-for="(header, colIndex) in fields"
             :key="colIndex"
             :data-cy="`scripts-table-td-${rowIndex}-${colIndex}`"
           >
             <div
-              :data-cy="`datasource-table-html-${rowIndex}-${colIndex}`"
               v-if="containsHTML(row[header.field])"
+              :data-cy="`datasource-table-html-${rowIndex}-${colIndex}`"
               v-html="sanitize(row[header.field])"
-            >
-            </div>
+            />
             <template v-else>
               <template
                 v-if="isComponent(row[header.field])"
@@ -50,8 +59,7 @@
                 <component
                   :is="row[header.field].component"
                   v-bind="row[header.field].props"
-                >
-                </component>
+                />
               </template>
               <template
                 v-else
@@ -60,10 +68,15 @@
                 <template v-if="header.field === 'title'">
                   <b-link
                     v-if="permission.includes('edit-scripts')"
-                    :href="`/designer/scripts/${row.id}/builder`"
                     v-uni-id="row.id.toString()"
-                  >{{ row.title }}</b-link>
-                  <span v-uni-id="row.id.toString()" v-else="permission.includes('edit-scripts')">{{ row.title }}</span>
+                    :href="`/designer/scripts/${row.id}/builder`"
+                  >
+                    {{ row.title }}
+                  </b-link>
+                  <span
+                    v-else="permission.includes('edit-scripts')"
+                    v-uni-id="row.id.toString()"
+                  >{{ row.title }}</span>
                 </template>
                 <template v-if="header.field === 'actions'">
                   <ellipsis-menu
@@ -87,7 +100,13 @@
         </template>
       </filter-table>
 
-      <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="script" :assetId="assetId" :assetName="assetName"/>
+      <add-to-project-modal
+        id="add-to-project-modal"
+        ref="add-to-project-modal"
+        asset-type="script"
+        :asset-id="assetId"
+        :asset-name="assetName"
+      />
 
       <pagination-table
         :meta="data.meta"
@@ -95,35 +114,68 @@
         @per-page-change="changePerPage"
       />
     </div>
-    <b-modal ref="myModalRef" :title="$t('Copy Script')" centered  header-close-content="&times;" >
+    <b-modal
+      ref="myModalRef"
+      :title="$t('Copy Script')"
+      centered
+      header-close-content="&times;"
+    >
       <form>
         <div class="form-group">
           <label for="title">{{ $t('Name') }}<small class="ml-1">*</small></label>
-          <input id="title"
+          <input
+            id="title"
+            v-model="dupScript.title"
             type="text"
             class="form-control"
-            v-model="dupScript.title"
-            v-bind:class="{ 'is-invalid': errors.title }"
-          />
-          <div class="invalid-feedback" role="alert" v-if="errors.title">{{errors.title[0]}}</div>
+            :class="{ 'is-invalid': errors.title }"
+          >
+          <div
+            v-if="errors.title"
+            class="invalid-feedback"
+            role="alert"
+          >
+            {{ errors.title[0] }}
+          </div>
         </div>
         <div class="form-group">
           <category-select
-          :label="$t('Category')"
-          api-get="script_categories"
-          api-list="script_categories"
-          v-model="dupScript.script_category_id"
-          :errors="errors.script_category_id">
-          </category-select>
+            v-model="dupScript.script_category_id"
+            :label="$t('Category')"
+            api-get="script_categories"
+            api-list="script_categories"
+            :errors="errors.script_category_id"
+          />
         </div>
         <div class="form-group">
           <label for="description">{{ $t('Description') }}</label>
-          <textarea class="form-control" id="description" rows="3" v-model="dupScript.description"></textarea>
+          <textarea
+            id="description"
+            v-model="dupScript.description"
+            class="form-control"
+            rows="3"
+          />
         </div>
       </form>
-      <div slot="modal-footer" class="w-100" align="right">
-        <button type="button" class="btn btn-outline-secondary" @click="hideModal">{{$t('Cancel')}}</button>
-        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{$t('Save')}}</button>
+      <div
+        slot="modal-footer"
+        class="w-100"
+        align="right"
+      >
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          @click="hideModal"
+        >
+          {{ $t('Cancel') }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary ml-2"
+          @click="onSubmit"
+        >
+          {{ $t('Save') }}
+        </button>
       </div>
     </b-modal>
     <add-to-bundle asset-type="ProcessMaker\Models\Script" />
@@ -233,8 +285,8 @@ export default {
           title: "",
           label: "",
           field: "actions",
-        }
-      ]
+        },
+      ],
     };
   },
   computed: {
@@ -244,9 +296,9 @@ export default {
         content: "Add to Bundle",
         icon: "fp-add-outlined",
         permission: "admin",
-        emit_on_root: 'add-to-bundle',
+        emit_on_root: "add-to-bundle",
       });
-    }
+    },
   },
   methods: {
     showModal() {
@@ -257,13 +309,13 @@ export default {
     },
     onSubmit() {
       ProcessMaker.apiClient
-        .put("scripts/" + this.dupScript.id + "/duplicate", this.dupScript)
-        .then(response => {
+        .put(`scripts/${this.dupScript.id}/duplicate`, this.dupScript)
+        .then((response) => {
           ProcessMaker.alert(this.$t("The script was duplicated."), "success");
           this.hideModal();
           this.fetch();
         })
-        .catch(error => {
+        .catch((error) => {
           if (error.response.status && error.response.status === 422) {
             this.errors = error.response.data.errors;
           }
@@ -277,20 +329,20 @@ export default {
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "scripts" +
-            "?page=" +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&filter=" +
-            this.filter +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=" +
-            this.orderDirection +
-            "&include=categories,category"
+          "scripts"
+            + `?page=${
+              this.page
+            }&per_page=${
+              this.perPage
+            }&filter=${
+              this.filter
+            }&order_by=${
+              this.orderBy
+            }&order_direction=${
+              this.orderDirection
+            }&include=categories,category`,
         )
-        .then(response => {
+        .then((response) => {
           this.data = this.transform(response.data);
           this.loading = false;
         });

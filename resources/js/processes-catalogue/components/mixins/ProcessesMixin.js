@@ -82,8 +82,8 @@ const ProcessHeader = {
       this.$emit("goBackCategory");
     },
     getNameEllipsis() {
-      const name = this.process.name;
-      const nameEllipsis = name.length <= 70 ? name : name.slice(0, 70) + "...";
+      const { name } = this.process;
+      const nameEllipsis = name.length <= 70 ? name : `${name.slice(0, 70)}...`;
       return nameEllipsis;
     },
   },

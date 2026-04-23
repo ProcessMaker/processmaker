@@ -6,7 +6,10 @@
       variant="light"
       @click="firstPage"
     >
-      <img src="/img/pagination-images/first.svg" :alt="$t('No Image')">
+      <img
+        src="/img/pagination-images/first.svg"
+        :alt="$t('No Image')"
+      >
     </b-button>
     <b-button
       :disabled="currentPage === 1"
@@ -14,7 +17,10 @@
       variant="light"
       @click="previousPage"
     >
-      <img src="/img/pagination-images/previous.svg" :alt="$t('No Image')">
+      <img
+        src="/img/pagination-images/previous.svg"
+        :alt="$t('No Image')"
+      >
     </b-button>
 
     <input
@@ -36,7 +42,10 @@
       variant="light"
       @click="nextPage"
     >
-      <img src="/img/pagination-images/next.svg" :alt="$t('No Image')">
+      <img
+        src="/img/pagination-images/next.svg"
+        :alt="$t('No Image')"
+      >
     </b-button>
     <b-button
       :disabled="currentPage >= totalPageCount"
@@ -44,7 +53,10 @@
       variant="light"
       @click="lastPage"
     >
-      <img src="/img/pagination-images/last.svg" :alt="$t('No Image')">
+      <img
+        src="/img/pagination-images/last.svg"
+        :alt="$t('No Image')"
+      >
     </b-button>
     <span class="pagination-total">
       {{ totalItems }}
@@ -130,9 +142,9 @@ export default {
     },
     totalItems() {
       if (this.meta.total === 1) {
-        return this.$t('{{count}} Item', { count: this.meta.total });
+        return this.$t("{{count}} Item", { count: this.meta.total });
       }
-      return this.$t('{{count}} Items', { count: this.meta.total });
+      return this.$t("{{count}} Items", { count: this.meta.total });
     },
     perPageButton() {
       return `${this.meta.per_page} ${this.$t("Per page")}`;
@@ -183,7 +195,7 @@ export default {
       if (!input) return;
 
       const span = document.createElement("span");
-      const body = document.querySelector('body');
+      const body = document.querySelector("body");
       if (!body) return;
 
       body.appendChild(span);

@@ -9,7 +9,8 @@
       class="tw-p-2 tw-rounded-md tw-border-0
         tw-ring-1 tw-ring-inset tw-ring-gray-300 placeholder:tw-text-gray-400
         focus:tw-ring-2 focus:tw-ring-inset"
-      @change="onChange()">
+      @change="onChange()"
+    >
   </div>
 </template>
 <script setup>

@@ -12,8 +12,8 @@ export default {
       switch (action.value) {
         case "edit-item":
           this.editFlowGenie(data);
-          break;  
-        case 'add-to-project':
+          break;
+        case "add-to-project":
           this.showAddToProjectModal(data.title, data.id);
           break;
         case "remove-item":

@@ -1,160 +1,184 @@
 <template>
   <div>
-    <b-button size="sm"
-              variant="light"
-              class="inbox-rule-buttons-border inbox-rule-buttons-font"
-              @click="$emit('reset-filters')">
-      <img src="/img/eraser-fill.svg" :alt="$t('Clear unsaved filters')"/>
+    <b-button
+      size="sm"
+      variant="light"
+      class="inbox-rule-buttons-border inbox-rule-buttons-font"
+      @click="$emit('reset-filters')"
+    >
+      <img
+        src="/img/eraser-fill.svg"
+        :alt="$t('Clear unsaved filters')"
+      >
       {{ $t('Clear unsaved filters') }}
     </b-button>
-    <b-dropdown v-if="showSavedSearchSelector"
-                id="inboxRuleButtonsDropdown"
-                size="sm"
-                variant="light"
-                split-variant="light"
-                split
-                class="inbox-rule-buttons-border rounded-sm">
-      <template v-slot:button-content>
+    <b-dropdown
+      v-if="showSavedSearchSelector"
+      id="inboxRuleButtonsDropdown"
+      size="sm"
+      variant="light"
+      split-variant="light"
+      split
+      class="inbox-rule-buttons-border rounded-sm"
+    >
+      <template #button-content>
         <div class="d-flex align-items-center">
-          <img src="/img/funnel-fill.svg" :alt="$t('Load a saved search')"/>
-          <b-form-input v-model="selectedText"
-                        :placeholder="selectedOption ? selectedOption.text : $t('Load a saved search')"
-                        size="sm"
-                        class="inbox-rule-buttons-input"
-                        autocomplete="off"
-                        id="inboxRuleButtonsDropdownInput"
-                        @input="onInput"
-                        @click="showMenu(toggleShowMenu=!toggleShowMenu)">
-          </b-form-input>
+          <img
+            src="/img/funnel-fill.svg"
+            :alt="$t('Load a saved search')"
+          >
+          <b-form-input
+            id="inboxRuleButtonsDropdownInput"
+            v-model="selectedText"
+            :placeholder="selectedOption ? selectedOption.text : $t('Load a saved search')"
+            size="sm"
+            class="inbox-rule-buttons-input"
+            autocomplete="off"
+            @input="onInput"
+            @click="showMenu(toggleShowMenu=!toggleShowMenu)"
+          />
         </div>
       </template>
-      <b-dropdown-item v-for="option in options"
-                       :key="option.value" 
-                       :value="option"
-                       @click="onSelect(option)">
+      <b-dropdown-item
+        v-for="option in options"
+        :key="option.value"
+        :value="option"
+        @click="onSelect(option)"
+      >
         {{ option.text }}
       </b-dropdown-item>
     </b-dropdown>
-    <b-popover target="inboxRuleButtonsDropdown"
-               triggers="hover focus"
-               placement="bottom"
-               boundary="window"
-               show
-               v-if="showMessageEmpty">
+    <b-popover
+      v-if="showMessageEmpty"
+      target="inboxRuleButtonsDropdown"
+      triggers="hover focus"
+      placement="bottom"
+      boundary="window"
+      show
+    >
       <div class="mt-2 mb-2 ml-3 mr-3">
         {{ $t('No saved searches available') }}
       </div>
     </b-popover>
-    <b-popover :show.sync="popoverMessage"
-               target="inboxRuleButtonsDropdown"
-               triggers=""
-               placement="top"
-               boundary="window"
-               custom-class="inbox-rule-buttons-popover-message border border-danger">
+    <b-popover
+      :show.sync="popoverMessage"
+      target="inboxRuleButtonsDropdown"
+      triggers=""
+      placement="top"
+      boundary="window"
+      custom-class="inbox-rule-buttons-popover-message border border-danger"
+    >
       <div class="mt-2 mb-2 ml-3 mr-3">
-        <b-icon icon="exclamation-circle"
-                variant="danger"
-                aria-hidden="true"></b-icon>
+        <b-icon
+          icon="exclamation-circle"
+          variant="danger"
+          aria-hidden="true"
+        />
         <span class="text-danger">
           {{ $t('Select a saved search.') }}
         </span>
       </div>
     </b-popover>
-    <b-button size="sm"
-              variant="light"
-              class="inbox-rule-buttons-border inbox-rule-buttons-font"
-              @click="$emit('showColumns')">
-      <img src="/img/gear-fill.svg" :alt="$t('Configure')"/>
+    <b-button
+      size="sm"
+      variant="light"
+      class="inbox-rule-buttons-border inbox-rule-buttons-font"
+      @click="$emit('showColumns')"
+    >
+      <img
+        src="/img/gear-fill.svg"
+        :alt="$t('Configure')"
+      >
     </b-button>
   </div>
 </template>
 
 <script>
-  export default {
-    components: {
+export default {
+  components: {
+  },
+  props: {
+    showSavedSearchSelector: {
+      type: Boolean,
+      default: true,
     },
-    props: {
-      showSavedSearchSelector: {
-        type: Boolean,
-        default: true
-      }
+  },
+  data() {
+    return {
+      selectedOption: null,
+      selectedText: "",
+      options: [],
+      showMessageEmpty: false,
+      popoverMessage: false,
+      toggleShowMenu: false,
+    };
+  },
+  watch: {
+    options() {
+      this.showMessageEmpty = this.options.length <= 0;
     },
-    data() {
-      return {
-        selectedOption: null,
-        selectedText: "",
-        options: [],
-        showMessageEmpty: false,
-        popoverMessage: false,
-        toggleShowMenu: false
-      };
+    selectedOption() {
+      this.selectedText = this.selectedOption?.text;
     },
-    watch: {
-      options() {
-        this.showMessageEmpty = this.options.length <= 0;
-      },
-      selectedOption() {
-        this.selectedText = this.selectedOption?.text;
-      }
-    },
-    mounted() {
-      this.requestSavedSearch("");
-      document.addEventListener("click", (event) => {
-        if (event.target.id !== "inboxRuleButtonsDropdownInput") {
-          this.showMenu(false);
-        }
-      });
-    },
-    methods: {
-      onSelect(option) {
-        this.selectedOption = option;
-        this.$emit('saved-search-id-changed', option.value);
+  },
+  mounted() {
+    this.requestSavedSearch("");
+    document.addEventListener("click", (event) => {
+      if (event.target.id !== "inboxRuleButtonsDropdownInput") {
         this.showMenu(false);
-      },
-      requestSavedSearch(filter) {
-        let url = "saved-searches" +
-                "?include=reports,user_options" +
-                "&page=1" +
-                "&per_page=30" +
-                "&filter=" + filter +
-                "&type=task" +
-                "&key=" +
-                "&is_system=false" +
-                "&subset=mine" +
-                "&order_by=title" +
-                "&order_direction=asc";
-        ProcessMaker.apiClient.get(url)
-                .then(response => {
-                  this.options = [];
-                  response?.data?.data?.forEach(item => {
-                    this.options.push({
-                      text: item.title,
-                      value: item.id
-                    });
-                  });
-                });
-      },
-      showPopoverMessage() {
-        this.popoverMessage = true;
-      },
-      onInput(value) {
-        this.requestSavedSearch(value);
-        this.showMenu(true);
-      },
-      showMenu(sw) {
-        let button = document.getElementById("inboxRuleButtonsDropdown");
-        if (!button) {
-          return;
-        }
-        let obj = button.querySelector(".dropdown-menu").classList;
-        if (sw === true) {
-          obj.add("inbox-rule-buttons-show");
-        } else {
-          obj.remove("inbox-rule-buttons-show");
-        }
       }
-    }
-  };
+    });
+  },
+  methods: {
+    onSelect(option) {
+      this.selectedOption = option;
+      this.$emit("saved-search-id-changed", option.value);
+      this.showMenu(false);
+    },
+    requestSavedSearch(filter) {
+      const url = "saved-searches"
+                + "?include=reports,user_options"
+                + "&page=1"
+                + "&per_page=30"
+                + `&filter=${filter
+                }&type=task`
+                + "&key="
+                + "&is_system=false"
+                + "&subset=mine"
+                + "&order_by=title"
+                + "&order_direction=asc";
+      ProcessMaker.apiClient.get(url)
+        .then((response) => {
+          this.options = [];
+          response?.data?.data?.forEach((item) => {
+            this.options.push({
+              text: item.title,
+              value: item.id,
+            });
+          });
+        });
+    },
+    showPopoverMessage() {
+      this.popoverMessage = true;
+    },
+    onInput(value) {
+      this.requestSavedSearch(value);
+      this.showMenu(true);
+    },
+    showMenu(sw) {
+      const button = document.getElementById("inboxRuleButtonsDropdown");
+      if (!button) {
+        return;
+      }
+      const obj = button.querySelector(".dropdown-menu").classList;
+      if (sw === true) {
+        obj.add("inbox-rule-buttons-show");
+      } else {
+        obj.remove("inbox-rule-buttons-show");
+      }
+    },
+  },
+};
 </script>
 
 <style>

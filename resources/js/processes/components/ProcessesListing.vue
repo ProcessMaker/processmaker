@@ -87,7 +87,10 @@
                       class="mr-2"
                       :class="{ 'fas fa-check-circle text-success': row.status == 'ACTIVE', 'far fa-circle': row.status == 'INACTIVE' }"
                     />
-                    <a :href="openModeler(row)" class="text-nowrap">
+                    <a
+                      :href="openModeler(row)"
+                      class="text-nowrap"
+                    >
                       {{ row[header.field] }}
                     </a>
                   </div>
@@ -262,13 +265,6 @@ export default {
       ],
     };
   },
-  created() {
-    ProcessMaker.EventBus.$on("api-data-process", (val) => {
-      this.fetch();
-      this.apiDataLoading = false;
-      this.apiNoResults = false;
-    });
-  },
   computed: {
     processActionsWithAddToBundle() {
       return this.processActions.toSpliced(7, 0, {
@@ -276,9 +272,16 @@ export default {
         content: "Add to Bundle",
         icon: "fp-add-outlined",
         permission: "admin",
-        emit_on_root: 'add-to-bundle',
+        emit_on_root: "add-to-bundle",
       });
-    }
+    },
+  },
+  created() {
+    ProcessMaker.EventBus.$on("api-data-process", (val) => {
+      this.fetch();
+      this.apiDataLoading = false;
+      this.apiNoResults = false;
+    });
   },
 };
 </script>
