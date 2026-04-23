@@ -28,7 +28,18 @@ mix.webpackConfig({
     alias: {
       "vue-monaco": path.resolve(__dirname, "resources/js/vue-monaco-amd.js"),
       styles: path.resolve(__dirname, "resources/sass"),
+      // axios-extensions still imports axios 0.x deep paths; axios 1 only exposes them via "unsafe" (or alias here).
+      "axios/lib/helpers/buildURL": path.resolve(
+        __dirname,
+        "node_modules/axios/lib/helpers/buildURL.js",
+      ),
     },
+  },
+  // Disable webpack minification (Terser). Pre-built vendor UMD chunks (e.g. screen-builder)
+  // stay minified in the bundle; use source maps to map stacks back to originals.
+  optimization: {
+    minimize: false,
+    minimizer: [],
   },
 });
 
