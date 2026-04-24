@@ -230,6 +230,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/ProcessMaker/SocialiteProviders"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/ProcessMaker/docusign-esign-php-client.git"
         }
     ],
     "config": {
