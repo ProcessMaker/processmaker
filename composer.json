@@ -54,7 +54,6 @@
         "processmaker/docker-executor-php": "1.4.3",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.12.4",
-        "processmaker/package-accessibility": "1.0.1",
         "processmaker/pmql": "1.13.3",
         "promphp/prometheus_client_php": "^2.12",
         "psr/http-message": "^2.0",
@@ -149,6 +148,7 @@
                 "package-sis-integration": "1.0.0"
             },
             "enterprise": {
+                "processmaker/package-accessibility": "1.0.1",               
                 "connector-docusign": "1.11.2",
                 "connector-idp": "1.14.2",
                 "connector-pdf-print": "1.23.3",
