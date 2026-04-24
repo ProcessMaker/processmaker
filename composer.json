@@ -124,7 +124,6 @@
                 "package-pinnacle": "1.0.9",
                 "package-esign": "dev-fall",
                 "package-thermofisher": "dev-fall",
-                "package-zj-adoa": "dev-fall",
                 "pps-file-storage": "dev-fall",
                 "package-csi": "dev-fall",
                 "package-jxchange": "dev-fall",
@@ -145,7 +144,7 @@
                 "package-zj-birmingham": "dev-main",
                 "package-tce": "dev-master",
                 "package-case-overview": "dev-main",
-                "package-sis-integration": "1.0.0"
+                "package-sis-integration": "dev-develop"
             },
             "enterprise": {
                 "processmaker/package-accessibility": "1.0.1",               
