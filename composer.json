@@ -147,7 +147,7 @@
                 "package-sis-integration": "dev-develop"
             },
             "enterprise": {
-                "processmaker/package-accessibility": "1.0.1",               
+                "package-accessibility": "1.0.1",               
                 "connector-docusign": "1.11.2",
                 "connector-idp": "1.14.2",
                 "connector-pdf-print": "1.23.3",
