@@ -43,6 +43,8 @@ class CancelRequest extends BpmnAction implements ShouldQueue
 
         // Close all active tokens
         $instance->close();
+        $instance->status = 'CANCELED';
+        $instance->save();
 
         // Persist closed tokens
         $tokenRepo = new TokenRepository(new ExecutionInstanceRepository());

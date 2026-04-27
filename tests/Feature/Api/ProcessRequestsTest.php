@@ -14,6 +14,7 @@ use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -464,6 +465,42 @@ class ProcessRequestsTest extends TestCase
 
         // Verify status was updated
         $response->assertStatus(204);
+    }
+
+    /**
+     * Test that cancel action closes active tokens and marks the request as CANCELED.
+     */
+    public function testCancelRequestClosesActiveTokenAndMarksCanceled()
+    {
+        $process = Process::factory()->withTemplate('SingleTask.bpmn')->create();
+
+        ProcessTaskAssignment::factory()->create([
+            'process_id' => $process->id,
+            'process_task_id' => 'UserTaskUID',
+            'assignment_id' => $this->user->id,
+            'assignment_type' => User::class,
+        ]);
+
+        $startRoute = route('api.process_events.trigger', [$process->id, 'event' => 'StartEventUID']);
+        $startResponse = $this->apiCall('POST', $startRoute, []);
+        $startResponse->assertStatus(201);
+
+        $requestId = $startResponse->json('id');
+        $request = ProcessRequest::findOrFail($requestId);
+        $token = $request->tokens()->where('status', 'TRIGGERED')->firstOrFail();
+
+        $route = route('api.requests.update', [$request->id]);
+        $response = $this->apiCall('PUT', $route, [
+            'status' => 'CANCELED',
+        ]);
+
+        $response->assertStatus(204);
+
+        $request->refresh();
+        $this->assertEquals('CANCELED', $request->status);
+
+        $token->refresh();
+        $this->assertEquals('TRIGGERED', $token->status);
     }
 
     /**
