@@ -903,11 +903,13 @@ class TasksTest extends TestCase
     {
         $user = User::factory()->create(['is_administrator' => true]);
         $group = Group::factory()->create();
+
         GroupMember::factory()->create([
             'group_id' => $group->id,
             'member_id' => $user->id,
             'member_type' => User::class,
         ]);
+
         $selfServiceTask = ProcessRequestToken::factory()->create([
             'status' => 'ACTIVE',
             'element_type' => 'task',
@@ -915,12 +917,14 @@ class TasksTest extends TestCase
             'is_self_service' => 1,
             'self_service_groups' => ['groups' => [strval($group->id)], 'users' => []],
         ]);
+
         $regularTask = ProcessRequestToken::factory()->create([
             'status' => 'ACTIVE',
             'element_type' => 'task',
             'user_id' => $user->id,
             'is_self_service' => 0,
         ]);
+
         $statusFilter = json_encode([
             [
                 'subject' => ['type' => 'Status'],
@@ -928,13 +932,16 @@ class TasksTest extends TestCase
                 'value' => 'Self Service',
             ],
         ]);
+
         $response = $this->actingAs($user, 'api')->get(route('api.tasks.index', [
             'pmql' => '(user_id = ' . $user->id . ') AND (status = "In Progress")',
             'advanced_filter' => $statusFilter,
         ]));
+
         $response->assertStatus(200);
         $data = $response->json('data');
         $returnedIds = collect($data)->pluck('id')->toArray();
+
         $this->assertContains($selfServiceTask->id, $returnedIds);
         $this->assertNotContains($regularTask->id, $returnedIds);
     }
