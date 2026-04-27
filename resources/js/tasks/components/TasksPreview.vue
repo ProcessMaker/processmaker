@@ -166,13 +166,14 @@
                   <b-button
                     v-if="allowReassignment"
                     v-b-tooltip.hover
-                    class="btn text-secondary icon-button"
+                    class="btn text-secondary icon-button preview-reassign-btn"
                     variant="light"
                     :aria-label="$t('Reassign')"
                     :title="$t('Reassign')"
+                    :disabled="isTaskCompleted"
                     @click="openReassignment()"
                   >
-                    <i class="fas fa-user-friends" />
+                    <i class="fas fa-user-friends preview-reassign-btn__icon" />
                   </b-button>
                   <b-button
                     v-b-tooltip.hover
@@ -284,6 +285,26 @@ export default {
   },
   mixins: [PreviewMixin, autosaveMixins, reassignMixin],
   props: ["tooltipButton", "propPreview"],
+  computed: {
+    /**
+     * TasksList replaces status with HTML; API uses CLOSED for completed.
+     */
+    isTaskCompleted() {
+      const status = this.task?.status;
+      if (status === undefined || status === null) {
+        return false;
+      }
+      if (typeof status === "string") {
+        if (status === "CLOSED" || status === "Completed") {
+          return true;
+        }
+        if (status.includes("badge-primary") && status.includes("status-primary")) {
+          return true;
+        }
+      }
+      return false;
+    },
+  },
   data() {
     return {
     };
@@ -414,6 +435,9 @@ export default {
         });
     },
     openReassignment() {
+      if (this.isTaskCompleted) {
+        return;
+      }
       this.showReassignment = !this.showReassignment;
     },
     getTaskDefinitionForReassignmentPermission() {
@@ -491,6 +515,25 @@ export default {
 .icon-button img {
   width: 16px;
   height: 16px;
+}
+
+/* Reassign disabled: keep same border as other icon-buttons; mute only the icon */
+.tasks-preview .preview-group-button .preview-reassign-btn.btn-light:disabled,
+.tasks-preview .preview-group-button .preview-reassign-btn.btn-light.disabled {
+  opacity: 1;
+  background-color: #fff;
+  border: 1px solid #ccc !important;
+  border-top-color: #ccc !important;
+  border-bottom-color: #ccc !important;
+  border-left-color: #ccc !important;
+  border-right-color: #ccc !important;
+  color: inherit;
+}
+
+.tasks-preview .preview-group-button .preview-reassign-btn.btn-light:disabled .preview-reassign-btn__icon,
+.tasks-preview .preview-group-button .preview-reassign-btn.btn-light.disabled .preview-reassign-btn__icon {
+  color: #adb5bd;
+  opacity: 0.55;
 }
 
 .arrow-button {
