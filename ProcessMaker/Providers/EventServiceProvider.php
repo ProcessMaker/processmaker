@@ -9,6 +9,7 @@ use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Events\AuthClientCreated;
 use ProcessMaker\Events\AuthClientDeleted;
 use ProcessMaker\Events\AuthClientUpdated;
+use ProcessMaker\Events\CaseDeleted;
 use ProcessMaker\Events\CategoryCreated;
 use ProcessMaker\Events\CategoryDeleted;
 use ProcessMaker\Events\CategoryUpdated;
@@ -23,6 +24,7 @@ use ProcessMaker\Events\FilesDownloaded;
 use ProcessMaker\Events\FilesUpdated;
 use ProcessMaker\Events\GroupCreated;
 use ProcessMaker\Events\GroupDeleted;
+use ProcessMaker\Events\GroupMembershipChanged;
 use ProcessMaker\Events\GroupUpdated;
 use ProcessMaker\Events\GroupUsersUpdated;
 use ProcessMaker\Events\PermissionUpdated;
@@ -65,6 +67,8 @@ use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Listeners\HandleActivityAssignedInterstitialRedirect;
 use ProcessMaker\Listeners\HandleActivityCompletedRedirect;
 use ProcessMaker\Listeners\HandleEndEventRedirect;
+use ProcessMaker\Listeners\InvalidatePermissionCacheOnGroupHierarchyChange;
+use ProcessMaker\Listeners\InvalidatePermissionCacheOnUpdate;
 use ProcessMaker\Listeners\InvalidateScreenCacheOnTranslationChange;
 use ProcessMaker\Listeners\SecurityLogger;
 use ProcessMaker\Listeners\SessionControlSettingsUpdated;
@@ -114,6 +118,12 @@ class EventServiceProvider extends ServiceProvider
         TranslationChanged::class => [
             InvalidateScreenCacheOnTranslationChange::class,
         ],
+        PermissionUpdated::class => [
+            InvalidatePermissionCacheOnUpdate::class,
+        ],
+        GroupMembershipChanged::class => [
+            InvalidatePermissionCacheOnGroupHierarchyChange::class,
+        ],
     ];
 
     /**
@@ -130,6 +140,7 @@ class EventServiceProvider extends ServiceProvider
             $this->app['events']->listen(AuthClientCreated::class, SecurityLogger::class);
             $this->app['events']->listen(AuthClientDeleted::class, SecurityLogger::class);
             $this->app['events']->listen(AuthClientUpdated::class, SecurityLogger::class);
+            $this->app['events']->listen(CaseDeleted::class, SecurityLogger::class);
             $this->app['events']->listen(CategoryCreated::class, SecurityLogger::class);
             $this->app['events']->listen(CategoryDeleted::class, SecurityLogger::class);
             $this->app['events']->listen(CategoryUpdated::class, SecurityLogger::class);

@@ -47,4 +47,20 @@ class ProcessRequestFactory extends Factory
             },
         ];
     }
+
+    public function withCaseNumber(int $caseNumber): self
+    {
+        $caseTitle = $this->faker->words(4, true);
+
+        return $this->state([
+            'case_number' => $caseNumber,
+            'case_title' => $caseTitle,
+            'case_title_formatted' => $caseTitle,
+        ])->afterCreating(function (ProcessRequest $request) use ($caseNumber, $caseTitle) {
+            $request->case_number = $caseNumber;
+            $request->case_title = $caseTitle;
+            $request->case_title_formatted = $caseTitle;
+            $request->save();
+        });
+    }
 }

@@ -48,16 +48,19 @@ class ThrowMessageEvent extends BpmnAction implements ShouldQueue
         $message->setId($this->messageRef);
         $eventDefinition->setPayload($message);
         $eventDefinition->setProperty('messageRef', $this->messageRef);
+        $eventDefinition->setProperty('target_catch_event_id', $this->elementId);
+        $eventDefinition->setProperty('target_instance_id', $this->instanceId);
+
+        if ($this->payload) {
+            foreach ($this->payload as $key => $value) {
+                $instance->getDataStore()->putData($key, $value);
+            }
+        }
 
         $this->engine->getEventDefinitionBus()->dispatchEventDefinition(
             null,
             $eventDefinition,
             null
         );
-        if ($this->payload) {
-            foreach ($this->payload as $key => $value) {
-                $instance->getDataStore()->putData($key, $value);
-            }
-        }
     }
 }

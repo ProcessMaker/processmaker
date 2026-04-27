@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Models;
 
+use ProcessMaker\Observers\GroupMemberObserver;
+
 /**
  * Represents a group Members definition.
  *
@@ -83,6 +85,30 @@ class GroupMember extends ProcessMakerModel
         'group_id', 'member_id', 'member_type',
     ];
 
+    /**
+     * Disable soft deletes for this model since the table doesn't have deleted_at column
+     */
+    public function getDeletedAtColumn()
+    {
+        return null;
+    }
+
+    /**
+     * Disable soft deletes for this model
+     */
+    public static function bootSoftDeletes()
+    {
+        // Do nothing - disable soft deletes
+    }
+
+    /**
+     * Override the query builder to not use soft deletes
+     */
+    public function newEloquentBuilder($query)
+    {
+        return new \Illuminate\Database\Eloquent\Builder($query);
+    }
+
     public static function rules()
     {
         return [
@@ -100,5 +126,13 @@ class GroupMember extends ProcessMakerModel
     public function group()
     {
         return $this->belongsTo(Group::class);
+    }
+
+    /**
+     * Boot the model and register observers
+     */
+    protected static function booted()
+    {
+        static::observe(GroupMemberObserver::class);
     }
 }

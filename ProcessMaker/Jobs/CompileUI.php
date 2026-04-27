@@ -41,7 +41,6 @@ class CompileUI implements ShouldQueue
     public function handle()
     {
         $setting = Setting::byKey('css-override');
-        \Log::debug('*** Got setting: ' . json_encode($setting));
         if ($setting) {
             $this->writeColors(json_decode($setting->attributesToArray()['config']['variables'], true));
             $this->writeFonts(json_decode($setting->attributesToArray()['config']['sansSerifFont']));

@@ -86,7 +86,7 @@ use Throwable;
  *   @OA\Property(property="self_service_tasks", type="object"),
  *   @OA\Property(property="signal_events", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="category", type="object", @OA\Schema(ref="#/components/schemas/ProcessCategory")),
- *   @OA\Property(property="manager_id", type="integer", format="id"),
+ *   @OA\Property(property="manager_id", type="array", @OA\Items(type="integer", format="id")),
  * ),
  * @OA\Schema(
  *   schema="Process",
@@ -589,7 +589,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      * Get the user to whom to assign a task.
      *
      * @param ActivityInterface $activity
-     * @param TokenInterface $token
+     * @param ProcessRequestToken $token
      *
      * @return User
      */
@@ -613,14 +613,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             if ($userByRule !== null) {
                 $user = $this->scalateToManagerIfEnabled($userByRule->id, $activity, $token, $assignmentType);
 
-                return $this->checkAssignment($token->processRequest, $activity, $assignmentType, $escalateToManager, $user ? User::where('id', $user)->first() : null);
+                return $this->checkAssignment($token->processRequest, $activity, $assignmentType, $escalateToManager, $user ? User::where('id', $user)->first() : null, $token);
             }
         }
 
         if (filter_var($assignmentLock, FILTER_VALIDATE_BOOLEAN) === true) {
             $user = $this->getLastUserAssignedToTask($activity->getId(), $token->getInstance()->getId());
             if ($user) {
-                return $this->checkAssignment($token->processRequest, $activity, $assignmentType, $escalateToManager, User::where('id', $user)->first());
+                return $this->checkAssignment($token->processRequest, $activity, $assignmentType, $escalateToManager, User::where('id', $user)->first(), $token);
             }
         }
 
@@ -665,7 +665,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
 
         $user = $this->scalateToManagerIfEnabled($user, $activity, $token, $assignmentType);
 
-        return $this->checkAssignment($token->getInstance(), $activity, $assignmentType, $escalateToManager, $user ? User::where('id', $user)->first() : null);
+        return $this->checkAssignment($token->getInstance(), $activity, $assignmentType, $escalateToManager, $user ? User::where('id', $user)->first() : null, $token);
     }
 
     /**
@@ -676,10 +676,11 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      * @param string $assignmentType
      * @param bool $escalateToManager
      * @param User|null $user
+     * @param ProcessRequestToken $token
      *
      * @return User|null
      */
-    private function checkAssignment(ProcessRequest $request, ActivityInterface $activity, $assignmentType, $escalateToManager, User $user = null)
+    private function checkAssignment(ProcessRequest $request, ActivityInterface $activity, $assignmentType, $escalateToManager, User $user = null, ProcessRequestToken $token = null)
     {
         $config = $activity->getProperty('config') ? json_decode($activity->getProperty('config'), true) : [];
         $selfServiceToggle = array_key_exists('selfService', $config ?? []) ? $config['selfService'] : false;
@@ -693,10 +694,15 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             if ($isSelfService && !$escalateToManager) {
                 return null;
             }
-            $user = $request->processVersion->manager;
+            $rule = new ProcessManagerAssigned();
+            if ($token === null) {
+                throw new ThereIsNoProcessManagerAssignedException($activity);
+            }
+            $user = $rule->getNextUser($activity, $token, $this, $request);
             if (!$user) {
                 throw new ThereIsNoProcessManagerAssignedException($activity);
             }
+            $user = User::find($user);
         }
 
         return $user;
@@ -1039,6 +1045,76 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
+     * This method is used to get the assignable users for a task based on the assignment rule.
+     * The assignment rule can be:
+     * - user_group: would assign it to those in the group or the Process Manager.
+     * - process_variable: would assign it to those in the group or the Process Manager.
+     * - rule_expression: would assign it to those in the group or the Process Manager.
+     * - previous_task_assignee: would assign it to the Process Manager.
+     * - requester: would assign it to the Process Manager.
+     * - process_manager: would assign it to the same Process Manager.
+     *
+     * @param ProcessRequestToken $processRequestToken
+     * @return array Array of user IDs, always returns a flat array (never nested)
+     */
+    public function getAssignableUsersByAssignmentType(ProcessRequestToken $processRequestToken): array
+    {
+        $assignmentRule = $processRequestToken->getAssignmentRule();
+        $managerIds = $processRequestToken->process->manager_id ?? [];
+
+        // Rules that only return process managers
+        $managerOnlyRules = ['previous_task_assignee', 'requester', 'process_manager'];
+        if (in_array($assignmentRule, $managerOnlyRules, true)) {
+            return $this->normalizeUserIds($managerIds);
+        }
+
+        // Rules that return assignable users plus process managers
+        $groupBasedRules = ['user_group', 'process_variable', 'rule_expression'];
+        if (in_array($assignmentRule, $groupBasedRules, true)) {
+            $users = [];
+
+            // Get assignable users from task assignments
+            if (!empty($processRequestToken->element_id)) {
+                $users = $this->getAssignableUsers($processRequestToken->element_id);
+            }
+
+            // Merge with manager IDs
+            if (!empty($managerIds)) {
+                $users = array_merge($users, $managerIds);
+            }
+
+            return $this->normalizeUserIds($users);
+        }
+
+        // Default: return empty array for unknown rules
+        return [];
+    }
+
+    /**
+     * Normalize user IDs to ensure a flat array of unique numeric values.
+     *
+     * @param array|null $userIds
+     * @return array
+     */
+    private function normalizeUserIds($userIds): array
+    {
+        if (empty($userIds)) {
+            return [];
+        }
+
+        // Flatten nested arrays and filter out invalid values
+        $normalized = array_filter(
+            array_values(Arr::flatten($userIds)),
+            function ($id) {
+                return !empty($id) && is_numeric($id);
+            }
+        );
+
+        // Remove duplicates and return
+        return array_values(array_unique($normalized));
+    }
+
+    /**
      * Get a consolidated list of users within groups.
      *
      * @param mixed $group_id
@@ -1147,7 +1223,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                     }
                 }
             } elseif (isset($startEvent['assignment']) && $startEvent['assignment'] === 'process_manager') {
-                $access = $this->manager && $this->manager->id && $this->manager->id === $user->id;
+                $access = in_array($user->id, $this->manager_id ?? []);
             } else {
                 $access = false;
             }

@@ -18,7 +18,11 @@ class BuildScriptExecutors extends Command
      *
      * @var string
      */
-    protected $signature = 'processmaker:build-script-executor {lang} {user?} {--rebuild}';
+    protected $signature = 'processmaker:build-script-executor
+                            {lang : The ID or language of the script executor}
+                            {user? : The user ID to send the broadcast event to}
+                            {--rebuild : Rebuild the docker image}
+                            {--build-args= : The build arguments for the docker build command}';
 
     /**
      * The console command description.
@@ -156,15 +160,46 @@ class BuildScriptExecutors extends Command
         $this->info('Building the docker executor');
 
         $image = $scriptExecutor->dockerImageName();
+        $cacheArg = $this->option('rebuild') ? '--no-cache ' : '';
         $command = Docker::command() .
-            " build --build-arg SDK_DIR=./sdk -t {$image} -f {$packagePath}/Dockerfile.custom {$packagePath}";
+            " build {$cacheArg}--build-arg SDK_DIR=./sdk -t {$image} -f {$packagePath}/Dockerfile.custom {$packagePath}";
 
+        $buildArgs = $this->getBuildArgs();
+
+        foreach ($buildArgs as $buildArg) {
+            $command .= ' ' . $buildArg;
+        }
+
+        $this->info("Running command: $command");
         $this->execCommand($command);
 
         $isNayra = $scriptExecutor->language === Base::NAYRA_LANG;
         if ($isNayra) {
             Base::bringUpNayraExecutor($this, $image);
         }
+    }
+
+    /**
+     * Get the build arguments for the docker build command.
+     *
+     * @return array
+     *   - '--build-arg <key>=<value>'
+     */
+    public function getBuildArgs(): array
+    {
+        $args = $this->option('build-args');
+
+        if ($args) {
+            $buildArgs = [];
+
+            foreach (explode(',', $args) as $arg) {
+                $buildArgs[] = '--build-arg ' . $arg;
+            }
+
+            return $buildArgs;
+        }
+
+        return [];
     }
 
     public function getDockerfileContent(ScriptExecutor $scriptExecutor): string

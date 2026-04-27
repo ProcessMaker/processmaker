@@ -134,6 +134,18 @@ class TaskController extends Controller
 
         $query = $this->indexBaseQuery($request);
 
+        // Get fields from request (sent by frontend)
+        // If not provided, don't apply select() to maintain backward compatibility (returns all columns)
+        $fields = $request->input('fields', '');
+        if ($fields) {
+            $selectedFields = explode(',', $fields);
+            // Ensure 'id' is always included for internal logic (e.g., inOverdueQuery at line ~186)
+            if (!in_array('id', $selectedFields)) {
+                $selectedFields[] = 'id';
+            }
+            $query = $query->select($selectedFields);
+        }
+
         $this->applyFilters($query, $request);
 
         $this->excludeNonVisibleTasks($query, $request);
@@ -142,18 +154,19 @@ class TaskController extends Controller
 
         $this->applyStatusFilter($query, $request);
 
+        // Apply process manager filter BEFORE PMQL to avoid conflicts with is_self_service filtering
+        if ($request->input('processesIManage') === 'true') {
+            $this->applyProcessManager($query, $user);
+        } else {
+            $this->applyForCurrentUser($query, $user);
+        }
+
         $this->applyPmql($query, $request, $user);
 
         $this->applyAdvancedFilter($query, $request);
 
-        $this->applyForCurrentUser($query, $user);
-
         // Apply filter overdue
         $query->overdue($request->input('overdue'));
-
-        if ($request->input('processesIManage') === 'true') {
-            $this->applyProcessManager($query, $user);
-        }
 
         // If only the total is being requested (by a Saved Search), send it now
         if ($getTotal === true) {
@@ -167,6 +180,11 @@ class TaskController extends Controller
         }
 
         $response = $this->applyUserFilter($response, $request, $user);
+
+        if ($response->total() > 0 && $request->input('processesIManage') === 'true') {
+            // enable user manager in cache
+            $this->enableUserManager($user);
+        }
 
         $inOverdueQuery = ProcessRequestToken::query()
             ->whereIn('id', $response->pluck('id'))
@@ -335,7 +353,8 @@ class TaskController extends Controller
             return new Resource($task->refresh());
         } elseif (!empty($request->input('user_id'))) {
             $userToAssign = $request->input('user_id');
-            $task->reassign($userToAssign, $request->user());
+            $comments = $request->input('comments');
+            $task->reassign($userToAssign, $request->user(), $comments);
 
             $taskRefreshed = $task->refresh();
 
@@ -420,7 +439,7 @@ class TaskController extends Controller
     }
 
     /**
-     * Only send data for a screen’s fields
+     * Only send data for a screen's fields
      *
      * @param ProcessRequestToken $task
      *

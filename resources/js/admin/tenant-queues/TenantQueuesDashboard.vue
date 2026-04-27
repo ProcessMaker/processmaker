@@ -53,9 +53,6 @@
         <b-card>
           <template #header>
             <div class="d-flex justify-content-between align-items-center">
-              <h5 class="card-title mb-0">
-                Tenants with Job Activity
-              </h5>
               <b-button
                 variant="outline-primary"
                 size="sm"

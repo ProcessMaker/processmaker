@@ -293,6 +293,8 @@ class ProcessTemplate implements TemplateInterface
         $processId = $rootLog['newId'];
 
         $process = Process::findOrFail($processId);
+        $process->user_id = Auth::id();
+        $process->save();
 
         $this->syncLaunchpadAssets($request, $process);
 
@@ -358,7 +360,6 @@ class ProcessTemplate implements TemplateInterface
         $template = ProcessTemplates::where('id', $id)->firstOrFail();
         $oldTemplateName = $template->name;
         $template->fill($request->except('id'));
-        $template->user_id = Auth::user()->id;
         $process = Process::where('name', $oldTemplateName)->where('is_template', 1)->first();
         if ($process) {
             $process->fill($request->except('id'));
@@ -406,11 +407,11 @@ class ProcessTemplate implements TemplateInterface
         // Extract svg from payload
         $svg = Arr::get($payload, 'export.' . $payload['root'] . '.attributes.svg');
 
-        // Update the process template manifest, svg, and user_id
+        // Update the process template manifest, svg, and updated_by
         $processTemplate = ProcessTemplates::where('name', $data['name'])->update([
             'manifest' => json_encode($payload),
             'svg' => $svg,
-            'user_id' => \Auth::user()->id,
+            'updated_by' => \Auth::user()->id,
         ]);
 
         return response()->json();

@@ -140,7 +140,7 @@ class TaskController extends Controller
         $element = $task->getDefinition(true);
         $screenFields = $screenVersion ? $screenVersion->screenFilteredFields() : [];
         $taskDraftsEnabled = TaskDraft::draftsEnabled();
-
+        $isSmartExtractTask = $task->element_name === 'Manual Document Review';
         // Remove screen parent to reduce the size of the response
         $screen = $task->screen;
         $screen['parent'] = null;
@@ -190,6 +190,25 @@ class TaskController extends Controller
                 'datetime_format',
             ]);
             $userConfiguration = (new UserConfigurationController())->index();
+            $hitlEnabled = config('smart-extract.hitl_enabled', false) && $isSmartExtractTask;
+
+            // Build the iframe source
+            $iframeSrc = null;
+            if ($hitlEnabled) {
+                $dashboardUrl = config('smart-extract.dashboard_url');
+                $requestData = $task->processRequest->data ?? [];
+
+                $documentToken = $requestData['documentToken'] ?? null;
+                $fileId = $requestData['fileId'] ?? null;
+
+                if ($documentToken && $fileId && !empty($dashboardUrl)) {
+                    $queryParams = http_build_query([
+                        'documentToken' => $documentToken,
+                        'fileId' => $fileId,
+                    ]);
+                    $iframeSrc = $dashboardUrl . '?' . $queryParams;
+                }
+            }
 
             return view('tasks.edit', [
                 'task' => $task,
@@ -204,6 +223,8 @@ class TaskController extends Controller
                 'screenFields' => $screenFields,
                 'taskDraftsEnabled' => $taskDraftsEnabled,
                 'userConfiguration' => $userConfiguration,
+                'hitlEnabled' => $hitlEnabled,
+                'iframeSrc' => $iframeSrc,
             ]);
         }
     }
@@ -243,7 +264,17 @@ class TaskController extends Controller
             // Review if the autentication is required
             if ($abe->require_login && Auth::user()->username === AnonymousUser::ANONYMOUS_USERNAME) {
                 $request->session()->put('url.intended', url()->full());
-                $cookie = cookie('processmaker_intended', url()->full(), 10, '/');
+                $cookie = cookie(
+                    'processmaker_intended',
+                    url()->full(),
+                    10,
+                    '/',
+                    null,
+                    true,
+                    true,
+                    false,
+                    config('session.same_site') ?: 'lax'
+                );
 
                 return redirect('login')->withCookie($cookie);
             }

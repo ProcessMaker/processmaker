@@ -150,7 +150,8 @@ export default {
       if (this.setting?.ui?.isNotEmpty) {
         return this.transformed !== "" && this.transformed !== null;
       }
-      if (this.setting.key.startsWith("white_list.")) {
+      const settingKey = this.setting?.key ?? "";
+      if (settingKey.startsWith("white_list.")) {
         return this.validateURL(this.transformed);
       }
       return true;
@@ -190,7 +191,8 @@ export default {
       if (this.setting.ui?.isNotEmpty && (this.transformed === "" || this.transformed === null)) {
         return;
       }
-      if (this.setting.key.startsWith("white_list.")) {
+      const settingKey = this.setting?.key ?? "";
+      if (settingKey.startsWith("white_list.")) {
         if (!this.validateURL(this.transformed)) {
           return;
         }

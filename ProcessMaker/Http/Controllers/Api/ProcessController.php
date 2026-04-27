@@ -19,6 +19,7 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Api\GroupController;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Requests\ProcessUpdateRequest;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Process as Resource;
@@ -429,7 +430,7 @@ class ProcessController extends Controller
 
         //set manager id
         if ($request->has('manager_id')) {
-            $process->manager_id = $request->input('manager_id', null);
+            $process->manager_id = $this->validateMaxManagers($request);
         }
 
         if (isset($data['bpmn'])) {
@@ -463,7 +464,7 @@ class ProcessController extends Controller
     /**
      * Updates the current element.
      *
-     * @param Request $request
+     * @param ProcessUpdateRequest $request
      * @param Process $process
      * @return ResponseFactory|Response
      *
@@ -494,21 +495,13 @@ class ProcessController extends Controller
      *     ),
      * )
      */
-    public function update(Request $request, Process $process)
+    public function update(ProcessUpdateRequest $request, Process $process)
     {
         $lastVersion = $process->getDraftOrPublishedLatestVersion();
         $process->bpmn = $lastVersion->bpmn;
         $process->alternative = $lastVersion->alternative;
         $process->stages = $lastVersion->stages;
 
-        $rules = Process::rules($process);
-        if (!$request->has('name')) {
-            unset($rules['name']);
-        }
-        if ($request->has('default_for_anon_webentry')) {
-            $rules = ['language_code' => 'required_if:default_for_anon_webentry,true'];
-        }
-        $request->validate($rules);
         $original = $process->getOriginal();
 
         // Replace html entities with the correct characters
@@ -542,7 +535,7 @@ class ProcessController extends Controller
 
         $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id', 'projects'));
         if ($request->has('manager_id')) {
-            $process->manager_id = $request->input('manager_id', null);
+            $process->manager_id = $this->validateMaxManagers($request);
         }
 
         if ($request->has('user_id')) {
@@ -619,6 +612,55 @@ class ProcessController extends Controller
         ProcessPublished::dispatch($process->refresh(), $changes, $original);
 
         return new Resource($process->refresh());
+    }
+
+    private function validateMaxManagers(Request $request)
+    {
+        $managerIds = $request->input('manager_id', []);
+
+        // Handle different input types
+        if (is_string($managerIds)) {
+            // If it's a string, try to decode it as JSON
+            if (empty($managerIds)) {
+                $managerIds = [];
+            } else {
+                $decoded = json_decode($managerIds, true);
+
+                // Handle JSON decode failure
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    throw new \Illuminate\Validation\ValidationException(
+                        validator([], []),
+                        ['manager_id' => [__('Invalid JSON format for manager_id')]]
+                    );
+                }
+
+                $managerIds = $decoded;
+            }
+        }
+
+        // Ensure we have an array
+        if (!is_array($managerIds)) {
+            // If it's a single value (not array), convert to array
+            $managerIds = [$managerIds];
+        }
+
+        // Filter out null, empty values and validate each manager ID
+        $managerIds = array_filter($managerIds, function ($id) {
+            return $id !== null && $id !== '' && is_numeric($id) && $id > 0;
+        });
+
+        // Re-index the array to remove gaps from filtered values
+        $managerIds = array_values($managerIds);
+
+        // Validate maximum number of managers
+        if (count($managerIds) > 10) {
+            throw new \Illuminate\Validation\ValidationException(
+                validator([], []),
+                ['manager_id' => [__('Maximum number of managers is :max', ['max' => 10])]]
+            );
+        }
+
+        return $managerIds;
     }
 
     /**
@@ -1714,7 +1756,7 @@ class ProcessController extends Controller
                     }
                     break;
                 case 'process_manager':
-                    $response = $currentUser === $process->manager_id;
+                    $response = in_array($currentUser, $process->manager_id ?? []);
                     break;
             }
         }

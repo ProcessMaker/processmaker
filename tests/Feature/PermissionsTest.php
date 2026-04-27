@@ -82,6 +82,7 @@ class PermissionsTest extends TestCase
         // Attach the permission to our group.
         $group->permissions()->attach(Permission::byName($permission)->id);
         $this->user->refresh();
+        $this->user->invalidatePermissionCache();
 
         // Our group now has permission, so this should return 200.
         $response = $this->webCall('GET', $url);

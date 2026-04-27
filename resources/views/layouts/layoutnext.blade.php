@@ -15,6 +15,8 @@
     <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
     <meta name="screen-cache-enabled" content="{{ config('app.screen.cache_enabled') ? 'true' : 'false' }}">
     <meta name="screen-cache-timeout" content="{{ config('app.screen.cache_timeout') }}">
+    <meta name="screen-secure-handler-toggle-visible" content="{{ config('app.screen.show_secure_handler_toggle') }}">
+    <meta name="screen-merge-draft-on-restore" content="{{ config('app.screen.merge_draft_on_restore') ? 'true' : 'false' }}">
     <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
     @include('layouts.common-meta')
     @if(Auth::user())
@@ -132,6 +134,7 @@
 @endif
 
 @yield('js')
+@stack('scripts')
 
 @isset($addons)
   @foreach ($addons as $addon)

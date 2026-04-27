@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
+use ProcessMaker\Http\Controllers\Api\Actions\Cases\DeleteCase;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -12,7 +14,7 @@ class CaseController extends Controller
     /**
      * Get stage information for cases
      */
-    public function getStagePerCase($case_number = null)
+    public function getStagePerCase(?string $case_number = null): JsonResponse
     {
         if (!empty($case_number)) {
             $responseData = $this->getSpecificCaseStages($case_number);
@@ -32,11 +34,55 @@ class CaseController extends Controller
     }
 
     /**
+     * Delete a case and its related requests.
+     *
+     * @param string $case_number
+     * @return JsonResponse
+     *
+     * @OA\Delete(
+     *     path="/cases/{case_number}",
+     *     summary="Delete a case and its related requests",
+     *     operationId="deleteCase",
+     *     tags={"Cases"},
+     *     @OA\Parameter(
+     *         description="Case number to delete",
+     *         in="path",
+     *         name="case_number",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
+     *     @OA\Response(
+     *         response=409,
+     *         description="Conflict"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     ),
+     * )
+     */
+    public function destroy(string $case_number): JsonResponse
+    {
+        (new DeleteCase)($case_number);
+
+        return response()->json([], 204);
+    }
+
+    /**
      * Get specific case stages information
      * @param string $caseNumber The unique identifier of the case to retrieve stages for
      * @return array
      */
-    private function getSpecificCaseStages($caseNumber)
+    private function getSpecificCaseStages(string $caseNumber): array
     {
         $allRequests = ProcessRequest::where('case_number', $caseNumber)->get();
         // Check if any requests were found
@@ -75,7 +121,7 @@ class CaseController extends Controller
      * @param string|null $status The status to set for the stages
      * @return array
      */
-    private function getDefaultCaseStages($status = null)
+    private function getDefaultCaseStages(?string $status = null): array
     {
         return [
             [
@@ -100,7 +146,7 @@ class CaseController extends Controller
      * @param string $stageName The name of the stage ('In Progress' or 'Completed')
      * @return string The mapped status
      */
-    private function mapStatus($status, $stageName)
+    private function mapStatus(?string $status, string $stageName): string
     {
         if ($status === 'COMPLETED') {
             return 'Done';
@@ -120,11 +166,11 @@ class CaseController extends Controller
     /**
      * Get the stages summary based on the provided request.
      *
-     * @param $requestId
+     * @param ProcessRequest $request
      * @return array An array of stage results, each containing the stage ID, name, status,
      *               and completion date.
      */
-    private function getStagesSummary(ProcessRequest $request)
+    private function getStagesSummary(ProcessRequest $request): array
     {
         $requestId = $request->id;
         $processId = $request->process_id;

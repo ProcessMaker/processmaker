@@ -12,6 +12,7 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
@@ -38,8 +39,12 @@ class ProcessExporter extends ExporterBase
             $this->addDependent('user', $process->user, UserExporter::class);
         }
 
-        if ($process->manager) {
-            $this->addDependent('manager', $process->manager, UserExporter::class, null, ['properties']);
+        $managers = $process->getManagers();
+
+        if ($managers) {
+            foreach ($managers as $manager) {
+                $this->addDependent('manager', $manager, UserExporter::class, null, ['properties']);
+            }
         }
 
         $this->exportScreens();
@@ -99,9 +104,11 @@ class ProcessExporter extends ExporterBase
             $process->user_id = User::where('is_administrator', true)->firstOrFail()->id;
         }
 
+        $managers = [];
         foreach ($this->getDependents('manager') as $dependent) {
-            $process->manager_id = $dependent->model->id;
+            $managers[] = $dependent->model->id;
         }
+        $process->manager_id = $managers;
 
         // Avoid associating the category from the manifest with processes imported from templates.
         // Use the user-selected category instead.
@@ -541,6 +548,9 @@ class ProcessExporter extends ExporterBase
     public function importProcessLaunchpad(): void
     {
         foreach ($this->getDependents('process_launchpad') as $launchpad) {
+            if (ProcessLaunchpad::where('process_id', $this->model->id)->exists()) {
+                continue;
+            }
             $launchpad->model->setAttribute('process_id', $this->model->id);
             $launchpad->model->saveOrFail();
         }

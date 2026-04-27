@@ -5,7 +5,13 @@
             $loginLogo = \ProcessMaker\Models\Setting::getLogin();
         @endphp
         <b-navbar-brand href="#" class="d-lg-none pl-2"><img class="navbar-logo" src={{$loginLogo}}></b-navbar-brand>
-        <b-navbar-toggle class="ml-auto" :target="['nav-collapse', 'breadcrumbs-collapse']"></b-navbar-toggle>
+        <b-navbar-toggle class="ml-auto" :target="['nav-collapse', 'breadcrumbs-collapse']" @click="toggleNavbar">
+            <template #default="{ expanded }">
+                <span class="bar" :class="{ 'rotate-top': isNavbarExpanded }"></span>
+                <span class="bar" :class="{ 'fade-out': isNavbarExpanded }"></span>
+                <span class="bar" :class="{ 'rotate-bottom': isNavbarExpanded }"></span>
+            </template>
+        </b-navbar-toggle>
     </div>
 
     <div class="d-flex d-lg-none w-100">
@@ -24,7 +30,7 @@
                             :variant="messageVariant" :callback="messageCallback"
                             @close="messageShow=false">
         </message-modal>
-        <session-modal id="sessionModal" :shown="sessionShow" :title="sessionTitle" :message="sessionMessage" :time="sessionTime" :warn-seconds="sessionWarnSeconds"
+        <session-modal id="sessionModal" :shown="sessionShow" :title="sessionTitle" :message="sessionMessage" :time="sessionTime" :warn-seconds="sessionWarnSeconds" :is-renewing="sessionIsRenewing"
                 @close="sessionShow=false">
         </session-modal>
         <div v-if="alerts.length > 0" class="alert-wrapper">
@@ -172,6 +178,27 @@
 
 </div>
 <style lang="scss" scoped>
+    .bar {
+        display: block;
+        width: 25px;
+        height: 3px;
+        margin: 5px auto;
+        background-color: rgba(114, 128, 146, 0.8);
+        transition: all 0.3s ease;
+    }
+
+    .rotate-top {
+        transform: rotate(45deg) translate(7px, 5px);
+    }
+
+    .rotate-bottom {
+        transform: rotate(-45deg) translate(6px, -5px);
+    }
+
+    .fade-out {
+        opacity: 0;
+    }
+
     .separator {
         border-right: 1px solid rgb(227, 231, 236);
         height: 30px;

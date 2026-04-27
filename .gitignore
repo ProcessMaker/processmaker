@@ -52,3 +52,4 @@ devhub/pm-font/dist
 test-db-snapshot.db
 snapshot_*.db
 storage/transitions
+.envrc

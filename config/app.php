@@ -41,6 +41,9 @@ return [
     // The timeout length for API calls, in milliseconds (0 for no timeout)
     'api_timeout' => env('API_TIMEOUT', 5000),
 
+    // Hide server headers for security (prevents information disclosure)
+    'hide_server_headers' => env('HIDE_SERVER_HEADERS', true),
+
     // Disables PHP execution in the storage directory
     // TODO Is this config value still used anywhere? :)
     'disable_php_upload_execution' => env('DISABLE_PHP_UPLOAD_EXECUTION', 0),
@@ -176,7 +179,6 @@ return [
          */
         Laravel\Passport\PassportServiceProvider::class,
         Laravel\Scout\ScoutServiceProvider::class,
-        TeamTNT\Scout\TNTSearchScoutServiceProvider::class,
         Jenssegers\Agent\AgentServiceProvider::class,
 
         /**
@@ -242,6 +244,8 @@ return [
     'screen' => [
         'cache_enabled' => env('SCREEN_CACHE_ENABLED', false),
         'cache_timeout' => env('SCREEN_CACHE_TIMEOUT', 5000), // timeout in milliseconds
+        'show_secure_handler_toggle' => filter_var(env('SCREEN_SECURE_HANDLER_TOGGLE_VISIBLE', false), FILTER_VALIDATE_BOOLEAN),
+        'merge_draft_on_restore' => filter_var(env('SCREEN_MERGE_DRAFT_ON_RESTORE', true), FILTER_VALIDATE_BOOLEAN),
     ],
 
     'queue_imports' => env('QUEUE_IMPORTS', true),
@@ -253,6 +257,7 @@ return [
     'force_https' => env('FORCE_HTTPS', true),
 
     'nayra_docker_network' => env('NAYRA_DOCKER_NETWORK', 'host'),
+    'nayra_port' => env('NAYRA_PORT', 8080),
 
     // Process Request security log rate limit: 1 per day (86400 seconds)
     'process_request_errors_rate_limit' => env('PROCESS_REQUEST_ERRORS_RATE_LIMIT', 1),
@@ -296,5 +301,10 @@ return [
 
     'multitenancy' => env('MULTITENANCY', false),
 
+    'reassign_restrict_to_assignable_users' => env('REASSIGN_RESTRICT_TO_ASSIGNABLE_USERS', true),
     'resources_core_path' => base_path('resources-core'),
+    'scheduler' => [
+        'claim_timeout_minutes' => env('SCHEDULER_CLAIM_TIMEOUT_MINUTES', 5),
+        'bpmn_timer_overlap_minutes' => env('SCHEDULER_BPMN_TIMER_OVERLAP_MINUTES', 5),
+    ],
 ];

@@ -49,7 +49,7 @@ trait ExtendedPMQL
      *
      * @return mixed
      */
-    public function scopePMQL(Builder $builder, string $query, callable $callback = null, User $user = null)
+    public function scopePMQL(Builder $builder, string $query, ?callable $callback = null, ?User $user = null)
     {
         if (!$callback) {
             // If a callback isn't passed to the scope, we handle it here
@@ -97,7 +97,7 @@ trait ExtendedPMQL
      *
      * @return mixed
      */
-    private function handle(Expression $expression, Builder $builder, User $user = null)
+    private function handle(Expression $expression, Builder $builder, ?User $user = null)
     {
         // Setup our needed variables
         $field = $expression->field->field();
