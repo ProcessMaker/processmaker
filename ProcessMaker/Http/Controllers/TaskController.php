@@ -264,7 +264,17 @@ class TaskController extends Controller
             // Review if the autentication is required
             if ($abe->require_login && Auth::user()->username === AnonymousUser::ANONYMOUS_USERNAME) {
                 $request->session()->put('url.intended', url()->full());
-                $cookie = cookie('processmaker_intended', url()->full(), 10, '/');
+                $cookie = cookie(
+                    'processmaker_intended',
+                    url()->full(),
+                    10,
+                    '/',
+                    null,
+                    true,
+                    true,
+                    false,
+                    config('session.same_site') ?: 'lax'
+                );
 
                 return redirect('login')->withCookie($cookie);
             }

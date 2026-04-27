@@ -122,7 +122,16 @@
         watch: {
             selectedTemplateOptions() {
                 this.$emit('template-options-selected', this.selectedTemplateOptions);
-            }
+            },
+            template: {
+                deep: true,
+                handler() {
+                    this.templateData = this.template?.template ? this.template.template : this.template;
+                    this.type = this.templateData?.type;
+                    this.showCssPreview = false;
+                    this.code = "";
+                },
+            },
         },
         methods: {
             hidePreview() {

@@ -91,6 +91,39 @@
           :assetId="assetId"
           :assetName="assetName"
         />
+        <add-to-bundle :asset-type="bundleAssetType" />
+        <b-modal ref="duplicateScriptModalRef" :title="$t('Copy Script')" centered header-close-content="&times;">
+          <form>
+            <div class="form-group">
+              <label for="dup-script-title">{{ $t('Name') }}<small class="ml-1">*</small></label>
+              <input
+                id="dup-script-title"
+                type="text"
+                class="form-control"
+                v-model="dupScript.title"
+                v-bind:class="{ 'is-invalid': errors.title }"
+              />
+              <div class="invalid-feedback" role="alert" v-if="errors.title">{{ errors.title[0] }}</div>
+            </div>
+            <div class="form-group">
+              <category-select
+                :label="$t('Category')"
+                api-get="script_categories"
+                api-list="script_categories"
+                v-model="dupScript.script_category_id"
+                :errors="errors.script_category_id"
+              />
+            </div>
+            <div class="form-group">
+              <label for="dup-script-description">{{ $t('Description') }}</label>
+              <textarea id="dup-script-description" class="form-control" rows="3" v-model="dupScript.description" />
+            </div>
+          </form>
+          <div slot="modal-footer" class="w-100 text-right">
+            <button type="button" class="btn btn-outline-secondary" @click="hideDuplicateScriptModal">{{ $t('Cancel') }}</button>
+            <button type="button" @click="onSubmitDuplicateScript" class="btn btn-secondary ml-2">{{ $t('Save') }}</button>
+          </div>
+        </b-modal>
       </div>
     </div>
   </div>
@@ -112,6 +145,8 @@ import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
 import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
+import AddToBundle from "../../components/shared/AddToBundle.vue";
+import CategorySelect from "../categories/components/CategorySelect.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -121,6 +156,8 @@ export default {
     CreateTemplateModal,
     CreatePmBlockModal,
     EllipsisMenu,
+    AddToBundle,
+    CategorySelect,
   },
   mixins: [
     datatableMixin,
@@ -170,6 +207,7 @@ export default {
       assetId: "",
       processTemplateName: "",
       pmBlockName: "",
+      bundleAssetType: "ProcessMaker\\Models\\Process",
     };
   },
   methods: {
@@ -216,17 +254,20 @@ export default {
     getActions(data) {
       switch (data.asset_type) {
         case "Process":
-          return this.processActions;
+          return this.addBundleAction(this.processActions, 7);
         case "Screen":
-          return this.screenActions.filter((object) => object.value !== "duplicate-item");
+          return this.addBundleAction(
+            this.screenActions.filter((object) => object.value !== "duplicate-item"),
+            3,
+          );
         case "Script":
-          return this.scriptActions;
+          return this.addBundleAction(this.scriptActions, 3);
         case "Data Source":
-          return this.dataSourceActions;
+          return this.addBundleAction(this.dataSourceActions, 2);
         case "Decision Table":
-          return this.decisionTableActions;
+          return this.addBundleAction(this.decisionTableActions, 2);
         case "Flow Genie":
-          return this.flowGenieActions;
+          return this.addBundleAction(this.flowGenieActions, 2);
         default:
           return []; // Handle unknown asset types as needed
       }
@@ -266,6 +307,15 @@ export default {
      * go to navigate action
      */
     onNavigate(action, data) {
+      if (action.value === "add-to-bundle") {
+        const assetType = this.getBundleAssetType(data.asset_type);
+        if (!assetType) {
+          return;
+        }
+        this.bundleAssetType = assetType;
+        this.$root.$emit("add-to-bundle", data);
+        return;
+      }
       switch (data.asset_type) {
         case "Process":
           this.assetType = "process";
@@ -319,6 +369,60 @@ export default {
       this.processId = id;
       this.pmBlockName = name;
       this.$refs["create-pm-block-modal"].show();
+    },
+    addBundleAction(actions, index) {
+      const addToBundleAction = {
+        value: "add-to-bundle",
+        content: "Add to Bundle",
+        icon: "fp-add-outlined",
+        permission: "admin",
+      };
+      return actions.toSpliced(index, 0, addToBundleAction);
+    },
+    getBundleAssetType(assetType) {
+      switch (assetType) {
+        case "Process":
+          return "ProcessMaker\\Models\\Process";
+        case "Screen":
+          return "ProcessMaker\\Models\\Screen";
+        case "Script":
+          return "ProcessMaker\\Models\\Script";
+        case "Data Source":
+          return "ProcessMaker\\Packages\\Connectors\\DataSources\\Models\\DataSource";
+        case "Decision Table":
+          return "ProcessMaker\\Package\\PackageDecisionEngine\\Models\\DecisionTable";
+        case "Flow Genie":
+          return "ProcessMaker\\Package\\PackageAi\\Models\\FlowGenie";
+        case "Collection":
+          return "ProcessMaker\\Plugins\\Collections\\Models\\Collection";
+        case "PM Block":
+          return "ProcessMaker\\Package\\PackagePmBlocks\\Models\\PmBlock";
+        default:
+          return null;
+      }
+    },
+    /**
+     * Open the duplicate script modal (required by scriptNavigation mixin for "Copy").
+     */
+    showModal() {
+      this.$refs.duplicateScriptModalRef.show();
+    },
+    hideDuplicateScriptModal() {
+      this.$refs.duplicateScriptModalRef.hide();
+    },
+    onSubmitDuplicateScript() {
+      window.ProcessMaker.apiClient
+        .put("scripts/" + this.dupScript.id + "/duplicate", this.dupScript)
+        .then(() => {
+          ProcessMaker.alert(this.$t("The script was duplicated."), "success");
+          this.hideDuplicateScriptModal();
+          this.fetch();
+        })
+        .catch((error) => {
+          if (error.response?.status === 422 && error.response?.data?.errors) {
+            this.errors = error.response.data.errors;
+          }
+        });
     },
   },
 };

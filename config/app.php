@@ -179,7 +179,6 @@ return [
          */
         Laravel\Passport\PassportServiceProvider::class,
         Laravel\Scout\ScoutServiceProvider::class,
-        TeamTNT\Scout\TNTSearchScoutServiceProvider::class,
         Jenssegers\Agent\AgentServiceProvider::class,
 
         /**
