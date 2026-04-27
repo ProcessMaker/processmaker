@@ -451,7 +451,10 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         $setting = Setting::byKey('indexed-search');
         if ($setting && $setting->config['enabled'] === true) {
             if (is_numeric($filter)) {
-                $query->whereIn('id', [$filter]);
+                $query->where(function ($query) use ($filter) {
+                    $query->whereIn('id', [$filter])
+                        ->orWhere('case_number', $filter);
+                });
             } else {
                 $matches = self::search($filter)->take(10000)->get()->pluck('id');
                 $query->whereIn('id', $matches);
@@ -465,7 +468,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
                     ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
                     ->orWhere('initiated_at', 'like', $filter)
                     ->orWhere('created_at', 'like', $filter)
-                    ->orWhere('updated_at', 'like', $filter);
+                    ->orWhere('updated_at', 'like', $filter)
+                    ->orWhere('case_number', 'like', $filter);
             });
         }
 
