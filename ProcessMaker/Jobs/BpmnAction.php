@@ -194,13 +194,13 @@ abstract class BpmnAction implements ShouldQueue
             for ($tries = 0; $tries < $maxRetries; $tries++) {
                 $currentLock = $this->currentLock($ids);
                 if (!$currentLock) {
-                    if (ProcessRequest::find($instanceId)) {
+                    if (ProcessRequest::query()->whereKey($instanceId)->exists()) {
                         $lock = $this->requestLock($ids);
                     } else {
                         throw new Exception('Unable to lock instance #' . $this->instanceId . ': Request does not exists');
                     }
                 } elseif ($lock->id == $currentLock->id) {
-                    $instance = ProcessRequest::findOrFail($instanceId);
+                    $instance = $this->findProcessRequestForBpmnAction($instanceId);
                     $this->activateLock($lock);
 
                     return $instance;
@@ -231,7 +231,7 @@ abstract class BpmnAction implements ShouldQueue
 
         for ($attempt = 0; $attempt < $totalAttempts; $attempt++) {
             try {
-                $instance = ProcessRequest::findOrFail($instanceId);
+                $instance = $this->findProcessRequestForBpmnAction($instanceId);
 
                 return $instance;
             } catch (ModelNotFoundException $e) {
@@ -342,6 +342,23 @@ abstract class BpmnAction implements ShouldQueue
         $microseconds = ($milliseconds % 1000) * 1000;
         sleep($seconds);
         usleep($microseconds);
+    }
+
+    /**
+     * Load ProcessRequest with relations used when wiring the BPMN engine (reduces N+1 during completeTask / other BPMN jobs).
+     *
+     * @param  int|string  $instanceId
+     */
+    private function findProcessRequestForBpmnAction($instanceId): ProcessRequest
+    {
+        return ProcessRequest::query()
+            ->with([
+                'process',
+                'processVersion',
+                'collaboration',
+            ])
+            ->whereKey($instanceId)
+            ->firstOrFail();
     }
 
     public function __destruct()

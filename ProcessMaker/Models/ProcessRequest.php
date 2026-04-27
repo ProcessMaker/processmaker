@@ -848,8 +848,12 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     public function mergeLatestStoredData()
     {
         $store = $this->getDataStore();
-        $latest = self::select('data')->find($this->getId());
-        $this->data = $store->updateArray($latest->data);
+        // Read only the JSON column without hydrating a full ProcessRequest row (called often during BPMN transitions).
+        $latestData = static::query()->whereKey($this->getKey())->value('data');
+        if (!is_array($latestData)) {
+            $latestData = [];
+        }
+        $this->data = $store->updateArray($latestData);
 
         return $this->data;
     }
