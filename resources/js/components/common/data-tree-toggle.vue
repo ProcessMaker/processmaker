@@ -12,12 +12,11 @@
     <div class="mb-2 custom-control custom-switch switch-padding">
       <input
         id="show_tree"
-        v-model="value"
         type="checkbox"
         :data-cy="value ? 'treeViewToggle-checked' : 'treeViewToggle'"
         class="custom-control-input"
         :checked="value"
-        @input="emitSwitchValue"
+        @change="emitSwitchValue"
       >
       <label
         for="show_tree"

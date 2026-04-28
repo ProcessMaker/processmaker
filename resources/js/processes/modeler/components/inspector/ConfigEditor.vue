@@ -85,7 +85,7 @@
                     data-cy="editorViewFrame"
                     language="json"
                     class="editor"
-                    @focusout.native="handleBlur"
+                    @focusout="handleBlur"
                   />
                 </div>
               </b-card-body>

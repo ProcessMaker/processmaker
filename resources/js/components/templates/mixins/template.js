@@ -1,14 +1,4 @@
-import Vue from "vue";
-
-Vue.filter("str_limit", (value, size) => {
-  if (!value) return "";
-  value = value.toString();
-
-  if (value.length <= size) {
-    return value;
-  }
-  return `${value.substr(0, size)}...`;
-});
+import { strLimit } from "../../../lib/strLimit";
 
 export default {
   data() {
@@ -19,6 +9,7 @@ export default {
   mounted() {
   },
   methods: {
+    strLimit,
     showDetails() {
       this.$emit("show-details", { template: this.template });
     },

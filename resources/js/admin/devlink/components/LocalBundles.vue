@@ -1,9 +1,9 @@
 <script setup>
 import {
-  ref, onMounted, getCurrentInstance, computed, reactive, set,
+  ref, onMounted, getCurrentInstance, computed, reactive,
 } from "vue";
 import debounce from "lodash/debounce";
-import { useRouter, useRoute } from "vue-router/composables";
+import { useRouter, useRoute } from "vue-router";
 import Origin from "./Origin.vue";
 import VersionCheck from "./VersionCheck.vue";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
@@ -43,7 +43,7 @@ const customButton = {
 };
 
 const setUpdateAvailable = (bundle, updateAvailable) => {
-  set(updatesAvailable, bundle.id, updateAvailable);
+  updatesAvailable[bundle.id] = updateAvailable;
 };
 
 onMounted(() => {

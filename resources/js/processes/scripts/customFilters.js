@@ -1,5 +1,4 @@
-// PHP
-Vue.filter("php", (value) => {
+function php(value) {
   value = value.split("\r");
   let format = "";
   const content = [];
@@ -21,10 +20,9 @@ Vue.filter("php", (value) => {
   });
 
   return `${content.join("\n")}\n\n\ return [];`;
-});
+}
 
-// JAVASCRIPT
-Vue.filter("javascript", (value) => {
+function javascript(value) {
   value = value.split("\r");
   let format = "";
   const content = [];
@@ -46,10 +44,9 @@ Vue.filter("javascript", (value) => {
   });
 
   return `${content.join("\n")}\n\n\ return {};`;
-});
+}
 
-// LUA
-Vue.filter("lua", (value) => {
+function lua(value) {
   value = value.split("\r");
   let format = "";
   const content = [];
@@ -71,10 +68,9 @@ Vue.filter("lua", (value) => {
   });
 
   return `${content.join("\n")}\n\n\ return {};`;
-});
+}
 
-// C#
-Vue.filter("csharp", (value) => {
+function csharp(value) {
   value = value.split("\r");
   let format = "";
   const content = [];
@@ -96,10 +92,9 @@ Vue.filter("csharp", (value) => {
   });
 
   return `${content.join("\n")}\n\n\ return {};`;
-});
+}
 
-// JAVA
-Vue.filter("java", (value) => {
+function java(value) {
   value = value.split("\r");
   let format = "";
   const content = [];
@@ -121,10 +116,9 @@ Vue.filter("java", (value) => {
   });
 
   return `${content.join("\n")}\n\n\ return {};`;
-});
+}
 
-// Python
-Vue.filter("python", (value) => {
+function python(value) {
   value = value.split("\r");
   let format = "";
   const content = [];
@@ -144,4 +138,13 @@ Vue.filter("python", (value) => {
   content.push("#  output = {\"name\": user.fullname}");
 
   return `${content.join("\n")}\n\noutput={};`;
-});
+}
+
+export default {
+  php,
+  javascript,
+  lua,
+  csharp,
+  java,
+  python,
+};

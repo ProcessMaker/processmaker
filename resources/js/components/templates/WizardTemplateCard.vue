@@ -23,9 +23,9 @@
             class="mb-3"
           >
           <h5 class="text-uppercase">
-            {{ template.name | str_limit(30) }}
+            {{ strLimit(template.name, 30) }}
           </h5>
-          {{ template.description | str_limit(150) }}
+          {{ strLimit(template.description, 150) }}
         </b-card-text>
       </b-card-body>
     </b-card>

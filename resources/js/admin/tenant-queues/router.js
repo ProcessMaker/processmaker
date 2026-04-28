@@ -1,10 +1,7 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import TenantQueuesDashboard from "./TenantQueuesDashboard.vue";
 import JobDetails from "./JobDetails.vue";
 import TenantJobs from "./TenantJobs.vue";
-
-Vue.use(VueRouter);
 
 const routes = [
   {
@@ -28,14 +25,13 @@ const routes = [
     meta: { title: "Job Details" },
   },
   {
-    path: "*",
+    path: "/:pathMatch(.*)*",
     redirect: "/",
   },
 ];
 
-const router = new VueRouter({
-  mode: "hash",
-  base: "/admin/tenant-queues/",
+const router = createRouter({
+  history: createWebHashHistory("/admin/tenant-queues/"),
   routes,
 });
 

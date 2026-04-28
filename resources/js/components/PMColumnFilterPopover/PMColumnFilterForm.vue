@@ -12,8 +12,11 @@
         class="pm-filter-form-area"
         data-cy="pmFilterFormArea"
       >
-        <template v-for="(item, index) in items">
-          <b-form-group :key="'buttonRemove' + index">
+        <template
+          v-for="(item, index) in items"
+          :key="'pm-filter-row-' + index"
+        >
+          <b-form-group>
             <div class="d-flex justify-content-between align-items-center">
               <p class="mb-0">
                 {{ $t("Filter the column:") }}
@@ -30,7 +33,7 @@
             </div>
           </b-form-group>
 
-          <b-form-group :key="'operator' + index">
+          <b-form-group>
             <b-form-select
               v-model="item.operator"
               :options="getOperators()"
@@ -40,7 +43,7 @@
             />
           </b-form-group>
 
-          <b-form-group :key="'value' + index">
+          <b-form-group>
             <component
               :is="item.viewControl"
               v-model="item.value"
@@ -51,7 +54,6 @@
 
           <b-form-group
             v-if="switchLogical(index)"
-            :key="'logical' + index"
           >
             <b-form-select
               v-model="item.logical"

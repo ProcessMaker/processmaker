@@ -2,7 +2,7 @@
 import {
   ref, getCurrentInstance, onMounted, defineProps,
 } from "vue";
-import { useRouter, useRoute } from "vue-router/composables";
+import { useRouter, useRoute } from "vue-router";
 import { store, loadInstance } from "../common";
 import PMTabs from "../../../components/PMTabs.vue";
 import Header from "./Header.vue";

@@ -1,4 +1,5 @@
-import { BNavbar } from "bootstrap-vue";
+import { BNavbar } from "bootstrap-vue-next";
+import { createPmEventBus } from "./lib/pmEventBus";
 import { Multiselect } from "@processmaker/vue-multiselect";
 import moment from "moment-timezone";
 import { sanitizeUrl } from "@braintree/sanitize-url";
@@ -62,7 +63,7 @@ Vue.component("Required", Required);
 Vue.component("Welcome", WelcomeModal);
 
 // Event bus ProcessMaker
-window.ProcessMaker.events = new Vue();
+window.ProcessMaker.events = createPmEventBus();
 
 window.ProcessMaker.nodeTypes = [];
 window.ProcessMaker.nodeTypes.get = function (id) {

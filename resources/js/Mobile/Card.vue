@@ -35,9 +35,11 @@
           </b-row>
           <div class="mt-3 mb-3">
             <template>
-              <template v-for="(row, index) in fields">
+              <template
+                v-for="(row, index) in fields"
+                :key="index"
+              >
                 <div
-                  :key="index"
                   class="bodyInfo"
                 >
                   {{ $t(row.label) }}: {{ formatItem[row.field] }}

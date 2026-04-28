@@ -1,13 +1,9 @@
-import Vue from "vue";
-import Router from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 
 import Layout from "./layouts/MainLayout.vue";
 
-Vue.use(Router);
-
-const router = new Router({
-  mode: "history",
-  base: "/admin/queues",
+const router = createRouter({
+  history: createWebHistory("/admin/queues"),
   routes: [
     {
       path: "/",

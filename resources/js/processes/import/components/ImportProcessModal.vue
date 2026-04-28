@@ -42,9 +42,11 @@
             </template>
 
             <!-- Asset Warnings -->
-            <template v-for="(asset, index) in existingAssets">
+            <template
+              v-for="(asset, index) in existingAssets"
+              :key="index"
+            >
               <warning-message
-                :key="index"
                 :title="warningTitle(asset)"
                 :helper-text="helperText(asset)"
               />

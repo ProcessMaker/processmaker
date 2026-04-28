@@ -1,23 +1,30 @@
-import "bootstrap-vue/dist/bootstrap-vue.css";
-import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
+import { configureCompat } from "vue";
+
+configureCompat({
+  MODE: 2,
+  COMPILER_V_FOR_TEMPLATE_KEY_PLACEMENT: true,
+  COMPILER_V_IF_V_FOR_PRECEDENCE: true,
+  COMPILER_NATIVE_TEMPLATE: true,
+  INSTANCE_EVENT_EMITTER: true,
+});
+
+import "bootstrap-vue-next/dist/bootstrap-vue-next.css";
+import BootstrapVueNext from "./lib/installBootstrapVueNext";
 import * as bootstrap from "bootstrap";
-import Router from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
 import * as VueDeepSet from "vue-deepset";
 
-/**
- * Setup Translations
- */
 import i18next from "i18next";
 import Backend from "i18next-chained-backend";
 import LocalStorageBackend from "i18next-localstorage-backend";
-import XHR from "i18next-xhr-backend";
-import VueI18Next from "@panter/vue-i18next";
-import { install as VuetableInstall } from "vuetable-2";
+import HttpBackend from "i18next-http-backend";
 import MonacoEditor from "vue-monaco";
 import Vue from "vue";
 import * as vue from "vue";
 import VueCookies from "vue-cookies";
+import VuetablePkg from "vue3-vuetable";
+
 import { initSessionSync } from "./common/sessionSync";
 import TenantAwareEcho from "./common/TenantAwareEcho";
 import GlobalStore from "./globalStore";
@@ -34,20 +41,15 @@ import TreeView from "./components/TreeView.vue";
 import FilterTable from "./components/shared/FilterTable.vue";
 import PaginationTable from "./components/shared/PaginationTable.vue";
 import PMDropdownSuggest from "./components/PMDropdownSuggest";
+import { createPmEventBus } from "./lib/pmEventBus";
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.__ = translator;
 window._ = require("lodash");
 window.Popper = require("popper.js").default;
 
-/**
- * Give node plugins access to our custom screen builder components
- */
 window.ProcessmakerComponents = require("./processes/screen-builder/components");
 
-/**
- * Give node plugins access to additional components
- */
 window.SharedComponents = require("./components/shared");
 
 window.ProcessesComponents = require("./processes/components");
@@ -58,46 +60,36 @@ window.Utils = require("./utils");
 
 window.PMDropdownSuggest = PMDropdownSuggest;
 
-/**
- * Exporting Modeler inspector components
- */
 window.ModelerInspector = require("./processes/modeler/components/inspector");
-/**
- * We'll load jQuery and the Bootstrap jQuery plugin which provides support
- * for JavaScript based Bootstrap features such as modals and tabs. This
- * code may be modified to fit the specific needs of your application.
- */
 
 window.$ = window.jQuery = require("jquery");
-
-/**
- * Vue is a modern JavaScript library for building interactive web interfaces
- * using reactive data binding and reusable components. Vue's API is clean
- * and simple, leaving you to focus on building your next great project.
- */
 
 window.Vue = Vue;
 window.vue = vue;
 window.bootstrap = bootstrap;
-window.Vue.use(BootstrapVue);
-window.Vue.use(BootstrapVueIcons);
+
+const VuetablePlugin = VuetablePkg.default || VuetablePkg;
+
+window.Vue.use(BootstrapVueNext);
 window.Vue.use(ScreenBuilder);
 window.Vue.use(GlobalStore);
 window.Vue.use(VueDeepSet);
 window.Vue.use(VueCookies);
-if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
-  window.Vue.use(Router);
-}
+window.Vue.use(VuetablePlugin);
+
 window.VueMonaco = require("vue-monaco");
 
 window.ScreenBuilder = require("@processmaker/screen-builder");
 window.VueFormElements = require("@processmaker/vue-form-elements");
 window.Modeler = require("@processmaker/modeler");
 
-window.VueRouter = Router;
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [],
+});
+window.VueRouter = { createRouter, createWebHistory };
+window.ProcessMakerRouter = router;
 
-window.Vue.use(VueI18Next);
-VuetableInstall(window.Vue);
 window.Vue.component("pagination", Pagination);
 window.Vue.component("monaco-editor", MonacoEditor);
 window.Vue.component("screen-select", ScreenSelect);
@@ -113,48 +105,46 @@ const mdates = JSON.parse(
   document.head.querySelector("meta[name=\"i18n-mdate\"]")?.content,
 );
 
-// Make $t available to all vue instances
-Vue.mixin({ i18n: new VueI18Next(i18next) });
+const i18nMixin = {
+  methods: {
+    $t(...args) {
+      return i18next.t(...args);
+    },
+  },
+};
+Vue.mixin(i18nMixin);
 Vue.mixin(AccessibilityMixin);
+
+const eventsBus = createPmEventBus();
+Object.defineProperty(eventsBus, "$cookies", {
+  configurable: true,
+  get() {
+    return window.Vue.$cookies;
+  },
+});
 
 window.ProcessMaker = {
   i18n: i18next,
 
-  /**
-     * A general use global event bus that can be used
-     */
-  EventBus: new Vue(),
-  /**
-     * A general use global router that can be used
-     */
-  Router: new Router({
-    mode: "history",
-  }),
-  /**
-     * ProcessMaker Notifications
-     */
+  EventBus: createPmEventBus(),
+
+  Router: router,
+
   notifications: [],
-  /**
-     * Push a notification.
-     *
-     * @param {object} notification
-     *
-     * @returns {void}
-     */
+
   pushNotification(notification) {
     if (window.ProcessMaker.notifications.filter((x) => x.id === notification).length === 0) {
       window.ProcessMaker.notifications.push(notification);
     }
   },
 
-  /**
-     * Removes notifications by message ids or urls
-     *
-     * @returns {void}
-     * @param messageIds
-     *
-     * @param urls
-     */
+  removeNotification(id) {
+    const idx = ProcessMaker.notifications.findIndex((x) => x.id === id);
+    if (idx >= 0) {
+      ProcessMaker.notifications.splice(idx, 1);
+    }
+  },
+
   removeNotifications(messageIds = [], urls = []) {
     return window.ProcessMaker.apiClient.put("/read_notifications", { message_ids: messageIds, routes: urls }).then(() => {
       messageIds.forEach((messageId) => {
@@ -169,14 +159,7 @@ window.ProcessMaker = {
       });
     });
   },
-  /**
-     * Mark as unread a list of notifications
-     *
-     * @returns {void}
-     * @param messageIds
-     *
-     * @param urls
-     */
+
   unreadNotifications(messageIds = [], urls = []) {
     return window.ProcessMaker.apiClient.put("/unread_notifications", { message_ids: messageIds, routes: urls });
   },
@@ -209,21 +192,19 @@ window.ProcessMaker.setValidatorLanguage = (validator, lang) => {
 
 window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
   lng: document.documentElement.lang,
-  fallbackLng: "en", // default language when no translations
-  returnEmptyString: false, // When a translation is an empty string, return the default language, not empty
+  fallbackLng: "en",
+  returnEmptyString: false,
   nsSeparator: false,
   keySeparator: false,
   parseMissingKeyHandler(value) {
     if (!translationsLoaded) { return value; }
-    // Report that a translation is missing
     window.ProcessMaker.missingTranslation(value);
-    // Fallback to showing the english version
     return value;
   },
   backend: {
     backends: [
-      LocalStorageBackend, // Try cache first
-      XHR,
+      LocalStorageBackend,
+      HttpBackend,
     ],
     backendOptions: [
       { versions: mdates },
@@ -234,20 +215,9 @@ window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
 
 window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
 
-/**
- * Create a axios instance which any vue component can bring in to call
- * REST api endpoints through oauth authentication
- *
- */
 window.ProcessMaker.apiClient = require("axios");
 
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
-
-/**
- * Next we will register the CSRF Token as a common header with Axios so that
- * all outgoing HTTP requests automatically have it attached. This is just
- * a simple convenience so we don't have to attach every token manually.
- */
 
 const token = document.head.querySelector("meta[name=\"csrf-token\"]");
 const isProd = document.head.querySelector("meta[name=\"is-prod\"]")?.content === "true";
@@ -258,7 +228,6 @@ if (token) {
   console.error("CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token");
 }
 
-// Setup api versions
 const apiVersionConfig = [
   { version: "1.0", baseURL: "/api/1.0/" },
   { version: "1.1", baseURL: "/api/1.1/" },
@@ -283,14 +252,12 @@ window.ProcessMaker.apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Set the default API timeout
 let apiTimeout = 5000;
 if (window.Processmaker && window.Processmaker.apiTimeout !== undefined) {
   apiTimeout = window.Processmaker.apiTimeout;
 }
 window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
 
-// Default alert functionality
 window.ProcessMaker.alert = function (text, variant) {
   if (typeof text === "string") {
     window.alert(text);
@@ -383,8 +350,6 @@ if (userID) {
   }
 }
 
-// Configuration Global object used by ScreenBuilder
-// @link https://processmaker.atlassian.net/browse/FOUR-6833 Cache configuration
 const screenCacheEnabled = document.head.querySelector("meta[name=\"screen-cache-enabled\"]")?.content ?? "false";
 const screenCacheTimeout = document.head.querySelector("meta[name=\"screen-cache-timeout\"]")?.content ?? "5000";
 const screenSecureHandlerToggleVisible = document.head.querySelector("meta[name='screen-secure-handler-toggle-visible']");
@@ -393,7 +358,6 @@ window.ProcessMaker.screen = {
   cacheTimeout: Number(screenCacheTimeout),
   secureHandlerToggleVisible: !!Number(screenSecureHandlerToggleVisible?.content),
 };
-// Initialize screen-builder cache
 initializeScreenCache(window.ProcessMaker.apiClient, window.ProcessMaker.screen);
 
 const clickTab = () => {
@@ -401,24 +365,25 @@ const clickTab = () => {
   if (!hash) {
     return;
   }
-  const tab = $(`[role="tab"][href="${hash}"]`);
-  if (tab.length) {
-    tab.tab("show");
+  const escaped = typeof CSS !== "undefined" && CSS.escape ? CSS.escape(hash) : hash.replace(/"/g, "\\\"");
+  const trigger = document.querySelector(`[role="tab"][href="${escaped}"]`);
+  if (trigger && bootstrap.Tab) {
+    try {
+      bootstrap.Tab.getOrCreateInstance(trigger).show();
+    } catch (e) {
+      // ignore
+    }
   }
 };
 window.addEventListener("hashchange", clickTab);
 
-// click an active tab after all components have mounted
 Vue.use({
-  install(vue) {
-    vue.mixin({
+  install(vueApp) {
+    vueApp.mixin({
       mounted() {
         if (this.$parent) {
-          // only run on root
           return;
         }
-
-        // Run after component mounted
         this.$nextTick(() => {
           clickTab();
         });
@@ -427,5 +392,4 @@ Vue.use({
   },
 });
 
-// Send an event when the global Vue and ProcessMaker instance is available
 window.dispatchEvent(new Event("app-bootstrapped"));

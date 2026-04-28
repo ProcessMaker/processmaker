@@ -1,7 +1,7 @@
 <template>
   <div>
     <vue-form-renderer
-      v-model="formData"
+      v-model="draftFormData"
       :config="screen.config"
       :computed="screen.computed"
       :custom-css="screen.custom_css"
@@ -11,12 +11,14 @@
 </template>
 
 <script>
+import cloneDeep from "lodash/cloneDeep";
 
 export default {
   props: ["screen", "formData"],
   data() {
     return {
       disabled: false,
+      draftFormData: {},
     };
   },
   watch: {
@@ -24,6 +26,13 @@ export default {
       deep: true,
       handler() {
         this.disabled = false;
+      },
+    },
+    formData: {
+      immediate: true,
+      deep: true,
+      handler(val) {
+        this.draftFormData = cloneDeep(val || {});
       },
     },
   },

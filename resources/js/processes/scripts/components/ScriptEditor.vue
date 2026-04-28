@@ -405,8 +405,7 @@
 import MonacoEditor from "vue-monaco";
 import _ from "lodash";
 import TopMenu from "../../../components/Menu.vue";
-// eslint-disable-next-line no-unused-vars
-import customFilters from "../customFilters";
+import scriptBoilerplateFormatters from "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
 import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 import AiTab from "./AiTab.vue";
@@ -888,22 +887,22 @@ export default {
         switch (this.script.language) {
           case "php":
           case "php-nayra":
-            this.code = Vue.filter("php")(this.boilerPlateTemplate);
+            this.code = scriptBoilerplateFormatters.php(this.boilerPlateTemplate);
             break;
           case "lua":
-            this.code = Vue.filter("lua")(this.boilerPlateTemplate);
+            this.code = scriptBoilerplateFormatters.lua(this.boilerPlateTemplate);
             break;
           case "javascript":
-            this.code = Vue.filter("javascript")(this.boilerPlateTemplate);
+            this.code = scriptBoilerplateFormatters.javascript(this.boilerPlateTemplate);
             break;
           case "csharp":
-            this.code = Vue.filter("csharp")(this.boilerPlateTemplate);
+            this.code = scriptBoilerplateFormatters.csharp(this.boilerPlateTemplate);
             break;
           case "java":
-            this.code = Vue.filter("java")(this.boilerPlateTemplate);
+            this.code = scriptBoilerplateFormatters.java(this.boilerPlateTemplate);
             break;
           case "python":
-            this.code = Vue.filter("python")(this.boilerPlateTemplate);
+            this.code = scriptBoilerplateFormatters.python(this.boilerPlateTemplate);
             break;
           default:
             break;

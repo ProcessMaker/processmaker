@@ -1,7 +1,19 @@
+import { configureCompat } from "vue";
+
+configureCompat({
+  MODE: 2,
+  COMPILER_V_FOR_TEMPLATE_KEY_PLACEMENT: true,
+  COMPILER_V_IF_V_FOR_PRECEDENCE: true,
+  COMPILER_NATIVE_TEMPLATE: true,
+  INSTANCE_EVENT_EMITTER: true,
+});
+
 import Vue from "vue";
 import * as vue from "vue";
-import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
+import BootstrapVueNext from "../lib/installBootstrapVueNext";
+import "bootstrap-vue-next/dist/bootstrap-vue-next.css";
 import moment from "moment-timezone";
+import { createPmEventBus } from "../lib/pmEventBus";
 import {
   setUses, setGlobalVariables, setGlobalPMVariables,
 } from "./globalVariables";
@@ -33,12 +45,11 @@ export const setupMain = () => {
   window.moment = moment;
 
   window.Vue.prototype.moment = moment;
-  window.Vue.use(BootstrapVue);
-  window.Vue.use(BootstrapVueIcons);
+  window.Vue.use(BootstrapVueNext);
 
   window.ProcessMaker = {
-    EventBus: new Vue(),
-    events: new Vue(),
+    EventBus: createPmEventBus(),
+    events: createPmEventBus(),
     packages: window.packages,
   };
 

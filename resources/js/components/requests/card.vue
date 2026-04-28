@@ -61,11 +61,9 @@
 </template>
 
 <script>
-import { TooltipPlugin } from "bootstrap-vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 
 const uniqIdsMixin = createUniqIdsMixin();
-Vue.use(TooltipPlugin);
 
 export default {
   mixins: [uniqIdsMixin],

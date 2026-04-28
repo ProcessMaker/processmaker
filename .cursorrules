@@ -1,12 +1,12 @@
-Vue 2 and Laravel Best Practices and Guidelines
+Vue 3 (compat build) and Laravel Best Practices and Guidelines
 
-Vue 2 Rules
+Vue 3 Rules
 
-You are an expert in TypeScript, Node.js, NuxtJS, Vue 2, Shadcn Vue, Radix Vue, VueUse, and Tailwind CSS.
+You are an expert in TypeScript, Node.js, Laravel Mix, Vue 3 (`@vue/compat` where noted), vue-router 4, vuex 4, Bootstrap 5, bootstrap-vue-next, and Tailwind CSS.
 
 Code Style and Structure
-	•	Write concise, technical TypeScript code with accurate examples.
-	•	Use Vue 2’s Options API for component definitions; prioritize composition patterns using plugins like vue-composition-api where necessary.
+	•	Write concise, technical code with accurate examples.
+	•	Use Vue 3’s Options API or `<script setup>` as matches surrounding files; avoid introducing Vue 2-only APIs (`Vue.filter`, `new Vue()` as bus, `Vue.set`).
 	•	Prefer iteration and modularization over duplication.
 	•	Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
 	•	Structure files: exported component, helpers, static content, and types.
@@ -19,7 +19,7 @@ Naming Conventions
 TypeScript Usage
 	•	Use TypeScript for all code; prefer types over interfaces.
 	•	Avoid enums; use const objects instead.
-	•	Use Vue 2 with TypeScript leveraging class-style components or vue-property-decorator.
+	•	Prefer TypeScript only where the file already uses it; this repo is mostly JavaScript.
 
 Syntax and Formatting
 	•	Use arrow functions for methods and computed properties.
@@ -31,24 +31,19 @@ UI and Styling
 	•	Implement responsive design with Tailwind CSS using a mobile-first approach.
 
 Performance Optimization
-	•	Leverage Nuxt 2’s built-in performance optimizations.
+	•	Keep Mix entry bundles focused; use dynamic imports where the codebase already does.
 	•	Use dynamic imports and lazy loading for routes and components.
 	•	Optimize images: use WebP format, include size data, and implement lazy loading.
 
 Key Conventions
-	•	Use VueUse for common composables and utilities.
-	•	Use Vuex for state management in Vue 2.
+	•	Use VueUse where already adopted.
+	•	Use vuex 4 for global store patterns already in the app.
 	•	Optimize Web Vitals (LCP, CLS, FID).
-	•	Utilize Nuxt’s auto-imports feature for components and utilities.
+	•	Register global UI via `resources/js/bootstrap.js` / layout bundles, not Nuxt auto-imports.
 
-Nuxt-Specific Guidelines
-	•	Follow Nuxt 2 directory structure (e.g., pages/, components/, plugins/).
-	•	Use Nuxt’s built-in features:
-	•	File-based routing in the pages/ directory.
-	•	Plugins for global functionality.
-	•	Modules for third-party integration.
-	•	Use asyncData and fetch hooks for data fetching.
-	•	Implement SEO best practices using Nuxt’s head() method or vue-meta.
+ProcessMaker frontend
+	•	Entry scripts live under `resources/js/` and compile via Laravel Mix (`webpack.mix.js`, `webpack-login.mix.js`).
+	•	Prefer `ProcessMaker.EventBus` (`mitt` wrapper) over ad-hoc `new Vue()` buses.
 
 Laravel Rules
 

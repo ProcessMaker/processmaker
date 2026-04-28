@@ -1,12 +1,16 @@
-import Vuex from "vuex";
+import { createStore } from "vuex";
 
 export default {
   install(Vue) {
-    const globalStore = new Vuex.Store({
-      modules: { },
+    const globalStore = createStore({
+      modules: {},
     });
 
     Vue.globalStore = globalStore;
+
+    if (Vue.config?.globalProperties) {
+      Vue.config.globalProperties.$globalStore = globalStore;
+    }
 
     Vue.mixin({
       beforeCreate() {

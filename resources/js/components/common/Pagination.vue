@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import PaginationMixin from "vuetable-2/src/components/VuetablePaginationMixin.vue";
+import PaginationMixin from "./mixins/vuetablePaginationMixin";
 
 export default {
   mixins: [PaginationMixin],

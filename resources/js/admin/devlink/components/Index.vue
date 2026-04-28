@@ -2,7 +2,7 @@
 import {
   ref, onMounted, computed, getCurrentInstance,
 } from "vue";
-import { useRouter, useRoute } from "vue-router/composables";
+import { useRouter, useRoute } from "vue-router";
 import debounce from "lodash/debounce";
 import Status from "./Status.vue";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";

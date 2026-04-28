@@ -12,9 +12,11 @@
       ref="processListContainer"
       class="processList d-flex"
     >
-      <template v-for="(process, index) in processList">
+      <template
+        v-for="(process, index) in processList"
+        :key="`${index}_${renderKey}`"
+      >
         <Card
-          :key="`${index}_${renderKey}`"
           :process="process"
           :show-cards="true"
           :current-page="currentPage"

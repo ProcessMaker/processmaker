@@ -1,3 +1,4 @@
-import { install as VuetableInstall } from "vuetable-2";
+import VuetablePkg from "vue3-vuetable";
 
-VuetableInstall(window.Vue);
+const VuetablePlugin = VuetablePkg.default || VuetablePkg;
+window.Vue.use(VuetablePlugin);

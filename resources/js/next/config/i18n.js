@@ -1,8 +1,7 @@
 import i18next from "i18next";
 import Backend from "i18next-chained-backend";
 import LocalStorageBackend from "i18next-localstorage-backend";
-import XHR from "i18next-xhr-backend";
-import VueI18Next from "@panter/vue-i18next";
+import HttpBackend from "i18next-http-backend";
 import { setGlobalPMVariables, setUses, getGlobalVariable } from "../globalVariables";
 
 export default () => {
@@ -39,8 +38,8 @@ export default () => {
     },
     backend: {
       backends: [
-        LocalStorageBackend, // Try cache first
-        XHR,
+        LocalStorageBackend,
+        HttpBackend,
       ],
       backendOptions: [
         { versions: mdates },
@@ -51,8 +50,14 @@ export default () => {
 
   i18nPromise.then(() => { translationsLoaded = true; });
 
-  setUses(Vue, { VueI18Next });
-  Vue.mixin({ i18n: new VueI18Next(i18next) });
+  setUses(Vue, {});
+  Vue.mixin({
+    methods: {
+      $t(...args) {
+        return i18next.t(...args);
+      },
+    },
+  });
   setGlobalPMVariables({
     i18n: i18next,
     i18nPromise,

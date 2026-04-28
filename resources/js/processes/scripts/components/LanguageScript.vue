@@ -9,9 +9,9 @@
     <div class="content-lang">
       <template
         v-for="(lang, index) in languages"
+        :key="index"
       >
         <b-card
-          :key="index"
           :ref="`${lang.title}-${index}`"
           class="mt-2"
           @click="selectLanguage(lang, index)"

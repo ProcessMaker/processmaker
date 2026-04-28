@@ -1,14 +1,13 @@
 import Vue from "vue";
+import { createRouter, createWebHistory } from "vue-router";
 import Process from "./components/Process";
 import ProcessesCatalogue from "./components/ProcessesCatalogue";
 import ProcessListing from "./components/ProcessListing";
+import { createPmEventBus } from "../lib/pmEventBus";
 
-export const EventBus = new Vue();
-Vue.use(VueRouter);
-const router = new VueRouter({
-  mode: "history",
-  base: "/process-browser",
-  // See https://v3.router.vuejs.org/guide/
+export const EventBus = createPmEventBus();
+const router = createRouter({
+  history: createWebHistory("/process-browser"),
   routes: [
     {
       name: "index",

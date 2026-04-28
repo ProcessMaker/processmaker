@@ -1,4 +1,5 @@
 import Vue from "vue";
+import { createRouter, createWebHistory } from "vue-router";
 import DevLink from "./components/DevLink";
 import Index from "./components/Index";
 import Instance from "./components/Instance";
@@ -10,11 +11,8 @@ import BundleDetail from "./components/BundleDetail.vue";
 import BundleContent from "./components/BundleContent.vue";
 import BundleAssetListing from "./components/BundleAssetListing.vue";
 
-Vue.use(VueRouter);
-const router = new VueRouter({
-  mode: "history",
-  base: "/admin/devlink",
-  // See https://v3.router.vuejs.org/guide/
+const router = createRouter({
+  history: createWebHistory("/admin/devlink"),
   routes: [
     {
       name: "index",

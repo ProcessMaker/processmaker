@@ -1,6 +1,5 @@
 import Vue from "vue";
 import VuePassword from "vue-password";
-import Router from "vue-router";
 import ExportManager from "./components/ExportManager";
 import ExportManagerView from "./components/ExportManagerView";
 import CustomExportView from "./components/CustomExportView.vue";
@@ -51,6 +50,8 @@ new Vue({
     },
   },
   beforeMount() {
-    this.$router.addRoutes(routes);
+    routes.forEach((route) => {
+      this.$router.addRoute(route);
+    });
   },
 }).$mount("#export-manager");

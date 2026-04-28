@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, getCurrentInstance } from "vue";
-import { useRouter, useRoute } from "vue-router/composables";
+import { useRouter, useRoute } from "vue-router";
 import moment from "moment";
 import types from "./assetTypes";
 

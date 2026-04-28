@@ -1,4 +1,5 @@
-import { BNavbar } from "bootstrap-vue";
+import { BNavbar } from "bootstrap-vue-next";
+import { createPmEventBus } from "./lib/pmEventBus";
 import { Multiselect } from "@processmaker/vue-multiselect";
 import moment from "moment-timezone";
 import { sanitizeUrl } from "@braintree/sanitize-url";
@@ -76,7 +77,7 @@ Vue.component("LanguageSelectorButton", (resolve) => {
 });
 
 // Event bus ProcessMaker
-window.ProcessMaker.events = new Vue();
+window.ProcessMaker.events = createPmEventBus();
 
 // Verify if is mobile
 const browser = navigator.userAgent;

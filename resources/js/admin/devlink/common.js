@@ -1,5 +1,4 @@
-import { reactive, onMounted } from "vue";
-import { useRouter } from "vue-router/composables";
+import { reactive } from "vue";
 
 const store = reactive({
   selectedInstance: {
@@ -9,8 +8,11 @@ const store = reactive({
 });
 
 const loadInstance = () => {
-  const router = useRouter();
-  const instanceId = router.currentRoute.params.id;
+  const router = window.ProcessMaker?.Router;
+  if (!router?.currentRoute?.value) {
+    return;
+  }
+  const instanceId = router.currentRoute.value.params.id;
 
   if (instanceId && (!store.selectedInstance.id || store.selectedInstance.id !== instanceId)) {
     window.ProcessMaker.apiClient.get(`/devlink/${instanceId}`).then((response) => {

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, getCurrentInstance } from "vue";
 import debounce from "lodash/debounce";
-import { useRouter, useRoute } from "vue-router/composables";
+import { useRouter, useRoute } from "vue-router";
 import InstanceTabs from "./InstanceTabs.vue";
 import InstallProgress from "./InstallProgress.vue";
 

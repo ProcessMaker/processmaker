@@ -72,7 +72,7 @@
                     :style="{ maxWidth: header.width + 'px' }"
                   >
                     <span v-uni-id="row.id.toString()">{{ row.name }}
-                      <small class="text-muted d-block">{{ row.description | str_limit(70) }}</small>
+                      <small class="text-muted d-block">{{ strLimit(row.description, 70) }}</small>
                     </span>
                     <b-tooltip
                       v-if="header.truncate"
@@ -131,16 +131,7 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
 import templateMixin from "../../processes/screen-templates/mixins/templateMixin.js";
-
-Vue.filter("str_limit", (value, size) => {
-  if (!value) return "";
-  value = value.toString();
-
-  if (value.length <= size) {
-    return value;
-  }
-  return `${value.substr(0, size)}...`;
-});
+import { strLimit } from "../../lib/strLimit";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -252,6 +243,7 @@ export default {
     action.href = documentationUrl;
   },
   methods: {
+    strLimit,
     transform(data) {
       // Clean up fields for meta pagination so vue table pagination can understand
       data.meta.last_page = data.meta.total_pages;

@@ -37,8 +37,11 @@
           v-show="!placeholder"
           ref="tbody"
         >
-          <template v-for="(row, indexRow) in data">
-            <TRow :key="`row-${indexRow}`">
+          <template
+            v-for="(row, indexRow) in data"
+            :key="`row-${indexRow}`"
+          >
+            <TRow>
               <template #[`cell`]>
                 <TCell
                   v-for="(column, indexColumn) in columns"

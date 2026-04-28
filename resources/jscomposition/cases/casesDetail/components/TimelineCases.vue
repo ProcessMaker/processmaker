@@ -2,11 +2,11 @@
   <div class="px-4 mb-2 timeline">
     <template
       v-for="(item,index) in comments"
-      v-if="timeline"
+      :key="`timeline-item-${index}`"
     >
       <component
+        v-if="timeline"
         :is="component(item)"
-        :key="`timeline-item-${index}`"
         :value="item"
         :icon="icon(item)"
         :allow-reactions="reactions"
@@ -19,11 +19,11 @@
     </template>
     <template
       v-for="(item,index) in comments"
-      v-if="!timeline"
+      :key="`timeline-item-nt-${index}`"
     >
       <component
+        v-if="!timeline"
         :is="component(item)"
-        :key="`timeline-item-${index}`"
         :value="item"
         :icon="icon(item)"
         :allow-reactions="reactions"

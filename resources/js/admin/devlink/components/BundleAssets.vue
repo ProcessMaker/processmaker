@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router/composables";
+import { useRouter } from "vue-router";
 import assetTypes from "./assetTypes";
 
 const router = useRouter();

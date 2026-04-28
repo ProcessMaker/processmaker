@@ -157,7 +157,7 @@
 import {
   ref, onMounted, computed, getCurrentInstance,
 } from "vue";
-import { useRoute } from "vue-router/composables";
+import { useRoute } from "vue-router";
 import BundleModal, { show as showBundleModal, hide as hideBundleModal } from "./BundleModal.vue";
 import UpdateBundle from "./UpdateBundle.vue";
 import BundleSettingsModal from "./BundleSettingsModal.vue";

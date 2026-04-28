@@ -236,12 +236,10 @@
 </template>
 
 <script>
-import { PopoverPlugin } from "bootstrap-vue";
 import NotificationCard from "./notification-card.vue";
 import NotificationItem from "./notification-item.vue";
 import notificationsMixin from "../notifications-mixin";
 
-Vue.use(PopoverPlugin);
 export default {
   components: { NotificationItem, NotificationCard },
   mixins: [notificationsMixin],

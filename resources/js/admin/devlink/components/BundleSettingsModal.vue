@@ -48,7 +48,7 @@
 </template>
 <script setup>
 import { ref, computed } from "vue";
-import { useRoute } from "vue-router/composables";
+import { useRoute } from "vue-router";
 
 const emit = defineEmits(["settings-saved"]);
 

@@ -27,13 +27,14 @@
           <div class="wizard-details-container text-left mb-3">
             <div class="wizard-details-text pl-3">
               <h1 class="mb-3 d-inline-block font-weight-bold template-name">
-                {{ templateDetails['modal-title']| str_limit(30) }}
+                {{ strLimit(templateDetails['modal-title'], 30) }}
               </h1>
               <h3 class="wizard-details-headline text-white">
-                {{ templateDetails['modal-excerpt'] | str_limit(150) }}
+                {{ strLimit(templateDetails['modal-excerpt'], 150) }}
               </h3>
               <div
-                v-for="item in templateModalDescriptionItems"
+                v-for="(item, descIndex) in templateModalDescriptionItems"
+                :key="descIndex"
                 class="mb-3 wizard-details-description text-white d-flex align-items-center"
               >
                 <span
@@ -46,7 +47,7 @@
                     width="30px"
                   >
                 </span>
-                <span class="template-list-item">{{ item | str_limit(150) }}</span>
+                <span class="template-list-item">{{ strLimit(item, 150) }}</span>
               </div>
               <hr class="template-divider mx-2">
               <button
@@ -80,6 +81,7 @@
 import { Task } from "@processmaker/screen-builder";
 import Modal from "../shared/Modal.vue";
 import wizardHelperProcessModalMixin from "./mixins/wizardHelperProcessModal";
+import { strLimit } from "../../lib/strLimit";
 
 export default {
   components: { Modal, Task },
@@ -115,6 +117,7 @@ export default {
     },
   },
   methods: {
+    strLimit,
     show() {
       this.$bvModal.show("wizardTemplateDetails");
     },

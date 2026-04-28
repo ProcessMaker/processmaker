@@ -1,5 +1,6 @@
 const mix = require("laravel-mix");
 const path = require("path");
+const webpack = require("webpack");
 require("laravel-mix-polyfill");
 // const packageJson = require("./package.json");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -20,12 +21,18 @@ mix.webpackConfig({
     new BundleAnalyzerPlugin({
       analyzerMode: process.env.STATS ? "server" : "disabled",
     }),
+    new webpack.DefinePlugin({
+      __VUE_OPTIONS_API__: JSON.stringify(true),
+      __VUE_PROD_DEVTOOLS__: JSON.stringify(false),
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false),
+    }),
   ],
   externals: ["SharedComponents", "ModelerInspector"],
   resolve: {
     extensions: [".*", ".js", ".ts", ".mjs", ".vue", ".json"],
     symlinks: false,
     alias: {
+      vue$: path.resolve(__dirname, "node_modules/@vue/compat/dist/vue.esm-bundler.js"),
       "vue-monaco": path.resolve(__dirname, "resources/js/vue-monaco-amd.js"),
       styles: path.resolve(__dirname, "resources/sass"),
     },
@@ -42,8 +49,7 @@ mix.options({
 mix
   .extract([
     "jquery",
-    "bootstrap-vue",
-    "popper.js",
+    "bootstrap-vue-next",
     "bootstrap",
   ], "public/js/bootstrap-vendor.js")
   .extract([
@@ -203,4 +209,53 @@ mix
   ])
   .version();
 
-mix.vue({ version: 2 });
+mix.vue({
+  version: 3,
+  options: {
+    compilerOptions: {
+      compatConfig: {
+        MODE: 2,
+        COMPILER_V_FOR_TEMPLATE_KEY_PLACEMENT: true,
+        COMPILER_V_IF_V_FOR_PRECEDENCE: true,
+        COMPILER_NATIVE_TEMPLATE: true,
+      },
+    },
+  },
+});
+
+function injectVueLoaderCompatConfig(rules) {
+  if (!rules) {
+    return;
+  }
+  rules.forEach((rule) => {
+    if (rule.oneOf) {
+      injectVueLoaderCompatConfig(rule.oneOf);
+    }
+    if (Array.isArray(rule.use)) {
+      rule.use.forEach((use) => {
+        const loaderPath = use.loader ? String(use.loader) : "";
+        if (loaderPath.includes("vue-loader")) {
+          // eslint-disable-next-line no-param-reassign
+          use.options = use.options || {};
+          // eslint-disable-next-line no-param-reassign
+          use.options.compilerOptions = {
+            ...(use.options.compilerOptions || {}),
+            compatConfig: {
+              MODE: 2,
+              COMPILER_V_FOR_TEMPLATE_KEY_PLACEMENT: true,
+              COMPILER_V_IF_V_FOR_PRECEDENCE: true,
+              COMPILER_NATIVE_TEMPLATE: true,
+            },
+          };
+        }
+      });
+    }
+  });
+}
+
+mix.webpackConfig((webpack, webpackConfig) => {
+  if (webpackConfig.module?.rules) {
+    injectVueLoaderCompatConfig(webpackConfig.module.rules);
+  }
+  return {};
+});

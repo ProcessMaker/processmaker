@@ -1,15 +1,17 @@
-import Router from "vue-router";
+import * as VueRouter from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [],
+});
 
 export default {
   global: {
-    VueRouter: Router,
+    VueRouter,
   },
   pm: {
-    Router: new Router({
-      mode: "history",
-    }),
+    Router: router,
   },
-  use: {
-    Router,
-  },
+  use: {},
 };

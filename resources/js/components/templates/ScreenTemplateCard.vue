@@ -25,8 +25,8 @@
             <i class="fas fa-palette thumbnail-icon" />
           </div>
           <div class="template-details">
-            <span class="template-name d-block pt-1">{{ template.name | str_limit(30) }}</span>
-            <span class="template-description d-block">{{ template.description | str_limit(150) }}</span>
+            <span class="template-name d-block pt-1">{{ strLimit(template.name, 30) }}</span>
+            <span class="template-description d-block">{{ strLimit(template.description, 150) }}</span>
           </div>
         </div>
         <div class="default-template-container d-flex align-items-end">

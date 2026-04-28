@@ -8,11 +8,11 @@
       @mouseleave="removeHoverClass"
     >
       <b-card-body
-        :title="template.name | str_limit(30)"
+        :title="strLimit(template.name, 30)"
         class="card-body"
       >
         <b-card-text class="mb-2">
-          {{ template.description | str_limit(150) }}
+          {{ strLimit(template.description, 150) }}
         </b-card-text>
         <b-badge
           v-for="category in categories"

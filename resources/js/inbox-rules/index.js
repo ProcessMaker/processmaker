@@ -1,14 +1,13 @@
+import Vue from "vue";
+import { createRouter, createWebHistory } from "vue-router";
 import Index from "./components/Index.vue";
 import Edit from "./components/Edit.vue";
 import TasksList from "../tasks/components/TasksList.vue";
 
 Vue.component("TasksList", TasksList);
 
-Vue.use(VueRouter);
-const router = new VueRouter({
-  mode: "history",
-  base: "/tasks/rules",
-  // See https://v3.router.vuejs.org/guide/
+const router = createRouter({
+  history: createWebHistory("/tasks/rules"),
   routes: [
     {
       name: "index",

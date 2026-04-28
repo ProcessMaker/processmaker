@@ -3,7 +3,9 @@
  * pagination transformers, etc.
  *
  */
-import Vuetable from "vuetable-2/src/components/Vuetable";
+import VuetablePkg from "vue3-vuetable";
+
+const Vuetable = VuetablePkg.Vuetable || VuetablePkg.default;
 import Pagination from "../../../components/common/Pagination";
 import FilterTableBodyMixin from "../../shared/FilterTableBodyMixin";
 

@@ -56,7 +56,7 @@
 </template>
 <script setup>
 import { ref, onMounted, nextTick } from "vue";
-import { useRouter, useRoute } from "vue-router/composables";
+import { useRouter, useRoute } from "vue-router";
 import CaseFilter from "./components/CaseFilter.vue";
 import BadgesSection from "./components/BadgesSection.vue";
 import { Pagination } from "../../base";

@@ -21,7 +21,7 @@
 import {
   ref, onMounted, watch, onUnmounted,
 } from "vue";
-import { useRouter, useRoute } from "vue-router/composables";
+import { useRouter, useRoute } from "vue-router";
 import AppCounters from "./components/AppCounters.vue";
 import { formatCounters } from "./utils/counters";
 import { getCounters } from "./api";

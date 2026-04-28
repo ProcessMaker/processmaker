@@ -1,8 +1,10 @@
 <template>
   <div id="tasksList">
-    <template v-for="(item, index) in tasksList">
+    <template
+      v-for="(item, index) in tasksList"
+      :key="index"
+    >
       <card
-        :key="index"
         :item="item"
         :fields="fields"
         :show-cards="true"

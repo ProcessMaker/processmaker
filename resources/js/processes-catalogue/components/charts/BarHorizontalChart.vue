@@ -1,25 +1,71 @@
+<template>
+  <Bar
+    :data="displayData"
+    :options="displayOptions"
+    :height="height"
+    :width="width"
+  />
+</template>
+
 <script>
-import { HorizontalBar } from "vue-chartjs";
+import { Bar } from "vue-chartjs";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default {
-  extends: HorizontalBar,
-  props: ["data", "options", "preview"],
+  name: "BarHorizontalChart",
+  components: { Bar },
+  props: {
+    data: {
+      type: Object,
+      default: null,
+    },
+    options: {
+      type: Object,
+      default: null,
+    },
+    preview: {
+      type: Boolean,
+      default: false,
+    },
+    height: {
+      type: Number,
+      default: undefined,
+    },
+    width: {
+      type: Number,
+      default: undefined,
+    },
+  },
   computed: {
-    chartData() {
-      return this.data;
+    displayData() {
+      if (this.preview) {
+        return this.previewData;
+      }
+      return this.data || { labels: [], datasets: [] };
+    },
+    displayOptions() {
+      const base = this.preview ? this.previewOptions : (this.options || {});
+      return {
+        indexAxis: "y",
+        ...base,
+      };
     },
     previewData() {
       return {
         datasets: [{
-          data: [
-            5, 10, 15,
-          ],
+          data: [5, 10, 15],
         }],
-        labels: [
-          1,
-          2,
-          3,
-        ],
+        labels: [1, 2, 3],
       };
     },
     previewOptions() {
@@ -32,45 +78,40 @@ export default {
             left: 2,
           },
         },
-        legend: {
-          display: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            enabled: false,
+          },
         },
         maintainAspectRatio: true,
         responsive: true,
-        tooltips: {
-          enabled: false,
-        },
         scales: {
-          xAxes: [{
+          x: {
             display: false,
-            ticks: {
-              max: 15,
-            },
-          }],
-          yAxes: [{
+            max: 15,
+          },
+          y: {
             display: false,
-          }],
+          },
         },
       };
     },
   },
   watch: {
-    data() {
-      this.render();
+    data: {
+      deep: true,
+      handler() {
+        this.$nextTick(() => this.$emit("render"));
+      },
     },
   },
   mounted() {
-    this.render();
+    this.$nextTick(() => this.$emit("render"));
   },
   methods: {
-    render() {
-      if (!this.preview) {
-        this.renderChart(this.chartData, this.options);
-      } else {
-        this.renderChart(this.previewData, this.previewOptions);
-      }
-      this.$emit("render");
-    },
     describe() {
       return this.$t("Horizontal Bar Graph");
     },

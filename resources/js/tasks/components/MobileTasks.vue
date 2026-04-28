@@ -10,9 +10,11 @@
       :message="$t('No items to show')"
       :description="$t('You have to start a Case of this process.')"
     />
-    <template v-for="(item, index) in data.data">
+    <template
+      v-for="(item, index) in data.data"
+      :key="index"
+    >
       <card
-        :key="index"
         :item="item"
         :fields="fields"
         :show-cards="true"

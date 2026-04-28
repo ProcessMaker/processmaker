@@ -2,7 +2,7 @@
 import {
   ref, watch, onMounted, getCurrentInstance,
 } from "vue";
-import { useRoute } from "vue-router/composables";
+import { useRoute } from "vue-router";
 import debounce from "lodash/debounce";
 import moment from "moment";
 import InstanceTabs from "./InstanceTabs.vue";

@@ -1,15 +1,12 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import DashboardViewer from "./components/DashboardViewer.vue";
 import Process from "../processes-catalogue/components/Process";
 
-Vue.use(VueRouter);
 const screen = JSON.parse(sessionStorage.getItem("dashboard_screen"));
 const formData = JSON.parse(sessionStorage.getItem("dashboard_formData"));
 
-const router = new VueRouter({
-  mode: "history",
-  base: "/inbox",
+const router = createRouter({
+  history: createWebHistory("/inbox"),
   routes: [
     {
       path: "/process/:processId",

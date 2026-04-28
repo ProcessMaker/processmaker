@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, defineEmits } from "vue";
-import { useRouter, useRoute } from "vue-router/composables";
+import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
 const emit = defineEmits(["updateAvailable"]);
