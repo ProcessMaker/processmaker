@@ -260,6 +260,11 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
             return;
         }
 
+        $currentStatus = ProcessRequest::query()->whereKey($instance->getKey())->value('status');
+        if ($currentStatus === 'CANCELED') {
+            return;
+        }
+
         // Save completed instance
         $instance->status = 'COMPLETED';
         $instance->completed_at = Carbon::now();

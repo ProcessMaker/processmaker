@@ -12,6 +12,7 @@ use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
@@ -99,10 +100,27 @@ class RunNayraScriptTask implements ShouldQueue
 
             $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout());
 
+            if (ProcessRequest::query()->whereKey($instance->getKey())->value('status') === 'CANCELED') {
+                Log::info('Skipping script task completion because the request was canceled.', [
+                    'process_request_id' => $instance->getKey(),
+                    'token_id' => $token->getKey(),
+                ]);
+
+                return;
+            }
+
             // Dispatch complete task action
             WorkflowManager::completeTask($processModel, $instance, $token, $response['output']);
         } catch (ConfigurationException $exception) {
             $output = $exception->getMessageForData($token);
+            if (ProcessRequest::query()->whereKey($instance->getKey())->value('status') === 'CANCELED') {
+                Log::info('Skipping script task completion because the request was canceled.', [
+                    'process_request_id' => $instance->getKey(),
+                    'token_id' => $token->getKey(),
+                ]);
+
+                return;
+            }
             WorkflowManager::completeTask($processModel, $instance, $token, $output);
         } catch (Throwable $exception) {
             Log::error('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Nayra\Managers;
 
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -71,6 +72,14 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         //Validate data
         $element = $token->getDefinition(true);
         $this->validateData($data, $definitions, $element);
+        if ($instance instanceof ProcessRequest) {
+            $status = ProcessRequest::query()->whereKey($instance->getKey())->value('status');
+            if ($status === 'CANCELED') {
+                throw new HttpResponseException(response()->json([
+                    'message' => __('This request has been canceled. The task cannot be completed.'),
+                ], 422));
+            }
+        }
         CompleteActivity::dispatchSync($definitions, $instance, $token, $data);
     }
 
