@@ -5,7 +5,7 @@
 <script>
 
 export default {
-  router: window.ProcessMaker.Router,
+  router: window.ProcessMaker?.Router,
   props: [],
   data() {
     return {

@@ -26,6 +26,10 @@ require("bootstrap");
 
 const { Vue } = window;
 
+window.ProcessMaker = window.ProcessMaker || {};
+window.ProcessMaker.user = window.ProcessMaker.user || {};
+window.ProcessMaker.notifications = window.ProcessMaker.notifications || {};
+
 Vue.use(VueHtml2Canvas);
 
 if (window.ProcessMaker && window.ProcessMaker.user) {

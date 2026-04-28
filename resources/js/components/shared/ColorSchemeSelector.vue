@@ -68,7 +68,11 @@
 </template>
 
 <script>
-import "chartjs-plugin-colorschemes";
+try {
+  require("chartjs-plugin-colorschemes");
+} catch (error) {
+  // Optional plugin; some chart.js versions no longer support this package.
+}
 
 export default {
   props: {
@@ -159,7 +163,13 @@ export default {
       const list = [];
       const names = [];
       const primaryNames = [];
-      const colors = Chart.colorschemes;
+      const colors = (typeof Chart !== "undefined" && Chart.colorschemes) ? Chart.colorschemes : {};
+      if (!Object.keys(colors).length) {
+        return [{
+          name: "Single Color - #4e73df",
+          colors: ["#4e73df"],
+        }];
+      }
       const categories = Object.keys(colors);
 
       categories.forEach((category) => {

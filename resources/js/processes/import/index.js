@@ -25,7 +25,7 @@ const routes = [
 new Vue({
   components: { },
   mixins: [State],
-  router: window.ProcessMaker.Router,
+  router: window.ProcessMaker?.Router,
   data() {
     return {
     };

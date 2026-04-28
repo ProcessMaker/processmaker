@@ -130,7 +130,7 @@ export default {
   },
   computed: {
     displayMyFilesLink() {
-      return window.ProcessMaker.packages.includes("package-files");
+      return window.ProcessMaker?.packages?.includes("package-files");
     },
     viewProfileText() {
       return this.$t("View {{user}} Profile", { user: this.username });

@@ -50,7 +50,7 @@
 
 <script>
 export default {
-  router: window.ProcessMaker.Router,
+  router: window.ProcessMaker?.Router,
   props: ["process", "category", "template"],
   data() {
     return {

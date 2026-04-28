@@ -124,6 +124,7 @@
 <script src="{{ mix('js/modeler-vendor.js') }}"></script>
 <script src="{{ mix('js/app.js') }}"></script>
 <script>
+  window.ProcessMaker = window.ProcessMaker || {};
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>
 <script src="{{ mix('js/app-layout.js') }}"></script>

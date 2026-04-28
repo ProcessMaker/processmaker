@@ -1,8 +1,14 @@
 import { Multiselect } from "@processmaker/vue-multiselect";
+import Vue from "vue";
+import { createPmEventBus } from "../../lib/pmEventBus";
+
+window.Vue = window.Vue || Vue;
+window.ProcessMaker = window.ProcessMaker || {};
+window.ProcessMaker.EventBus = window.ProcessMaker.EventBus || createPmEventBus();
 
 Vue.component("Multiselect", Multiselect);
 
-ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
+window.ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
   const { FormBuilderControls, globalProperties } = window.ScreenBuilder;
   const initialControls = FormBuilderControls;
   // The submit button has by default the 'submit' value

@@ -138,6 +138,7 @@
 <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
 <script src="{{ mix('js/app.js') }}"></script>
 <script>
+  window.ProcessMaker = window.ProcessMaker || {};
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   window.ProcessMaker.ai = {
     ragCollections: @json(config('ai.rag_collections.enabled')),

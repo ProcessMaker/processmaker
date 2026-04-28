@@ -463,6 +463,7 @@
 @section('js')
   <script src="{{ mix('js/processes/modeler/initialLoad.js') }}"></script>
   <script>
+    window.ProcessMaker = window.ProcessMaker || {};
     window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
     window.Processmaker = {
       csrfToken: "{{csrf_token()}}",

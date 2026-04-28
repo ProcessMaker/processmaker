@@ -234,7 +234,7 @@ export default {
   mounted() {
     const action = this.actions.find((x) => x.value === "view-documentation");
     let documentationUrl = "";
-    if (window.ProcessMaker.packages.includes("package-ai")) {
+    if (window.ProcessMaker?.packages?.includes("package-ai")) {
       documentationUrl = "/modeler/template/{{id}}/documentation";
     } else if (this.isDocumenterInstalled) {
       documentationUrl = "/modeler/template/{{id}}/print";

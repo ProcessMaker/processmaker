@@ -631,7 +631,7 @@
                     ? JSON.parse(this.formData.connected_accounts) 
                     : [];
 
-                  if (window.ProcessMaker.packages.includes('connector-slack')) {
+                  if (window.ProcessMaker?.packages?.includes('connector-slack')) {
                     if (!accounts.some(account => account.name === 'Slack')) {
                       accounts.push(DEFAULT_ACCOUNTS.connectorSlack);
                     }

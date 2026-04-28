@@ -212,16 +212,49 @@ export default {
       this.transform(this.chart);
     },
     setDefaults() {
-      Chart.defaults.global.defaultFontFamily = "'Open Sans'";
-      Chart.defaults.global.defaultFontSize = 12;
-      Chart.defaults.global.defaultFontStyle = "bold";
-      Chart.defaults.global.layout.padding = 1;
+      if (typeof Chart === "undefined" || !Chart.defaults) {
+        return;
+      }
 
-      Chart.scaleService.updateScaleDefaults("linear", {
-        ticks: {
+      if (Chart.defaults.global) {
+        // Chart.js v2
+        Chart.defaults.global.defaultFontFamily = "'Open Sans'";
+        Chart.defaults.global.defaultFontSize = 12;
+        Chart.defaults.global.defaultFontStyle = "bold";
+        Chart.defaults.global.layout.padding = 1;
+
+        if (Chart.scaleService && Chart.scaleService.updateScaleDefaults) {
+          Chart.scaleService.updateScaleDefaults("linear", {
+            ticks: {
+              min: 0,
+            },
+          });
+        }
+        return;
+      }
+
+      // Chart.js v3/v4
+      Chart.defaults.font = {
+        ...(Chart.defaults.font || {}),
+        family: "'Open Sans'",
+        size: 12,
+        weight: "bold",
+      };
+      Chart.defaults.layout = {
+        ...(Chart.defaults.layout || {}),
+        padding: 1,
+      };
+      Chart.defaults.scales = {
+        ...(Chart.defaults.scales || {}),
+        linear: {
+          ...((Chart.defaults.scales || {}).linear || {}),
           min: 0,
+          ticks: {
+            ...(((Chart.defaults.scales || {}).linear || {}).ticks || {}),
+            min: 0,
+          },
         },
-      });
+      };
     },
     setupChartOptions() {
       const { options } = this;

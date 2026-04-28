@@ -1,6 +1,10 @@
 import formTypes from "./formTypes";
+import { createPmEventBus } from "../../lib/pmEventBus";
 
-ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
+window.ProcessMaker = window.ProcessMaker || {};
+window.ProcessMaker.EventBus = window.ProcessMaker.EventBus || createPmEventBus();
+
+window.ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
   const { FormBuilderControls, globalProperties } = window.ScreenBuilder;
 
   const TableControl = FormBuilderControls.find((control) => control.rendererBinding === "FormMultiColumn");

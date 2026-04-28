@@ -4,6 +4,8 @@ import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterSt
 import ParticipantHomeScreen from "./components/ParticipantHomeScreen.vue";
 import PmqlInput from "../components/shared/PmqlInput.vue";
 
+window.ProcessMaker = window.ProcessMaker || {};
+
 Vue.component("TasksList", TasksList);
 Vue.component("ParticipantHomeScreen", ParticipantHomeScreen);
 
@@ -17,8 +19,8 @@ const main = new Vue({
     TasksListCounter,
   },
   data: {
-    showOldTaskScreen: window.ProcessMaker.showOldTaskScreen,
-    userConfiguration: window.ProcessMaker.userConfiguration,
+    showOldTaskScreen: window.ProcessMaker?.showOldTaskScreen ?? false,
+    userConfiguration: window.ProcessMaker?.userConfiguration || {},
     urlConfiguration: "users/configuration",
     showMenu: true,
     columns: window.Processmaker.defaultColumns || null,
@@ -66,7 +68,7 @@ const main = new Vue({
         _hide_badge: true,
       },
     ],
-    taskDraftsEnabled: window.ProcessMaker.taskDraftsEnabled,
+    taskDraftsEnabled: window.ProcessMaker?.taskDraftsEnabled ?? false,
   },
   mounted() {
     ProcessMaker.EventBus.$on("advanced-search-addition", (component) => {

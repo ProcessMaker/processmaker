@@ -35,6 +35,10 @@ require("bootstrap");
 
 const { Vue } = window;
 
+window.ProcessMaker = window.ProcessMaker || {};
+window.ProcessMaker.user = window.ProcessMaker.user || {};
+window.ProcessMaker.notifications = window.ProcessMaker.notifications || {};
+
 Vue.use(VueHtml2Canvas);
 
 if (window.ProcessMaker && window.ProcessMaker.user) {
@@ -44,7 +48,9 @@ if (window.ProcessMaker && window.ProcessMaker.user) {
 }
 if (document.documentElement.lang) {
   moment.locale(document.documentElement.lang);
-  window.ProcessMaker.user.lang = document.documentElement.lang;
+  if (window.ProcessMaker.user) {
+    window.ProcessMaker.user.lang = document.documentElement.lang;
+  }
 }
 Vue.prototype.moment = moment;
 // initializing global instance of a moment object
@@ -78,6 +84,7 @@ Vue.component("LanguageSelectorButton", (resolve) => {
 
 // Event bus ProcessMaker
 window.ProcessMaker.events = createPmEventBus();
+window.ProcessMaker.events.$cookies = Vue.$cookies;
 
 // Verify if is mobile
 const browser = navigator.userAgent;
