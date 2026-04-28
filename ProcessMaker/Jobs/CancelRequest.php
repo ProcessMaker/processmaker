@@ -54,7 +54,7 @@ class CancelRequest extends BpmnAction implements ShouldQueue
         }
 
         // Close tokens that were created after the in-memory snapshot (race with parallel
-        // gateways / concurrent completions). See FOUR-28073.
+        // gateways / concurrent completions).
         ProcessRequestToken::query()
             ->where('process_request_id', $instance->getKey())
             ->where('status', '!=', ActivityInterface::TOKEN_STATE_CLOSED)
