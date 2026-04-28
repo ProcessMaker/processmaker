@@ -68,7 +68,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "styles/components/modal";
-::v-deep .modal-header .delete-icon {
+:deep(.modal-header .delete-icon) {
   width: 48px;
   height: 48px;
   background-color: #FEE6E5;
@@ -79,25 +79,25 @@ export default {
   color: #EC5962;
   font-size: 26px;
 }
-::v-deep .modal-body-text {
+:deep(.modal-body-text) {
   font-size: 16px;
   font-weight: 500;
 }
-::v-deep .modal-footer {
+:deep(.modal-footer) {
   background-color: #FBFBFC;
   border-top: 1px solid #E9ECF1;
   border-bottom-left-radius: 16px;
   border-bottom-right-radius: 16px;
 }
-::v-deep .modal-footer .btn-primary {
+:deep(.modal-footer .btn-primary) {
   border: none;
   background-color: #EC5962;
   color: #FFFFFF;
 }
-::v-deep .modal-footer .btn-primary:hover {
+:deep(.modal-footer .btn-primary:hover) {
   background-color: #c74a51;
 }
-::v-deep .modal-footer .btn-secondary {
+:deep(.modal-footer .btn-secondary) {
   border: 1px solid #D7DDE5;
   background-color: #FFFFFF;
   color: #20242A;

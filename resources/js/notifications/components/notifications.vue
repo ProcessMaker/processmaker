@@ -436,7 +436,7 @@ export default {
     height: auto !important;
 }
 
-.notification-popover::v-deep .tabs {
+.notification-popover:deep(.tabs) {
   .nav-tabs {
     border-bottom: 0 !important;
     font-size: 1.2em;

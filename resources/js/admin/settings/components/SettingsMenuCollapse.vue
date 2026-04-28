@@ -254,7 +254,7 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
-::v-deep .settings-ellipsis-menu .contracted-menu {
+:deep(.settings-ellipsis-menu .contracted-menu) {
   background-color: transparent;
   border: none;
   box-shadow: none;

@@ -178,7 +178,7 @@ export default {
     .editor-container .editor{
         height: 700px;
     }
-    .sidebar-tree-view::v-deep .b-sidebar {
+    .sidebar-tree-view:deep(.b-sidebar) {
       margin-top: 128px;
       margin-right: 315px;
       width: 65%;

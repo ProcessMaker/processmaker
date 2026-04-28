@@ -352,7 +352,7 @@ const handleInstallationComplete = () => {
 
 @import "styles/components/table";
 @import "styles/components/modal";
-::v-deep .delete-modal-style .modal-header .delete-icon {
+:deep(.delete-modal-style .modal-header .delete-icon) {
   width: 48px;
   height: 48px;
   background-color: #FEE6E5;
@@ -363,22 +363,22 @@ const handleInstallationComplete = () => {
   color: #EC5962;
   font-size: 26px;
 }
-::v-deep .delete-modal-style .modal-body-text {
+:deep(.delete-modal-style .modal-body-text) {
   font-size: 16px;
   font-weight: 500;
 }
-::v-deep .delete-modal-style .modal-footer {
+:deep(.delete-modal-style .modal-footer) {
   background-color: #FBFBFC;
   border-top: 1px solid #E9ECF1;
   border-bottom-left-radius: 16px;
   border-bottom-right-radius: 16px;
 }
-::v-deep .delete-modal-style .modal-footer .btn-primary {
+:deep(.delete-modal-style .modal-footer .btn-primary) {
   border: none;
   background-color: #EC5962;
   color: #FFFFFF;
 }
-::v-deep .delete-modal-style .modal-footer .btn-secondary {
+:deep(.delete-modal-style .modal-footer .btn-secondary) {
   border: 1px solid #D7DDE5;
   background-color: #FFFFFF;
   color: #20242A;

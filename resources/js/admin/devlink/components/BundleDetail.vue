@@ -309,13 +309,13 @@ width: 100%;
   padding-right: 24px;
   margin-bottom: 8px;
 }
-::v-deep .btn {
+:deep(.btn) {
   font-size: 14px;
   border-radius: 8px;
   text-transform: none;
   margin-left: 8px;
 }
-::v-deep .dropdown-menu {
+:deep(.dropdown-menu) {
   border-radius: 8px;
   font-size: 14px;
   font-weight: 400;

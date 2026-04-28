@@ -182,7 +182,7 @@ export default {
   margin-bottom: 2rem;
 }
 
-::v-deep(.custom-css-scope [selector="btn-bx1"] button) {
+:deep(.custom-css-scope [selector="btn-bx1"] button) {
   width: auto !important;
 }
 </style>
