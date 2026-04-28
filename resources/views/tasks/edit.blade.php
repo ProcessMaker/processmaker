@@ -87,25 +87,29 @@
             <div id="tabContent" class="tab-content tw-flex tw-flex-col tw-grow tw-overflow-y-scroll">
               <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
                 @can('update', $task)
-                <task
-                  ref="task"
-                  class="card border-0"
-                  v-model="formData"
-                  :initial-task-id="{{ $task->id }}"
-                  :initial-request-id="{{ $task->process_request_id }}"
-                  :screen-version="{{ $task->screen['id'] ?? null }}"
-                  :user-id="{{ Auth::user()->id }}"
-                  csrf-token="{{ csrf_token() }}"
-                  initial-loop-context="{{ $task->getLoopContext() }}"
-                  :wait-loading-listeners="true"
-                  @task-updated="taskUpdated"
-                  @updated-page-core="updatePage"
-                  @submit="submit"
-                  @completed="completed"
-                  @@error="error"
-                  @closed="closed"
-                  @redirect="redirectToTask"
-                  @form-data-changed="handleFormDataChange" />
+                  @unless($hitlEnabled)
+                    <task
+                      ref="task"
+                      class="card border-0"
+                      v-model="formData"
+                      :initial-task-id="{{ $task->id }}"
+                      :initial-request-id="{{ $task->process_request_id }}"
+                      :screen-version="{{ $task->screen['id'] ?? null }}"
+                      :user-id="{{ Auth::user()->id }}"
+                      csrf-token="{{ csrf_token() }}"
+                      initial-loop-context="{{ $task->getLoopContext() }}"
+                      :wait-loading-listeners="true"
+                      @task-updated="taskUpdated"
+                      @updated-page-core="updatePage"
+                      @submit="submit"
+                      @completed="completed"
+                      @@error="error"
+                      @closed="closed"
+                      @redirect="redirectToTask"
+                      @form-data-changed="handleFormDataChange" />
+                  @else
+                    @include('tasks.partials.hitl-iframe', ['iframeSrc' => $iframeSrc ?? null])
+                  @endunless
                 @endcan
                 <div v-if="taskHasComments">
                   <timeline :commentable_id="task.id"
@@ -433,7 +437,7 @@
     let draftTask = task.draft;
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
-    const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
+    const userIsProcessManager = {{ in_array(Auth::user()->id, $task->process?->manager_id ?? []) ? "true": "false" }};
     const userConfiguration = @json($userConfiguration);
     let screenFields = @json($screenFields);
     window.Processmaker.user = @json($currentUser);

@@ -116,10 +116,15 @@ class ProcessLaunchpadExporterTest extends TestCase
         $properties = json_decode($newProcess->launchpad->properties, true);
         $newSavedSearch1Id = Arr::get($properties, 'tabs.0.idSavedSearch');
         $newSavedSearch2Id = Arr::get($properties, 'tabs.1.idSavedSearch');
+        $cancelScreen = $newProcess->cancelScreen;
 
         $this->assertNotEquals($originalSavedSearch1Id, $savedSearch1->id);
         $this->assertEquals($savedSearch1->id, $newSavedSearch1Id);
         $this->assertEquals($savedSearch2->id, $newSavedSearch2Id);
+        $this->assertNotNull($cancelScreen);
+        $this->assertEquals($cancelScreen->id, Arr::get($properties, 'screen_id'));
+        $this->assertEquals($cancelScreen->uuid, Arr::get($properties, 'screen_uuid'));
+        $this->assertEquals($cancelScreen->title, Arr::get($properties, 'screen_title'));
 
         // Re-import the same process.
         $importer = new Importer($payload, $options);

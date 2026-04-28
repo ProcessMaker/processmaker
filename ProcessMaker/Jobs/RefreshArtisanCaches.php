@@ -3,42 +3,18 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Console\Application;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Process;
 
-class RefreshArtisanCaches implements ShouldQueue, ShouldBeUnique
+class RefreshArtisanCaches implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
-
-    public $tries = 2; // One extra try to handle the debounce release
-
-    public $queuedAt;
-
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->queuedAt = time();
-    }
-
-    /**
-     * Debounce when multiple Settings are saved at the same time
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [
-            (new WithoutOverlapping('refresh_artisan_caches'))->dontRelease(),
-        ];
-    }
 
     /**
      * Execute the job.
@@ -47,33 +23,7 @@ class RefreshArtisanCaches implements ShouldQueue, ShouldBeUnique
      */
     public function handle()
     {
-        // Skip in testing environment because this reconnects the database
-        // meaning we loose transactions, and sets the console output verbosity
-        // to quiet so we loose expectsOutput assertions.
-        if (app()->environment('testing')) {
-            return;
-        }
-
-        // Wait 3 seconds before running the job - debounce
-        if ($this->queuedAt && $this->queuedAt >= time() - 3) {
-            $this->release(3);
-
-            return;
-        }
-
-        $options = [
-            '--no-interaction' => true,
-            '--quiet' => true,
-        ];
-
-        if (app()->configurationIsCached()) {
-            Artisan::call('config:cache', $options);
-        } else {
-            Artisan::call('queue:restart', $options);
-
-            // We call this manually here since this job is dispatched
-            // automatically when the config *is* cached
-            RestartMessageConsumers::dispatchSync();
-        }
+        // Do not rebuild the cache and restart the queue any more.
+        // This is no longer needed.
     }
 }

@@ -1,3 +1,5 @@
+import { getReassignUsers as getReassignUsersApi } from "../tasks/api";
+
 export default {
   data() {
     return {
@@ -21,28 +23,28 @@ export default {
           this.allowReassignment = response.data[this.task.id];
         });
     },
-    getReassignUsers(filter = null) {
-      const params = { };
-      if (filter) {
-        params.filter = filter;
-      }
-      if (this.task?.id) {
-        params.assignable_for_task_id = this.task.id;
-      }
+    async getReassignUsers(filter = null) {
+      try {
+        const response = await getReassignUsersApi(
+          filter,
+          this.task?.id,
+          this.task?.request_data,
+          this.currentTaskUserId
+        );
 
-      ProcessMaker.apiClient.get('users_task_count', { params }).then(response => {
         this.reassignUsers = [];
-        response.data.data.forEach((user) => {
-          if (this.currentTaskUserId === user.id) {
-            return;
-          }
-          this.reassignUsers.push({
-            text: user.fullname,
-            value: user.id,
-            active_tasks_count: user.active_tasks_count
+        if (response?.data) {
+          response.data.forEach((user) => {
+            this.reassignUsers.push({
+              text: user.fullname,
+              value: user.id,
+              active_tasks_count: user.active_tasks_count
+            });
           });
-        });
-      });
+        }
+      } catch (error) {
+        console.error('Error loading reassign users:', error);
+      }
     },
     onReassignInput: _.debounce(function (filter) {
       this.getReassignUsers(filter);

@@ -35,12 +35,14 @@ class DashboardTest extends TestCase
         $this->user->permissions()->attach(Permission::byName('view-users'));
         $this->user->permissions()->attach(Permission::byName('view-groups'));
         $this->user->refresh();
+        $this->user->invalidatePermissionCache();
 
         $response = $this->webCall('GET', '/admin');
         $response->assertRedirect(route('users.index'));
 
         $this->user->permissions()->detach(Permission::byName('view-users'));
         $this->user->refresh();
+        $this->user->invalidatePermissionCache();
         $this->flushSession();
 
         $response = $this->webCall('GET', '/admin');

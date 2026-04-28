@@ -92,7 +92,7 @@ class UserTokenController extends Controller
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
-        $tokens = $this->tokenRepository->forUser($user->id);
+        $tokens = $this->tokenRepository->forUser($user);
 
         $results = $tokens->load('client')->filter(function ($token) {
             return $token->client->personal_access_client && !$token->revoked;
@@ -202,7 +202,7 @@ class UserTokenController extends Controller
 
         $token = $this->tokenRepository->findForUser(
             $tokenId,
-            $user->getKey()
+            $user
         );
 
         if (is_null($token)) {
@@ -256,7 +256,7 @@ class UserTokenController extends Controller
 
         $token = $this->tokenRepository->findForUser(
             $tokenId,
-            $user->getKey()
+            $user
         );
 
         if (is_null($token)) {

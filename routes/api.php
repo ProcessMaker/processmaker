@@ -45,7 +45,7 @@ use ProcessMaker\Http\Controllers\Api\WizardTemplateController;
 use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 
-Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/1.0')->name('api.')->group(function () {
+Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->prefix('api/1.0')->name('api.')->group(function () {
     // Users
     Route::get('users', [UserController::class, 'index'])->name('users.index'); // Permissions handled in the controller
     Route::get('users/{user}', [UserController::class, 'show'])->name('users.show'); // Permissions handled in the controller
@@ -60,8 +60,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy')->middleware('can:delete-users');
     Route::put('password/change', [ChangePasswordController::class, 'update'])->name('password.update');
     Route::put('users/update_language', [UserController::class, 'updateLanguage'])->name('users.updateLanguage');
-    Route::get('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count')
-        ->middleware('can:view-users');
+    Route::get('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count');
+    Route::post('users_task_count', [UserController::class, 'getUsersTaskCount'])->name('users.users_task_count_post');
 
     // User Groups
     Route::put('users/{user}/groups', [UserController::class, 'updateGroups'])->name('users.groups.update')->middleware('can:edit-users');
@@ -233,6 +233,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Cases
     Route::get('cases/stages_bar/{case_number?}', [CaseController::class, 'getStagePerCase'])->name('cases.stage');
+    Route::delete('cases/{case_number}', [CaseController::class, 'destroy'])->name('cases.destroy');
 
     // TaskDrafts
     Route::put('drafts/{task}', [TaskDraftController::class, 'update'])->name('taskdraft.update');
@@ -448,6 +449,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     });
 
     // Slack Connector Validation
-    Route::post('connector-slack/validate-token', [\ProcessMaker\Packages\Connectors\Slack\Controllers\SlackController::class, 'validateToken'])->name('connector-slack.validate-token');
+    Route::post('connector-slack/validate-token', [ProcessMaker\Packages\Connectors\Slack\Controllers\SlackController::class, 'validateToken'])->name('connector-slack.validate-token');
 });
 Route::post('devlink/bundle-updated/{bundle}/{token}', [DevLinkController::class, 'bundleUpdated'])->name('devlink.bundle-updated');

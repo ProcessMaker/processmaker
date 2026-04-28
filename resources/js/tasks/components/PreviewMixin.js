@@ -172,6 +172,7 @@ const PreviewMixin = {
       }
       this.prevTask = prevTask;
       this.nextTask = nextTask;
+      this.showReassignment = false;
     },
     /**
      * Expand Open task

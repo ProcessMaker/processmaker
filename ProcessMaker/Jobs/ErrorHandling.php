@@ -93,10 +93,11 @@ class ErrorHandling
     public function sendExecutionErrorNotification(string $message)
     {
         if ($this->processRequestToken) {
-            $user = $this->processRequestToken->processRequest->processVersion->manager;
-            if ($user !== null) {
-                Log::info('Send Execution Error Notification: ' . $message);
-                Notification::send($user, new ErrorExecutionNotification($this->processRequestToken, $message, $this->bpmnErrorHandling));
+            // review no multiple managers
+            $mangers = $this->processRequestToken->processRequest->processVersion->getManagers();
+            foreach ($mangers as $manager) {
+                Log::info('Send Execution Error Notification: ' . $message . ' to manager: ' . $manager->username);
+                Notification::send($manager, new ErrorExecutionNotification($this->processRequestToken, $message, $this->bpmnErrorHandling));
             }
         }
     }
@@ -210,10 +211,59 @@ class ErrorHandling
     public static function convertResponseToException($result)
     {
         if ($result['status'] === 'error') {
-            if (str_starts_with($result['message'], 'Command exceeded timeout of')) {
-                throw new ScriptTimeoutException($result['message']);
+            $rawMessage = $result['message'] ?? '';
+            if (str_starts_with((string) $rawMessage, 'Command exceeded timeout of')) {
+                throw new ScriptTimeoutException((string) $rawMessage);
             }
-            throw new ScriptException($result['message']);
+
+            $message = self::extractScriptErrorMessage($result);
+
+            if (empty($message)) {
+                $message = $rawMessage ?: 'Script execution failed with unknown error';
+            }
+
+            throw new ScriptException($message);
         }
+    }
+
+    /**
+     * Extract a concise error message from the microservice response.
+     */
+    private static function extractScriptErrorMessage(array $result): string
+    {
+        $candidates = [
+            $result['output']['error'] ?? null,
+            $result['output']['exception'] ?? null,
+            $result['output']['stderr'] ?? null,
+            $result['output']['stdout'] ?? null,
+            $result['message'] ?? null,
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (is_string($candidate) || is_numeric($candidate)) {
+                $short = self::shortenMessage((string) $candidate);
+                if (!empty($short)) {
+                    return $short;
+                }
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Keep only the first line of the error and limit its length to avoid noisy traces.
+     */
+    private static function shortenMessage(string $message): string
+    {
+        $firstLine = strtok($message, "\n");
+        $firstLine = $firstLine === false ? $message : $firstLine;
+        $trimmed = trim($firstLine);
+
+        if (strlen($trimmed) > 400) {
+            return substr($trimmed, 0, 400) . '…';
+        }
+
+        return $trimmed;
     }
 }

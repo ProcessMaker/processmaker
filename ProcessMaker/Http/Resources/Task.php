@@ -74,6 +74,8 @@ class Task extends ApiResource
 
         $this->addAssignableUsers($array, $include);
 
+        $this->mergeHitlCaseNumber($array);
+
         return $array;
     }
 
@@ -114,6 +116,28 @@ class Task extends ApiResource
         }
     }
 
+    private function mergeHitlCaseNumber(array &$array): void
+    {
+        if (!config('smart-extract.hitl_enabled')) {
+            return;
+        }
+
+        if (!empty(data_get($array, 'process_request.case_number'))) {
+            return;
+        }
+
+        $this->processRequest->loadMissing('parentRequest');
+        $parentCaseNumber = $this->processRequest->parentRequest?->case_number;
+        if (!$parentCaseNumber) {
+            return;
+        }
+
+        data_set($array, 'process_request.case_number', $parentCaseNumber);
+        if (empty($array['case_number'])) {
+            $array['case_number'] = $parentCaseNumber;
+        }
+    }
+
     /**
      * Add the active users to the list of assigned users
      *
@@ -131,7 +155,7 @@ class Task extends ApiResource
                 ->whereNotIn('status', Process::NOT_ASSIGNABLE_USER_STATUS)
                 ->whereIn('id', $chunk)
                 ->pluck('id')->toArray();
-            $assignedUsers = array_merge($assignedUsers,$activeUsers);
+            $assignedUsers = array_merge($assignedUsers, $activeUsers);
         }
 
         return $assignedUsers;

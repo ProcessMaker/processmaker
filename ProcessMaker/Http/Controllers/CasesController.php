@@ -65,6 +65,9 @@ class CasesController extends Controller
 
         // Get all the request related to this case number
         $allRequests = ProcessRequest::where('case_number', $case_number)->get();
+        if ($allRequests->isEmpty()) {
+            abort(404);
+        }
         $parentRequest = null;
         $requestCount = $allRequests->count();
         // Search the parent request parent_request_id and load $request
@@ -74,6 +77,7 @@ class CasesController extends Controller
                 break;
             }
         }
+        $request = $parentRequest ?: $allRequests->first();
         $request->participants;
         $request->user;
         // Load the data and key values
@@ -95,7 +99,7 @@ class CasesController extends Controller
         // The user can see the comments
         $canViewComments = (Auth::user()->hasPermissionsFor('comments')->count() > 0) || class_exists(PackageServiceProvider::class);
         // The user is Manager from the main request
-        $isProcessManager = $request->process?->manager_id === Auth::user()->id;
+        $isProcessManager = in_array(Auth::user()->id, $request->process?->manager_id ?? []);
         // Check if the user has permission print for request
         $canPrintScreens = $canOpenCase = $this->canUserCanOpenCase($allRequests);
         if (!$canOpenCase && !$isProcessManager) {

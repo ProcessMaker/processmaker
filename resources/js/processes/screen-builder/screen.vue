@@ -606,6 +606,7 @@ export default {
             value: "create-template",
             content: this.$t("Save as Template"),
             icon: "fas fa-file-image",
+            conditional: "if(is_template, false, true)",
           },
         ],
       },
@@ -1234,7 +1235,9 @@ export default {
           section: "right",
           options: {
             actions: [...this.ellipsisMenuOptions.actions],
-            data: {},
+            data: {
+              is_template: !!this.screen.is_template,
+            },
             divider: false,
             lauchpad: true,
           },

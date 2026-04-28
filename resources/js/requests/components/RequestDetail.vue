@@ -184,12 +184,32 @@ export default {
               this.status
             }&per_page=${
               this.perPage
-            }${this.getSortParam()}`,
+            }${this.getSortParam()}${this.getColumnsParam()}`,
         )
         .then((response) => {
           this.data = this.transform(response.data);
           this.loading = false;
         });
+    },
+    /**
+     * Get the fields parameter for the API request
+     * @returns {string} The fields parameter for the API request
+     */
+    getColumnsParam() {
+      const fields = [
+        'id',
+        'element_id',           // Required by assignableUsers relationship (TokenAssignableUsers::match uses element_id)
+        'element_name',
+        'user_id',
+        'process_id',
+        'process_request_id',
+        'status',
+        'due_at',
+        'is_self_service',
+        'is_actionbyemail',
+        'self_service_groups',  // Required by Task resource's addAssignableUsers() method when recalculating assignable users
+      ];
+      return `&fields=${fields.join(',')}`;
     },
     getSortParam() {
       if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {

@@ -330,4 +330,28 @@ class ScreenExporterTest extends TestCase
         $newInterstitial = Screen::where('title', 'Default Interstitial 2')->firstOrFail();
         $this->assertNull($newInterstitial->key);
     }
+
+    public function testExportScreenWithMissingDependentScreen()
+    {
+        $screen = Screen::factory()->create([
+            'title' => 'Screen with missing dependent screen',
+            'key' => 'screen',
+            'config' => [
+                ['items' => [
+                    ['component' => 'FormNestedScreen', 'config' => ['screen' => 9999999999]],
+                ]],
+            ],
+        ]);
+
+        $exporter = new Exporter();
+        $exporter->exportScreen($screen);
+        $payload = $exporter->payload();
+
+        $screens = Arr::where($payload['export'], function ($value) {
+            return $value['type'] === 'Screen';
+        });
+
+        $this->assertCount(1, $screens);
+        $this->assertEquals($screen->uuid, Arr::first($screens)['attributes']['uuid']);
+    }
 }

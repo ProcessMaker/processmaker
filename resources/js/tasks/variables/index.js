@@ -1,6 +1,6 @@
 export default {};
 
-export const api = window.ProcessMaker?.apiClient;
+export const getApi = () => window.ProcessMaker?.apiClient;
 
 export const i18n = window.ProcessMaker?.i18n;
 

@@ -6,7 +6,7 @@
           <template #header>
             <div class="d-flex justify-content-between align-items-center">
               <h5 class="mb-0">
-                Tenant Jobs - {{ tenant ? tenant.name : `Tenant ${tenantId}` }}
+                {{ tenant ? tenant.name : `Tenant ${tenantId}` }}
               </h5>
               <div>
                 <b-button
@@ -87,9 +87,9 @@
                 {{ getStatusText(data.item.status) }}
               </b-badge>
             </template>
-
-            <template #cell(queued)="data">
-              {{ formatTimestamp(data.item.queued_at) }}
+            
+            <template #cell(pushed)="data">
+              {{ formatTimestamp(data.item.pushed_at) }}
             </template>
 
             <template #cell(completed)="data">
@@ -143,7 +143,7 @@ export default {
         { key: "name", label: "Name" },
         { key: "queue", label: "Queue" },
         { key: "status", label: "Status" },
-        { key: "queued", label: "Queued" },
+        { key: "pushed", label: "Pushed" },
         { key: "completed", label: "Completed" },
         { key: "runtime", label: "Runtime" },
         { key: "actions", label: "Actions" },
@@ -260,7 +260,6 @@ export default {
      * @returns {string} The formatted runtime.
      */
     formatRuntime(queuedAt, completedAt) {
-      console.log(queuedAt, completedAt);
       if (!queuedAt || !completedAt) return "-";
       const runtime = completedAt - queuedAt;
       return `${runtime.toFixed(2)}s`;

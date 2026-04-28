@@ -52,7 +52,7 @@ class Install extends Command
             {--data-username=                   : The data database username}
             {--data-password=                   : The data database password}
             {--data-schema=                     : The data database schema (if pgsql)}
-            {--redis-client=predis              : The Redis client (predis or phpredis)}
+            {--redis-client=phpredis            : The Redis client (predis or phpredis)}
             {--redis-host=                      : The Redis host, default is 127.0.0.1}
             {--redis-prefix=                    : The prefix to be appended to Redis entries}
             {--horizon-prefix=horizon:          : The prefix to be appended to Horizon queue entries}

@@ -4,6 +4,10 @@ const templatePreviewMixin = {
       showPreview: false,
       showRight: true,
       template: {},
+      prevTemplate: {},
+      nextTemplate: {},
+      existPrev: false,
+      existNext: false,
       data: [],
       templateTitle: "",
       loading: true,
@@ -28,6 +32,9 @@ const templatePreviewMixin = {
       this.template = info;
       this.showPreview = true;
       this.data = data;
+      this.existPrev = false;
+      this.existNext = false;
+      this.defineNextPrevTemplate();
     },
     showButton() {
       this.isMouseOver = true;
@@ -85,6 +92,33 @@ const templatePreviewMixin = {
       this.showTemplatePreview = false;
       this.selectedTemplate = null;
     },
+    closePreviewFrame() {
+      if (this.$refs?.preview?.onClose) {
+        this.$refs.preview.onClose();
+        return;
+      }
+      if (typeof this.onClose === "function") {
+        this.onClose();
+      }
+    },
+    bindPreviewTabClose(tabSelector) {
+      if (!tabSelector || typeof $ === "undefined") {
+        return;
+      }
+      this._previewTabSelector = tabSelector;
+      this._previewTabHandler = () => {
+        this.closePreviewFrame();
+      };
+      $(tabSelector).on("hide.bs.tab.templatePreview", this._previewTabHandler);
+    },
+    unbindPreviewTabClose() {
+      if (!this._previewTabSelector || typeof $ === "undefined") {
+        return;
+      }
+      $(this._previewTabSelector).off("hide.bs.tab.templatePreview", this._previewTabHandler);
+      this._previewTabSelector = null;
+      this._previewTabHandler = null;
+    },
     onClose() {
       this.$emit('mark-selected-row', 0);
       this.showPreview = false;
@@ -99,6 +133,56 @@ const templatePreviewMixin = {
       this.isLoading = "";
       this.stopFrame = false;
       this.size = 50;
+      this.prevTemplate = {};
+      this.nextTemplate = {};
+      this.existPrev = false;
+      this.existNext = false;
+    },
+    defineNextPrevTemplate() {
+      if (!Array.isArray(this.data)) {
+        this.prevTemplate = {};
+        this.nextTemplate = {};
+        this.existPrev = false;
+        this.existNext = false;
+        return;
+      }
+
+      let prevTemplate = {};
+      let nextTemplate = {};
+      let seeNextTemplate = false;
+      for (const templateIndex in this.data) {
+        if (!seeNextTemplate) {
+          if (this.data[templateIndex] === this.template) {
+            seeNextTemplate = true;
+          } else {
+            prevTemplate = this.data[templateIndex];
+            this.existPrev = true;
+          }
+        } else {
+          nextTemplate = this.data[templateIndex];
+          this.existNext = true;
+          break;
+        }
+      }
+      this.prevTemplate = prevTemplate;
+      this.nextTemplate = nextTemplate;
+    },
+    goPrevNext(action) {
+      let targetTemplate = null;
+      if (action === "Next" && this.existNext) {
+        targetTemplate = this.nextTemplate;
+      }
+      if (action === "Prev" && this.existPrev) {
+        targetTemplate = this.prevTemplate;
+      }
+
+      if (!targetTemplate) {
+        return;
+      }
+
+      this.$emit("select-template", targetTemplate);
+      this.$emit("mark-selected-row", targetTemplate.id);
+      this.showSideBar(targetTemplate, this.data);
     },
   },
 };

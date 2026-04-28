@@ -39,6 +39,8 @@ class GroupExporterTest extends TestCase
 
     public function testGroupWithUsers()
     {
+        $this->markTestSkipped('Group members are no longer exported/imported to avoid massive expansions.');
+
         DB::beginTransaction();
 
         // Creating 1 group and 10 users

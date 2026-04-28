@@ -5,23 +5,18 @@ namespace ProcessMaker\Providers;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 use Laravel\Passport\Passport;
 use ProcessMaker\Events\TenantResolved;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Media;
-use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessVersion;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\Policies\MediaPolicy;
@@ -60,6 +55,10 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+
+        // Explicitly disable client UUIDs to match the database schema (integer id)
+        // In newer versions of Passport, UUIDs are enabled by default
+        Passport::$clientUuids = false;
 
         Passport::enablePasswordGrant();
 
@@ -101,6 +100,10 @@ class AuthServiceProvider extends ServiceProvider
                     return $user->hasPermission($permission);
                 });
             }
+
+            Gate::define('view-designer', function ($user) {
+                return $user->canAny('view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables|view-projects');
+            });
         } catch (\Exception $e) {
             Log::notice('Unable to register gates. Either no database connection or no permissions table exists.');
         }
