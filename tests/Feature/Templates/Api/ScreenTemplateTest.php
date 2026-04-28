@@ -477,6 +477,42 @@ class ScreenTemplateTest extends TestCase
         $this->assertNotEmpty($updatedScreen->config[1]['items']);
     }
 
+    public function testApplyTemplateSanitizesSerializedInspectorComponents()
+    {
+        $templatePath = base_path(self::SCREEN_TEMPLATE_PATH);
+        $screenTemplateData = File::get($templatePath);
+
+        $screenTemplate = $this->createScreenTemplateFromManifest($screenTemplateData);
+
+        $screenPath = base_path(self::SCREEN_PATH);
+        $screenData = json_decode(File::get($screenPath), true);
+
+        $newScreen = Screen::factory()->create([
+            'config' => $screenData,
+        ]);
+
+        $route = route('api.template.applyTemplate', [
+            'type' => 'screen',
+            'id' => $screenTemplate->id,
+        ]);
+
+        $response = $this->apiCall('POST', $route, [
+            'screenId' => $newScreen->id,
+            'templateOptions' => ['Fields', 'Layout'],
+            'currentScreenPage' => 1,
+        ]);
+
+        $response->assertStatus(200);
+
+        if (class_exists(VersionHistory::class)) {
+            $updatedScreen = \ProcessMaker\Models\ScreenVersion::select('config')->where('screen_id', $newScreen->id)->latest()->firstOrFail();
+        } else {
+            $updatedScreen = Screen::select('config')->where('id', $newScreen->id)->firstOrFail();
+        }
+
+        $this->assertScreenConfigSanitized($updatedScreen->config);
+    }
+
     public function testApplyLayoutToExistingScreen()
     {
         // Create screen from template-manifest-with-css-fields-layout.json
@@ -573,5 +609,75 @@ class ScreenTemplateTest extends TestCase
 
         // Check that the screen has the custom_css
         $this->assertNotNull($updatedScreen->custom_css);
+    }
+
+    private function assertScreenConfigSanitized(array $config): void
+    {
+        foreach ($config as $page) {
+            $this->assertScreenConfigValueSanitized($page);
+        }
+    }
+
+    private function createScreenTemplateFromManifest(string $manifest): ScreenTemplates
+    {
+        $screenTemplate = ScreenTemplates::make([
+            'unique_template_id' => 'serialized-inspector-regression',
+            'name' => 'Serialized Inspector Regression',
+            'description' => 'Template with serialized Vue component inspector metadata.',
+            'version' => '1.0.0',
+            'user_id' => null,
+            'editing_screen_uuid' => null,
+            'screen_category_id' => ScreenCategory::factory()->create()->getKey(),
+            'screen_type' => 'FORM',
+            'media_collection' => 'serialized-inspector-regression-media',
+            'manifest' => $manifest,
+            'screen_custom_css' => null,
+            'is_public' => true,
+            'is_default_template' => false,
+            'is_system' => false,
+            'asset_type' => null,
+        ]);
+        $screenTemplate->saveOrFail();
+
+        return $screenTemplate;
+    }
+
+    private function assertScreenConfigValueSanitized($value): void
+    {
+        if (!is_array($value)) {
+            return;
+        }
+
+        if (array_key_exists('inspector', $value) && is_array($value['inspector'])) {
+            foreach ($value['inspector'] as $inspector) {
+                if (is_array($inspector) && array_key_exists('type', $inspector)) {
+                    $this->assertFalse(is_array($inspector['type']));
+                }
+            }
+        }
+
+        foreach (['content', 'label'] as $field) {
+            if (!array_key_exists($field, $value)) {
+                continue;
+            }
+
+            $this->assertFalse(is_array($value[$field]));
+        }
+
+        if (
+            array_key_exists('tooltip', $value)
+            && is_array($value['tooltip'])
+            && array_key_exists('content', $value['tooltip'])
+        ) {
+            $this->assertFalse(is_array($value['tooltip']['content']));
+        }
+
+        if (array_key_exists('validation', $value) && is_array($value['validation'])) {
+            $this->assertNotEmpty($value['validation']);
+        }
+
+        foreach ($value as $childValue) {
+            $this->assertScreenConfigValueSanitized($childValue);
+        }
     }
 }
