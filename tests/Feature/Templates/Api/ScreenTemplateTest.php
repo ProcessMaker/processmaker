@@ -392,13 +392,11 @@ class ScreenTemplateTest extends TestCase
 
     public function testApplyCssToExistingScreen()
     {
-        // Create a new screen with two pages and no custom_css
-        $screenPath = base_path(self::SCREEN_PATH);
-        $screenData = json_decode(File::get($screenPath), true);
-
+        // Create a new screen with no config and no custom_css
         $screen = Screen::factory()->create([
-            'config' => $screenData,
+            'config' => null,
         ]);
+        $this->assertNull($screen->config);
         $this->assertNull($screen->custom_css);
 
         // Create a screen template with custom_css
@@ -420,13 +418,14 @@ class ScreenTemplateTest extends TestCase
         $response->assertStatus(200);
 
         if (class_exists(VersionHistory::class)) {
-            $updatedScreen = \ProcessMaker\Models\ScreenVersion::select('custom_css')->where('screen_id', $screen->id)->latest()->firstOrFail();
+            $updatedScreen = \ProcessMaker\Models\ScreenVersion::select('config', 'custom_css')->where('screen_id', $screen->id)->latest()->firstOrFail();
         } else {
-            $updatedScreen = Screen::select('custom_css')->where('id', $screen->id)->firstOrFail();
+            $updatedScreen = Screen::select('config', 'custom_css')->where('id', $screen->id)->firstOrFail();
         }
 
         // Check that the screen has the custom_css
         $this->assertNotNull($updatedScreen->custom_css);
+        $this->assertNull($updatedScreen->config);
     }
 
     public function testApplyFieldsToExistingScreen()
@@ -475,6 +474,7 @@ class ScreenTemplateTest extends TestCase
 
         // Check that the screen config is not empty
         $this->assertNotEmpty($updatedScreen->config[1]['items']);
+        $this->assertScreenConfigSanitized($updatedScreen->config);
     }
 
     public function testApplyTemplateSanitizesSerializedInspectorComponents()

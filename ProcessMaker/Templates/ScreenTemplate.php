@@ -725,8 +725,6 @@ class ScreenTemplate implements TemplateInterface
                         $newTemplateScreen, $currentScreen, $templateOptions, $currentScreenPage);
                 }
 
-                $currentScreen->config = ScreenTemplateHelper::sanitizeScreenConfig($currentScreen->config);
-
                 // Copy the updated config from screenVersion to screen
                 // This is needed to save the changes to the current screen when applying a template to the screen version
                 if ($hasVersionsPackage) {
@@ -856,6 +854,7 @@ class ScreenTemplate implements TemplateInterface
                 throw new MissingScreenPageException();
             }
 
+            // Sanitize only imported template components so existing screen config is not altered.
             $templateComponents = ScreenTemplateHelper::sanitizeScreenConfig(
                 ScreenTemplateHelper::getScreenComponents($newTemplateScreen->config,
                     $supportedComponents, false)[0]['items'] ?? []
@@ -876,6 +875,7 @@ class ScreenTemplate implements TemplateInterface
             ?? []
                 : $newTemplateScreen->config[0]['items'] ?? [];
 
+        // Sanitize only imported template components so existing screen config is not altered.
         return ScreenTemplateHelper::sanitizeScreenConfig($templateComponents);
     }
 
