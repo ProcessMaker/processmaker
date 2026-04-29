@@ -54,7 +54,6 @@
         "processmaker/docker-executor-php": "1.4.3",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.12.4",
-        "processmaker/package-accessibility": "1.0.1",
         "processmaker/pmql": "1.13.3",
         "promphp/prometheus_client_php": "^2.12",
         "psr/http-message": "^2.0",
@@ -125,7 +124,6 @@
                 "package-pinnacle": "1.0.9",
                 "package-esign": "dev-fall",
                 "package-thermofisher": "dev-fall",
-                "package-zj-adoa": "dev-fall",
                 "pps-file-storage": "dev-fall",
                 "package-csi": "dev-fall",
                 "package-jxchange": "dev-fall",
@@ -142,13 +140,14 @@
                 "package-zj-sonymusic": "dev-fall",
                 "pm-platform": "dev-fall",
                 "package-zj-nas": "dev-fall",
-                "package-plg": "0.14.0",
+                "package-plg": "0.16.11",
                 "package-zj-birmingham": "dev-main",
                 "package-tce": "dev-master",
                 "package-case-overview": "dev-main",
-                "package-sis-integration": "1.0.0"
+                "package-sis-integration": "dev-develop"
             },
             "enterprise": {
+                "package-accessibility": "1.0.1",               
                 "connector-docusign": "1.11.2",
                 "connector-idp": "1.14.2",
                 "connector-pdf-print": "1.23.3",
@@ -231,6 +230,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/ProcessMaker/SocialiteProviders"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/ProcessMaker/docusign-esign-php-client.git"
         }
     ],
     "config": {
