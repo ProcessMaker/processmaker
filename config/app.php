@@ -21,7 +21,7 @@ return [
     'env' => env('APP_ENV', 'local'),
 
     // Should we place our application in debug mode
-    'debug' => env('APP_DEBUG', false),
+    'debug' => env('APP_DEBUG', true),
 
     // What's our default cache lifecycle
     'cache_lifetime' => env('APP_CACHE_LIFETIME', 60),
@@ -77,7 +77,7 @@ return [
     'processmaker_scripts_timeout' => env('PROCESSMAKER_SCRIPTS_TIMEOUT', 'timeout'),
 
     // System-level scripts timeout
-    'processmaker_system_scripts_timeout_seconds' => env('PROCESSMAKER_SYSTEM_SCRIPTS_TIMEOUT_SECONDS', 300),
+    'processmaker_system_scripts_timeout_seconds' => env('PROCESSMAKER_SYSTEM_SCRIPTS_TIMEOUT_SECONDS', 3000),
 
     // Since the task scheduler has a preset of one minute (crontab), the times
     // must be rounded or truncated to the nearest HH:MM:00 before compare
@@ -157,7 +157,7 @@ return [
         'favicon_path' => env('FAVICON_PATH', '/img/favicon.svg'),
 
         // Maximum file size for images to be set as default (in bytes) (5MB)
-        'img_max_filesize_limit' => env('IMG_MAX_FILESIZE_LIMIT', '5M'),
+        'img_max_filesize_limit' => env('IMG_MAX_FILESIZE_LIMIT', '50M'),
 
         // Maximum file size for documents to be set as default (in bytes) (10MB)
         'doc_max_filesize_limit' => env('DOC_MAX_FILESIZE_LIMIT', '10M'),
@@ -287,6 +287,9 @@ return [
 
     // Enable or disable TCE customization feature
     'tce_customization_enable' => env('TCE_CUSTOMIZATION_ENABLED', false),
+
+    // Enable or disable to show case number in screens feature
+    'tce_enable_case_number_screen' => env('TCE_ENABLE_CASE_NUMBER_SCREEN', false),
 
     'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', strtolower(preg_replace('/[^a-zA-Z0-9_]+/', '_', env('APP_NAME', 'processmaker')))),
 

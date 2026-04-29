@@ -88,6 +88,9 @@
               <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
                 @can('update', $task)
                   @unless($hitlEnabled)
+                  <div v-if="tceEnableCaseNumberScreen" class="tw-block tw-gap-2 tw-mb-0 tw-px-2 tw-bg-white tw-border-l tw-border-l-[#d7dde5] tw-border-r tw-border-r-[#d7dde5]" v-cloak>
+                    <span class="tw-font-medium tw-text-[#728092] tw-text-xs">Case ID:</span> <span class="tw-font-normal tw-text-[#9fa8b5] tw-text-xs">{{ $caseNumber }}</span>
+                  </div>
                     <task
                       ref="task"
                       class="card border-0"
@@ -438,6 +441,8 @@
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ in_array(Auth::user()->id, $task->process?->manager_id ?? []) ? "true": "false" }};
+    const caseNumber = @json($caseNumber);
+    window.ProcessMaker.tceEnableCaseNumberScreen = @json($tceEnableCaseNumberScreen);
     const userConfiguration = @json($userConfiguration);
     let screenFields = @json($screenFields);
     window.Processmaker.user = @json($currentUser);
