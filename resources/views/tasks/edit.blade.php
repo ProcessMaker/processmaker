@@ -89,7 +89,7 @@
                 @can('update', $task)
                   @unless($hitlEnabled)
                   <div v-if="tceEnableCaseNumberScreen" class="tw-block tw-gap-2 tw-mb-0 tw-px-2 tw-bg-white tw-border-l tw-border-l-[#d7dde5] tw-border-r tw-border-r-[#d7dde5]" v-cloak>
-                    <span class="tw-font-medium tw-text-[#728092] tw-text-xs">Case ID:</span> <span class="tw-font-normal tw-text-[#9fa8b5] tw-text-xs">{{ $caseNumber }}</span>
+                    <span class="tw-font-medium tw-text-[#728092] tw-text-xs">Case #:</span> <span class="tw-font-normal tw-text-[#9fa8b5] tw-text-xs">{{ $caseNumber }}</span>
                   </div>
                     <task
                       ref="task"
