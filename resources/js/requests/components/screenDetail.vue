@@ -1,31 +1,31 @@
 <template>
-  <div class="card h-100">
+  <div class="card">
     <b-overlay
-          id="overlay-background"
-          :show="disabled"
-          :variant="variant"
-          :opacity="opacity"
-          :blur="blur"
-          rounded="sm"
+      id="overlay-background"
+      :show="disabled"
+      :variant="variant"
+      :opacity="opacity"
+      :blur="blur"
+      rounded="sm"
+    >
+      <div class="w-100 d-print-none" align="right">
+        <button
+          type="button"
+          @click="print"
+          class="btn btn-secondary ml-2"
+          :aria-label="$t('Print')"
+          v-if="canPrint"
+          :disabled="disabled"
         >
-    <div class="w-100 d-print-none" align="right">
-      <button
-        type="button"
-        @click="print"
-        class="btn btn-secondary ml-2"
-        :aria-label="$t('Print')"
-        v-if="canPrint"
-        :disabled="disabled"
-      >
-        <i class="fas fa-print"></i> {{ $t("Print") }}
-      </button>
-    </div>
-    <div v-for="page in printablePages" :key="page" class="card">
-      <div class="card-body h-100" :style="cardStyles">
+          <i class="fas fa-print"></i> {{ $t("Print") }}
+        </button>
+      </div>
+      <div v-for="page in printablePages" :key="page" class="card-body" :style="cardStyles">
         <component
           ref="print"
           :is="component"
           v-model="formData"
+          :current-page="page"
           :data="formData"
           @update="onUpdate"
           :config="json"
@@ -34,20 +34,19 @@
           token-id=""
         />
       </div>
-    </div>
-    <div class="w-100 d-print-none" align="right">
-      <button
-        type="button"
-        @click="print"
-        v-if="canPrint"
-        class="btn btn-secondary ml-2"
-        :aria-label="$t('Print')"
-        :disabled="disabled"
-      >
-        <i class="fas fa-print"></i> {{ $t("Print") }}
-      </button>
-    </div>
-  </b-overlay>
+      <div class="w-100 d-print-none" align="right">
+        <button
+          type="button"
+          @click="print"
+          v-if="canPrint"
+          class="btn btn-secondary ml-2"
+          :aria-label="$t('Print')"
+          :disabled="disabled"
+        >
+          <i class="fas fa-print"></i> {{ $t("Print") }}
+        </button>
+      </div>
+    </b-overlay>
   </div>
 </template>
 
@@ -87,6 +86,7 @@
         isPhotoVideo: false,
         cardStyles: 'pointer-events: none;',
         iFramePostedData: null,
+        printablePages: [],
       }
     },
     computed: {
@@ -104,15 +104,6 @@
         set() {
 
         }
-      },
-      printablePages() {
-        const pages = [0];
-        if (this.rowData.config instanceof Array) {
-          this.rowData.config.forEach(page => {
-            this.findPagesInNavButtons(page, pages);
-          });
-        }
-        return pages;
       },
       component() {
         if ('renderComponent' in this.rowData.config) {
@@ -141,7 +132,7 @@
       } else {
           this.disabled = false;
       }
-      this.loadPages();
+      this.printablePages = this.loadPages();
     },
     methods: {
       closeRequestCount() {
@@ -156,13 +147,13 @@
         }
       },
       loadPages() {
-        this.$nextTick(() => {
-          this.$refs.print.forEach((page, index) => {
-            if (page.setCurrentPage) {
-              page.setCurrentPage(this.printablePages[index]);
-            }
+        const pages = [0];
+        if (this.rowData.config instanceof Array) {
+          this.rowData.config.forEach((page) => {
+            this.findPagesInNavButtons(page, pages);
           });
-        });
+        }
+        return pages;
       },
       findPagesInNavButtons(object, found = []) {
         if (object.items) {
@@ -175,7 +166,24 @@
           });
         } else if (object.config && object.config.event === 'pageNavigate' && object.config.eventData) {
           const page = parseInt(object.config.eventData);
-          found.indexOf(page) === -1 ? found.push(page) : null;
+          if (found.indexOf(page) === -1) {
+            found.push(page);
+          }
+        }
+        // Also search in the structure of pages of the form
+        if (object.component === 'FormMultiColumn' && object.config && object.config.pages) {
+          object.config.pages.forEach((page, index) => {
+            if (found.indexOf(index) === -1) {
+              found.push(index);
+            }
+          });
+        }
+        // Search in components that can have pagination
+        if (object.component === 'FormPage' && object.config && object.config.page) {
+          const page = parseInt(object.config.page);
+          if (found.indexOf(page) === -1) {
+            found.push(page);
+          }
         }
       },
       /**
@@ -212,7 +220,25 @@
         ProcessMaker.EventBus.$emit('form-data-updated', data);
       },
       print() {
-        window.print();
+        // Ensure that the content is rendered completely before printing
+        this.$nextTick(() => {
+          // Force the re-rendering of all components
+          this.$forceUpdate();
+          
+          // Small delay to ensure that the DOM is updated
+          setTimeout(() => {
+            // Apply specific styles for print
+            document.body.classList.add('printing');
+            
+            // Open the print dialog
+            window.print();
+            
+            // Clean the class after a time
+            setTimeout(() => {
+              document.body.classList.remove('printing');
+            }, 1000);
+          }, 100);
+        });
         return true;
       }
     },
@@ -229,4 +255,71 @@
     }
   }
 </script>
+
+<style scoped>
+@media print {
+  .card {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    page-break-inside: avoid;
+  }
+  
+  .card-body {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+  
+  .h-100 {
+    height: auto !important;
+    max-height: none !important;
+  }
+  
+  /* Ensure that all elements of the form are visible */
+  .card-body * {
+    overflow: visible !important;
+  }
+  
+  /* Avoid that the elements are cut */
+  .form-group,
+  .form-control,
+  .input-group {
+    overflow: visible !important;
+    height: auto !important;
+  }
+}
+
+/* Additional styles when printing */
+body.printing .card {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+body.printing .card-body {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+body.printing .h-100 {
+  height: auto !important;
+  max-height: none !important;
+}
+
+/* Avoid empty pages */
+@media print {
+  .card:empty,
+  .card-body:empty {
+    display: none !important;
+  }
+  
+  /* Ensure that the content is shown correctly */
+  .card {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
+</style>
 

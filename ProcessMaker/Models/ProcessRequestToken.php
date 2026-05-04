@@ -17,6 +17,8 @@ use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowUserManager;
+use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Models\MustacheExpressionEvaluator;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
@@ -638,10 +640,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $setting = Setting::byKey('indexed-search');
         if ($setting && $setting->config['enabled'] === true) {
             if (is_numeric($filter)) {
-                $query->whereIn('id', [$filter]);
+                $query->whereIn('process_request_tokens.id', [$filter]);
             } else {
                 $matches = self::search($filter)->take(10000)->get()->pluck('id');
-                $query->whereIn('id', $matches);
+                $query->whereIn('process_request_tokens.id', $matches);
             }
         } else {
             $filter = '%' . mb_strtolower($filter) . '%';
@@ -649,10 +651,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
-                    ->orWhere('id', 'like', $filter)
-                    ->orWhere('created_at', 'like', $filter)
-                    ->orWhere('due_at', 'like', $filter)
-                    ->orWhere('updated_at', 'like', $filter)
+                    ->orWhere('process_request_tokens.id', 'like', $filter)
+                    ->orWhere('process_request_tokens.created_at', 'like', $filter)
+                    ->orWhere('process_request_tokens.due_at', 'like', $filter)
+                    ->orWhere('process_request_tokens.updated_at', 'like', $filter)
                     ->orWhereHas('processRequest', function ($query) use ($filter) {
                         $query->where(DB::raw('LOWER(name)'), 'like', $filter);
                     })
@@ -783,8 +785,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
                     $query->whereIn('process_request_tokens.id', $selfServiceTaskIds);
                 } elseif ($user) {
-                    $taskIds = $user->availableSelfServiceTaskIds();
-                    $query->whereIn('process_request_tokens.id', $taskIds);
+                    $query->whereIn('process_request_tokens.id', $user->availableSelfServiceTasksQuery());
                 } else {
                     $query->where('process_request_tokens.is_self_service', 1);
                 }
@@ -1442,6 +1443,59 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * Build context for Mustache (end event external URL). Same as scripts/screens: _user, _request, process data, APP_URL.
+     */
+    private function getElementDestinationMustacheContext(): array
+    {
+        try {
+            $context = (new DataManager())->getData($this);
+        } catch (Throwable $e) {
+            Log::warning('Failed to load Mustache context via DataManager, falling back to request data', [
+                'token_id' => $this->id,
+                'error' => $e->getMessage(),
+            ]);
+            $request = $this->processRequest;
+            $context = array_merge($request->data ?? [], $request ? (new DataManager())->updateRequestMagicVariable([], $request) : []);
+            $user = $this->user ?? auth()->user();
+            if ($user) {
+                $userData = $user->attributesToArray();
+                unset($userData['remember_token']);
+                $context['_user'] = $userData;
+            }
+        }
+
+        $context['APP_URL'] = config('app.url');
+
+        // Never expose remember_token to Mustache (defense in depth; DataManager/fallback may already strip it)
+        if (isset($context['_user']) && is_array($context['_user'])) {
+            unset($context['_user']['remember_token']);
+        }
+
+        // Normalize to plain arrays/scalars so Mustache resolves all keys (common PHP idiom)
+        $json = json_encode($context, JSON_THROW_ON_ERROR);
+        $normalized = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+
+        return is_array($normalized) ? $normalized : [];
+    }
+
+    /**
+     * Resolve Mustache in end event external URL. FEEL is not supported here; use Mustache only.
+     * Context: APP_URL, _request, _user, process variables (same as getElementDestinationMustacheContext).
+     *
+     * Example (Mustache):
+     *   {{APP_URL}}/admin/users/{{_request.id}}/edit     -> https://example.com/admin/users/123/edit
+     *   {{APP_URL}}/webentry/{{_request.id}}             -> https://example.com/webentry/123
+     *   {{APP_URL}}/path/{{my_process_var}}               -> uses process variable my_process_var
+     */
+    private function resolveElementDestinationUrl(string $url): string
+    {
+        $url = html_entity_decode($url, ENT_QUOTES | ENT_HTML401, 'UTF-8');
+        $context = $this->getElementDestinationMustacheContext();
+
+        return (new MustacheExpressionEvaluator())->render($url, $context);
+    }
+
+    /**
      * Determines the destination based on the type of element destination property
      *
      * @param elementDestinationType Used to determine the type of destination for an element.
@@ -1480,6 +1534,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                         $elementDestination = $elementDestinationProp['value'];
                     } else {
                         $elementDestination = $elementDestinationProp['value']['url'] ?? null;
+                    }
+                }
+                if (is_string($elementDestination) && $elementDestination !== '') {
+                    if ($elementDestinationType === 'externalURL' || $elementDestinationType === 'customDashboard') {
+                        $elementDestination = $this->resolveElementDestinationUrl($elementDestination);
                     }
                 }
                 break;

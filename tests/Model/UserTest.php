@@ -63,8 +63,6 @@ class UserTest extends TestCase
 
     public function testCanAnyFirst()
     {
-        dump('Starting test');
-
         $user = User::factory()->create();
 
         $p1 = Permission::factory()->create(['name' => 'foo']);
