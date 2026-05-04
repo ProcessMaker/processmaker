@@ -640,10 +640,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $setting = Setting::byKey('indexed-search');
         if ($setting && $setting->config['enabled'] === true) {
             if (is_numeric($filter)) {
-                $query->whereIn('id', [$filter]);
+                $query->whereIn('process_request_tokens.id', [$filter]);
             } else {
                 $matches = self::search($filter)->take(10000)->get()->pluck('id');
-                $query->whereIn('id', $matches);
+                $query->whereIn('process_request_tokens.id', $matches);
             }
         } else {
             $filter = '%' . mb_strtolower($filter) . '%';
@@ -651,10 +651,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
-                    ->orWhere('id', 'like', $filter)
-                    ->orWhere('created_at', 'like', $filter)
-                    ->orWhere('due_at', 'like', $filter)
-                    ->orWhere('updated_at', 'like', $filter)
+                    ->orWhere('process_request_tokens.id', 'like', $filter)
+                    ->orWhere('process_request_tokens.created_at', 'like', $filter)
+                    ->orWhere('process_request_tokens.due_at', 'like', $filter)
+                    ->orWhere('process_request_tokens.updated_at', 'like', $filter)
                     ->orWhereHas('processRequest', function ($query) use ($filter) {
                         $query->where(DB::raw('LOWER(name)'), 'like', $filter);
                     })

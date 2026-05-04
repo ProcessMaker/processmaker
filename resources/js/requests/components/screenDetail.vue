@@ -20,11 +20,12 @@
           <i class="fas fa-print"></i> {{ $t("Print") }}
         </button>
       </div>
-      <div class="card-body" :style="cardStyles">
+      <div v-for="page in printablePages" :key="page" class="card-body" :style="cardStyles">
         <component
           ref="print"
           :is="component"
           v-model="formData"
+          :current-page="page"
           :data="formData"
           @update="onUpdate"
           :config="json"
@@ -85,6 +86,7 @@
         isPhotoVideo: false,
         cardStyles: 'pointer-events: none;',
         iFramePostedData: null,
+        printablePages: [],
       }
     },
     computed: {
@@ -102,11 +104,6 @@
         set() {
 
         }
-      },
-      printablePages() {
-        // New strategy: always return only page 0
-        // This avoids any problem with the detection of pages
-        return [0];
       },
       component() {
         if ('renderComponent' in this.rowData.config) {
@@ -135,7 +132,7 @@
       } else {
           this.disabled = false;
       }
-      this.loadPages();
+      this.printablePages = this.loadPages();
     },
     methods: {
       closeRequestCount() {
@@ -150,12 +147,13 @@
         }
       },
       loadPages() {
-        this.$nextTick(() => {
-          if (this.$refs.print && this.$refs.print.setCurrentPage) {
-            // Force page 0
-            this.$refs.print.setCurrentPage(0);
-          }
-        });
+        const pages = [0];
+        if (this.rowData.config instanceof Array) {
+          this.rowData.config.forEach((page) => {
+            this.findPagesInNavButtons(page, pages);
+          });
+        }
+        return pages;
       },
       findPagesInNavButtons(object, found = []) {
         if (object.items) {
@@ -185,54 +183,6 @@
           const page = parseInt(object.config.page);
           if (found.indexOf(page) === -1) {
             found.push(page);
-          }
-        }
-      },
-      hasRealContent(item) {
-        // Verify if the element has real content that should be shown
-        if (!item) return false;
-        
-        // If it is a component that should not be shown in print, it does not have content
-        if (item.component === 'FormButton' || item.component === 'FileUpload' || item.component === 'PhotoVideo') {
-          return false;
-        }
-        
-        // If it has items, verify if any of them has content
-        if (item.items && item.items.length > 0) {
-          return item.items.some(child => this.hasRealContent(child));
-        }
-        
-        // If it is an array, verify if any of them has content
-        if (item instanceof Array) {
-          return item.some(child => this.hasRealContent(child));
-        }
-        
-        // If it has a valid component, it has content
-        if (item.component && item.component !== 'FormButton' && item.component !== 'FileUpload' && item.component !== 'PhotoVideo') {
-          return true;
-        }
-        
-        return false;
-      },
-      findAllPagesWithContent(config, pages) {
-        if (config instanceof Array) {
-          config.forEach((item, index) => {
-            if (this.hasRealContent(item)) {
-              if (pages.indexOf(index) === -1) {
-                pages.push(index);
-              }
-            }
-            // Search recursively in the items
-            if (item.items) {
-              this.findAllPagesWithContent(item.items, pages);
-            }
-          });
-        } else if (config.items) {
-          this.findAllPagesWithContent(config.items, pages);
-        } else if (config.component && config.component !== 'FormButton' && config.component !== 'FileUpload' && config.component !== 'PhotoVideo') {
-          // If it is a valid component, include page 0
-          if (pages.indexOf(0) === -1) {
-            pages.push(0);
           }
         }
       },
