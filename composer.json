@@ -19,7 +19,7 @@
         "doctrine/annotations": "^2.0",
         "doctrine/dbal": "^4.2",
         "fakerphp/faker": "^1.24",
-        "firebase/php-jwt": "^6.0|^7.0",
+        "firebase/php-jwt": "^6.4",
         "google/apiclient": "^2.18",
         "google/protobuf": "^4.33.6",
         "guzzlehttp/guzzle": "^7.9",
