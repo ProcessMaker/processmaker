@@ -264,10 +264,13 @@ export default {
       return "link";
     },
     hasMessages() {
-      return this.totalMessages > 0;
+      const localUnread = this.messages.filter((m) => !m.read_at).length;
+      return this.totalMessages > 0 || localUnread > 0;
     },
     displayTotalCount() {
-      return this.totalMessages > 10 ? "10+" : this.totalMessages;
+      const localUnread = this.messages.filter((m) => !m.read_at).length;
+      const count = Math.max(this.totalMessages, localUnread);
+      return count > 10 ? "10+" : count;
     },
   },
   watch: {
