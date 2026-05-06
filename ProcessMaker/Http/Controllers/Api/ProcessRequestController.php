@@ -32,6 +32,7 @@ use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Query\SyntaxError;
@@ -613,9 +614,9 @@ class ProcessRequestController extends Controller
         // Close any token still open after status is CANCELED (race: task submit commits after CancelRequest job).
         ProcessRequestToken::query()
             ->where('process_request_id', $request->getKey())
-            ->where('status', '!=', 'CLOSED')
+            ->where('status', '!=', ActivityInterface::TOKEN_STATE_CLOSED)
             ->update([
-                'status' => 'CLOSED',
+                'status' => ActivityInterface::TOKEN_STATE_CLOSED,
                 'completed_at' => now(),
                 'due_at' => null,
                 'riskchanges_at' => null,
