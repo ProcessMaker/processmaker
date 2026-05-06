@@ -36,20 +36,24 @@ class DevLinkController extends Controller
         $devLinkId = $request->input('devlink_id');
         $redirectUri = $request->input('redirect_uri');
 
-        $client = Client::where([
+        // We can't re-use a client because the secret is hashed.
+        Client::where([
             'name' => 'devlink',
             'redirect' => $redirectUri,
-        ])->first();
+        ])
+        ->get()
+        ->each(function ($c) {
+            $c->delete();
+        });
 
-        if (!$client) {
-            $clientRepository = app('Laravel\Passport\ClientRepository');
-            $client = $clientRepository->createAuthorizationCodeGrantClient('devlink', [$redirectUri]);
-        }
+        $clientRepository = app('Laravel\Passport\ClientRepository');
+        $client = $clientRepository->createAuthorizationCodeGrantClient('devlink', [$redirectUri]);
+        $plainSecret = $client->plainSecret;
 
         $query = http_build_query([
             'devlink_id' => $devLinkId,
             'client_id' => $client->id,
-            'client_secret' => $client->secret,
+            'client_secret' => $plainSecret,
         ]);
 
         return redirect($redirectUri . '?' . $query);
