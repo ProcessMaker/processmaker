@@ -136,6 +136,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         // Validate data
         $element = $token->getDefinition(true);
         $this->validateData($data, $definitions, $element);
+        $this->assertProcessRequestNotCanceled($instance);
 
         // Get complementary information
         $version = $instance->process_version_id;
@@ -381,6 +382,12 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
 
     private function dispatchActionForServiceTask($version, $token, $response, $state, $userId)
     {
+        $instance = $token->processRequest
+            ?? ProcessRequest::query()->whereKey($token->process_request_id)->first();
+        if ($instance) {
+            $this->assertProcessRequestNotCanceled($instance);
+        }
+
         $this->dispatchAction([
             'bpmn' => $version,
             'action' => self::ACTION_COMPLETE_TASK,

@@ -72,15 +72,25 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         //Validate data
         $element = $token->getDefinition(true);
         $this->validateData($data, $definitions, $element);
-        if ($instance instanceof ProcessRequest) {
-            $status = ProcessRequest::query()->whereKey($instance->getKey())->value('status');
-            if ($status === 'CANCELED') {
-                throw new HttpResponseException(response()->json([
-                    'message' => __('This request has been canceled. The task cannot be completed.'),
-                ], 422));
-            }
-        }
+        $this->assertProcessRequestNotCanceled($instance);
         CompleteActivity::dispatchSync($definitions, $instance, $token, $data);
+    }
+
+    /**
+     * Block task completion when the request was canceled (FOUR-28073).
+     * Used by the default manager and by WorkflowManagerRabbitMq / Kafka.
+     */
+    protected function assertProcessRequestNotCanceled(ExecutionInstanceInterface $instance): void
+    {
+        if (!$instance instanceof ProcessRequest) {
+            return;
+        }
+        $status = ProcessRequest::query()->whereKey($instance->getKey())->value('status');
+        if ($status === 'CANCELED') {
+            throw new HttpResponseException(response()->json([
+                'message' => __('This request has been canceled. The task cannot be completed.'),
+            ], 422));
+        }
     }
 
     /**
