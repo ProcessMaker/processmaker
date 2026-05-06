@@ -609,6 +609,19 @@ class ProcessRequestController extends Controller
         // Close process request
         $request->status = 'CANCELED';
         $request->save();
+
+        // Close any token still open after status is CANCELED (race: task submit commits after CancelRequest job).
+        ProcessRequestToken::query()
+            ->where('process_request_id', $request->getKey())
+            ->where('status', '!=', 'CLOSED')
+            ->update([
+                'status' => 'CLOSED',
+                'completed_at' => now(),
+                'due_at' => null,
+                'riskchanges_at' => null,
+                'user_id' => null,
+            ]);
+
         // Update case status
         CaseUpdateStatus::dispatchSync($request);
 

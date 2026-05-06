@@ -8,7 +8,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
@@ -77,8 +76,6 @@ abstract class BpmnAction implements ShouldQueue
             if ($this->processId !== 'non_persistent_process') {
                 HandleRedirectListener::sendRedirectToEvent();
             }
-        } catch (HttpResponseException $exception) {
-            throw $exception;
         } catch (HttpABTestingException $exception) {
             Log::error($exception->getMessage());
             throw $exception;

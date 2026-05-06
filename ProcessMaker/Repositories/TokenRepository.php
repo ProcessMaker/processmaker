@@ -90,27 +90,6 @@ class TokenRepository implements TokenRepositoryInterface
         if ($process->isNonPersistent()) {
             return;
         }
-        $instance = $token->getInstance();
-        if ($instance instanceof ProcessRequest) {
-            $currentStatus = ProcessRequest::query()->whereKey($instance->getKey())->value('status');
-            if ($currentStatus === 'CANCELED') {
-                $token->status = ActivityInterface::TOKEN_STATE_CLOSED;
-                $token->element_id = $activity->getId();
-                $token->element_type = $this->getActivityType($activity);
-                $token->element_name = $activity->getName();
-                $token->process_id = $instance->process_id;
-                $token->process_request_id = $instance->getKey();
-                $token->user_id = null;
-                $token->due_at = null;
-                $token->riskchanges_at = null;
-                $token->completed_at = Carbon::now();
-                $token->updateTokenProperties();
-                $token->saveOrFail();
-                $token->setId($token->getKey());
-
-                return;
-            }
-        }
         $token->status = ActivityInterface::TOKEN_STATE_ACTIVE;
         $token->element_id = $activity->getId();
         $token->element_type = $this->getActivityType($activity);

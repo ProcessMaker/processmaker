@@ -53,8 +53,8 @@ class CancelRequest extends BpmnAction implements ShouldQueue
             $tokenRepo->store($token);
         }
 
-        // Close tokens that were created after the in-memory snapshot (race with parallel
-        // gateways / concurrent completions).
+        // Tokens created after the in-memory snapshot (e.g. another user submits a task while
+        // cancel is confirmed) must still be closed so no ACTIVE task remains on a CANCELED request.
         ProcessRequestToken::query()
             ->where('process_request_id', $instance->getKey())
             ->where('status', '!=', ActivityInterface::TOKEN_STATE_CLOSED)
