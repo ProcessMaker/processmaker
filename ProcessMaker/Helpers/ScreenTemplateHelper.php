@@ -21,7 +21,7 @@ class ScreenTemplateHelper
      * is a serialized Vue component object. That data is not needed at runtime
      * and can reach renderer paths that expect Mustache templates to be strings.
      */
-    public static function sanitizeScreenConfig($config): array
+    public static function sanitizeScreenConfig(mixed $config): array
     {
         if (!is_array($config)) {
             return [];
@@ -429,41 +429,35 @@ class ScreenTemplateHelper
         return $cssString;
     }
 
-    private static function sanitizeConfigValue($value, ?string $key = null)
+    private static function sanitizeConfigValue(mixed $value, ?string $key = null): mixed
     {
         if ($key === 'validation' && is_array($value) && $value === []) {
-            return null;
-        }
+            $sanitized = null;
+        } elseif (in_array($key, self::RENDERABLE_STRING_FIELDS, true)) {
+            $sanitized = self::sanitizeRenderableString($value);
+        } elseif (!is_array($value)) {
+            $sanitized = $value;
+        } elseif (array_is_list($value)) {
+            $sanitized = array_map(fn ($item) => self::sanitizeConfigValue($item), $value);
+        } else {
+            $sanitized = [];
+            foreach ($value as $childKey => $childValue) {
+                if ($childKey === 'inspector' && is_array($childValue)) {
+                    $sanitized[$childKey] = array_map(
+                        fn ($item) => self::sanitizeInspectorItem($item),
+                        $childValue
+                    );
+                    continue;
+                }
 
-        if (in_array($key, self::RENDERABLE_STRING_FIELDS, true)) {
-            return self::sanitizeRenderableString($value);
-        }
-
-        if (!is_array($value)) {
-            return $value;
-        }
-
-        if (array_is_list($value)) {
-            return array_map(fn ($item) => self::sanitizeConfigValue($item), $value);
-        }
-
-        $sanitized = [];
-        foreach ($value as $childKey => $childValue) {
-            if ($childKey === 'inspector' && is_array($childValue)) {
-                $sanitized[$childKey] = array_map(
-                    fn ($item) => self::sanitizeInspectorItem($item),
-                    $childValue
-                );
-                continue;
+                $sanitized[$childKey] = self::sanitizeConfigValue($childValue, (string) $childKey);
             }
-
-            $sanitized[$childKey] = self::sanitizeConfigValue($childValue, (string) $childKey);
         }
 
         return $sanitized;
     }
 
-    private static function sanitizeInspectorItem($item)
+    private static function sanitizeInspectorItem(mixed $item): mixed
     {
         if (!is_array($item)) {
             return $item;
@@ -481,10 +475,10 @@ class ScreenTemplateHelper
         return $sanitized;
     }
 
-    private static function sanitizeRenderableString($value): ?string
+    private static function sanitizeRenderableString(mixed $value): string
     {
         if ($value === null || is_array($value)) {
-            return null;
+            return '';
         }
 
         return is_string($value) ? $value : (string) $value;

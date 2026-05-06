@@ -27,6 +27,16 @@ class ScreenTemplateTest extends TestCase
 
     private const SCREEN_PATH = 'tests/Feature/Templates/fixtures/screen-config-with-two-pages.json';
 
+    private const RENDERABLE_STRING_FIELDS = [
+        'ariaLabel',
+        'content',
+        'fieldValue',
+        'helper',
+        'label',
+        'loadingLabel',
+        'placeholder',
+    ];
+
     public function testCreateScreenTemplate()
     {
         $screenCategoryId = ScreenCategory::factory()->create()->id;
@@ -513,6 +523,54 @@ class ScreenTemplateTest extends TestCase
         $this->assertScreenConfigSanitized($updatedScreen->config);
     }
 
+    public function testApplyTemplateSanitizesDatePickerRenderableStrings()
+    {
+        $templatePath = base_path(self::SCREEN_TEMPLATE_PATH);
+        $screenTemplateData = $this->addDatePickerWithInvalidRenderableFields(File::get($templatePath));
+
+        $screenTemplate = $this->createScreenTemplateFromManifest($screenTemplateData);
+
+        $screenPath = base_path(self::SCREEN_PATH);
+        $screenData = json_decode(File::get($screenPath), true);
+
+        $newScreen = Screen::factory()->create([
+            'config' => $screenData,
+        ]);
+
+        $route = route('api.template.applyTemplate', [
+            'type' => 'screen',
+            'id' => $screenTemplate->id,
+        ]);
+
+        $response = $this->apiCall('POST', $route, [
+            'screenId' => $newScreen->id,
+            'templateOptions' => ['Fields'],
+            'currentScreenPage' => 1,
+        ]);
+
+        $response->assertStatus(200);
+
+        if (class_exists(VersionHistory::class)) {
+            $updatedScreen = \ProcessMaker\Models\ScreenVersion::select('config')->where('screen_id', $newScreen->id)->latest()->firstOrFail();
+        } else {
+            $updatedScreen = Screen::select('config')->where('id', $newScreen->id)->firstOrFail();
+        }
+
+        $datePicker = $this->findScreenConfigItem(
+            $updatedScreen->config[1]['items'],
+            'FormDatePicker',
+            'date'
+        );
+
+        $this->assertNotNull($datePicker);
+        $this->assertSame('', $datePicker['config']['label']);
+        $this->assertSame('', $datePicker['config']['placeholder']);
+        $this->assertSame('', $datePicker['config']['helper']);
+        $this->assertSame('', $datePicker['config']['ariaLabel']);
+        $this->assertNull($datePicker['config']['validation']);
+        $this->assertScreenConfigSanitized($updatedScreen->config);
+    }
+
     public function testApplyLayoutToExistingScreen()
     {
         // Create screen from template-manifest-with-css-fields-layout.json
@@ -642,12 +700,109 @@ class ScreenTemplateTest extends TestCase
         return $screenTemplate;
     }
 
-    private function assertScreenConfigValueSanitized($value): void
+    private function addDatePickerWithInvalidRenderableFields(string $manifest): string
+    {
+        $payload = json_decode($manifest, true);
+        $root = $payload['root'];
+        $config = json_decode($payload['export'][$root]['attributes']['config'], true);
+
+        $config[0]['items'][] = [
+            'label' => 'Date Picker',
+            'config' => [
+                'icon' => 'far fa-calendar-alt',
+                'name' => 'date',
+                'type' => 'datetime',
+                'label' => null,
+                'helper' => null,
+                'placeholder' => null,
+                'ariaLabel' => null,
+                'minDate' => null,
+                'maxDate' => null,
+                'dataFormat' => 'date',
+                'validation' => [],
+            ],
+            'component' => 'FormDatePicker',
+            'inspector' => [
+                [
+                    'type' => 'FormInput',
+                    'field' => 'label',
+                    'config' => [
+                        'label' => 'Label',
+                        'helper' => 'The label describes the field\'s name',
+                    ],
+                ],
+                [
+                    'type' => 'ValidationSelect',
+                    'field' => 'validation',
+                    'config' => [
+                        'label' => 'Validation Rules',
+                        'helper' => 'The validation rules needed for this field',
+                    ],
+                ],
+            ],
+            'editor-control' => 'FormDatePicker',
+            'editor-component' => 'FormDatePicker',
+        ];
+
+        $payload['export'][$root]['attributes']['config'] = json_encode($config);
+
+        return json_encode($payload);
+    }
+
+    private function findScreenConfigItem(array $items, string $component, string $name): ?array
+    {
+        $matchingItem = null;
+
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            if (($item['component'] ?? null) === $component && ($item['config']['name'] ?? null) === $name) {
+                $matchingItem = $item;
+                break;
+            }
+
+            $nestedItem = $this->findScreenConfigItemInChildren($item, $component, $name);
+            if ($nestedItem !== null) {
+                $matchingItem = $nestedItem;
+                break;
+            }
+        }
+
+        return $matchingItem;
+    }
+
+    private function findScreenConfigItemInChildren(array $item, string $component, string $name): ?array
+    {
+        foreach ($this->screenConfigChildCollections($item) as $childItems) {
+            $nestedItem = $this->findScreenConfigItem($childItems, $component, $name);
+            if ($nestedItem !== null) {
+                return $nestedItem;
+            }
+        }
+
+        return null;
+    }
+
+    private function assertScreenConfigValueSanitized(mixed $value): void
     {
         if (!is_array($value)) {
             return;
         }
 
+        $this->assertInspectorItemsSanitized($value);
+        $this->assertRenderableFieldsSanitized($value);
+        $this->assertTooltipSanitized($value);
+        $this->assertValidationSanitized($value);
+
+        foreach ($value as $childValue) {
+            $this->assertScreenConfigValueSanitized($childValue);
+        }
+    }
+
+    private function assertInspectorItemsSanitized(array $value): void
+    {
         if (array_key_exists('inspector', $value) && is_array($value['inspector'])) {
             foreach ($value['inspector'] as $inspector) {
                 if (is_array($inspector) && array_key_exists('type', $inspector)) {
@@ -655,29 +810,46 @@ class ScreenTemplateTest extends TestCase
                 }
             }
         }
+    }
 
-        foreach (['content', 'label'] as $field) {
+    private function assertRenderableFieldsSanitized(array $value): void
+    {
+        foreach (self::RENDERABLE_STRING_FIELDS as $field) {
             if (!array_key_exists($field, $value)) {
                 continue;
             }
 
-            $this->assertFalse(is_array($value[$field]));
+            $this->assertIsString($value[$field]);
         }
+    }
 
-        if (
-            array_key_exists('tooltip', $value)
-            && is_array($value['tooltip'])
-            && array_key_exists('content', $value['tooltip'])
-        ) {
-            $this->assertFalse(is_array($value['tooltip']['content']));
+    private function assertTooltipSanitized(array $value): void
+    {
+        $tooltip = $value['tooltip'] ?? null;
+        if (is_array($tooltip) && array_key_exists('content', $tooltip)) {
+            $this->assertIsString($value['tooltip']['content']);
         }
+    }
 
+    private function assertValidationSanitized(array $value): void
+    {
         if (array_key_exists('validation', $value) && is_array($value['validation'])) {
             $this->assertNotEmpty($value['validation']);
         }
+    }
 
-        foreach ($value as $childValue) {
-            $this->assertScreenConfigValueSanitized($childValue);
+    private function screenConfigChildCollections(array $item): array
+    {
+        $collections = [];
+
+        if (array_key_exists('items', $item) && is_array($item['items'])) {
+            $collections[] = $item['items'];
         }
+
+        if (array_is_list($item)) {
+            $collections[] = $item;
+        }
+
+        return $collections;
     }
 }
