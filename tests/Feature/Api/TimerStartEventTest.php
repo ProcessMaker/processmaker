@@ -228,4 +228,25 @@ class TimerStartEventTest extends TestCase
         $task->type = 'TIMER_START_EVENT';
         $manager->executeTimerStartEvent($task, json_decode($task->configuration));
     }
+
+    public function testScheduleMustNotStartHandleRepliesTimerWhenAbeInboundConfigInadequate()
+    {
+        // triggerStartEvent must not run when ABE inbound mail settings are missing/inadequate
+        WorkflowManager::shouldReceive('triggerStartEvent')
+            ->never()
+            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any());
+
+        $data = [];
+        $data['name'] = 'Actions By Email - Handle Replies';
+        $data['bpmn'] = Process::getProcessTemplate('TimerStartEvent.bpmn');
+
+        $process = Process::factory()->create($data);
+
+        $manager = new TaskSchedulerManager();
+        $task = new ScheduledTask();
+        $task->process_id = $process->id;
+        $task->configuration = '{"type":"TimeCycle","interval":"R4\/2019-02-13T13:08:00Z\/PT1M", "element_id" : "_9"}';
+        $task->type = 'TIMER_START_EVENT';
+        $manager->executeTimerStartEvent($task, json_decode($task->configuration));
+    }
 }

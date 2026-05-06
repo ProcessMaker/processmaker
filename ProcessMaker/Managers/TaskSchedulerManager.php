@@ -21,6 +21,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\ScheduledTask;
 use ProcessMaker\Models\TimerExpression;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Nayra\Bpmn\Models\BoundaryEvent;
 use ProcessMaker\Nayra\Bpmn\Models\DatePeriod;
 use ProcessMaker\Nayra\Bpmn\Models\IntermediateCatchEvent;
@@ -398,11 +399,165 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         if (!$definitions->findElementById($config->element_id)) {
             return;
         }
+
+        if ($this->shouldSkipHandleRepliesTimerStart($process)) {
+            Log::info('Skipping Actions By Email Handle Replies timer event because ABE inbound mail configuration is not adequate', [
+                'process_id' => $process->id,
+                'process_name' => $process->name,
+            ]);
+            return;
+        }
+
         $event = $definitions->getEvent($config->element_id);
         $data = [];
 
         //Trigger the start event
         $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
+    }
+
+    /**
+     * Determine if the timer should be skipped for the Actions By Email handle replies process.
+     *
+     * @param Process $process
+     * @return bool
+     */
+    private function shouldSkipHandleRepliesTimerStart(Process $process): bool
+    {
+        if (!$this->isHandleRepliesProcess($process)) {
+            return false;
+        }
+
+        return !$this->hasAdequateAbeInboundConfiguration();
+    }
+
+    /**
+     * Whether Actions By Email has enough configuration to poll inbound mail (IMAP or OAuth).
+     *
+     * This is a heuristic in core: the connector may add more keys; we avoid starting the
+     * Handle Replies timer when the mailbox clearly is not set up (FOUR-30587).
+     *
+     * @return bool
+     */
+    private function hasAdequateAbeInboundConfiguration(): bool
+    {
+        if (!Setting::readyToUseSettingsDatabase()) {
+            return false;
+        }
+
+        $host = $this->getAbeInboundSettingValue(['abe_imap_host', 'email_connector_mail_host']);
+        $username = $this->getAbeInboundSettingValue(['abe_imap_username', 'email_connector_mail_username']);
+
+        if (!$this->hasValue($host) || !$this->hasValue($username)) {
+            return false;
+        }
+
+        return $this->hasAnyAbeInboundCredential();
+    }
+
+    /**
+     * Standard password or OAuth-style tokens stored under abe_imap_* settings.
+     */
+    private function hasAnyAbeInboundCredential(): bool
+    {
+        if ($this->hasValue($this->getAbeInboundSettingValue(['abe_imap_password', 'email_connector_mail_password']))) {
+            return true;
+        }
+
+        return Setting::query()
+            ->whereRaw('LOWER(`key`) LIKE ?', ['abe_imap%'])
+            ->where(function ($query) {
+                $query->whereRaw('LOWER(`key`) LIKE ?', ['%access_token%'])
+                    ->orWhereRaw('LOWER(`key`) LIKE ?', ['%refresh_token%']);
+            })
+            ->get()
+            ->contains(function ($setting) {
+                return $this->hasValue($this->extractSettingValue($setting->config));
+            });
+    }
+
+    /**
+     * Reads the first non-empty value from supported Actions By Email / mail settings keys.
+     *
+     * @param array $prefixes
+     * @return string|null
+     */
+    private function getAbeInboundSettingValue(array $prefixes): ?string
+    {
+        $settings = Setting::query()->where(function ($query) use ($prefixes) {
+            foreach ($prefixes as $prefix) {
+                $query->orWhereRaw('LOWER(`key`) LIKE ?', [strtolower($prefix) . '%']);
+            }
+        })->get();
+
+        if ($settings->isEmpty()) {
+            return null;
+        }
+
+        foreach ($settings as $setting) {
+            $value = $this->extractSettingValue($setting->config);
+            if ($this->hasValue($value)) {
+                return (string) $value;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Normalize setting values from different possible setting formats.
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    private function extractSettingValue($value)
+    {
+        if (is_object($value)) {
+            $value = (array) $value;
+        }
+
+        if (is_array($value)) {
+            if (array_key_exists('value', $value)) {
+                return $value['value'];
+            }
+
+            return $value;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Check if a setting value is present and not empty.
+     *
+     * @param mixed $value
+     * @return bool
+     */
+    private function hasValue($value): bool
+    {
+        if (is_array($value)) {
+            foreach ($value as $item) {
+                if ($this->hasValue($item)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return is_scalar($value) && trim((string) $value) !== '';
+    }
+
+    /**
+     * Identify the handle replies process by name.
+     *
+     * @param Process $process
+     * @return bool
+     */
+    private function isHandleRepliesProcess(Process $process): bool
+    {
+        $name = (string) $process->name;
+
+        return stripos($name, 'actions by email') !== false && stripos($name, 'handle replies') !== false;
     }
 
     /**
