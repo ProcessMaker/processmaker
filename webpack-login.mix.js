@@ -1,6 +1,7 @@
 const mix = require("laravel-mix");
 const path = require("path");
 const fs = require("fs");
+const { EsbuildPlugin } = require("esbuild-loader");
 
 const manifestPath = path.resolve(__dirname, "public/mix-manifest.json");
 let existingContent = {};
@@ -30,11 +31,17 @@ mix.webpackConfig({
   },
 });
 
+mix.override((webpackConfig) => {
+  webpackConfig.optimization = webpackConfig.optimization || {};
+  webpackConfig.optimization.minimizer = [
+    new EsbuildPlugin({
+      target: "es2015",
+    }),
+  ];
+});
+
 mix.options({
   legacyNodePolyfills: false,
-  terser: {
-    parallel: true,
-  },
 });
 
 mix

@@ -1,5 +1,6 @@
 const mix = require("laravel-mix");
 const path = require("path");
+const { EsbuildPlugin } = require("esbuild-loader");
 require("laravel-mix-polyfill");
 // const packageJson = require("./package.json");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -32,11 +33,17 @@ mix.webpackConfig({
   },
 });
 
+mix.override((webpackConfig) => {
+  webpackConfig.optimization = webpackConfig.optimization || {};
+  webpackConfig.optimization.minimizer = [
+    new EsbuildPlugin({
+      target: "es2015",
+    }),
+  ];
+});
+
 mix.options({
   legacyNodePolyfills: false,
-  terser: {
-    parallel: true,
-  },
 });
 
 mix
