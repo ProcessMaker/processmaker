@@ -257,4 +257,58 @@ class PermissionServiceManagerTest extends TestCase
         $this->assertIsArray($cachedPermissions);
         $this->assertEmpty($cachedPermissions);
     }
+
+    public function test_invalidate_affected_caches_for_group_clears_only_affected_users_and_group_cache()
+    {
+        $childGroup = Group::factory()->create(['name' => 'Child Group']);
+        $unrelatedGroup = Group::factory()->create(['name' => 'Unrelated Group']);
+        $userInChild = User::factory()->create(['username' => 'child-user']);
+        $unrelatedUser = User::factory()->create(['username' => 'unrelated-user']);
+
+        $this->group->groupMembers()->create([
+            'group_id' => $this->group->id,
+            'member_id' => $this->user->id,
+            'member_type' => User::class,
+        ]);
+
+        $this->group->groupMembers()->create([
+            'group_id' => $this->group->id,
+            'member_id' => $childGroup->id,
+            'member_type' => Group::class,
+        ]);
+
+        $childGroup->groupMembers()->create([
+            'group_id' => $childGroup->id,
+            'member_id' => $userInChild->id,
+            'member_type' => User::class,
+        ]);
+
+        $unrelatedGroup->groupMembers()->create([
+            'group_id' => $unrelatedGroup->id,
+            'member_id' => $unrelatedUser->id,
+            'member_type' => User::class,
+        ]);
+
+        $this->serviceManager->warmUpUserCache($this->user->id);
+        $this->serviceManager->warmUpUserCache($userInChild->id);
+        $this->serviceManager->warmUpUserCache($unrelatedUser->id);
+
+        Cache::put("user_{$this->user->id}_permissions", ['legacy'], 3600);
+        Cache::put("user_{$userInChild->id}_permissions", ['legacy'], 3600);
+        Cache::put("user_{$unrelatedUser->id}_permissions", ['legacy'], 3600);
+        Cache::put("group_permissions:{$this->group->id}", ['group-permission'], 3600);
+        Cache::put('unrelated-cache-key', 'keep-me', 3600);
+
+        $this->serviceManager->invalidateAffectedCachesForGroup($this->group->id);
+
+        $this->assertNull(Cache::get("user_permissions:{$this->user->id}"));
+        $this->assertNull(Cache::get("user_permissions:{$userInChild->id}"));
+        $this->assertNull(Cache::get("user_{$this->user->id}_permissions"));
+        $this->assertNull(Cache::get("user_{$userInChild->id}_permissions"));
+        $this->assertNull(Cache::get("group_permissions:{$this->group->id}"));
+
+        $this->assertNotNull(Cache::get("user_permissions:{$unrelatedUser->id}"));
+        $this->assertNotNull(Cache::get("user_{$unrelatedUser->id}_permissions"));
+        $this->assertSame('keep-me', Cache::get('unrelated-cache-key'));
+    }
 }
