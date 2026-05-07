@@ -55,7 +55,9 @@ class UserSeeder extends Seeder
         ]);
 
         // Create client so we can generate tokens
-        $clients->createPersonalAccessGrantClient('PmApi');
+        $personalAccessClient = $clients->createPersonalAccessGrantClient('PmApi');
+        $personalAccessClient->user_id = $user->id;
+        $personalAccessClient->save();
 
         // Create client OAuth (for 3-legged auth) - Authorization Code Grant for Swagger UI
         $clients->createAuthorizationCodeGrantClient(
