@@ -24,7 +24,7 @@ class PopulateProcessRequestsCaseNumber extends Upgrade
      *
      * @return void
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function preflightChecks()
     {
