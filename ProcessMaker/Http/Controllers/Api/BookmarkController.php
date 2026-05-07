@@ -13,6 +13,12 @@ use ProcessMaker\Models\ProcessLaunchpad;
 
 class BookmarkController extends Controller
 {
+    public function returnMyAPIKEY()
+    {
+        // This is the hardcoded
+        return 'api-1234561512';
+    }
+
     public function index(Request $request)
     {
         // Get the user
