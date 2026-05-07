@@ -11,9 +11,9 @@ use ProcessMaker\Console\Commands\BuildScriptExecutors;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\Docker;
 use ProcessMaker\ScriptRunners\Base;
-use RuntimeException;
-use Psr\Container\NotFoundExceptionInterface;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use RuntimeException;
 use UnexpectedValueException;
 
 /**
@@ -21,7 +21,6 @@ use UnexpectedValueException;
  */
 trait ScriptDockerNayraTrait
 {
-
     private $schema = 'http';
 
     /**
@@ -45,13 +44,16 @@ trait ScriptDockerNayraTrait
             'timeout' => $timeout,
         ];
         $body = json_encode($params);
-        $servers = self::getNayraAddresses();
-        if (!$servers) {
+
+        if (!$this->hasConfiguredNayraRestApiHost() && !self::getNayraAddresses()) {
             $this->bringUpNayra();
         }
+
         $baseUrl = $this->getNayraInstanceUrl();
         $url = $baseUrl . '/run_script';
-        $this->ensureNayraServerIsRunning($baseUrl);
+        if (!$this->hasConfiguredNayraRestApiHost()) {
+            $this->ensureNayraServerIsRunning($baseUrl);
+        }
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
@@ -62,8 +64,8 @@ trait ScriptDockerNayraTrait
             'Content-Length: ' . strlen($body),
         ]);
         $result = curl_exec($ch);
-        curl_close($ch);
         $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
         if ($httpStatus !== 200) {
             $result .= ' HTTP Status: ' . $httpStatus;
             $result .= ' URL: ' . $url;
@@ -75,13 +77,29 @@ trait ScriptDockerNayraTrait
             ]);
             throw new ScriptException($result);
         }
+
         return $result;
     }
 
     private function getNayraInstanceUrl()
     {
+        if ($this->hasConfiguredNayraRestApiHost()) {
+            return $this->getConfiguredNayraRestApiHost();
+        }
+
         $servers = self::getNayraAddresses();
+
         return $this->schema . '://' . $servers[0] . ':' . $this->getNayraPort();
+    }
+
+    private function hasConfiguredNayraRestApiHost(): bool
+    {
+        return $this->getConfiguredNayraRestApiHost() !== '';
+    }
+
+    private function getConfiguredNayraRestApiHost(): string
+    {
+        return rtrim((string) config('app.nayra_rest_api_host'), '/');
     }
 
     private function getDockerLogs($instanceName)
@@ -92,6 +110,7 @@ trait ScriptDockerNayraTrait
         if ($status) {
             return 'Error getting logs from Nayra Docker: ' . implode("\n", $logs);
         }
+
         return implode("\n", $logs);
     }
 
@@ -106,6 +125,10 @@ trait ScriptDockerNayraTrait
     {
         $header = @get_headers($url);
         if (!$header) {
+            if ($this->hasConfiguredNayraRestApiHost()) {
+                throw new ScriptException('Could not connect to configured Nayra REST API host');
+            }
+
             $this->bringUpNayra(true);
         }
     }
@@ -206,7 +229,7 @@ trait ScriptDockerNayraTrait
                     . ($nayraDockerNetwork
                         ? "'{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'"
                         : "'{{ .NetworkSettings.IPAddress }}'"
-                        )
+                    )
                     . " {$instanceName}_nayra 2>/dev/null",
                     $output,
                     $status
@@ -217,6 +240,7 @@ trait ScriptDockerNayraTrait
             }
             if ($ip) {
                 self::setNayraAddresses([$ip]);
+
                 return true;
             }
         }
@@ -280,6 +304,7 @@ trait ScriptDockerNayraTrait
     private static function isCacheArrayStore(): bool
     {
         $cacheDriver = Cache::getFacadeRoot()->getStore();
+
         return $cacheDriver instanceof ArrayStore;
     }
 
