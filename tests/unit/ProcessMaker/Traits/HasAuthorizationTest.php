@@ -3,9 +3,11 @@
 namespace Tests\Unit\ProcessMaker\Traits;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\User;
+use ProcessMaker\Services\PermissionCacheService;
 use Tests\TestCase;
 
 class HasAuthorizationTest extends TestCase
@@ -64,6 +66,25 @@ class HasAuthorizationTest extends TestCase
 
         // Test that permissions were loaded
         $this->assertTrue($this->user->hasPermission('test-permission'));
+    }
+
+    /**
+     * Test that legacy permission caches written by the trait are tracked for clearAll().
+     */
+    public function test_load_user_permissions_registers_legacy_cache_for_clear_all()
+    {
+        $this->user->permissions()->attach($this->permission->id);
+        Cache::put('unrelated-cache-key', 'keep-me', 3600);
+
+        $permissions = $this->user->loadUserPermissions();
+
+        $this->assertContains('test-permission', $permissions);
+        $this->assertNotNull(Cache::get("user_{$this->user->id}_permissions"));
+
+        app(PermissionCacheService::class)->clearAll();
+
+        $this->assertNull(Cache::get("user_{$this->user->id}_permissions"));
+        $this->assertSame('keep-me', Cache::get('unrelated-cache-key'));
     }
 
     /**

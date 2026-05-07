@@ -184,6 +184,19 @@ class PermissionRepository implements PermissionRepositoryInterface
     }
 
     /**
+     * Get all user ids affected by permissions inherited from the given group subtree.
+     */
+    public function getAffectedUserIdsForGroup(int $groupId): array
+    {
+        $group = Group::find($groupId);
+        if (!$group) {
+            return [];
+        }
+
+        return $this->collectAffectedUserIds($group);
+    }
+
+    /**
      * Get nested group permissions recursively with protection against infinite loops
      */
     private function getNestedGroupPermissionsOptimized(Group $group, array $visitedGroups = [], int $maxDepth = 10): array
@@ -260,5 +273,38 @@ class PermissionRepository implements PermissionRepositoryInterface
         }
 
         return false;
+    }
+
+    /**
+     * Collect all users inside a group subtree with protection against cycles.
+     */
+    private function collectAffectedUserIds(Group $group, array $visitedGroups = [], int $maxDepth = 25): array
+    {
+        if (in_array($group->id, $visitedGroups, true) || count($visitedGroups) >= $maxDepth) {
+            return [];
+        }
+
+        if (!$group->relationLoaded('groupMembers')) {
+            $group->load('groupMembers.member');
+        }
+
+        $visitedGroups[] = $group->id;
+        $userIds = [];
+
+        foreach ($group->groupMembers as $groupMember) {
+            if ($groupMember->member_type === User::class) {
+                $userIds[] = (int) $groupMember->member_id;
+                continue;
+            }
+
+            if ($groupMember->member_type === Group::class && $groupMember->member instanceof Group) {
+                $userIds = array_merge(
+                    $userIds,
+                    $this->collectAffectedUserIds($groupMember->member, $visitedGroups, $maxDepth)
+                );
+            }
+        }
+
+        return array_values(array_unique($userIds));
     }
 }
