@@ -105,6 +105,7 @@ mix
   .js("resources/js/admin/script-executors/index.js", "public/js/admin/script-executors/index.js")
   .js("resources/js/admin/tenant-queues/index.js", "public/js/admin/tenant-queues/index.js")
   .js("resources/js/admin/logs/index.js", "public/js/admin/logs/index.js")
+  .js("resources/js/admin/cases-retention/index.js", "public/js/admin/cases-retention/index.js")
 
   .js("resources/js/processes/index.js", "public/js/processes")
   .js("resources/js/processes/edit.js", "public/js/processes")

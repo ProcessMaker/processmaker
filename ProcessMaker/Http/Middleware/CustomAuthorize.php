@@ -7,7 +7,6 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Middleware\Authorize as Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -16,6 +15,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
+use ProcessMaker\Services\PermissionCacheService;
 use ProcessMaker\Traits\ProjectAssetTrait;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -94,9 +94,13 @@ class CustomAuthorize extends Middleware
 
     private function getUserPermissions($user)
     {
-        return Cache::remember("user_{$user->id}_permissions", 86400, function () use ($user) {
-            return $user->permissions()->pluck('name')->toArray();
-        });
+        return app(PermissionCacheService::class)->rememberLegacyUserPermissions(
+            $user->id,
+            86400,
+            function () use ($user) {
+                return $user->permissions()->pluck('name')->toArray();
+            }
+        );
     }
 
     private function hasPermission($userPermissions, $permission)

@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Services\PermissionCacheService;
 use Symfony\Component\HttpFoundation\Response;
 
 class IsManager
@@ -76,12 +77,11 @@ class IsManager
             }
 
             // simulate the permissions by adding them temporarily to the cache of permissions
-            $cacheKey = "user_{$user->id}_permissions";
             $simulatedPermissions = array_merge($currentPermissions, $permissionsToAdd);
 
             // save in cache temporarily (only for this request)
             // use a very short time to expire quickly if not cleaned manually
-            Cache::put($cacheKey, $simulatedPermissions, 5); // 5 segundos como fallback
+            app(PermissionCacheService::class)->putLegacyUserPermissions($user->id, $simulatedPermissions, 5);
         } catch (\Exception $e) {
             Log::error('IsManager middleware - Error simulating permissions: ' . $e->getMessage());
         }
@@ -93,10 +93,8 @@ class IsManager
     private function cleanupSimulatedPermission($user)
     {
         try {
-            $cacheKey = "user_{$user->id}_permissions";
-
             // delete the cache to force the reload of real permissions
-            Cache::forget($cacheKey);
+            app(PermissionCacheService::class)->forgetLegacyUserPermissions($user->id);
         } catch (\Exception $e) {
             Log::error('IsManager middleware - Error cleaning up simulated permissions: ' . $e->getMessage());
         }

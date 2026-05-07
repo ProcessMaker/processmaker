@@ -1615,6 +1615,7 @@
   "Process is missing end event": "Process is missing end event",
   "Process is missing start event": "Process is missing start event",
   "Process Launchpad": "Process Launchpad",
+  "Case retention was automatically shortened to match your subscription tier. The new retention period applies immediately.": "Case retention was automatically shortened to match your subscription tier. The new retention period applies immediately.",
   "Process Manager not configured.": "Process Manager not configured.",
   "Process Manager": "Process Manager",
   "Process Owner": "Process Owner",

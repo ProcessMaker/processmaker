@@ -1,5 +1,5 @@
 <template>
-  <div class="form-group">
+  <div class="form-group project-select">
     <label>{{ $t(label) }}</label>
     <multiselect
       v-model="content"
@@ -14,10 +14,26 @@
       :show-labels="false"
       :searchable="true"
       :internal-search="true"
+      class="project-select__multiselect"
       @open="load()"
       @search-change="load"
       @select="(selected) => lastSelectedId = selected.id"
     >
+      <template slot="tag" slot-scope="slotProps">
+        <span
+          class="project-select__tag multiselect__tag"
+          :title="slotProps.option.title"
+        >
+          <span class="project-select__tag-label">{{ slotProps.option.title }}</span>
+          <i
+            aria-hidden="true"
+            tabindex="1"
+            class="multiselect__tag-icon"
+            @mousedown.prevent
+            @click="slotProps.remove(slotProps.option)"
+          />
+        </span>
+      </template>
       <template slot="noResult">
         {{ $t('No elements found. Consider changing the search query.') }}
       </template>
@@ -147,3 +163,38 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.project-select {
+  min-width: 0;
+}
+
+.project-select__multiselect {
+  min-width: 0;
+}
+
+.project-select__tag {
+  align-items: center;
+  display: inline-flex;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.project-select__tag-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+::v-deep .multiselect__tags {
+  max-width: 100%;
+}
+
+::v-deep .multiselect__tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  max-width: 100%;
+}
+</style>

@@ -45,9 +45,6 @@ class PopulateProcessRequestsCaseNumber extends Upgrade
         $count = $this->getParentNonSystemRequests()->count();
         echo ' ', $count, PHP_EOL;
 
-        // Truncate the table case_numbers
-        DB::table('case_numbers')->truncate();
-
         // Get all the process requests that don't have a parent request and are not system processes
         $this->getParentNonSystemRequests()->orderBy('process_requests.id')
         ->chunk($chunkSize, function ($records) use (&$caseNumber, $startTime, $count) {
@@ -144,8 +141,6 @@ class PopulateProcessRequestsCaseNumber extends Upgrade
      */
     public function down()
     {
-        // Truncate the table case_numbers
-        DB::table('case_numbers')->truncate();
         // Update the auto increment value of table case_numbers to 1
         DB::statement('ALTER TABLE case_numbers AUTO_INCREMENT = 1;');
         // Set the case_number of all the process requests to null
