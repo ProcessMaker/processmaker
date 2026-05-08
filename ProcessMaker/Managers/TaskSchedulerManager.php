@@ -202,10 +202,11 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     {
         try {
             $config = json_decode($task->configuration);
-            $lastExecution = new DateTime($task->last_execution, new DateTimeZone('UTC'));
 
-            if ($lastExecution === null) {
-                return;
+            // SCHEDULED_JOB rows use last_execution = null until first run; BPMN timers always set last_execution.
+            $lastExecution = null;
+            if ($task->last_execution !== null && $task->last_execution !== '') {
+                $lastExecution = new DateTime($task->last_execution, new DateTimeZone('UTC'));
             }
 
             $owner = $task->processRequestToken ?: $task->processRequest ?: $task->process;
@@ -721,11 +722,14 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         if (!isset($config['job'])) {
             throw new InvalidArgumentException('$config["job"] is required');
         }
+
+        // Must use "interval" so nextDate(TimeDate) picks up the target datetime (same shape as BPMN timer tasks).
         $configuration = [
             'type' => 'TimeDate',
-            'date' => $datetime,
             ...$config,
+            'interval' => $datetime,
         ];
+
         $scheduledTask = new ScheduledTask();
         $scheduledTask->configuration = json_encode($configuration);
         $scheduledTask->type = 'SCHEDULED_JOB';
