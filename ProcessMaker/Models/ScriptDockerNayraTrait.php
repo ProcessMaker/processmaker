@@ -3,7 +3,6 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Cache\ArrayStore;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -11,9 +10,7 @@ use ProcessMaker\Console\Commands\BuildScriptExecutors;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\Docker;
 use ProcessMaker\ScriptRunners\Base;
-use RuntimeException;
-use Psr\Container\NotFoundExceptionInterface;
-use Psr\Container\ContainerExceptionInterface;
+use ProcessMaker\Models\ScriptExecutor;
 use UnexpectedValueException;
 
 /**
@@ -23,6 +20,8 @@ trait ScriptDockerNayraTrait
 {
 
     private $schema = 'http';
+
+    abstract protected function getScriptExecutor(): ScriptExecutor;
 
     /**
      * Execute the script task using Nayra Docker.
@@ -45,21 +44,20 @@ trait ScriptDockerNayraTrait
             'timeout' => $timeout,
         ];
         $body = json_encode($params);
-        $baseUrl = $this->resolveNayraBaseUrl();
+        $baseUrl = $this->ensureNayraServerIsRunning($this->resolveNayraBaseUrl());
         $url = $baseUrl . '/run_script';
-        $this->ensureNayraServerIsRunning($baseUrl);
 
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        $ch = $this->curlInit($url);
+        $this->curlSetOpt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        $this->curlSetOpt($ch, CURLOPT_POSTFIELDS, $body);
+        $this->curlSetOpt($ch, CURLOPT_RETURNTRANSFER, true);
+        $this->curlSetOpt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
             'Content-Length: ' . strlen($body),
         ]);
-        $result = curl_exec($ch);
-        curl_close($ch);
-        $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $result = $this->curlExec($ch);
+        $httpStatus = $this->curlGetInfo($ch, CURLINFO_HTTP_CODE);
+        $this->curlClose($ch);
         if ($httpStatus !== 200) {
             $result .= ' HTTP Status: ' . $httpStatus;
             $result .= ' URL: ' . $url;
@@ -77,22 +75,32 @@ trait ScriptDockerNayraTrait
     private function getNayraInstanceUrl()
     {
         if (config('app.nayra_rest_api_host')) {
-            return config('app.nayra_rest_api_host');
+            return $this->normalizeNayraUrl(config('app.nayra_rest_api_host'));
         }
 
-        $servers = self::getNayraAddresses();
-        return $this->schema . '://' . $servers[0] . ':' . $this->getNayraPort();
+        if ($endpoint = self::getNayraEndpoint()) {
+            return $endpoint;
+        }
+
+        return $this->buildNayraEndpoint();
     }
 
     private function resolveNayraBaseUrl()
     {
         if (config('app.nayra_rest_api_host')) {
-            return config('app.nayra_rest_api_host');
+            return $this->normalizeNayraUrl(config('app.nayra_rest_api_host'));
         }
 
-        if (!self::getNayraAddresses()) {
-            $this->bringUpNayra();
+        $endpoint = self::getNayraEndpoint();
+        if ($endpoint) {
+            if ($this->isNayraServiceReachable($endpoint)) {
+                return $endpoint;
+            }
+
+            self::clearNayraEndpoint();
         }
+
+        $this->bringUpNayra();
 
         return $this->getNayraInstanceUrl();
     }
@@ -112,21 +120,26 @@ trait ScriptDockerNayraTrait
      * Ensure that the Nayra server is running.
      *
      * @param string $url URL of the Nayra server
-     * @return void
+     * @return string
      * @throws ScriptException If cannot connect to Nayra Service
      */
-    private function ensureNayraServerIsRunning(string $url)
+    private function ensureNayraServerIsRunning(string $url): string
     {
-        $header = @get_headers($url);
-        if ($header) {
-            return;
+        if ($this->isNayraServiceReachable($url)) {
+            return $url;
         }
 
         if (config('app.nayra_rest_api_host')) {
             throw new ScriptException('Could not connect to the configured Nayra REST API host: ' . $url);
         }
 
+        self::clearNayraEndpoint();
         $this->bringUpNayra(true);
+
+        $url = $this->getNayraInstanceUrl();
+        $this->nayraServiceIsRunning($url);
+
+        return $url;
     }
 
     /**
@@ -137,50 +150,84 @@ trait ScriptDockerNayraTrait
     private function bringUpNayra($restart = false)
     {
         $docker = Docker::command();
-        $instanceName = config('app.instance');
-        if (!$restart && self::findNayraAddresses($docker, $instanceName, 3)) {
-            // The container is already running
+        $instanceName = self::getNayraContainerName();
+        $endpoint = $this->buildNayraEndpoint();
+
+        if (!$restart && $this->isNayraServiceReachable($endpoint)) {
+            self::setNayraEndpoint($endpoint);
             return;
         }
 
-        $image = $this->scriptExecutor->dockerImageName();
-        //check if image exists
-        exec($docker . " inspect {$image} 2>&1", $output, $status);
+        $image = $this->getNayraDockerImage($docker);
+        $portMapping = $this->getNayraDockerPortMapping();
+        $network = config('app.nayra_docker_network');
+
+        $output = [];
+        exec($docker . " stop {$instanceName}_nayra 2>&1 || true", $output);
+
+        $output = [];
+        exec($docker . " rm {$instanceName}_nayra 2>&1 || true", $output);
+
+        $output = [];
+        exec(
+            $docker . ' run -d '
+            . $portMapping
+            . '--name ' . $instanceName . '_nayra '
+            . ($network ? '--network=' . $network . ' ' : '')
+            . $image,
+            $output,
+            $status
+        );
         if ($status) {
-            $this->bringUpNayraContainer();
-        } else {
-            $isHost = config('app.nayra_docker_network') === 'host';
-            $portMapping = $isHost ? '-e PORT=' . $this->getNayraPort() . ' ' : '-p ' . $this->getNayraPort() . ':8080 ';
-            exec($docker . " stop {$instanceName}_nayra 2>&1 || true");
-            exec($docker . " rm {$instanceName}_nayra 2>&1 || true");
-            exec(
-                $docker . ' run -d '
-                . ($this->getNayraPort() !== 8080 ? $portMapping : '')
-                . '--name ' . $instanceName . '_nayra '
-                . (config('app.nayra_docker_network')
-                    ? '--network=' . config('app.nayra_docker_network') . ' '
-                    : '')
-                . $image,
-                $output,
-                $status
-            );
-            if ($status) {
-                Log::error('Error starting Nayra Docker', [
-                    'output' => $output,
-                    'status' => $status,
-                ]);
-                throw new ScriptException('Error starting Nayra Docker');
-            }
+            Log::error('Error starting Nayra Docker', [
+                'output' => $output,
+                'status' => $status,
+            ]);
+            throw new ScriptException('Error starting Nayra Docker');
         }
-        $this->waitContainerNetwork($docker, $instanceName);
-        $url = $this->getNayraInstanceUrl();
-        $this->nayraServiceIsRunning($url);
+
+        self::setNayraEndpoint($endpoint);
+        $this->nayraServiceIsRunning($endpoint);
     }
 
     private function bringUpNayraContainer()
     {
         $lang = Base::NAYRA_LANG;
         Artisan::call("processmaker:build-script-executor {$lang} --rebuild");
+    }
+
+    private function getNayraDockerImage(string $docker): string
+    {
+        $image = $this->getScriptExecutor()->dockerImageName();
+        $sharedImage = $this->sharedNayraDockerImageName($image);
+
+        foreach (array_unique([$sharedImage, $image]) as $candidate) {
+            $output = [];
+            exec($docker . " inspect {$candidate} 2>&1", $output, $status);
+            if (!$status) {
+                return $candidate;
+            }
+        }
+
+        $this->bringUpNayraContainer();
+
+        return $image;
+    }
+
+    private function sharedNayraDockerImageName(string $image): string
+    {
+        $currentInstance = config('app.instance');
+        $sharedInstance = self::getNayraInstanceName();
+
+        if ($currentInstance === $sharedInstance) {
+            return $image;
+        }
+
+        return str_replace(
+            'executor-' . $currentInstance . '-',
+            'executor-' . $sharedInstance . '-',
+            $image
+        );
     }
 
     /**
@@ -255,12 +302,146 @@ trait ScriptDockerNayraTrait
             if ($i > 0) {
                 sleep(1);
             }
-            $status = @get_headers($url);
+            $status = $this->getHeaders($url);
             if ($status) {
                 return true;
             }
         }
         throw new ScriptException('Could not connect to the nayra container');
+    }
+
+    private function isNayraServiceReachable(string $url): bool
+    {
+        return (bool) $this->getHeaders($url);
+    }
+
+    protected function getHeaders(string $url): array|false
+    {
+        return @get_headers($url);
+    }
+
+    protected function curlInit(string $url): mixed
+    {
+        return curl_init($url);
+    }
+
+    protected function curlSetOpt(mixed $handle, int $option, mixed $value): bool
+    {
+        return curl_setopt($handle, $option, $value);
+    }
+
+    protected function curlExec(mixed $handle): string|bool
+    {
+        return curl_exec($handle);
+    }
+
+    protected function curlGetInfo(mixed $handle, int $option): mixed
+    {
+        return curl_getinfo($handle, $option);
+    }
+
+    protected function curlClose(mixed $handle): void
+    {
+        curl_close($handle);
+    }
+
+    private function normalizeNayraUrl(string $url): string
+    {
+        return rtrim($url, '/');
+    }
+
+    private function buildNayraEndpoint(): string
+    {
+        return self::buildNayraEndpointUrl($this->schema);
+    }
+
+    private static function buildNayraEndpointUrl(string $schema = 'http'): string
+    {
+        return $schema . '://' . self::getNayraEndpointHost() . ':' . self::getNayraPortValue();
+    }
+
+    private static function getNayraEndpointHost(): string
+    {
+        $dockerHost = config('app.processmaker_scripts_docker_host');
+        if ($dockerHost) {
+            $parsed = parse_url($dockerHost);
+            if (isset($parsed['host'])) {
+                return $parsed['host'];
+            }
+
+            return explode(':', $dockerHost)[0];
+        }
+
+        return '127.0.0.1';
+    }
+
+    private function getNayraDockerPortMapping(): string
+    {
+        return self::getNayraDockerPortMappingValue();
+    }
+
+    private static function getNayraDockerPortMappingValue(): string
+    {
+        $port = self::getNayraPortValue();
+
+        return config('app.nayra_docker_network') === 'host'
+            ? '-e PORT=' . $port . ' '
+            : '-p ' . $port . ':8080 ';
+    }
+
+    private static function getNayraInstanceName(): string
+    {
+        $instance = config('app.instance');
+
+        if (!config('app.multitenancy')) {
+            return $instance;
+        }
+
+        $tenant = app()->bound('currentTenant') ? app('currentTenant') : null;
+
+        if ($tenant && str_ends_with($instance, '_' . $tenant->id)) {
+            return substr($instance, 0, -strlen('_' . $tenant->id));
+        }
+
+        return $instance;
+    }
+
+    private static function getNayraContainerName(): string
+    {
+        return self::getNayraInstanceName();
+    }
+
+    public static function getNayraEndpoint()
+    {
+        // Check if it is running in unit test mode with Cache ArrayStore
+        $isArrayDriver = self::isCacheArrayStore();
+        if ($isArrayDriver) {
+            return Cache::store('file')->get('nayra_endpoint');
+        }
+
+        return Cache::get('nayra_endpoint');
+    }
+
+    public static function setNayraEndpoint(string $endpoint)
+    {
+        // Check if it is running in unit test mode with Cache ArrayStore
+        $isArrayDriver = self::isCacheArrayStore();
+        if ($isArrayDriver) {
+            return Cache::store('file')->forever('nayra_endpoint', $endpoint);
+        }
+
+        Cache::forever('nayra_endpoint', $endpoint);
+    }
+
+    public static function clearNayraEndpoint()
+    {
+        // Check if it is running in unit test mode with Cache ArrayStore
+        $isArrayDriver = self::isCacheArrayStore();
+        if ($isArrayDriver) {
+            return Cache::store('file')->forget('nayra_endpoint');
+        }
+
+        Cache::forget('nayra_endpoint');
     }
 
     public static function getNayraAddresses()
@@ -304,27 +485,25 @@ trait ScriptDockerNayraTrait
 
     public static function bringUpNayraExecutor(BuildScriptExecutors $builder, string $image)
     {
-        $instanceName = config('app.instance');
+        $instanceName = self::getNayraContainerName();
         $docker = Docker::command();
         $builder->info('Stop existing nayra container');
         $builder->execCommand("{$docker} stop {$instanceName}_nayra 2>&1 || true");
         $builder->execCommand("{$docker} rm {$instanceName}_nayra 2>&1 || true");
         $builder->info('Bring up the nayra container');
         $builder->execCommand(
-            $docker . ' run -d --name ' . $instanceName . '_nayra '
+            $docker . ' run -d '
+            . self::getNayraDockerPortMappingValue()
+            . '--name ' . $instanceName . '_nayra '
             . (config('app.nayra_docker_network')
                 ? '--network=' . config('app.nayra_docker_network') . ' '
                 : '')
             . $image
         );
-        $builder->info('Get IP address of the nayra container');
-        $found = self::findNayraAddresses($docker, $instanceName, 30);
-        if ($found) {
-            $builder->info('Nayra container IP: ' . self::getNayraAddresses()[0]);
-            $builder->sendEvent(0, 'done');
-        } else {
-            throw new UnexpectedValueException('Could not get IP address of the nayra container');
-        }
+        $endpoint = self::buildNayraEndpointUrl();
+        self::setNayraEndpoint($endpoint);
+        $builder->info('Nayra endpoint: ' . $endpoint);
+        $builder->sendEvent(0, 'done');
     }
 
     /**
@@ -333,6 +512,7 @@ trait ScriptDockerNayraTrait
     public static function initNayraPhpUnitTest()
     {
         Base::clearNayraAddresses();
+        Base::clearNayraEndpoint();
         $network = config('app.nayra_docker_network');
         // Check if docker network exists, if not create it
         exec(Docker::command() . " network inspect {$network} 2>&1", $output, $status);
@@ -346,6 +526,11 @@ trait ScriptDockerNayraTrait
 
     private function getNayraPort()
     {
-        return config('app.nayra_port', 8080);
+        return self::getNayraPortValue();
+    }
+
+    private static function getNayraPortValue(): int
+    {
+        return (int) config('app.nayra_port', 8080) ?: 8080;
     }
 }

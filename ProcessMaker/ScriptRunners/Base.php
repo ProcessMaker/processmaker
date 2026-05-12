@@ -53,6 +53,11 @@ abstract class Base
         $this->scriptExecutor = $scriptExecutor;
     }
 
+    protected function getScriptExecutor(): ScriptExecutor
+    {
+        return $this->scriptExecutor;
+    }
+
     /**
      * Run a script code.
      *
