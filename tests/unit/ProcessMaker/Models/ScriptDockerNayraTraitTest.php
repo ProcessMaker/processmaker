@@ -17,6 +17,8 @@ class ScriptDockerNayraTraitFunctionState
 
     public const HOST_NETWORK_NAYRA_HOST = 'http://' . self::HOST_NETWORK_IP . ':8081';
 
+    public const REMOTE_DOCKER_HOST = 'tcp://qa-remotedocker:2375';
+
     public const NAYRA_TEST_IMAGE = 'processmaker4/nayra:test';
 
     public const OK_HEADER = 'HTTP/1.1 200 OK';
@@ -316,12 +318,65 @@ class ScriptDockerNayraTraitTest extends TestCase
     {
         config([
             'app.nayra_port' => '',
-            'app.processmaker_scripts_docker_host' => 'tcp://qa-remotedocker:2375',
+            'app.processmaker_scripts_docker_host' => ScriptDockerNayraTraitFunctionState::REMOTE_DOCKER_HOST,
         ]);
 
         $runner = new ScriptDockerNayraTraitTestHarness();
 
         $this->assertSame('http://qa-remotedocker:8080', $runner->exposedGetNayraInstanceUrl());
+    }
+
+    public function testLocalDockerNetworkNayraEndpointUsesDockerReportedAddressAfterStartup()
+    {
+        config([
+            'app.nayra_docker_network' => 'pm4-tools_default',
+            'app.nayra_port' => '',
+        ]);
+
+        $runner = new ScriptDockerNayraTraitTestHarness();
+
+        $this->assertSame(
+            'http://' . ScriptDockerNayraTraitFunctionState::HOST_NETWORK_IP . ':8080',
+            $runner->exposedBuildNayraEndpointAfterStartup('docker', 'processmaker', 'http', 1)
+        );
+        $this->assertCount(1, ScriptDockerNayraTraitFunctionState::$execCommands);
+        $this->assertStringContainsString(
+            "inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' processmaker_nayra",
+            ScriptDockerNayraTraitFunctionState::$execCommands[0]
+        );
+    }
+
+    public function testLocalDockerNetworkNayraEndpointDoesNotOverrideRemoteDockerHost()
+    {
+        config([
+            'app.nayra_docker_network' => 'pm4-tools_default',
+            'app.nayra_port' => '',
+            'app.processmaker_scripts_docker_host' => ScriptDockerNayraTraitFunctionState::REMOTE_DOCKER_HOST,
+        ]);
+
+        $runner = new ScriptDockerNayraTraitTestHarness();
+
+        $this->assertSame(
+            'http://qa-remotedocker:8080',
+            $runner->exposedBuildNayraEndpointAfterStartup(
+                'DOCKER_HOST=' . ScriptDockerNayraTraitFunctionState::REMOTE_DOCKER_HOST . ' docker',
+                'processmaker',
+                'http',
+                1
+            )
+        );
+        $this->assertSame([], ScriptDockerNayraTraitFunctionState::$execCommands);
+    }
+
+    public function testEmptyDockerNetworkNayraEndpointUsesLocalhostAfterStartup()
+    {
+        $runner = new ScriptDockerNayraTraitTestHarness();
+
+        $this->assertSame(
+            ScriptDockerNayraTraitFunctionState::LOCAL_NAYRA_HOST,
+            $runner->exposedBuildNayraEndpointAfterStartup('docker', 'processmaker', 'http', 1)
+        );
+        $this->assertSame([], ScriptDockerNayraTraitFunctionState::$execCommands);
     }
 
     public function testLocalHostNetworkNayraEndpointUsesDockerReportedAddressAfterStartup()
@@ -345,14 +400,19 @@ class ScriptDockerNayraTraitTest extends TestCase
     {
         config([
             'app.nayra_docker_network' => 'host',
-            'app.processmaker_scripts_docker_host' => 'tcp://qa-remotedocker:2375',
+            'app.processmaker_scripts_docker_host' => ScriptDockerNayraTraitFunctionState::REMOTE_DOCKER_HOST,
         ]);
 
         $runner = new ScriptDockerNayraTraitTestHarness();
 
         $this->assertSame(
             'http://qa-remotedocker:8081',
-            $runner->exposedBuildNayraEndpointAfterStartup('DOCKER_HOST=tcp://qa-remotedocker:2375 docker', 'processmaker', 'http', 1)
+            $runner->exposedBuildNayraEndpointAfterStartup(
+                'DOCKER_HOST=' . ScriptDockerNayraTraitFunctionState::REMOTE_DOCKER_HOST . ' docker',
+                'processmaker',
+                'http',
+                1
+            )
         );
         $this->assertSame([], ScriptDockerNayraTraitFunctionState::$execCommands);
     }

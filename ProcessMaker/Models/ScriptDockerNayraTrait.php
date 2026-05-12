@@ -75,28 +75,37 @@ trait ScriptDockerNayraTrait
     private function getNayraInstanceUrl()
     {
         if (config('app.nayra_rest_api_host')) {
-            return $this->normalizeNayraUrl(config('app.nayra_rest_api_host'));
-        }
-
-        if ($endpoint = self::getNayraEndpoint()) {
+            $endpoint = $this->normalizeNayraUrl(config('app.nayra_rest_api_host'));
+            Log::warning('Nayra endpoint selected from config', self::nayraRuntimeContext($endpoint, 'config'));
             return $endpoint;
         }
 
-        return $this->buildNayraEndpoint();
+        if ($endpoint = self::getNayraEndpoint()) {
+            Log::warning('Nayra endpoint selected from cache', self::nayraRuntimeContext($endpoint, 'cache'));
+            return $endpoint;
+        }
+
+        $endpoint = $this->buildNayraEndpoint();
+        Log::warning('Nayra endpoint selected from fallback', self::nayraRuntimeContext($endpoint, 'fallback'));
+        return $endpoint;
     }
 
     private function resolveNayraBaseUrl()
     {
         if (config('app.nayra_rest_api_host')) {
-            return $this->normalizeNayraUrl(config('app.nayra_rest_api_host'));
+            $endpoint = $this->normalizeNayraUrl(config('app.nayra_rest_api_host'));
+            Log::warning('Nayra runtime endpoint resolved from config', self::nayraRuntimeContext($endpoint, 'config'));
+            return $endpoint;
         }
 
         $endpoint = self::getNayraEndpoint();
         if ($endpoint) {
             if ($this->isNayraServiceReachable($endpoint)) {
+                Log::warning('Cached Nayra endpoint is reachable', self::nayraRuntimeContext($endpoint, 'cache'));
                 return $endpoint;
             }
 
+            Log::warning('Cached Nayra endpoint is not reachable; clearing cache', self::nayraRuntimeContext($endpoint, 'cache'));
             self::clearNayraEndpoint();
         }
 
@@ -126,13 +135,16 @@ trait ScriptDockerNayraTrait
     private function ensureNayraServerIsRunning(string $url): string
     {
         if ($this->isNayraServiceReachable($url)) {
+            Log::warning('Nayra endpoint readiness confirmed before script execution', self::nayraRuntimeContext($url, 'selected'));
             return $url;
         }
 
         if (config('app.nayra_rest_api_host')) {
+            Log::warning('Configured Nayra endpoint is not reachable', self::nayraRuntimeContext($url, 'config'));
             throw new ScriptException('Could not connect to the configured Nayra REST API host: ' . $url);
         }
 
+        Log::warning('Nayra endpoint is not reachable; rebuilding container endpoint', self::nayraRuntimeContext($url, 'selected'));
         self::clearNayraEndpoint();
         $this->bringUpNayra(true);
 
@@ -152,15 +164,18 @@ trait ScriptDockerNayraTrait
         $docker = Docker::command();
         $instanceName = self::getNayraContainerName();
         $endpoint = $this->buildNayraEndpoint();
+        Log::warning('Preparing Nayra runtime endpoint', self::nayraRuntimeContext($endpoint, 'rebuild', $instanceName));
 
         if (!$restart && $this->isNayraServiceReachable($endpoint)) {
             self::setNayraEndpoint($endpoint);
+            Log::warning('Nayra container startup skipped because endpoint is reachable', self::nayraRuntimeContext($endpoint, 'fallback', $instanceName));
             return;
         }
 
         $image = $this->getNayraDockerImage($docker);
         $portMapping = $this->getNayraDockerPortMapping();
         $network = config('app.nayra_docker_network');
+        Log::warning('Starting Nayra Docker container', self::nayraRuntimeContext($endpoint, 'rebuild', $instanceName));
 
         $output = [];
         exec($docker . " stop {$instanceName}_nayra 2>&1 || true", $output);
@@ -180,13 +195,16 @@ trait ScriptDockerNayraTrait
         );
         if ($status) {
             Log::error('Error starting Nayra Docker', [
-                'output' => $output,
                 'status' => $status,
+                'output' => self::sanitizeNayraDockerOutput($output),
+                'endpointCandidate' => $endpoint,
+                'context' => self::nayraRuntimeContext($endpoint, 'rebuild', $instanceName),
             ]);
             throw new ScriptException('Error starting Nayra Docker');
         }
 
         $endpoint = self::buildNayraEndpointAfterStartup($docker, $instanceName, $this->schema);
+        Log::warning('Nayra endpoint selected after Docker startup', self::nayraRuntimeContext($endpoint, 'rebuild', $instanceName));
         $this->cacheNayraEndpointAfterReadiness($endpoint);
     }
 
@@ -194,6 +212,7 @@ trait ScriptDockerNayraTrait
     {
         $this->nayraServiceIsRunning($endpoint);
         self::setNayraEndpoint($endpoint);
+        Log::warning('Nayra endpoint cached after readiness check', self::nayraRuntimeContext($endpoint, 'rebuild'));
     }
 
     private function bringUpNayraContainer()
@@ -322,9 +341,15 @@ trait ScriptDockerNayraTrait
             }
             $status = $this->getHeaders($url);
             if ($status) {
+                Log::warning('Nayra readiness check succeeded', self::nayraRuntimeContext($url, 'readiness') + [
+                    'attempt' => $i + 1,
+                ]);
                 return true;
             }
         }
+        Log::warning('Nayra readiness check failed', self::nayraRuntimeContext($url, 'readiness') + [
+            'attempts' => static::getNayraEndpointReadinessAttempts(),
+        ]);
         throw new ScriptException('Could not connect to the nayra container');
     }
 
@@ -384,7 +409,7 @@ trait ScriptDockerNayraTrait
         string $schema = 'http',
         int $addressAttempts = 30
     ): string {
-        if (self::shouldUseContainerHostNetworkEndpoint()) {
+        if (self::shouldUseLocalContainerNetworkEndpoint()) {
             $host = self::resolveNayraContainerAddress($docker, $instanceName, $addressAttempts);
             if ($host) {
                 return self::buildNayraEndpointUrl($schema, $host);
@@ -394,10 +419,34 @@ trait ScriptDockerNayraTrait
         return self::buildNayraEndpointUrl($schema);
     }
 
-    private static function shouldUseContainerHostNetworkEndpoint(): bool
+    private static function shouldUseLocalContainerNetworkEndpoint(): bool
     {
-        return config('app.nayra_docker_network') === 'host'
+        return (bool) config('app.nayra_docker_network')
             && !config('app.processmaker_scripts_docker_host');
+    }
+
+    private static function nayraRuntimeContext(
+        ?string $endpoint = null,
+        ?string $source = null,
+        ?string $instanceName = null
+    ): array {
+        return [
+            'endpoint' => $endpoint,
+            'source' => $source,
+            'dockerHost' => config('app.processmaker_scripts_docker_host') ?: null,
+            'nayraDockerNetwork' => config('app.nayra_docker_network') ?: null,
+            'nayraPort' => self::getNayraPortValue(),
+            'containerName' => ($instanceName ?? self::getNayraContainerName()) . '_nayra',
+            'multitenancy' => (bool) config('app.multitenancy'),
+        ];
+    }
+
+    private static function sanitizeNayraDockerOutput(array $output): array
+    {
+        return array_map(
+            static fn ($line) => substr((string) $line, 0, 500),
+            array_slice($output, -10)
+        );
     }
 
     private static function getNayraEndpointHost(): string
