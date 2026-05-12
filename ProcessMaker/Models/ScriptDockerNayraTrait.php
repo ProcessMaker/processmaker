@@ -186,6 +186,7 @@ trait ScriptDockerNayraTrait
             throw new ScriptException('Error starting Nayra Docker');
         }
 
+        $endpoint = self::buildNayraEndpointAfterStartup($docker, $instanceName, $this->schema);
         $this->cacheNayraEndpointAfterReadiness($endpoint);
     }
 
@@ -257,6 +258,11 @@ trait ScriptDockerNayraTrait
      */
     private static function findNayraAddresses($docker, $instanceName, $times): bool
     {
+        return self::resolveNayraContainerAddress($docker, $instanceName, $times) !== null;
+    }
+
+    private static function resolveNayraContainerAddress($docker, $instanceName, $times): ?string
+    {
         $ip = '';
         $nayraDockerNetwork = config('app.nayra_docker_network');
 
@@ -264,15 +270,17 @@ trait ScriptDockerNayraTrait
             if ($i > 0) {
                 sleep(1);
             }
+            $output = [];
+            $status = 0;
             if ($nayraDockerNetwork === 'host') {
-                $ip = exec(
+                $ip = static::execDockerCommand(
                     $docker . " exec {$instanceName}_nayra hostname -i 2>/dev/null",
                     $output,
                     $status
                 );
                 $ip = explode(' ', trim($ip))[0];
             } else {
-                $ip = exec(
+                $ip = static::execDockerCommand(
                     $docker . ' inspect --format '
                     . ($nayraDockerNetwork
                         ? "'{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'"
@@ -288,11 +296,16 @@ trait ScriptDockerNayraTrait
             }
             if ($ip) {
                 self::setNayraAddresses([$ip]);
-                return true;
+                return $ip;
             }
         }
 
-        return false;
+        return null;
+    }
+
+    protected static function execDockerCommand(string $command, array &$output, int &$status): string|false
+    {
+        return exec($command, $output, $status);
     }
 
     /**
@@ -360,9 +373,31 @@ trait ScriptDockerNayraTrait
         return self::buildNayraEndpointUrl($this->schema);
     }
 
-    private static function buildNayraEndpointUrl(string $schema = 'http'): string
+    private static function buildNayraEndpointUrl(string $schema = 'http', ?string $host = null): string
     {
-        return $schema . '://' . self::getNayraEndpointHost() . ':' . self::getNayraPortValue();
+        return $schema . '://' . ($host ?? self::getNayraEndpointHost()) . ':' . self::getNayraPortValue();
+    }
+
+    private static function buildNayraEndpointAfterStartup(
+        string $docker,
+        string $instanceName,
+        string $schema = 'http',
+        int $addressAttempts = 30
+    ): string {
+        if (self::shouldUseContainerHostNetworkEndpoint()) {
+            $host = self::resolveNayraContainerAddress($docker, $instanceName, $addressAttempts);
+            if ($host) {
+                return self::buildNayraEndpointUrl($schema, $host);
+            }
+        }
+
+        return self::buildNayraEndpointUrl($schema);
+    }
+
+    private static function shouldUseContainerHostNetworkEndpoint(): bool
+    {
+        return config('app.nayra_docker_network') === 'host'
+            && !config('app.processmaker_scripts_docker_host');
     }
 
     private static function getNayraEndpointHost(): string
@@ -505,7 +540,7 @@ trait ScriptDockerNayraTrait
                 : '')
             . $image
         );
-        $endpoint = self::buildNayraEndpointUrl();
+        $endpoint = self::buildNayraEndpointAfterStartup($docker, $instanceName);
         if (!static::nayraEndpointIsRunning($endpoint)) {
             throw new UnexpectedValueException('Could not connect to the nayra container');
         }
