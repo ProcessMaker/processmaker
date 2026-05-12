@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use ProcessMaker\Console\Commands\BuildScriptExecutors;
 use ProcessMaker\Exception\ScriptException;
+use UnexpectedValueException;
 use Tests\TestCase;
 
 class ScriptDockerNayraTraitFunctionState
@@ -55,6 +57,7 @@ class ScriptDockerNayraTraitTestHarness
         resolveNayraBaseUrl as public exposedResolveNayraBaseUrl;
         getNayraPort as public exposedGetNayraPort;
         getNayraContainerName as public exposedGetNayraContainerName;
+        cacheNayraEndpointAfterReadiness as public exposedCacheNayraEndpointAfterReadiness;
     }
 
     public int $bringUpNayraCalls = 0;
@@ -78,9 +81,19 @@ class ScriptDockerNayraTraitTestHarness
 
     protected function getHeaders(string $url): array|false
     {
+        return static::getNayraEndpointHeaders($url);
+    }
+
+    protected static function getNayraEndpointHeaders(string $url): array|false
+    {
         ScriptDockerNayraTraitFunctionState::$requestedHeaders[] = $url;
 
         return ScriptDockerNayraTraitFunctionState::$headers[$url] ?? false;
+    }
+
+    protected static function getNayraEndpointReadinessAttempts(): int
+    {
+        return 1;
     }
 
     protected function curlInit(string $url): object
@@ -120,6 +133,37 @@ class ScriptDockerNayraTraitTestHarness
     {
         ScriptDockerNayraTraitFunctionState::$curlHandles[__FUNCTION__][] = $handle;
         ScriptDockerNayraTraitFunctionState::$curlClosed = true;
+    }
+}
+
+class ScriptDockerNayraTraitBuildScriptExecutorsHarness extends BuildScriptExecutors
+{
+    public array $commands = [];
+
+    public array $events = [];
+
+    public array $infoMessages = [];
+
+    public function execCommand(string $command)
+    {
+        $this->commands[] = $command;
+    }
+
+    public function info($text, $verbosity = null)
+    {
+        $this->infoMessages[] = $text;
+    }
+
+    /**
+     * @param mixed $output
+     * @param mixed $status
+     */
+    public function sendEvent($output, $status)
+    {
+        $this->events[] = [
+            'output' => $output,
+            'status' => $status,
+        ];
     }
 }
 
@@ -316,5 +360,101 @@ class ScriptDockerNayraTraitTest extends TestCase
 
         $this->assertSame(0, $runner->bringUpNayraCalls);
         $this->assertNull(ScriptDockerNayraTraitFunctionState::$curlUrl);
+    }
+
+    public function testRuntimeBringUpNayraCachesEndpointAfterReadinessPasses()
+    {
+        ScriptDockerNayraTraitFunctionState::$headers = [
+            ScriptDockerNayraTraitFunctionState::LOCAL_NAYRA_HOST => [
+                ScriptDockerNayraTraitFunctionState::OK_HEADER,
+            ],
+        ];
+
+        $runner = new ScriptDockerNayraTraitTestHarness();
+        $runner->exposedCacheNayraEndpointAfterReadiness(ScriptDockerNayraTraitFunctionState::LOCAL_NAYRA_HOST);
+
+        $this->assertSame(
+            ScriptDockerNayraTraitFunctionState::LOCAL_NAYRA_HOST,
+            ScriptDockerNayraTraitTestHarness::getNayraEndpoint()
+        );
+        $this->assertSame(
+            [ScriptDockerNayraTraitFunctionState::LOCAL_NAYRA_HOST],
+            ScriptDockerNayraTraitFunctionState::$requestedHeaders
+        );
+    }
+
+    public function testRuntimeBringUpNayraDoesNotCacheEndpointWhenReadinessFails()
+    {
+        ScriptDockerNayraTraitFunctionState::$headers = [
+            ScriptDockerNayraTraitFunctionState::LOCAL_NAYRA_HOST => false,
+        ];
+
+        $runner = new ScriptDockerNayraTraitTestHarness();
+
+        try {
+            $runner->exposedCacheNayraEndpointAfterReadiness(ScriptDockerNayraTraitFunctionState::LOCAL_NAYRA_HOST);
+            $this->fail('Expected runtime Nayra startup to fail when the endpoint is unreachable.');
+        } catch (ScriptException $exception) {
+            $this->assertSame('Could not connect to the nayra container', $exception->getMessage());
+        }
+
+        $this->assertNull(ScriptDockerNayraTraitTestHarness::getNayraEndpoint());
+        $this->assertSame(
+            [ScriptDockerNayraTraitFunctionState::LOCAL_NAYRA_HOST],
+            ScriptDockerNayraTraitFunctionState::$requestedHeaders
+        );
+    }
+
+    public function testBringUpNayraExecutorCachesEndpointAfterItIsReachable()
+    {
+        ScriptDockerNayraTraitFunctionState::$headers = [
+            ScriptDockerNayraTraitFunctionState::LOCAL_NAYRA_HOST => [
+                ScriptDockerNayraTraitFunctionState::OK_HEADER,
+            ],
+        ];
+        $builder = new ScriptDockerNayraTraitBuildScriptExecutorsHarness();
+
+        ScriptDockerNayraTraitTestHarness::bringUpNayraExecutor($builder, 'processmaker4/nayra:test');
+
+        $this->assertSame(
+            ScriptDockerNayraTraitFunctionState::LOCAL_NAYRA_HOST,
+            ScriptDockerNayraTraitTestHarness::getNayraEndpoint()
+        );
+        $this->assertSame(
+            [ScriptDockerNayraTraitFunctionState::LOCAL_NAYRA_HOST],
+            ScriptDockerNayraTraitFunctionState::$requestedHeaders
+        );
+        $this->assertCount(3, $builder->commands);
+        $this->assertStringContainsString('docker run -d -p 8081:8080', $builder->commands[2]);
+        $this->assertContains('Nayra endpoint: ' . ScriptDockerNayraTraitFunctionState::LOCAL_NAYRA_HOST, $builder->infoMessages);
+        $this->assertSame([
+            [
+                'output' => 0,
+                'status' => 'done',
+            ],
+        ], $builder->events);
+    }
+
+    public function testBringUpNayraExecutorDoesNotCacheEndpointWhenItIsUnreachable()
+    {
+        ScriptDockerNayraTraitFunctionState::$headers = [
+            ScriptDockerNayraTraitFunctionState::LOCAL_NAYRA_HOST => false,
+        ];
+        $builder = new ScriptDockerNayraTraitBuildScriptExecutorsHarness();
+
+        try {
+            ScriptDockerNayraTraitTestHarness::bringUpNayraExecutor($builder, 'processmaker4/nayra:test');
+            $this->fail('Expected Nayra executor startup to fail when the endpoint is unreachable.');
+        } catch (UnexpectedValueException $exception) {
+            $this->assertSame('Could not connect to the nayra container', $exception->getMessage());
+        }
+
+        $this->assertNull(ScriptDockerNayraTraitTestHarness::getNayraEndpoint());
+        $this->assertSame(
+            [ScriptDockerNayraTraitFunctionState::LOCAL_NAYRA_HOST],
+            ScriptDockerNayraTraitFunctionState::$requestedHeaders
+        );
+        $this->assertCount(3, $builder->commands);
+        $this->assertSame([], $builder->events);
     }
 }

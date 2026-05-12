@@ -186,8 +186,13 @@ trait ScriptDockerNayraTrait
             throw new ScriptException('Error starting Nayra Docker');
         }
 
-        self::setNayraEndpoint($endpoint);
+        $this->cacheNayraEndpointAfterReadiness($endpoint);
+    }
+
+    private function cacheNayraEndpointAfterReadiness(string $endpoint): void
+    {
         $this->nayraServiceIsRunning($endpoint);
+        self::setNayraEndpoint($endpoint);
     }
 
     private function bringUpNayraContainer()
@@ -298,7 +303,7 @@ trait ScriptDockerNayraTrait
      */
     private function nayraServiceIsRunning($url): bool
     {
-        for ($i = 0; $i < 30; $i++) {
+        for ($i = 0; $i < static::getNayraEndpointReadinessAttempts(); $i++) {
             if ($i > 0) {
                 sleep(1);
             }
@@ -317,7 +322,7 @@ trait ScriptDockerNayraTrait
 
     protected function getHeaders(string $url): array|false
     {
-        return @get_headers($url);
+        return static::getNayraEndpointHeaders($url);
     }
 
     protected function curlInit(string $url): mixed
@@ -501,9 +506,37 @@ trait ScriptDockerNayraTrait
             . $image
         );
         $endpoint = self::buildNayraEndpointUrl();
+        if (!static::nayraEndpointIsRunning($endpoint)) {
+            throw new UnexpectedValueException('Could not connect to the nayra container');
+        }
+
         self::setNayraEndpoint($endpoint);
         $builder->info('Nayra endpoint: ' . $endpoint);
         $builder->sendEvent(0, 'done');
+    }
+
+    private static function nayraEndpointIsRunning(string $url): bool
+    {
+        for ($i = 0; $i < static::getNayraEndpointReadinessAttempts(); $i++) {
+            if ($i > 0) {
+                sleep(1);
+            }
+            if (static::getNayraEndpointHeaders($url)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected static function getNayraEndpointHeaders(string $url): array|false
+    {
+        return @get_headers($url);
+    }
+
+    protected static function getNayraEndpointReadinessAttempts(): int
+    {
+        return 30;
     }
 
     /**
