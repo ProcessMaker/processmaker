@@ -28,10 +28,14 @@ Broadcast::channel('ProcessMaker.Models.ProcessRequest.{id}', function ($user, $
     }
 
     $request = ProcessRequest::find($id);
+    if (!$request) {
+        return false;
+    }
 
     return $request->user_id === $user->id
         || !empty($request->participants()->where('users.id', $user->getKey())->first())
-        || in_array($user->id, $request->process?->manager_id ?? []);
+        || in_array($user->id, $request->process?->manager_id ?? [])
+        || $request->canUserClaimASelfServiceTask($user);
 });
 
 Broadcast::channel('ProcessMaker.Models.ProcessRequestToken.{id}', function ($user, $id) {
