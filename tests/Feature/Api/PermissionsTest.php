@@ -22,6 +22,10 @@ class PermissionsTest extends TestCase
 {
     use RequestHelper;
 
+    private const PERMISSIONS_URL = '/permissions';
+
+    private const PROCESSES_URL = '/processes';
+
     protected function withUserSetup()
     {
         $this->user->is_administrator = false;
@@ -59,10 +63,10 @@ class PermissionsTest extends TestCase
             'status' => 'ACTIVE',
         ]);
 
-        $response = $this->apiCall('GET', '/processes');
+        $response = $this->apiCall('GET', self::PROCESSES_URL);
         $response->assertStatus(200);
 
-        $response = $this->apiCall('GET', '/processes/' . $process->id);
+        $response = $this->apiCall('GET', self::PROCESSES_URL . '/' . $process->id);
         $response->assertStatus(200);
 
         $permission = Permission::byName('archive-processes');
@@ -74,7 +78,7 @@ class PermissionsTest extends TestCase
         // Invalidate permission cache to ensure changes take effect
         $this->user->invalidatePermissionCache();
 
-        $response = $this->apiCall('DELETE', '/processes/' . $process->id);
+        $response = $this->apiCall('DELETE', self::PROCESSES_URL . '/' . $process->id);
         $response->assertStatus(403);
 
         $this->user->permissions()->attach($permission->id);
@@ -84,7 +88,7 @@ class PermissionsTest extends TestCase
         // Invalidate permission cache to ensure the new permission takes effect
         $this->user->invalidatePermissionCache();
 
-        $response = $this->apiCall('DELETE', '/processes/' . $process->id);
+        $response = $this->apiCall('DELETE', self::PROCESSES_URL . '/' . $process->id);
         $response->assertStatus(204);
     }
 
@@ -97,7 +101,7 @@ class PermissionsTest extends TestCase
 
         $testUser = User::factory()->create();
         $testPermission = Permission::factory()->create();
-        $response = $this->apiCall('PUT', '/permissions', [
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
             'user_id' => $testUser->id,
             'permission_names' => [$testPermission->name],
         ]);
@@ -107,6 +111,151 @@ class PermissionsTest extends TestCase
         //Assert that the permissions has been set
         $this->assertEquals($testUser->permissions->count(), 1);
         $this->assertEquals($testUser->permissions->first()->id, $testPermission->id);
+    }
+
+    public function testSetPermissionsForGroupWithInheritedEditGroupsPermission()
+    {
+        $this->user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => false,
+        ]);
+        $this->initializePermissions(false);
+
+        $adminGroup = Group::factory()->create();
+        $adminGroup->permissions()->attach(Permission::whereIn('name', [
+            'view-groups',
+            'create-groups',
+            'edit-groups',
+            'delete-groups',
+        ])->pluck('id'));
+
+        GroupMember::factory()->create([
+            'group_id' => $adminGroup->id,
+            'member_type' => User::class,
+            'member_id' => $this->user->id,
+        ]);
+
+        $this->user->invalidatePermissionCache();
+
+        $targetGroup = Group::factory()->create();
+
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
+            'group_id' => $targetGroup->id,
+            'permission_names' => ['view-groups', 'edit-groups'],
+        ]);
+
+        $response->assertStatus(204);
+        $this->assertEqualsCanonicalizing(
+            ['view-groups', 'edit-groups'],
+            $targetGroup->refresh()->permissions()->pluck('name')->toArray()
+        );
+    }
+
+    public function testSetPermissionsForUserRequiresEditUsersPermission()
+    {
+        $this->user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => false,
+        ]);
+        $this->initializePermissions(false);
+
+        $adminGroup = Group::factory()->create();
+        $adminGroup->permissions()->attach(Permission::byName('edit-groups')->id);
+
+        GroupMember::factory()->create([
+            'group_id' => $adminGroup->id,
+            'member_type' => User::class,
+            'member_id' => $this->user->id,
+        ]);
+
+        $this->user->invalidatePermissionCache();
+
+        $targetUser = User::factory()->create();
+
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
+            'user_id' => $targetUser->id,
+            'permission_names' => ['view-groups'],
+        ]);
+
+        $response->assertStatus(403);
+        $this->assertFalse($targetUser->refresh()->permissions()->where('name', 'view-groups')->exists());
+    }
+
+    public function testSetPermissionsForGroupRequiresEditGroupsPermission()
+    {
+        $this->user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => false,
+        ]);
+        $this->initializePermissions(false);
+
+        $targetGroup = Group::factory()->create();
+
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
+            'group_id' => $targetGroup->id,
+            'permission_names' => ['view-groups'],
+        ]);
+
+        $response->assertStatus(403);
+        $this->assertCount(0, $targetGroup->refresh()->permissions);
+    }
+
+    public function testUnauthorizedPermissionUpdatesDoNotExposeTargetExistence()
+    {
+        $this->user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => false,
+        ]);
+        $this->initializePermissions(false);
+
+        $targetUser = User::factory()->create();
+        $targetGroup = Group::factory()->create();
+        $missingUserId = User::max('id') + 1;
+        $missingGroupId = Group::max('id') + 1;
+
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
+            'user_id' => $targetUser->id,
+            'permission_names' => ['view-groups'],
+        ]);
+        $response->assertStatus(403);
+
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
+            'user_id' => $missingUserId,
+            'permission_names' => ['view-groups'],
+        ]);
+        $response->assertStatus(403);
+
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
+            'group_id' => $targetGroup->id,
+            'permission_names' => ['view-groups'],
+        ]);
+        $response->assertStatus(403);
+
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
+            'group_id' => $missingGroupId,
+            'permission_names' => ['view-groups'],
+        ]);
+        $response->assertStatus(403);
+    }
+
+    public function testSetPermissionsRequiresExactlyOneTarget()
+    {
+        $targetUser = User::factory()->create();
+        $targetGroup = Group::factory()->create();
+
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
+            'permission_names' => ['view-groups'],
+        ]);
+
+        $response->assertStatus(422);
+
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
+            'user_id' => $targetUser->id,
+            'group_id' => $targetGroup->id,
+            'permission_names' => ['view-groups'],
+        ]);
+
+        $response->assertStatus(422);
     }
 
     public function testSetPermissionsViewProcessCatalogForUser()
@@ -180,7 +329,7 @@ class PermissionsTest extends TestCase
             // Invalidate permission cache to ensure the new permission takes effect
             $this->user->invalidatePermissionCache();
 
-            $response = $this->apiCall('PUT', $url, $attrs);
+            $this->apiCall('PUT', $url, $attrs);
             $this->assertEquals('Test Category Update', $class::find($id)->name);
 
             // test view permission
@@ -250,8 +399,8 @@ class PermissionsTest extends TestCase
     public function testSetPermissionsViewMyRequestForUsersAndGroupCreated()
     {
         // Set up the users and groups
-        $users = User::factory()->count(5)->create();
-        $groups = Group::factory()->count(3)->create();
+        User::factory()->count(5)->create();
+        Group::factory()->count(3)->create();
 
         // Run the seeder
         $this->seed(PermissionSeeder::class);
@@ -279,7 +428,7 @@ class PermissionsTest extends TestCase
         $this->user = $regularUser;
         $this->user->save();
 
-        $response = $this->apiCall('PUT', '/permissions', [
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
             'user_id' => $targetUser->id,
             'is_administrator' => true,
             'permission_names' => [],
@@ -292,7 +441,7 @@ class PermissionsTest extends TestCase
         $targetUser->is_administrator = true;
         $targetUser->save();
 
-        $response = $this->apiCall('PUT', '/permissions', [
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
             'user_id' => $targetUser->id,
             'is_administrator' => false,
             'permission_names' => [],
@@ -306,7 +455,7 @@ class PermissionsTest extends TestCase
         $this->user = $adminUser;
         $this->user->save();
 
-        $response = $this->apiCall('PUT', '/permissions', [
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
             'user_id' => $targetUser->id,
             'is_administrator' => false,
             'permission_names' => [],
@@ -317,7 +466,7 @@ class PermissionsTest extends TestCase
         $this->assertFalse($targetUser->is_administrator);
 
         // Test 4: Admin can grant admin role
-        $response = $this->apiCall('PUT', '/permissions', [
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
             'user_id' => $targetUser->id,
             'is_administrator' => true,
             'permission_names' => [],
