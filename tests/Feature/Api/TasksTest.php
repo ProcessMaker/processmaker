@@ -870,6 +870,109 @@ class TasksTest extends TestCase
         $this->assertNotContains($activeTask->id, $returnedIds);
     }
 
+    public function testProcessManagerAdvancedStatusFilterCanReturnCompletedTasks()
+    {
+        $manager = User::factory()->create();
+        $process = Process::factory()->create([
+            'properties' => ['manager_id' => $manager->id],
+        ]);
+        $unmanagedProcess = Process::factory()->create();
+        $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
+
+        $activeTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'is_self_service' => 0,
+        ]);
+
+        $completedTask = ProcessRequestToken::factory()->create([
+            'status' => 'CLOSED',
+            'element_type' => 'task',
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'is_self_service' => 0,
+        ]);
+
+        $unmanagedCompletedTask = ProcessRequestToken::factory()->create([
+            'status' => 'CLOSED',
+            'element_type' => 'task',
+            'process_id' => $unmanagedProcess->id,
+            'is_self_service' => 0,
+        ]);
+
+        $statusFilter = json_encode([
+            [
+                'subject' => ['type' => 'Status'],
+                'operator' => '=',
+                'value' => 'Completed',
+            ],
+        ]);
+
+        $response = $this->actingAs($manager, 'api')->get(route('api.tasks.index', [
+            'processesIManage' => 'true',
+            'advanced_filter' => $statusFilter,
+        ]));
+
+        $response->assertStatus(200);
+        $returnedIds = collect($response->json('data'))->pluck('id')->toArray();
+
+        $this->assertContains($completedTask->id, $returnedIds);
+        $this->assertNotContains($activeTask->id, $returnedIds);
+        $this->assertNotContains($unmanagedCompletedTask->id, $returnedIds);
+    }
+
+    public function testProcessManagerAdvancedStatusFilterCanReturnInProgressCompletedAndSelfServiceTasks()
+    {
+        $manager = User::factory()->create();
+        $process = Process::factory()->create([
+            'properties' => ['manager_id' => $manager->id],
+        ]);
+
+        $activeTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'process_id' => $process->id,
+            'is_self_service' => 0,
+        ]);
+
+        $completedTask = ProcessRequestToken::factory()->create([
+            'status' => 'CLOSED',
+            'element_type' => 'task',
+            'process_id' => $process->id,
+            'is_self_service' => 0,
+        ]);
+
+        $selfServiceTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'process_id' => $process->id,
+            'user_id' => null,
+            'is_self_service' => 1,
+        ]);
+
+        $statusFilter = json_encode([
+            [
+                'subject' => ['type' => 'Status'],
+                'operator' => '=',
+                'value' => ['In Progress', 'Completed', 'Self Service'],
+            ],
+        ]);
+
+        $response = $this->actingAs($manager, 'api')->get(route('api.tasks.index', [
+            'processesIManage' => 'true',
+            'advanced_filter' => $statusFilter,
+        ]));
+
+        $response->assertStatus(200);
+        $returnedIds = collect($response->json('data'))->pluck('id')->toArray();
+
+        $this->assertContains($activeTask->id, $returnedIds);
+        $this->assertContains($completedTask->id, $returnedIds);
+        $this->assertContains($selfServiceTask->id, $returnedIds);
+    }
+
     public function testPmqlStatusPreservedWhenNoAdvancedStatusFilter()
     {
         $user = User::factory()->create(['is_administrator' => true]);
