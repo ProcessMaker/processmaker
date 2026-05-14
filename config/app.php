@@ -288,6 +288,9 @@ return [
     // Enable or disable TCE customization feature
     'tce_customization_enable' => env('TCE_CUSTOMIZATION_ENABLED', false),
 
+    // Enable or disable case retention policy
+    'case_retention_policy_enabled' => env('CASE_RETENTION_POLICY_ENABLED', false),
+
     'prometheus_namespace' => env('PROMETHEUS_NAMESPACE', strtolower(preg_replace('/[^a-zA-Z0-9_]+/', '_', env('APP_NAME', 'processmaker')))),
 
     'server_timing' => [
@@ -302,6 +305,18 @@ return [
     'multitenancy' => env('MULTITENANCY', false),
 
     'reassign_restrict_to_assignable_users' => env('REASSIGN_RESTRICT_TO_ASSIGNABLE_USERS', true),
+
+    // When true, shows the Cases Retention section on process configuration
+    'case_retention_policy_enabled' => filter_var(env('CASE_RETENTION_POLICY_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
+
+    // Controls which retention periods are available in the UI for the current tier.
+    'case_retention_tier' => trim((string) env('CASE_RETENTION_TIER', '1'), " \t\n\r\0\x0B\"'"),
+    'case_retention_tier_options' => [
+        '1' => ['six_months', 'one_year'],
+        '2' => ['six_months', 'one_year', 'three_years'],
+        '3' => ['six_months', 'one_year', 'three_years', 'five_years'],
+    ],
+
     'resources_core_path' => base_path('resources-core'),
     'scheduler' => [
         'claim_timeout_minutes' => env('SCHEDULER_CLAIM_TIMEOUT_MINUTES', 5),

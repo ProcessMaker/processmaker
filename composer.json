@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "2026.7.3",
+    "version": "2026.8.2",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -49,7 +49,7 @@
         "phpseclib/phpseclib": "^3.0.51",
         "pion/laravel-chunk-upload": "dev-master",
         "predis/predis": "^2.3",
-        "processmaker/docker-executor-lua": "^1.0",
+        "processmaker/docker-executor-lua": "1.0.1",
         "processmaker/docker-executor-node": "1.1.0",
         "processmaker/docker-executor-php": "1.4.3",
         "processmaker/laravel-i18next": "dev-master",
@@ -113,7 +113,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "871804b1",
+            "build": "90d83217",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.10",
@@ -163,7 +163,7 @@
                 "package-collections": "2.27.5",
                 "package-comments": "1.16.4",
                 "package-conversational-forms": "1.15.2",
-                "package-data-sources": "1.34.9",
+                "package-data-sources": "1.34.10",
                 "package-decision-engine": "1.16.3",
                 "package-dynamic-ui": "1.28.4",
                 "package-email-start-event": "1.0.11",
@@ -176,7 +176,7 @@
                 "package-product-analytics": "1.5.11",
                 "package-projects": "1.12.9",
                 "package-rpa": "1.1.2",
-                "package-savedsearch": "1.43.11",
+                "package-savedsearch": "1.43.12",
                 "package-slideshow": "1.4.3",
                 "package-smart-extract": "0.0.6",
                 "package-signature": "1.15.5",
