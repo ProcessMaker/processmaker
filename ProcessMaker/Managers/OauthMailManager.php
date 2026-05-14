@@ -9,7 +9,6 @@ use GuzzleHttp\Client;
 use Illuminate\Mail\MailManager;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Packages\Connectors\Email\EmailConfig;
-use ProcessMaker\Models\Setting;
 
 class OauthMailManager extends MailManager
 {
@@ -128,25 +127,13 @@ class OauthMailManager extends MailManager
     {
         try {
             $index = $this->emailServerIndex ? "_{$this->emailServerIndex}" : '';
-            //Get Mail Host
-            $key = "EMAIL_CONNECTOR_MAIL_HOST{$index}";
-            $settingEmailConnectorMailHost = Setting::byKey($key)?->config ?? null;
-
-            $baseUrlMicrosoft = 'https://login.microsoftonline.com/';
-            $permissions = 'https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send offline_access';
-            // Change the Microsoft Base Url and scopes according to the environment if the mail host ends with .us, which is the case for Microsoft 365 US Government.
-            if ($settingEmailConnectorMailHost && is_string($settingEmailConnectorMailHost) && str_ends_with($settingEmailConnectorMailHost, '.us')) {
-                $baseUrlMicrosoft = 'https://login.microsoftonline.us/';
-                $permissions = 'https://outlook.office365.us/IMAP.AccessAsUser.All https://outlook.office365.us/POP.AccessAsUser.All https://outlook.office365.us/SMTP.Send offline_access';
-            }
-
             $guzzle = new Client();
-            $url = $baseUrlMicrosoft . $this->token->tenant_id . '/oauth2/v2.0/token';
+            $url = 'https://login.microsoftonline.com/' . $this->token->tenant_id . '/oauth2/v2.0/token';
             $newToken = json_decode($guzzle->post($url, [
                 'form_params' => [
                     'client_id' =>  $this->token->client_id,
                     'client_secret' => $this->token->client_secret,
-                    'scope' => $permissions,
+                    'scope' => 'https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send offline_access',
                     'refresh_token' => $this->token->refresh_token,
                     'grant_type' => 'refresh_token',
                 ],
