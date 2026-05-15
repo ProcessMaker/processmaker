@@ -144,10 +144,10 @@
                 "package-zj-birmingham": "dev-main",
                 "package-tce": "dev-master",
                 "package-case-overview": "dev-main",
-                "package-sis-integration": "dev-develop"
+                "package-sis-integration": "dev-develop",
+                "package-accessibility": "1.0.1"
             },
             "enterprise": {
-                "package-accessibility": "1.0.1",
                 "connector-docusign": "1.11.2",
                 "connector-idp": "1.14.2",
                 "connector-pdf-print": "1.23.3",
