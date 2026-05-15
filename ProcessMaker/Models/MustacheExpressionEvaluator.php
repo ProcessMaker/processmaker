@@ -15,7 +15,7 @@ class MustacheExpressionEvaluator implements TemplateExpressionInterface
 
     public function __construct(array $options = [])
     {
-        $this->engine = new Mustache_Engine($options);
+        $this->engine = app(Mustache_Engine::class, $options);
     }
 
     /**
