@@ -15,6 +15,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -522,6 +523,82 @@ class ProcessRequestsTest extends TestCase
 
         // Assert that the API updated
         $response->assertStatus(204);
+    }
+
+    /**
+     * Canceling a request must leave no non-CLOSED tokens (bulk close in CancelRequest + controller).
+     */
+    public function testCancelProcessRequestClosesAllActiveTokens(): void
+    {
+        $request = ProcessRequest::factory()->create([
+            'status' => 'ACTIVE',
+        ]);
+
+        ProcessRequestToken::factory()->count(2)->create([
+            'process_request_id' => $request->id,
+            'process_id' => $request->process_id,
+            'status' => 'ACTIVE',
+            'user_id' => $this->user->id,
+            'completed_at' => null,
+        ]);
+
+        $route = route('api.requests.update', [$request->id]);
+        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED']);
+
+        $response->assertStatus(204);
+
+        $request->refresh();
+        $this->assertSame('CANCELED', $request->status);
+
+        $openCount = ProcessRequestToken::query()
+            ->where('process_request_id', $request->id)
+            ->where('status', '!=', ActivityInterface::TOKEN_STATE_CLOSED)
+            ->count();
+
+        $this->assertSame(0, $openCount);
+    }
+
+    /**
+     * A token created on an already-canceled request (e.g. race with task completion) is closed on a second cancel.
+     */
+    public function testCancelProcessRequestSecondSweepClosesStrayToken(): void
+    {
+        $request = ProcessRequest::factory()->create([
+            'status' => 'ACTIVE',
+        ]);
+
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $request->id,
+            'process_id' => $request->process_id,
+            'status' => 'ACTIVE',
+            'user_id' => $this->user->id,
+            'completed_at' => null,
+        ]);
+
+        $route = route('api.requests.update', [$request->id]);
+        $this->apiCall('PUT', $route, ['status' => 'CANCELED'])->assertStatus(204);
+
+        $request->refresh();
+        $this->assertSame('CANCELED', $request->status);
+
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $request->id,
+            'process_id' => $request->process_id,
+            'status' => 'ACTIVE',
+            'user_id' => $this->user->id,
+            'completed_at' => null,
+            'element_id' => 'stray_after_cancel',
+            'element_type' => 'task',
+        ]);
+
+        $this->apiCall('PUT', $route, ['status' => 'CANCELED'])->assertStatus(204);
+
+        $openCount = ProcessRequestToken::query()
+            ->where('process_request_id', $request->id)
+            ->where('status', '!=', ActivityInterface::TOKEN_STATE_CLOSED)
+            ->count();
+
+        $this->assertSame(0, $openCount);
     }
 
     /**

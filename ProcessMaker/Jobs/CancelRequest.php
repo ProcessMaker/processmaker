@@ -2,9 +2,12 @@
 
 namespace ProcessMaker\Jobs;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
 use ProcessMaker\Repositories\TokenRepository;
@@ -49,5 +52,18 @@ class CancelRequest extends BpmnAction implements ShouldQueue
         foreach ($instance->getTokens()->toArray() as $token) {
             $tokenRepo->store($token);
         }
+
+        // Tokens created after the in-memory snapshot (e.g. another user submits a task while
+        // cancel is confirmed) must still be closed so no ACTIVE task remains on a CANCELED request.
+        ProcessRequestToken::query()
+            ->where('process_request_id', $instance->getKey())
+            ->where('status', '!=', ActivityInterface::TOKEN_STATE_CLOSED)
+            ->update([
+                'status' => ActivityInterface::TOKEN_STATE_CLOSED,
+                'completed_at' => Carbon::now(),
+                'due_at' => null,
+                'riskchanges_at' => null,
+                'user_id' => null,
+            ]);
     }
 }
