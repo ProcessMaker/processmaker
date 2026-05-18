@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1_1;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Constants\CaseStatusConstants;
 use ProcessMaker\Models\CaseParticipated;
@@ -474,6 +475,33 @@ class CaseControllerTest extends TestCase
         $response->assertJsonFragment(['totalInProgress' => 5]);
         $response->assertJsonFragment(['totalCompleted' => 5]);
         $response->assertJsonFragment(['totalMyRequest' => 5]);
+    }
+
+    public function test_get_all_cases_forbidden_without_view_all_cases_permission(): void
+    {
+        // Seed permissions and register gates so the `can:view-all_cases`
+        // middleware on api.1.1.cases.all_cases is enforceable in tests.
+        $this->initializePermissions();
+
+        $nonAdmin = User::factory()->create([
+            'is_administrator' => false,
+        ]);
+
+        // Create some cases so a permitted user would get a non-empty payload.
+        self::createCasesStartedForUser($nonAdmin->id, 3);
+
+        // Without the permission, access is denied.
+        $response = $this->actingAs($nonAdmin, 'api')
+            ->json('GET', route('api.1.1.cases.all_cases'));
+        $response->assertStatus(403);
+
+        // Granting the permission restores access.
+        $nonAdmin->giveDirectPermission('view-all_cases');
+
+        $response = $this->actingAs($nonAdmin, 'api')
+            ->json('GET', route('api.1.1.cases.all_cases'));
+        $response->assertStatus(200);
+        $response->assertJsonCount(3, 'data');
     }
 
     public function test_get_all_cases_participants(): void
