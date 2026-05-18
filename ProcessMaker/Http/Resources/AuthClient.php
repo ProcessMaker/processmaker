@@ -26,7 +26,7 @@ class AuthClient extends ApiResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'secret' => $this->secret,
+            'secret' => $this->plainSecret,
             'redirect' => $this->redirect,
             'revoked' => $this->revoked,
             'types' => $types,

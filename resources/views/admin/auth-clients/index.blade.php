@@ -40,6 +40,26 @@
               </div>
             </b-form-checkbox-group>
         </pm-modal>
+        <pm-modal ref="secretModal" id="secretModal" :title="secretTitle" style="display: none;"
+        :set-custom-buttons="true"
+        :custom-buttons="customModalButtons"
+        @close="hideSecretModal">
+            <div class="form-group">
+                <label for="secret">{{__('Secret')}}</label>
+                <div class="input-group">
+                    <input readonly disabled type="text" class="form-control" id="secret" v-model="secret">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-primary" @click="copySecret(secret)" v-b-tooltip.hover :title="$t('Copy Secret To Clipboard')">
+                            <i class="fa-lg fas fa-copy" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="tw-flex tw-items-start tw-gap-3 tw-p-3 tw-mt-3 tw-rounded-lg tw-border tw-border-amber-300 tw-bg-amber-50 tw-text-amber-900" role="alert">
+                <i class="fas fa-exclamation-triangle tw-text-amber-500 tw-mt-0.5 tw-shrink-0" aria-hidden="true"></i>
+                <p class="tw-text-sm tw-m-0">{{ __('This is the only time you will be able to view the client secret. Keep it in a safe place.') }}</p>
+            </div>
+        </pm-modal>
 
         <div class="px-3 page-content">
             <div id="search-bar" class="search mb-3" vcloak>
@@ -66,7 +86,6 @@
                 <auth-clients-listing ref="authClientList" :permission="{{ \Auth::user()->hasPermissionsFor('auth_clients') }}" :filter="filter" @edit="edit"/>
             </div>
         </div>
-
     </div>
 @endsection
 
@@ -88,8 +107,12 @@
           errors: null,
           disabled: false,
           title:'',
+          secretTitle:'',
+          customModalButtons: [],
+          secret: "",
         },
         beforeMount() {
+          this.initCustomModalButtons();
           this.resetValues();
         },
         methods: {
@@ -120,8 +143,9 @@
               data: this.authClient,
             }).then(response => {
               this.$refs.createEditAuthClient.hide();
-              this.$refs.authClientList.fetch();
               this.loading = false;
+              this.secret = response.data.secret
+              this.$refs.secretModal.show();
               ProcessMaker.alert(this.$t("The auth client was ") + verb + ".", this.$t("success"))
             }).catch(error => {
               this.disabled = false;
@@ -130,6 +154,7 @@
           },
           resetValues() {
             this.title = this.$t('Create Auth-Client')
+            this.secretTitle = this.$t('Copy Secret To Clipboard')
             this.authClient = {
               id: null,
               name: "",
@@ -143,12 +168,35 @@
               types: null
             };
             this.disabled = false;
+            this.initCustomModalButtons();
           },
           edit(item) {
             this.title = this.$t('Edit Auth Client');
             this.authClient = item;
             this.$refs.createEditAuthClient.show();
-          }
+          },
+          initCustomModalButtons() {
+            this.customModalButtons = [
+              {
+                content: "Close",
+                action: "close",
+                variant: "secondary",
+                disabled: false,
+                hidden: false,
+              },
+            ];
+          },
+          hideSecretModal() {
+            this.$refs.secretModal.hide();
+            this.$refs.authClientList.fetch();
+          },
+          copySecret(secret) {
+            navigator.clipboard.writeText(secret).then(() => {
+              ProcessMaker.alert(this.$t("Secret copied to clipboard."), "success");
+            }, () => {
+              ProcessMaker.alert(this.$t("Secret not copied to clipboard."), "danger");
+            });
+          },
         },
       })
     </script>

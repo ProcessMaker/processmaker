@@ -33,19 +33,6 @@
             :divider="true"
           />
         </template>
-        <template slot="secret" slot-scope="props">
-          <b-btn
-            variant="link"
-            class="copylink"
-            @click="copySecret(props.rowData.secret)"
-            v-b-tooltip.hover
-            :title="$t('Copy Client Secret To Clipboard')"
-            v-uni-aria-describedby="props.rowData.id.toString()"
-          >
-            <i class="fas fa-clipboard fa-lg fa-fw"></i>
-          </b-btn>
-          {{ props.rowData.secret.substr(0, 10) }}...
-        </template>
       </vuetable>
       <pagination
         :single="$t('Auth Client')"
@@ -55,7 +42,6 @@
         @vuetable-pagination:change-page="onPageChange"
         ref="pagination"
       ></pagination>
-      <textarea class="copytext" ref="copytext"></textarea>
     </div>
   </div>
 </template>
@@ -73,7 +59,6 @@ export default {
   props: ["filter", "permission"],
   data() {
     return {
-      copytext: "",
       sortOrder: [
         {
           field: "name",
@@ -100,10 +85,6 @@ export default {
           callback(val) {
             return val.substr(0, 20) + "...";
           },
-        },
-        {
-          title: () => this.$t("Client Secret"),
-          name: "__slot:secret",
         },
         {
           name: "__slot:actions",
@@ -184,11 +165,6 @@ export default {
       }
       this.fetch();
     },
-    copySecret(secret) {
-      this.$refs.copytext.value = secret;
-      this.$refs.copytext.select();
-      document.execCommand("copy");
-    },
     onNavigate(action, data) {
       switch (action.value) {
         case 'edit-item':
@@ -223,15 +199,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.copytext {
-  position: absolute;
-  left: -1000px;
-  top: -1000px;
-}
-
-.copylink {
-  padding: 0;
-}
-</style>
