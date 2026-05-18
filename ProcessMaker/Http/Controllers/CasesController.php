@@ -28,9 +28,11 @@ class CasesController extends Controller
      */
     public function index($type = null)
     {
-        // The "All cases" tab exposes cases the user didn't participate in,
-        // so it must be gated by the same permission as the underlying API
-        // (`view-all_cases`). Admins are allowed through Gate::before.
+        // The "All cases" tab exposes every case in the platform regardless
+        // of the user's relationship to it, so it is gated by the
+        // `view-all_cases` permission. The other tabs (My cases, In progress,
+        // Completed) are scoped to the user and need no gate.
+        // Admins bypass this check via Gate::before in AuthServiceProvider.
         if ($type === 'all' && !Auth::user()->can('view-all_cases')) {
             abort(403);
         }
