@@ -151,6 +151,39 @@ class PermissionsTest extends TestCase
         );
     }
 
+    public function testSetPermissionsForUserWithInheritedEditUsersPermission()
+    {
+        $this->user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => false,
+        ]);
+        $this->initializePermissions(false);
+
+        $adminGroup = Group::factory()->create();
+        $adminGroup->permissions()->attach(Permission::byName('edit-users')->id);
+
+        GroupMember::factory()->create([
+            'group_id' => $adminGroup->id,
+            'member_type' => User::class,
+            'member_id' => $this->user->id,
+        ]);
+
+        $this->user->invalidatePermissionCache();
+
+        $targetUser = User::factory()->create();
+
+        $response = $this->apiCall('PUT', self::PERMISSIONS_URL, [
+            'user_id' => $targetUser->id,
+            'permission_names' => ['view-groups'],
+        ]);
+
+        $response->assertStatus(204);
+        $this->assertEqualsCanonicalizing(
+            ['view-groups'],
+            $targetUser->refresh()->permissions()->pluck('name')->toArray()
+        );
+    }
+
     public function testSetPermissionsForUserRequiresEditUsersPermission()
     {
         $this->user = User::factory()->create([
