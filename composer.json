@@ -46,7 +46,7 @@
         "paragonie/sodium_compat": "^2.5",
         "php-amqplib/php-amqplib": "^3.7",
         "php-http/promise": "~1.2.0",
-        "phpseclib/phpseclib": "^3.0.51",
+        "phpseclib/phpseclib": "^3.0",
         "pion/laravel-chunk-upload": "dev-master",
         "predis/predis": "^2.3",
         "processmaker/docker-executor-lua": "1.0.1",
