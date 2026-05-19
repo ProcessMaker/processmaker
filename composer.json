@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "2026.8.1",
+    "version": "2026.8.2",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -113,7 +113,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "7e6848e6",
+            "build": "90d83217",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.10",
@@ -144,10 +144,10 @@
                 "package-zj-birmingham": "dev-main",
                 "package-tce": "dev-master",
                 "package-case-overview": "dev-main",
-                "package-sis-integration": "dev-develop"
+                "package-sis-integration": "dev-develop",
+                "package-accessibility": "1.0.1"
             },
             "enterprise": {
-                "package-accessibility": "1.0.1",
                 "connector-docusign": "1.11.2",
                 "connector-idp": "1.14.2",
                 "connector-pdf-print": "1.23.3",
@@ -160,7 +160,7 @@
                 "package-ai": "1.16.17",
                 "package-analytics-reporting": "1.11.5",
                 "package-auth": "1.24.15",
-                "package-collections": "2.27.5",
+                "package-collections": "2.27.6",
                 "package-comments": "1.16.4",
                 "package-conversational-forms": "1.15.2",
                 "package-data-sources": "1.34.10",
