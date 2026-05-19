@@ -42,7 +42,8 @@ class SetUserIdOnOauthClient extends Upgrade
         }
 
         DB::table('oauth_clients')
-            ->where('name', 'PmApi')
+            ->where('personal_access_client', true)
+            ->whereNull('user_id')
             ->update(['user_id' => $adminUserId]);
     }
 
@@ -53,8 +54,18 @@ class SetUserIdOnOauthClient extends Upgrade
      */
     public function down()
     {
+        $adminUserId = DB::table('users')
+            ->where('is_administrator', true)
+            ->orderBy('id')
+            ->value('id');
+
+        if ($adminUserId === null) {
+            return;
+        }
+
         DB::table('oauth_clients')
-            ->where('name', 'PmApi')
+            ->where('personal_access_client', true)
+            ->where('user_id', $adminUserId)
             ->update(['user_id' => null]);
     }
 }
