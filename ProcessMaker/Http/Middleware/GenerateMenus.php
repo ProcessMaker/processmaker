@@ -136,6 +136,14 @@ class GenerateMenus
                     'file' => "data:image/svg+xml;base64,{$devlinkIcon}",
                 ]);
             }
+            if (\Auth::user()->canAny('view-settings|edit-settings') &&
+                (hasPackage('package-email-start-event') || hasPackage('package-ai'))) {
+                $submenu->add(__('Logs'), [
+                    'route' => 'admin.logs',
+                    'icon' => 'fa-bars',
+                    'id' => 'admin-logs',
+                ]);
+            }
         });
         Menu::make('sidebar_task', function ($menu) {
             $submenu = $menu->add(__('Tasks'));
