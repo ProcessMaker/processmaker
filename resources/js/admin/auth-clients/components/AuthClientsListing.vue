@@ -110,8 +110,7 @@ export default {
         data = data.filter((item) => {
           return (
             item.name.toLowerCase().indexOf(this.filter.toLowerCase()) > -1 ||
-            item.redirect.toLowerCase().indexOf(this.filter.toLowerCase()) > -1 ||
-            item.secret.toLowerCase().indexOf(this.filter.toLowerCase()) > -1
+            item.redirect.toLowerCase().indexOf(this.filter.toLowerCase()) > -1
           );
         });
       }
