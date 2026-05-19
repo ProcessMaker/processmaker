@@ -16,12 +16,13 @@ use Illuminate\Support\Str;
 use PDOException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\StartEventConditional;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\ScheduledTask;
-use ProcessMaker\Models\TimerExpression;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\TimerExpression;
 use ProcessMaker\Nayra\Bpmn\Models\BoundaryEvent;
 use ProcessMaker\Nayra\Bpmn\Models\DatePeriod;
 use ProcessMaker\Nayra\Bpmn\Models\IntermediateCatchEvent;
@@ -405,6 +406,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                 'process_id' => $process->id,
                 'process_name' => $process->name,
             ]);
+
             return;
         }
 
@@ -444,56 +446,80 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
             return false;
         }
 
-        $host = $this->getAbeInboundSettingValue(['abe_imap_host', 'email_connector_mail_host']);
+        $authMethodIndex = (int) ($this->getAbeInboundSettingValue(['abe_imap_auth_method']) ?? 0);
         $username = $this->getAbeInboundSettingValue(['abe_imap_username', 'email_connector_mail_username']);
 
-        if (!$this->hasValue($host) || !$this->hasValue($username)) {
+        if (!$this->hasValue($username)) {
             return false;
         }
 
-        return $this->hasAnyAbeInboundCredential();
+        if ($authMethodIndex === 1) {
+            return $this->hasEnvironmentVariables([
+                'ABE_GMAIL_API_CLIENT_ID',
+                'ABE_GMAIL_API_SECRET',
+                'ABE_GMAIL_API_ACCESS_TOKEN',
+                'ABE_GMAIL_API_REFRESH_TOKEN',
+            ]);
+        }
+
+        if ($authMethodIndex === 2) {
+            return $this->hasEnvironmentVariables([
+                'ABE_OFFICE_365_CLIENT_ID',
+                'ABE_OFFICE_365_TENANT_ID',
+                'ABE_OFFICE_365_SECRET',
+                'ABE_OFFICE_365_ACCESS_TOKEN',
+                'ABE_OFFICE_365_REFRESH_TOKEN',
+                'ABE_OFFICE_365_ACCESS_TOKEN_EXPIRE_DATE',
+            ]);
+        }
+
+        return $this->hasStandardAbeInboundConfiguration();
     }
 
     /**
-     * Standard password or OAuth-style tokens stored under abe_imap_* settings.
+     * IMAP configuration for standard authentication mode.
      */
-    private function hasAnyAbeInboundCredential(): bool
+    private function hasStandardAbeInboundConfiguration(): bool
     {
-        if ($this->hasValue($this->getAbeInboundSettingValue(['abe_imap_password', 'email_connector_mail_password']))) {
+        $password = $this->getAbeInboundSettingValue(['abe_imap_password', 'email_connector_mail_password']);
+        if (!$this->hasValue($password)) {
+            return false;
+        }
+
+        $inboxUri = $this->getAbeInboundSettingValue(['abe_imap_inbox_uri']);
+        if ($this->hasValue($inboxUri)) {
             return true;
         }
 
-        return Setting::query()
-            ->whereRaw('LOWER(`key`) LIKE ?', ['abe_imap%'])
-            ->where(function ($query) {
-                $query->whereRaw('LOWER(`key`) LIKE ?', ['%access_token%'])
-                    ->orWhereRaw('LOWER(`key`) LIKE ?', ['%refresh_token%']);
-            })
-            ->get()
-            ->contains(function ($setting) {
-                return $this->hasValue($this->extractSettingValue($setting->config));
-            });
+        $server = $this->getAbeInboundSettingValue(['abe_imap_server', 'email_connector_mail_host']);
+        $port = $this->getAbeInboundSettingValue(['abe_imap_port', 'email_connector_mail_port']);
+
+        return $this->hasValue($server) && $this->hasValue($port);
     }
 
     /**
      * Reads the first non-empty value from supported Actions By Email / mail settings keys.
      *
-     * @param array $prefixes
+     * @param array $keys
      * @return string|null
      */
-    private function getAbeInboundSettingValue(array $prefixes): ?string
+    private function getAbeInboundSettingValue(array $keys): ?string
     {
-        $settings = Setting::query()->where(function ($query) use ($prefixes) {
-            foreach ($prefixes as $prefix) {
-                $query->orWhereRaw('LOWER(`key`) LIKE ?', [strtolower($prefix) . '%']);
-            }
-        })->get();
+        $settings = Setting::query()
+            ->whereIn('key', $keys)
+            ->get()
+            ->keyBy('key');
 
         if ($settings->isEmpty()) {
             return null;
         }
 
-        foreach ($settings as $setting) {
+        foreach ($keys as $key) {
+            $setting = $settings->get($key);
+            if (!$setting) {
+                continue;
+            }
+
             $value = $this->extractSettingValue($setting->config);
             if ($this->hasValue($value)) {
                 return (string) $value;
@@ -555,9 +581,28 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      */
     private function isHandleRepliesProcess(Process $process): bool
     {
+        if ((string) $process->package_key === 'package-actions-by-email/handle-replies') {
+            return true;
+        }
+
         $name = (string) $process->name;
 
         return stripos($name, 'actions by email') !== false && stripos($name, 'handle replies') !== false;
+    }
+
+    private function hasEnvironmentVariables(array $names): bool
+    {
+        $values = EnvironmentVariable::query()
+            ->whereIn('name', $names)
+            ->pluck('value', 'name');
+
+        foreach ($names as $name) {
+            if (!isset($values[$name]) || trim((string) $values[$name]) === '') {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
