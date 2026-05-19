@@ -34,6 +34,19 @@ const translate = ProcessMaker.i18n;
 const { Router } = window.ProcessMaker;
 const path = window.location.pathname;
 
+const props = defineProps({
+  permissions: {
+    type: Object,
+    default: () => ({
+      overviewTabTask: true,
+      summaryTabTask: true,
+      completedTabTask: true,
+      formTabTask: true,
+      filesTabTask: true,
+    }),
+  },
+});
+
 const urlTabs = [
   "errors",
   "tasks",
@@ -45,21 +58,6 @@ const urlTabs = [
   "requests",
 ];
 
-const tabDefault = computed(() => {
-  if (urlTabs.includes(window.location.hash.substring(1))) {
-    return window.location.hash.substring(1);
-  }
-  // This section is for the package-files, the issue should be fixed in page with vue-router
-  const routeResolved = Router.resolve(path);
-  if (routeResolved.route?.name && routeResolved.route?.meta?.package === "package-files") {
-    return "file_manager";
-  }
-  if (isErrors()) {
-    return "errors";
-  }
-  return "tasks";
-});
-
 const componentToShow = computed(() => {
   if (isTceCustomization()) {
     return TabSummary;
@@ -67,7 +65,7 @@ const componentToShow = computed(() => {
   return null;
 });
 
-const tabs = [
+const tabs = computed(() => [
   {
     name: translate.t("Errors"),
     href: "#errors",
@@ -86,28 +84,28 @@ const tabs = [
     name: translate.t("Overview"),
     href: "#overview",
     current: "overview",
-    show: !isTceCustomization(),
+    show: props.permissions.overviewTabTask && !isTceCustomization(),
     content: Overview,
   },
   {
     name: translate.t("Summary"),
     href: "#summary",
     current: "summary",
-    show: getRequestStatus() !== "ERROR" && !isTceCustomization(),
+    show: props.permissions.summaryTabTask && getRequestStatus() !== "ERROR" && !isTceCustomization(),
     content: TabSummary,
   },
   {
     name: translate.t("Completed & Form"),
     href: "#completed_form",
     current: "completed_form",
-    show: true,
+    show: props.permissions.completedTabTask || props.permissions.formTabTask,
     content: CompletedForms,
   },
   {
     name: translate.t("File Manager"),
     href: "#file_manager",
     current: "file_manager",
-    show: true,
+    show: props.permissions.filesTabTask,
     content: TabFiles,
   },
   {
@@ -124,5 +122,30 @@ const tabs = [
     show: getRequestCount() !== 1 && !isTceCustomization(),
     content: RequestTable,
   },
-];
+]);
+
+const tabDefault = computed(() => {
+  const requestedTab = window.location.hash.substring(1);
+  const visibleTab = (current) => tabs.value.find((tab) => tab.current === current && tab.show);
+
+  if (urlTabs.includes(requestedTab) && visibleTab(requestedTab)) {
+    return requestedTab;
+  }
+
+  // This section is for the package-files, the issue should be fixed in page with vue-router
+  const routeResolved = Router.resolve(path);
+  if (
+    routeResolved.route?.name
+    && routeResolved.route?.meta?.package === "package-files"
+    && visibleTab("file_manager")
+  ) {
+    return "file_manager";
+  }
+
+  if (visibleTab("errors")) {
+    return "errors";
+  }
+
+  return tabs.value.find((tab) => tab.show)?.current || "tasks";
+});
 </script>

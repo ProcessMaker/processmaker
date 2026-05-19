@@ -42,12 +42,15 @@
                       @click="switchTab('pending')" href="#pending" role="tab" aria-controls="pending"
                       aria-selected="true">{{ __('Tasks') }}</a>
                   </li>
+                  @can('overview-tab-task')
                   <li class="nav-item">
                     <a class="nav-link" id="overview-tab" data-toggle="tab" href="#overview" role="tab"
                       aria-controls="overview" aria-selected="false" @click="switchTab('overview')">
                       {{ __('Overview') }}
                     </a>
                   </li>
+                  @endcan
+                  @can('summary-tab-task')
                   <li class="nav-item" v-if="showSummary">
                     <a id="summary-tab" data-toggle="tab" href="#summary" role="tab" aria-controls="summary"
                       @click="switchTab('summary')" aria-selected="false"
@@ -55,6 +58,7 @@
                       {{ __('Summary') }}
                     </a>
                   </li>
+                  @endcan
                   @if ($request->status === 'COMPLETED' && !$request->errors)
                     @can('editData', $request)
                       <li class="nav-item">
@@ -65,11 +69,13 @@
                       </li>
                     @endcan
                   @endif
+                  @can('completed-tab-task')
                   <li class="nav-item">
                     <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
                       aria-controls="completed" aria-selected="false"
                       @click="switchTab('completed')">{{ __('Completed') }}</a>
                   </li>
+                  @endcan
                   @if (count($files) > 0 && !hasPackage('package-files'))
                     <li class="nav-item">
                       <a class="nav-link" id="files-tab" data-toggle="tab" href="#files" role="tab" aria-controls="files"
@@ -86,12 +92,14 @@
                     </li>
                   </template>
 
+                  @can('form-tab-task')
                   <li class="nav-item" v-show="canViewPrint">
                     <a class="nav-link" id="forms-tab" data-toggle="tab" href="#forms" role="tab" aria-controls="forms"
                       aria-selected="false" @click="switchTab('forms')">
                       {{ __('Forms') }}
                     </a>
                   </li>
+                  @endcan
                   @isset($addons)
                     @foreach ($addons as $addon) @if (!empty($addon['title']))
                       <li class="nav-item">
@@ -487,8 +495,10 @@
         <script src="{{$script}}"></script>
     @endforeach
   @if (hasPackage('package-files'))
-    <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
-    <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
+    @can('files-tab-task')
+      <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
+      <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
+    @endif
   @endif
 
   <script>
