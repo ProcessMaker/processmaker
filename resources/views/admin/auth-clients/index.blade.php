@@ -144,8 +144,13 @@
             }).then(response => {
               this.$refs.createEditAuthClient.hide();
               this.loading = false;
-              this.secret = response.data.secret
-              this.$refs.secretModal.show();
+              if (response.data.secret) {
+                this.secret = response.data.secret
+                this.$refs.secretModal.show();
+              }
+              else {
+                this.$refs.authClientList.fetch();
+              }
               ProcessMaker.alert(this.$t("The auth client was ") + verb + ".", this.$t("success"))
             }).catch(error => {
               this.disabled = false;
