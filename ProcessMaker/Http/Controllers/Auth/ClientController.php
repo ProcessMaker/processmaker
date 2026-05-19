@@ -65,7 +65,6 @@ class ClientController
             );
         }
 
-        $client->makeVisible('secret');
         AuthClientCreated::dispatch($client->getAttributes());
 
         return new AuthClientResource($client);
