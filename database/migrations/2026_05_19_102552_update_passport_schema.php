@@ -24,13 +24,18 @@ return new class extends Migration {
         });
 
         foreach (Passport::client()->cursor() as $client) {
+            if ($client->personal_access_client === true && $client->password_client === false) {
+                $grantTypes = ['personal_access'];
+            } else {
+                $grantTypes = $client->grant_types;
+            }
             Model::withoutTimestamps(fn () => $client->forceFill([
                 'owner_id' => $client->user_id,
                 'owner_type' => $client->user_id
                     ? config('auth.providers.' . ($client->provider ?: config('auth.guards.api.provider')) . '.model')
                     : null,
                 'redirect_uris' => $client->redirect_uris,
-                'grant_types' => $client->grant_types,
+                'grant_types' => $grantTypes,
             ])->save());
         }
 
