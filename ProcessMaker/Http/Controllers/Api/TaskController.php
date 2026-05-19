@@ -156,7 +156,7 @@ class TaskController extends Controller
 
         // Apply process manager filter BEFORE PMQL to avoid conflicts with is_self_service filtering
         if ($request->input('processesIManage') === 'true') {
-            $this->applyProcessManager($query, $user);
+            $this->applyProcessManager($query, $user, $request);
         } else {
             $this->applyForCurrentUser($query, $user);
         }
