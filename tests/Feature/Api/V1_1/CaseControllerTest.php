@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1_1;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Constants\CaseStatusConstants;
 use ProcessMaker\Models\CaseParticipated;
@@ -474,6 +475,87 @@ class CaseControllerTest extends TestCase
         $response->assertJsonFragment(['totalInProgress' => 5]);
         $response->assertJsonFragment(['totalCompleted' => 5]);
         $response->assertJsonFragment(['totalMyRequest' => 5]);
+    }
+
+    public function test_get_all_cases_forbidden_without_view_all_cases_permission(): void
+    {
+        // Ensure the permission row exists and register it as a Laravel Gate
+        // so $user->can('view-all_cases') is enforceable in tests.
+        Permission::firstOrCreate(
+            ['name' => 'view-all_cases'],
+            ['title' => 'View All Cases'],
+        );
+        Gate::define('view-all_cases', fn ($user) => $user->hasPermission('view-all_cases'));
+
+        $nonAdmin = User::factory()->create([
+            'is_administrator' => false,
+        ]);
+
+        self::createCasesStartedForUser($nonAdmin->id, 3);
+
+        // Unscoped request (the "All cases" tab) — denied without the permission.
+        $response = $this->actingAs($nonAdmin, 'api')
+            ->json('GET', route('api.1.1.cases.all_cases'));
+        $response->assertStatus(403);
+
+        // Granting the permission restores access to the unscoped query.
+        $nonAdmin->giveDirectPermission('view-all_cases');
+
+        $response = $this->actingAs($nonAdmin, 'api')
+            ->json('GET', route('api.1.1.cases.all_cases'));
+        $response->assertStatus(200);
+        $response->assertJsonCount(3, 'data');
+    }
+
+    public function test_get_all_cases_allows_user_to_view_their_own_cases_without_permission(): void
+    {
+        // The endpoint is shared by the "My cases" tab, which scopes the
+        // query to the authenticated user. That self-scoped path must work
+        // even when the user lacks `view-all_cases`.
+        $nonAdmin = User::factory()->create([
+            'is_administrator' => false,
+        ]);
+
+        $ownCases = self::createCasesStartedForUser($nonAdmin->id, 4);
+        $otherUser = self::createUser('other_user');
+        self::createCasesStartedForUser($otherUser->id, 6);
+
+        $response = $this->actingAs($nonAdmin, 'api')
+            ->json('GET', route('api.1.1.cases.all_cases', ['userId' => $nonAdmin->id]));
+
+        $response->assertStatus(200);
+        $response->assertJsonCount($ownCases->count(), 'data');
+        $response->assertJsonMissing(['user_id' => $otherUser->id]);
+    }
+
+    public function test_get_all_cases_forbids_user_from_viewing_another_users_cases_without_permission(): void
+    {
+        Permission::firstOrCreate(
+            ['name' => 'view-all_cases'],
+            ['title' => 'View All Cases'],
+        );
+        Gate::define('view-all_cases', fn ($user) => $user->hasPermission('view-all_cases'));
+
+        $nonAdmin = User::factory()->create([
+            'is_administrator' => false,
+        ]);
+        $otherUser = self::createUser('other_user');
+        self::createCasesStartedForUser($otherUser->id, 2);
+
+        // Passing another user's id must require `view-all_cases`; otherwise
+        // any authenticated user could iterate userIds to enumerate the
+        // entire platform.
+        $response = $this->actingAs($nonAdmin, 'api')
+            ->json('GET', route('api.1.1.cases.all_cases', ['userId' => $otherUser->id]));
+        $response->assertStatus(403);
+
+        // With the permission, the same request succeeds.
+        $nonAdmin->giveDirectPermission('view-all_cases');
+
+        $response = $this->actingAs($nonAdmin, 'api')
+            ->json('GET', route('api.1.1.cases.all_cases', ['userId' => $otherUser->id]));
+        $response->assertStatus(200);
+        $response->assertJsonCount(2, 'data');
     }
 
     public function test_get_all_cases_participants(): void

@@ -119,6 +119,7 @@ return [
 
     // Microservice AI Host
     'ai_microservice_host' => env('AI_MICROSERVICE_HOST'),
+    'ai_microservice_host_ws' => env('AI_MICROSERVICE_HOST_WS'),
 
     // Security log
     'security_log' => env('SECURITY_LOG', 'true'),
@@ -288,6 +289,8 @@ return [
     // Enable or disable TCE customization feature
     'tce_customization_enable' => env('TCE_CUSTOMIZATION_ENABLED', false),
 
+    // Enable or disable to show case number in screens feature
+    'tce_enable_case_number_screen' => env('TCE_ENABLE_CASE_NUMBER_SCREEN', false),
     // Enable or disable case retention policy
     'case_retention_policy_enabled' => env('CASE_RETENTION_POLICY_ENABLED', false),
 

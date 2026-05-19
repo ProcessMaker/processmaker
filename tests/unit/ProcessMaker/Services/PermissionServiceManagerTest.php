@@ -34,6 +34,9 @@ class PermissionServiceManagerTest extends TestCase
         $this->group = Group::factory()->create(['name' => 'Test Group']);
         $this->user = User::factory()->create(['username' => 'testuser']);
 
+        // remove all permissions from user
+        $this->user->permissions()->detach();
+
         // Clear cache
         Cache::flush();
     }

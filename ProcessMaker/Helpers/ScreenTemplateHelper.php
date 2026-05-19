@@ -4,6 +4,32 @@ namespace ProcessMaker\Helpers;
 
 class ScreenTemplateHelper
 {
+    private const RENDERABLE_STRING_FIELDS = [
+        'ariaLabel',
+        'content',
+        'fieldValue',
+        'helper',
+        'label',
+        'loadingLabel',
+        'placeholder',
+    ];
+
+    /**
+     * Remove serialized Vue component definitions from screen config.
+     *
+     * Screen templates can contain old inspector metadata where inspector.type
+     * is a serialized Vue component object. That data is not needed at runtime
+     * and can reach renderer paths that expect Mustache templates to be strings.
+     */
+    public static function sanitizeScreenConfig(mixed $config): array
+    {
+        if (!is_array($config)) {
+            return [];
+        }
+
+        return self::sanitizeConfigValue($config);
+    }
+
     /**
      * Remove screen components from the configuration based on the provided components.
      *
@@ -401,5 +427,60 @@ class ScreenTemplateHelper
         }
 
         return $cssString;
+    }
+
+    private static function sanitizeConfigValue(mixed $value, ?string $key = null): mixed
+    {
+        if ($key === 'validation' && is_array($value) && $value === []) {
+            $sanitized = null;
+        } elseif (in_array($key, self::RENDERABLE_STRING_FIELDS, true)) {
+            $sanitized = self::sanitizeRenderableString($value);
+        } elseif (!is_array($value)) {
+            $sanitized = $value;
+        } elseif (array_is_list($value)) {
+            $sanitized = array_map(fn ($item) => self::sanitizeConfigValue($item), $value);
+        } else {
+            $sanitized = [];
+            foreach ($value as $childKey => $childValue) {
+                if ($childKey === 'inspector' && is_array($childValue)) {
+                    $sanitized[$childKey] = array_map(
+                        fn ($item) => self::sanitizeInspectorItem($item),
+                        $childValue
+                    );
+                    continue;
+                }
+
+                $sanitized[$childKey] = self::sanitizeConfigValue($childValue, (string) $childKey);
+            }
+        }
+
+        return $sanitized;
+    }
+
+    private static function sanitizeInspectorItem(mixed $item): mixed
+    {
+        if (!is_array($item)) {
+            return $item;
+        }
+
+        $sanitized = [];
+        foreach ($item as $key => $value) {
+            if ($key === 'type' && is_array($value)) {
+                continue;
+            }
+
+            $sanitized[$key] = self::sanitizeConfigValue($value, (string) $key);
+        }
+
+        return $sanitized;
+    }
+
+    private static function sanitizeRenderableString(mixed $value): string
+    {
+        if ($value === null || is_array($value)) {
+            return '';
+        }
+
+        return is_string($value) ? $value : (string) $value;
     }
 }

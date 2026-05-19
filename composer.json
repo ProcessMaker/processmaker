@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "2026.8.2",
+    "version": "2026.9.1",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -46,7 +46,7 @@
         "paragonie/sodium_compat": "^2.5",
         "php-amqplib/php-amqplib": "^3.7",
         "php-http/promise": "~1.2.0",
-        "phpseclib/phpseclib": "^3.0.51",
+        "phpseclib/phpseclib": "^3.0",
         "pion/laravel-chunk-upload": "dev-master",
         "predis/predis": "^2.3",
         "processmaker/docker-executor-lua": "1.0.1",
@@ -113,7 +113,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "90d83217",
+            "build": "5c91234c",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.10",
@@ -144,10 +144,10 @@
                 "package-zj-birmingham": "dev-main",
                 "package-tce": "dev-master",
                 "package-case-overview": "dev-main",
-                "package-sis-integration": "dev-develop"
+                "package-sis-integration": "dev-develop",
+                "package-accessibility": "1.0.1"
             },
             "enterprise": {
-                "package-accessibility": "1.0.1",
                 "connector-docusign": "1.11.2",
                 "connector-idp": "1.14.2",
                 "connector-pdf-print": "1.23.3",
@@ -155,18 +155,18 @@
                 "connector-slack": "1.9.6",
                 "docker-executor-node-ssr": "1.7.4",
                 "package-ab-testing": "1.4.2",
-                "package-actions-by-email": "1.22.13",
+                "package-actions-by-email": "1.22.14",
                 "package-advanced-user-manager": "1.13.3",
-                "package-ai": "1.16.17",
+                "package-ai": "1.16.18",
                 "package-analytics-reporting": "1.11.5",
                 "package-auth": "1.24.15",
-                "package-collections": "2.27.5",
+                "package-collections": "2.27.6",
                 "package-comments": "1.16.4",
                 "package-conversational-forms": "1.15.2",
                 "package-data-sources": "1.34.10",
                 "package-decision-engine": "1.16.3",
                 "package-dynamic-ui": "1.28.4",
-                "package-email-start-event": "1.0.11",
+                "package-email-start-event": "1.0.12",
                 "package-files": "1.23.6",
                 "package-googleplaces": "1.12.1",
                 "package-photo-video": "1.6.3",
@@ -176,7 +176,7 @@
                 "package-product-analytics": "1.5.11",
                 "package-projects": "1.12.9",
                 "package-rpa": "1.1.2",
-                "package-savedsearch": "1.43.12",
+                "package-savedsearch": "1.43.13",
                 "package-slideshow": "1.4.3",
                 "package-smart-extract": "0.0.6",
                 "package-signature": "1.15.5",
@@ -197,7 +197,7 @@
             "microservices": {
                 "pmai": "fall-2023"
             },
-            "release": "Summer 2025"
+            "release": "2026"
         }
     },
     "scripts": {

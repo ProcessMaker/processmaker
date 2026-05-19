@@ -225,6 +225,8 @@ class TaskController extends Controller
                 'userConfiguration' => $userConfiguration,
                 'hitlEnabled' => $hitlEnabled,
                 'iframeSrc' => $iframeSrc,
+                'caseNumber' => $task->processRequest->case_number,
+                'tceEnableCaseNumberScreen' => config('app.tce_enable_case_number_screen'),
             ]);
         }
     }
