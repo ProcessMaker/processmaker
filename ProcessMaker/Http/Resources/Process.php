@@ -28,6 +28,7 @@ class Process extends ApiResource
             $array['svg'] = $this->svg;
         }
         $array['manager_id'] = $this->manager_id;
+        $array['case_retention_tier_adjustment_notice'] = (bool) ($this->resource->case_retention_tier_adjustment_notice ?? false);
 
         return $array;
     }

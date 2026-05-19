@@ -126,15 +126,18 @@ class PermissionCacheServiceTest extends TestCase
     {
         // Cache user permissions
         $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
+        $this->cacheService->putLegacyUserPermissions($this->userId, $this->userPermissions, 3600);
 
         // Verify cache exists
         $this->assertNotNull(Cache::get("user_permissions:{$this->userId}"));
+        $this->assertNotNull(Cache::get("user_{$this->userId}_permissions"));
 
         // Invalidate cache
         $this->cacheService->invalidateUserPermissions($this->userId);
 
         // Verify cache was cleared
         $this->assertNull(Cache::get("user_permissions:{$this->userId}"));
+        $this->assertNull(Cache::get("user_{$this->userId}_permissions"));
     }
 
     /**
@@ -162,10 +165,13 @@ class PermissionCacheServiceTest extends TestCase
     {
         // Cache both user and group permissions
         $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
+        $this->cacheService->putLegacyUserPermissions($this->userId, $this->userPermissions, 3600);
         $this->cacheService->cacheGroupPermissions($this->groupId, $this->groupPermissions);
+        Cache::put('unrelated-cache-key', 'keep-me', 3600);
 
         // Verify both caches exist
         $this->assertNotNull(Cache::get("user_permissions:{$this->userId}"));
+        $this->assertNotNull(Cache::get("user_{$this->userId}_permissions"));
         $this->assertNotNull(Cache::get("group_permissions:{$this->groupId}"));
 
         // Clear all caches
@@ -173,7 +179,64 @@ class PermissionCacheServiceTest extends TestCase
 
         // Verify both caches were cleared
         $this->assertNull(Cache::get("user_permissions:{$this->userId}"));
+        $this->assertNull(Cache::get("user_{$this->userId}_permissions"));
         $this->assertNull(Cache::get("group_permissions:{$this->groupId}"));
+        $this->assertSame('keep-me', Cache::get('unrelated-cache-key'));
+    }
+
+    /**
+     * Test that clearAll clears tracked legacy permission caches without touching unrelated cache.
+     */
+    public function test_clear_all_clears_legacy_user_permission_cache_only_when_tracked()
+    {
+        $permissions = $this->cacheService->rememberLegacyUserPermissions($this->userId, 3600, function () {
+            return $this->userPermissions;
+        });
+        Cache::put('unrelated-cache-key', 'keep-me', 3600);
+
+        $this->assertEquals($this->userPermissions, $permissions);
+        $this->assertNotNull(Cache::get("user_{$this->userId}_permissions"));
+
+        $this->cacheService->clearAll();
+
+        $this->assertNull(Cache::get("user_{$this->userId}_permissions"));
+        $this->assertSame('keep-me', Cache::get('unrelated-cache-key'));
+    }
+
+    /**
+     * Test that tracked permission keys include every managed cache entry.
+     */
+    public function test_tracked_permission_keys_include_all_managed_cache_entries()
+    {
+        $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
+        $this->cacheService->putLegacyUserPermissions($this->userId, $this->userPermissions, 3600);
+        $this->cacheService->cacheGroupPermissions($this->groupId, $this->groupPermissions);
+
+        $trackedKeys = Cache::get('permission_cache_keys');
+
+        $this->assertIsArray($trackedKeys);
+        $this->assertContains("user_permissions:{$this->userId}", $trackedKeys);
+        $this->assertContains("user_{$this->userId}_permissions", $trackedKeys);
+        $this->assertContains("group_permissions:{$this->groupId}", $trackedKeys);
+    }
+
+    /**
+     * Test that tracked permission keys are pruned when a user cache is invalidated.
+     */
+    public function test_invalidate_user_permissions_removes_only_user_keys_from_tracked_index()
+    {
+        $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
+        $this->cacheService->putLegacyUserPermissions($this->userId, $this->userPermissions, 3600);
+        $this->cacheService->cacheGroupPermissions($this->groupId, $this->groupPermissions);
+
+        $this->cacheService->invalidateUserPermissions($this->userId);
+
+        $trackedKeys = Cache::get('permission_cache_keys');
+
+        $this->assertIsArray($trackedKeys);
+        $this->assertNotContains("user_permissions:{$this->userId}", $trackedKeys);
+        $this->assertNotContains("user_{$this->userId}_permissions", $trackedKeys);
+        $this->assertContains("group_permissions:{$this->groupId}", $trackedKeys);
     }
 
     /**

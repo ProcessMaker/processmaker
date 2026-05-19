@@ -206,8 +206,13 @@ class ScreenController extends Controller
      *     ),
      * )
      */
-    public function show(Screen $screen)
+    public function show(Request $request, Screen $screen)
     {
+        $include = $request->input('include', '');
+        if ($include) {
+            $screen->load(explode(',', $include));
+        }
+
         return new ScreenResource($screen);
     }
 

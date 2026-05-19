@@ -2,10 +2,10 @@
 
 namespace ProcessMaker\Traits;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
+use ProcessMaker\Services\PermissionCacheService;
 use ProcessMaker\Services\PermissionServiceManager;
 
 trait HasAuthorization
@@ -33,9 +33,13 @@ trait HasAuthorization
     public function loadUserPermissions()
     {
         $user = $this;
-        $permissions = Cache::remember("user_{$user->id}_permissions", 86400, function () use ($user) {
-            return $user->permissions()->pluck('name')->toArray();
-        });
+        $permissions = app(PermissionCacheService::class)->rememberLegacyUserPermissions(
+            $user->id,
+            86400,
+            function () use ($user) {
+                return $user->permissions()->pluck('name')->toArray();
+            }
+        );
 
         return $this->addCategoryViewPermissions($permissions);
     }

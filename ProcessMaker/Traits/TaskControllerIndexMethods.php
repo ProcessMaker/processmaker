@@ -295,6 +295,18 @@ trait TaskControllerIndexMethods
     {
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
+            if ($this->advancedFilterHasStatus($request)) {
+                $pmql = $this->removeStatusFromPmql($pmql);
+
+                if ($this->advancedFilterHasSelfServiceStatus($request)) {
+                    $pmql = $this->removeUserIdFromPmql($pmql);
+                }
+            }
+
+            if (empty($pmql)) {
+                return;
+            }
+
             try {
                 $query->pmql($pmql, null, $user);
             } catch (QueryException $e) {
@@ -303,6 +315,60 @@ trait TaskControllerIndexMethods
                 abort('Your PMQL contains invalid syntax.', 400);
             }
         }
+    }
+
+    private function advancedFilterHasStatus($request): bool
+    {
+        return !empty($this->getAdvancedFilterArray($request));
+    }
+
+    private function advancedFilterHasSelfServiceStatus($request): bool
+    {
+        foreach ($this->getAdvancedFilterArray($request) as $filter) {
+            $values = (array) ($filter['value'] ?? []);
+            foreach ($values as $v) {
+                if (mb_strtolower($v) === 'self service') {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private function getAdvancedFilterArray($request): array
+    {
+        $advancedFilter = $request->input('advanced_filter', '');
+        if (empty($advancedFilter)) {
+            return [];
+        }
+
+        $filterArray = is_string($advancedFilter) ? json_decode($advancedFilter, true) : $advancedFilter;
+        if (!is_array($filterArray)) {
+            return [];
+        }
+
+        return array_filter($filterArray, function ($filter) {
+            return isset($filter['subject']['type']) && $filter['subject']['type'] === 'Status';
+        });
+    }
+
+    private function removeStatusFromPmql(string $pmql): string
+    {
+        $pmql = preg_replace('/\s+AND\s+\(status\s*=\s*"[^"]*"\)/i', '', $pmql);
+        $pmql = preg_replace('/\(status\s*=\s*"[^"]*"\)\s+AND\s+/i', '', $pmql);
+        $pmql = preg_replace('/\(status\s*=\s*"[^"]*"\)/i', '', $pmql);
+
+        return trim($pmql);
+    }
+
+    private function removeUserIdFromPmql(string $pmql): string
+    {
+        $pmql = preg_replace('/\s+AND\s+\(user_id\s*=\s*\d+\)/i', '', $pmql);
+        $pmql = preg_replace('/\(user_id\s*=\s*\d+\)\s+AND\s+/i', '', $pmql);
+        $pmql = preg_replace('/\(user_id\s*=\s*\d+\)/i', '', $pmql);
+
+        return trim($pmql);
     }
 
     private function applyAdvancedFilter($query, $request)

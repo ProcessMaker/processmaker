@@ -174,4 +174,46 @@ class InvalidatePermissionCacheOnGroupHierarchyChangeTest extends TestCase
         $this->expectNotToPerformAssertions();
         $this->listener->handle($event);
     }
+
+    public function test_invalidates_only_affected_users_and_preserves_unrelated_cache_entries()
+    {
+        $descendantGroup = Group::factory()->create(['name' => 'Descendant Group']);
+        $unrelatedGroup = Group::factory()->create(['name' => 'Unrelated Group']);
+        $descendantUser = User::factory()->create(['username' => 'descendant-user']);
+        $unrelatedUser = User::factory()->create(['username' => 'unrelated-user']);
+
+        $this->group->groupMembers()->create([
+            'group_id' => $this->group->id,
+            'member_id' => $descendantGroup->id,
+            'member_type' => Group::class,
+        ]);
+
+        $descendantGroup->groupMembers()->create([
+            'group_id' => $descendantGroup->id,
+            'member_id' => $descendantUser->id,
+            'member_type' => User::class,
+        ]);
+
+        $unrelatedGroup->groupMembers()->create([
+            'group_id' => $unrelatedGroup->id,
+            'member_id' => $unrelatedUser->id,
+            'member_type' => User::class,
+        ]);
+
+        app(\ProcessMaker\Services\PermissionServiceManager::class)->warmUpUserCache($descendantUser->id);
+        app(\ProcessMaker\Services\PermissionServiceManager::class)->warmUpUserCache($unrelatedUser->id);
+
+        Cache::put("user_{$descendantUser->id}_permissions", ['legacy'], 3600);
+        Cache::put("user_{$unrelatedUser->id}_permissions", ['legacy'], 3600);
+        Cache::put('unrelated-cache-key', 'keep-me', 3600);
+
+        $event = new GroupMembershipChanged($this->group, $this->parentGroup, 'updated');
+        $this->listener->handle($event);
+
+        $this->assertNull(Cache::get("user_permissions:{$descendantUser->id}"));
+        $this->assertNull(Cache::get("user_{$descendantUser->id}_permissions"));
+        $this->assertNotNull(Cache::get("user_permissions:{$unrelatedUser->id}"));
+        $this->assertNotNull(Cache::get("user_{$unrelatedUser->id}_permissions"));
+        $this->assertSame('keep-me', Cache::get('unrelated-cache-key'));
+    }
 }

@@ -31,7 +31,13 @@
 
     <div
       ref="processInfo"
-      class="tw-overflow-hidden tw-flex-1 tw-pb-4">
+      class="tw-flex-1 tw-pb-4"
+      :class="
+        selectedProcess === 'inbox'
+          ? 'tw-overflow-hidden'
+          : 'tw-overflow-auto'
+      "
+    >
       <div v-if="selectedProcess === 'inbox'">
         <div class="px-3 page-content mb-0">
           <div class="row">
