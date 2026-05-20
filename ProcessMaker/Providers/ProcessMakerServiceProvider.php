@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\URL;
 use Laravel\Horizon\Horizon;
 use Laravel\Horizon\SystemProcessCounter;
 use Laravel\Horizon\WorkerCommandString;
+use Laravel\Passport\Client as PassportClient;
 use Lavary\Menu\Menu;
 use OpenApi\Analysers\AttributeAnnotationFactory;
 use OpenApi\Analysers\DocBlockAnnotationFactory;
@@ -354,6 +355,24 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Models\ProcessRequestToken::observe(Observers\ProcessRequestTokenObserver::class);
 
         Models\ProcessCollaboration::observe(Observers\ProcessCollaborationObserver::class);
+
+        // Due to this change https://github.com/laravel/passport/blob/ea020190123953426a439f0267c6cfa478f6e6e7/src/Guards/TokenGuard.php#L146
+        // user ID is now required for bearer tokens clients. Any user will work here, the token itself
+        // is what's associated with the real user. For now, we'll use the first administrator user.
+        PassportClient::creating(function (PassportClient $client): void {
+            if (!$client->personal_access_client || $client->user_id !== null) {
+                return;
+            }
+
+            $adminUserId = Models\User::query()
+                ->where('is_administrator', true)
+                ->orderBy('id')
+                ->value('id');
+
+            if ($adminUserId !== null) {
+                $client->user_id = $adminUserId;
+            }
+        });
     }
 
     /**
