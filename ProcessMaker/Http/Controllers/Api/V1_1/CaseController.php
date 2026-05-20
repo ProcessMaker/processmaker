@@ -43,6 +43,17 @@ class CaseController extends Controller
      */
     public function getAllCases(CaseListRequest $request): JsonResponse
     {
+        // Users are always allowed to view cases scoped to themselves
+        // Any broader query requires the `view-all_cases` permission.
+        // Admins pass through via Gate::before in AuthServiceProvider.
+        $authUser = Auth::user();
+        $requestedUserId = $request->filled('userId') ? (int) $request->input('userId') : null;
+        $isViewingOwnCases = $requestedUserId !== null && $requestedUserId === $authUser->id;
+
+        if (!$isViewingOwnCases && !$authUser->can('view-all_cases')) {
+            abort(403);
+        }
+
         $query = $this->caseRepository->getAllCases($request);
 
         return $this->paginateResponse($query);

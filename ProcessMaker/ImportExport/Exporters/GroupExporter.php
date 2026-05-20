@@ -3,6 +3,9 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\ImportExport\Dependent;
+use ProcessMaker\ImportExport\DependentType;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 
 class GroupExporter extends ExporterBase
@@ -12,6 +15,22 @@ class GroupExporter extends ExporterBase
     public static $fallbackMatchColumn = 'name';
 
     public $discard = true;
+
+    public static function shouldFindDiscardedDependentModel(Dependent $dependent): bool
+    {
+        return $dependent->type === DependentType::GROUP_ASSIGNMENT;
+    }
+
+    public static function findDiscardedDependentModel(Dependent $dependent): ?Group
+    {
+        $name = $dependent->fallbackMatches['name'] ?? null;
+
+        if (!$name) {
+            return null;
+        }
+
+        return Group::where('name', $name)->first();
+    }
 
     public function export() : void
     {

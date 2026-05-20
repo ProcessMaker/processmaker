@@ -38,6 +38,11 @@ class UserObserver
         $perList = [
             'view-process-catalog',
             'view-my_requests',
+            'overview-tab-task',
+            'summary-tab-task',
+            'completed-tab-task',
+            'form-tab-task',
+            'files-tab-task',
         ];
         $permissionIds = Permission::whereIn('name', $perList)->pluck('id')->toArray();
         $user->permissions()->attach($permissionIds);

@@ -99,20 +99,4 @@ class DeleteCase
             ->pluck('id')
             ->all();
     }
-
-    private function dispatchSavedSearchRecount(): void
-    {
-        if (!config('savedsearch.count', false)) {
-            return;
-        }
-
-        $jobClass = 'ProcessMaker\\Package\\SavedSearch\\Jobs\\RecountAllSavedSearches';
-        if (!class_exists($jobClass)) {
-            return;
-        }
-
-        DB::afterCommit(static function () use ($jobClass): void {
-            $jobClass::dispatch(['request', 'task']);
-        });
-    }
 }

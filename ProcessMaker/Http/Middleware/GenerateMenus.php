@@ -123,10 +123,25 @@ class GenerateMenus
                     ]);
                 }
 
+                if (config('app.case_retention_policy_enabled')) {
+                    $submenu->add(__('Cases Retention Logs'), [
+                        'route' => 'cases-retention.index',
+                        'icon' => 'fa-sync-alt',
+                    ]);
+                }
+
                 $devlinkIcon = base64_encode(file_get_contents(base_path('resources/img/devlink.svg')));
                 $submenu->add(__('DevLink'), [
                     'route' => 'devlink.index',
                     'file' => "data:image/svg+xml;base64,{$devlinkIcon}",
+                ]);
+            }
+            if (\Auth::user()->canAny('view-settings|edit-settings') &&
+                (hasPackage('package-email-start-event') || hasPackage('package-ai'))) {
+                $submenu->add(__('Logs'), [
+                    'route' => 'admin.logs',
+                    'icon' => 'fa-bars',
+                    'id' => 'admin-logs',
                 ]);
             }
         });
