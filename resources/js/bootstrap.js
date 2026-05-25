@@ -142,9 +142,10 @@ window.ProcessMaker = {
      * @returns {void}
      */
   pushNotification(notification) {
-    if (window.ProcessMaker.notifications.filter((x) => x.id === notification).length === 0) {
-      window.ProcessMaker.notifications.push(notification);
+    if (!notification || window.ProcessMaker.notifications.some((x) => x.id === notification.id)) {
+      return;
     }
+    window.ProcessMaker.notifications.push(notification);
   },
 
   /**

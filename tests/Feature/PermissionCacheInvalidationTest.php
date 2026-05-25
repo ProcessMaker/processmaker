@@ -4,6 +4,11 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redis;
+use Laravel\Passport\Passport;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\User;
 use ProcessMaker\Services\PermissionServiceManager;
@@ -23,7 +28,7 @@ class PermissionCacheInvalidationTest extends TestCase
         // Ensure the user is created by the trait
         if (!$this->user) {
             $this->user = User::factory()->create([
-                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'password' => Hash::make('password'),
                 'is_administrator' => true,
             ]);
         }
@@ -113,5 +118,66 @@ class PermissionCacheInvalidationTest extends TestCase
         $freshPermissions = $this->permissionService->getUserPermissions($this->user->id);
         $this->assertContains('permission-1', $freshPermissions);
         $this->assertNotContains('permission-2', $freshPermissions);
+    }
+
+    public function test_group_permission_update_does_not_logout_redis_backed_session()
+    {
+        $this->ensureRedisSessionAndCacheAreAvailable();
+
+        $originalPermission = Permission::factory()->create(['name' => 'redis-group-permission']);
+        Permission::factory()->create(['name' => 'redis-group-permission-updated']);
+        $group = Group::factory()->create(['name' => 'Redis Permission Group']);
+        $affectedUser = User::factory()->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => false,
+        ]);
+
+        GroupMember::factory()->create([
+            'group_id' => $group->id,
+            'member_type' => User::class,
+            'member_id' => $affectedUser->id,
+        ]);
+
+        $group->permissions()->sync([$originalPermission->id]);
+
+        $this->permissionService->warmUpUserCache($affectedUser->id);
+
+        $cachedPermissions = Cache::get("user_permissions:{$affectedUser->id}");
+        $this->assertNotNull($cachedPermissions);
+        $this->assertContains('redis-group-permission', $cachedPermissions);
+
+        $this->actingAs($this->user, 'web')
+            ->post(route('keep-alive'))
+            ->assertNoContent();
+
+        Passport::actingAs($this->user);
+
+        $this->json('PUT', '/api/1.0/permissions', [
+            'group_id' => $group->id,
+            'permission_names' => ['redis-group-permission-updated'],
+        ])->assertNoContent();
+
+        $this->post(route('keep-alive'))->assertNoContent();
+        $this->assertAuthenticatedAs($this->user, 'web');
+
+        $freshPermissions = $this->permissionService->getUserPermissions($affectedUser->id);
+        $this->assertContains('redis-group-permission-updated', $freshPermissions);
+        $this->assertNotContains('redis-group-permission', $freshPermissions);
+    }
+
+    private function ensureRedisSessionAndCacheAreAvailable(): void
+    {
+        config()->set('cache.default', 'redis');
+        config()->set('session.driver', 'redis');
+        config()->set('session.connection', 'default');
+
+        try {
+            Redis::connection('default')->ping();
+            Redis::connection('cache')->ping();
+        } catch (\Throwable $e) {
+            $this->markTestSkipped(
+                'Redis is not available for the permission cache invalidation regression test: ' . $e->getMessage()
+            );
+        }
     }
 }

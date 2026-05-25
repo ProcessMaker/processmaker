@@ -22,6 +22,7 @@ const main = new Vue({
   },
   mixins: addons,
   data: {
+    tceEnableCaseNumberScreen: window.ProcessMaker.tceEnableCaseNumberScreen,
     // Edit data
     fieldsToUpdate: [],
     jsonData: "",

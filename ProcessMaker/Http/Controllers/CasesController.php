@@ -22,10 +22,21 @@ class CasesController extends Controller
     /**
      * Get the list of requests.
      *
+     * @param string|null $type One of `all|in_progress|completed` (constrained by the route).
+     *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View
      */
-    public function index()
+    public function index($type = null)
     {
+        // The "All cases" tab exposes every case in the platform regardless
+        // of the user's relationship to it, so it is gated by the
+        // `view-all_cases` permission. The other tabs (My cases, In progress,
+        // Completed) are scoped to the user and need no gate.
+        // Admins bypass this check via Gate::before in AuthServiceProvider.
+        if ($type === 'all' && !Auth::user()->can('view-all_cases')) {
+            abort(403);
+        }
+
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, 'FORM'));
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);

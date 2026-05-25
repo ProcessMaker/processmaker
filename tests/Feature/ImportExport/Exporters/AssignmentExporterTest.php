@@ -2,22 +2,11 @@
 
 namespace Tests\Feature\ImportExport\Exporters;
 
-use Illuminate\Support\Arr;
-use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
-use ProcessMaker\ImportExport\Importer;
-use ProcessMaker\ImportExport\Options;
-use ProcessMaker\ImportExport\Tree;
 use ProcessMaker\ImportExport\Utils;
-use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessNotificationSetting;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\SignalData;
-use ProcessMaker\Models\SignalEventDefinition;
 use ProcessMaker\Models\User;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
@@ -26,39 +15,17 @@ class AssignmentExporterTest extends TestCase
 {
     use HelperTrait;
 
-    private function fixtures()
-    {
-        // Create simple screens. Extensive screen tests are in ScreenExporterTest.php
-        $cancelScreen = $this->createScreen('basic-form-screen', ['title' => 'Cancel Screen']);
-        $requestDetailScreen = $this->createScreen('basic-display-screen', ['title' => 'Request Detail Screen']);
+    private const TASK_1 = '/bpmn:definitions/bpmn:process/bpmn:task[1]';
 
-        $manager = User::factory()->create(['username' => 'manager']);
-        $group = Group::factory()->create(['name' => 'Group', 'description' => 'My Example Group', 'manager_id' => $manager->id]);
-        $user = User::factory()->create(['username' => 'testuser']);
-        $user->groups()->sync([$group->id]);
+    private const TASK_2 = '/bpmn:definitions/bpmn:process/bpmn:task[2]';
 
-        $process = $this->createProcess('basic-process', [
-            'name' => 'Process',
-            'user_id' => $user->id,
-            'cancel_screen_id' => $cancelScreen->id,
-            'request_detail_screen_id' => $requestDetailScreen->id,
-        ]);
+    private const MANUAL_TASK_1 = '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]';
 
-        // Notification Settings.
-        $processNotificationSetting1 = ProcessNotificationSetting::factory()->create([
-            'process_id' => $process->id,
-            'notifiable_type' => 'requester',
-            'notification_type' => 'assigned',
-        ]);
-        $processNotificationSetting2 = ProcessNotificationSetting::factory()->create([
-            'process_id' => $process->id,
-            'notifiable_type' => 'requester',
-            'notification_type' => 'assigned',
-            'element_id' => 'node_3',
-        ]);
+    private const MANUAL_TASK_2 = '/bpmn:definitions/bpmn:process/bpmn:manualTask[2]';
 
-        return [$process, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2];
-    }
+    private const CALL_ACTIVITY_1 = '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]';
+
+    private const CALL_ACTIVITY_2 = '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]';
 
     public function testExportImportAssignments()
     {
@@ -70,20 +37,11 @@ class AssignmentExporterTest extends TestCase
         foreach ($users as $key => $user) {
             if ($key <= 2) {
                 $group = $groups[0];
-            }
-            if ($key > 2 and $key <= 4) {
+            } elseif ($key <= 4) {
                 $group = $groups[1];
-            }
-            if ($key > 4 and $key <= 5) {
+            } elseif ($key <= 5) {
                 $group = $groups[2];
-            }
-
-            // Assign last user to last group
-            if ($key == 11) {
-                $group = $groups[9];
-            }
-
-            if ($key > 5) {
+            } else {
                 continue;
             }
 
@@ -100,24 +58,24 @@ class AssignmentExporterTest extends TestCase
         $process = $this->createProcess('process-with-different-kinds-of-assignments', ['name' => 'processTest']);
 
         // Assign users to process assignments
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers', implode(',', [$users[0]->id, $users[1]->id, $users[2]->id]));
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedUsers', implode(',', [$users[3]->id, $users[4]->id]));
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedUsers', implode(',', [$users[5]->id, $users[6]->id]));
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[2]', 'pm:assignedUsers', implode(',', [$users[7]->id]));
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'pm:assignedUsers', implode(',', [$users[8]->id, $users[9]->id]));
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'pm:assignedUsers', implode(',', [$users[10]->id]));
+        Utils::setAttributeAtXPath($process, self::TASK_1, 'pm:assignedUsers', implode(',', [$users[0]->id, $users[1]->id, $users[2]->id]));
+        Utils::setAttributeAtXPath($process, self::TASK_2, 'pm:assignedUsers', implode(',', [$users[3]->id, $users[4]->id]));
+        Utils::setAttributeAtXPath($process, self::MANUAL_TASK_1, 'pm:assignedUsers', implode(',', [$users[5]->id, $users[6]->id]));
+        Utils::setAttributeAtXPath($process, self::MANUAL_TASK_2, 'pm:assignedUsers', implode(',', [$users[7]->id]));
+        Utils::setAttributeAtXPath($process, self::CALL_ACTIVITY_1, 'pm:assignedUsers', implode(',', [$users[8]->id, $users[9]->id]));
+        Utils::setAttributeAtXPath($process, self::CALL_ACTIVITY_2, 'pm:assignedUsers', implode(',', [$users[10]->id]));
 
         // Assign groups to process assignments
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups', implode(',', [$groups[0]->id]));
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedGroups', implode(',', [$groups[1]->id, $groups[2]->id]));
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedGroups', implode(',', [$groups[3]->id]));
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[2]', 'pm:assignedGroups', implode(',', [$groups[4]->id, $groups[5]->id]));
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'pm:assignedGroups', implode(',', [$groups[6]->id, $groups[7]->id, $groups[8]->id]));
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'pm:assignedGroups', implode(',', [$groups[9]->id]));
+        Utils::setAttributeAtXPath($process, self::TASK_1, 'pm:assignedGroups', implode(',', [$groups[0]->id]));
+        Utils::setAttributeAtXPath($process, self::TASK_2, 'pm:assignedGroups', implode(',', [$groups[1]->id, $groups[2]->id]));
+        Utils::setAttributeAtXPath($process, self::MANUAL_TASK_1, 'pm:assignedGroups', implode(',', [$groups[3]->id]));
+        Utils::setAttributeAtXPath($process, self::MANUAL_TASK_2, 'pm:assignedGroups', implode(',', [$groups[4]->id, $groups[5]->id]));
+        Utils::setAttributeAtXPath($process, self::CALL_ACTIVITY_1, 'pm:assignedGroups', implode(',', [$groups[6]->id, $groups[7]->id, $groups[8]->id]));
+        Utils::setAttributeAtXPath($process, self::CALL_ACTIVITY_2, 'pm:assignedGroups', implode(',', [$groups[9]->id]));
 
         $process->save();
 
-        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process) {
+        $this->runExportAndImport($process, ProcessExporter::class, function () {
             User::query()->forceDelete();
             Group::query()->forceDelete();
             GroupMember::query()->forceDelete();
@@ -147,19 +105,19 @@ class AssignmentExporterTest extends TestCase
 
         // Assert the new imported user and groups are correctly assigned to the process
 
-        $this->assertEquals("$newUserIds[0],$newUserIds[1],$newUserIds[2]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers'));
-        $this->assertEquals("$newUserIds[3],$newUserIds[4]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedUsers'));
-        $this->assertEquals("$newUserIds[5],$newUserIds[6]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedUsers'));
-        $this->assertEquals("$newUserIds[7]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[2]', 'pm:assignedUsers'));
-        $this->assertEquals("$newUserIds[8],$newUserIds[9]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'pm:assignedUsers'));
-        $this->assertEquals("$newUserIds[10]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'pm:assignedUsers'));
+        $this->assertEquals("$newUserIds[0],$newUserIds[1],$newUserIds[2]", Utils::getAttributeAtXPath($process, self::TASK_1, 'pm:assignedUsers'));
+        $this->assertEquals("$newUserIds[3],$newUserIds[4]", Utils::getAttributeAtXPath($process, self::TASK_2, 'pm:assignedUsers'));
+        $this->assertEquals("$newUserIds[5],$newUserIds[6]", Utils::getAttributeAtXPath($process, self::MANUAL_TASK_1, 'pm:assignedUsers'));
+        $this->assertEquals("$newUserIds[7]", Utils::getAttributeAtXPath($process, self::MANUAL_TASK_2, 'pm:assignedUsers'));
+        $this->assertEquals("$newUserIds[8],$newUserIds[9]", Utils::getAttributeAtXPath($process, self::CALL_ACTIVITY_1, 'pm:assignedUsers'));
+        $this->assertEquals("$newUserIds[10]", Utils::getAttributeAtXPath($process, self::CALL_ACTIVITY_2, 'pm:assignedUsers'));
 
-        $this->assertEquals("$newGroupIds[0]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups'));
-        $this->assertEquals("$newGroupIds[1],$newGroupIds[2]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedGroups'));
-        $this->assertEquals("$newGroupIds[3]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedGroups'));
-        $this->assertEquals("$newGroupIds[4],$newGroupIds[5]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[2]', 'pm:assignedGroups'));
-        $this->assertEquals("$newGroupIds[6],$newGroupIds[7],$newGroupIds[8]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'pm:assignedGroups'));
-        $this->assertEquals("$newGroupIds[9]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'pm:assignedGroups'));
+        $this->assertEquals("$newGroupIds[0]", Utils::getAttributeAtXPath($process, self::TASK_1, 'pm:assignedGroups'));
+        $this->assertEquals("$newGroupIds[1],$newGroupIds[2]", Utils::getAttributeAtXPath($process, self::TASK_2, 'pm:assignedGroups'));
+        $this->assertEquals("$newGroupIds[3]", Utils::getAttributeAtXPath($process, self::MANUAL_TASK_1, 'pm:assignedGroups'));
+        $this->assertEquals("$newGroupIds[4],$newGroupIds[5]", Utils::getAttributeAtXPath($process, self::MANUAL_TASK_2, 'pm:assignedGroups'));
+        $this->assertEquals("$newGroupIds[6],$newGroupIds[7],$newGroupIds[8]", Utils::getAttributeAtXPath($process, self::CALL_ACTIVITY_1, 'pm:assignedGroups'));
+        $this->assertEquals("$newGroupIds[9]", Utils::getAttributeAtXPath($process, self::CALL_ACTIVITY_2, 'pm:assignedGroups'));
     }
 
     public function testSomeAssignmentsDoNotExistOnTarget()
@@ -171,8 +129,8 @@ class AssignmentExporterTest extends TestCase
         $process = $this->createProcess('process-with-different-kinds-of-assignments', ['name' => 'processTest']);
 
         // Assign users to process assignments
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers', $user1->id . ',' . $user2->id);
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups', $group1->id . ',' . $group2->id);
+        Utils::setAttributeAtXPath($process, self::TASK_1, 'pm:assignedUsers', $user1->id . ',' . $user2->id);
+        Utils::setAttributeAtXPath($process, self::TASK_1, 'pm:assignedGroups', $group1->id . ',' . $group2->id);
 
         $process->save();
 
@@ -183,8 +141,8 @@ class AssignmentExporterTest extends TestCase
         }, false);
 
         $process = Process::where('name', 'processTest')->firstOrFail();
-        $this->assertEquals($user2->id, Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers'));
-        $this->assertEquals($group2->id, Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups'));
+        $this->assertEquals($user2->id, Utils::getAttributeAtXPath($process, self::TASK_1, 'pm:assignedUsers'));
+        $this->assertEquals($group2->id, Utils::getAttributeAtXPath($process, self::TASK_1, 'pm:assignedGroups'));
     }
 
     public function testAllAssignmentsDoNotExistOnTarget()
@@ -194,8 +152,8 @@ class AssignmentExporterTest extends TestCase
         $process = $this->createProcess('process-with-different-kinds-of-assignments', ['name' => 'processTest']);
 
         // Assign users to process assignments
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers', $user->id);
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups', $group->id);
+        Utils::setAttributeAtXPath($process, self::TASK_1, 'pm:assignedUsers', $user->id);
+        Utils::setAttributeAtXPath($process, self::TASK_1, 'pm:assignedGroups', $group->id);
 
         $process->save();
 
@@ -206,7 +164,105 @@ class AssignmentExporterTest extends TestCase
         }, false);
 
         $process = Process::where('name', 'processTest')->firstOrFail();
-        $this->assertEquals('', Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers'));
-        $this->assertEquals('', Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups'));
+        $this->assertEquals('', Utils::getAttributeAtXPath($process, self::TASK_1, 'pm:assignedUsers'));
+        $this->assertEquals('', Utils::getAttributeAtXPath($process, self::TASK_1, 'pm:assignedGroups'));
+    }
+
+    public function testGroupAssignmentResolvesWhenUuidAndNameMatchOnTarget()
+    {
+        $group = Group::factory()->create(['name' => 'Accounting']);
+        $payload = $this->exportProcessWithGroupAssignment($group);
+
+        Process::where('name', 'processTest')->forceDelete();
+
+        $this->import($payload);
+
+        $this->assertImportedGroupAssignment((string) $group->id);
+    }
+
+    public function testGroupAssignmentResolvesByNameWhenUuidDiffersOnTarget()
+    {
+        $group = Group::factory()->create(['name' => 'Accounting']);
+        $payload = $this->exportProcessWithGroupAssignment($group);
+
+        Process::where('name', 'processTest')->forceDelete();
+        $group->delete();
+        $targetGroup = Group::factory()->create(['name' => 'Accounting']);
+
+        $this->import($payload);
+
+        $this->assertImportedGroupAssignment((string) $targetGroup->id);
+    }
+
+    public function testGroupAssignmentDoesNotResolveWhenOnlyUuidMatchesOnTarget()
+    {
+        $group = Group::factory()->create(['name' => 'Accounting']);
+        $payload = $this->exportProcessWithGroupAssignment($group);
+
+        Process::where('name', 'processTest')->forceDelete();
+        $group->update(['name' => 'Finance']);
+
+        $this->import($payload);
+
+        $this->assertImportedGroupAssignment('');
+    }
+
+    public function testGroupAssignmentDoesNotResolveWhenUuidAndNameAreMissingOnTarget()
+    {
+        $group = Group::factory()->create(['name' => 'Accounting']);
+        $payload = $this->exportProcessWithGroupAssignment($group);
+
+        Process::where('name', 'processTest')->forceDelete();
+        $group->delete();
+
+        $this->import($payload);
+
+        $this->assertImportedGroupAssignment('');
+    }
+
+    public function testGroupAssignmentKeepsOnlyGroupsResolvedByName()
+    {
+        $keptGroup = Group::factory()->create(['name' => 'Accounting']);
+        $uuidOnlyGroup = Group::factory()->create(['name' => 'Operations']);
+        $missingGroup = Group::factory()->create(['name' => 'Support']);
+        $payload = $this->exportProcessWithGroupAssignment($keptGroup, $uuidOnlyGroup, $missingGroup);
+
+        Process::where('name', 'processTest')->forceDelete();
+        $keptGroup->delete();
+        $uuidOnlyGroup->update(['name' => 'Renamed Operations']);
+        $missingGroup->delete();
+        $targetGroup = Group::factory()->create(['name' => 'Accounting']);
+
+        $this->import($payload);
+
+        $this->assertImportedGroupAssignment((string) $targetGroup->id);
+    }
+
+    private function exportProcessWithGroupAssignment(Group ...$groups): array
+    {
+        $this->addGlobalSignalProcess();
+
+        $process = $this->createProcess('process-with-different-kinds-of-assignments', ['name' => 'processTest']);
+
+        Utils::setAttributeAtXPath(
+            $process,
+            self::TASK_1,
+            'pm:assignedGroups',
+            collect($groups)->pluck('id')->join(',')
+        );
+
+        $process->save();
+
+        return $this->export($process, ProcessExporter::class, null, false);
+    }
+
+    private function assertImportedGroupAssignment(string $expected): void
+    {
+        $process = Process::where('name', 'processTest')->firstOrFail();
+
+        $this->assertEquals(
+            $expected,
+            Utils::getAttributeAtXPath($process, self::TASK_1, 'pm:assignedGroups')
+        );
     }
 }

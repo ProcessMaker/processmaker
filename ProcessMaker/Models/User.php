@@ -591,7 +591,7 @@ class User extends Authenticatable implements HasMedia
 
         // Clear permissions and user_permissions
         Cache::forget('permissions');
-        Cache::forget("user_{$this->id}_permissions");
+        $this->invalidatePermissionCache();
 
         // return the refreshed user instance
         return $this;

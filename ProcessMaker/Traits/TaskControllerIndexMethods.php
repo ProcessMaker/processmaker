@@ -19,6 +19,8 @@ use ProcessMaker\Query\SyntaxError;
 
 trait TaskControllerIndexMethods
 {
+    private const SELF_SERVICE_STATUS = 'self service';
+
     private function indexBaseQuery($request)
     {
         // Parse the includes parameter
@@ -291,10 +293,35 @@ trait TaskControllerIndexMethods
         }
     }
 
+    private function requestHasStatusFilter($request): bool
+    {
+        if ($request->filled('status') || $request->filled('statusfilter')) {
+            return true;
+        }
+
+        if ($this->advancedFilterHasStatus($request)) {
+            return true;
+        }
+
+        return preg_match('/(?:^|[\s(])status\s*(?:=|!=|<>)/i', $request->input('pmql', '')) === 1;
+    }
+
     private function applyPmql($query, $request, $user)
     {
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
+            if ($this->advancedFilterHasStatus($request)) {
+                $pmql = $this->removeStatusFromPmql($pmql);
+
+                if ($this->advancedFilterHasSelfServiceStatus($request)) {
+                    $pmql = $this->removeUserIdFromPmql($pmql);
+                }
+            }
+
+            if (empty($pmql)) {
+                return;
+            }
+
             try {
                 $query->pmql($pmql, null, $user);
             } catch (QueryException $e) {
@@ -303,6 +330,60 @@ trait TaskControllerIndexMethods
                 abort('Your PMQL contains invalid syntax.', 400);
             }
         }
+    }
+
+    private function advancedFilterHasStatus($request): bool
+    {
+        return !empty($this->getAdvancedFilterArray($request));
+    }
+
+    private function advancedFilterHasSelfServiceStatus($request): bool
+    {
+        foreach ($this->getAdvancedFilterArray($request) as $filter) {
+            $values = (array) ($filter['value'] ?? []);
+            foreach ($values as $v) {
+                if (mb_strtolower($v) === self::SELF_SERVICE_STATUS) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private function getAdvancedFilterArray($request): array
+    {
+        $advancedFilter = $request->input('advanced_filter', '');
+        if (empty($advancedFilter)) {
+            return [];
+        }
+
+        $filterArray = is_string($advancedFilter) ? json_decode($advancedFilter, true) : $advancedFilter;
+        if (!is_array($filterArray)) {
+            return [];
+        }
+
+        return array_filter($filterArray, function ($filter) {
+            return isset($filter['subject']['type']) && $filter['subject']['type'] === 'Status';
+        });
+    }
+
+    private function removeStatusFromPmql(string $pmql): string
+    {
+        $pmql = preg_replace('/\s+AND\s+\(status\s*=\s*"[^"]*"\)/i', '', $pmql);
+        $pmql = preg_replace('/\(status\s*=\s*"[^"]*"\)\s+AND\s+/i', '', $pmql);
+        $pmql = preg_replace('/\(status\s*=\s*"[^"]*"\)/i', '', $pmql);
+
+        return trim($pmql);
+    }
+
+    private function removeUserIdFromPmql(string $pmql): string
+    {
+        $pmql = preg_replace('/\s+AND\s+\(user_id\s*=\s*\d+\)/i', '', $pmql);
+        $pmql = preg_replace('/\(user_id\s*=\s*\d+\)\s+AND\s+/i', '', $pmql);
+        $pmql = preg_replace('/\(user_id\s*=\s*\d+\)/i', '', $pmql);
+
+        return trim($pmql);
     }
 
     private function applyAdvancedFilter($query, $request)
@@ -318,34 +399,62 @@ trait TaskControllerIndexMethods
             // If processesIManage is active, handle "Self Service" status filter specially
             if ($isProcessManager && is_array($filterArray)) {
                 $hasSelfServiceFilter = false;
-                $filteredArray = [];
+                $nonStatusFilters = [];
+                $statusFilters = [];
 
                 foreach ($filterArray as $filter) {
-                    // Check if this is a "Self Service" status filter
-                    if (isset($filter['subject']['type']) &&
-                        $filter['subject']['type'] === 'Status' &&
-                        isset($filter['value']) &&
-                        mb_strtolower($filter['value']) === 'self service') {
-                        $hasSelfServiceFilter = true;
-                        // Don't add this filter to the array - we'll handle it manually
+                    $isStatusFilter = isset($filter['subject']['type']) && $filter['subject']['type'] === 'Status';
+                    if (!$isStatusFilter) {
+                        $nonStatusFilters[] = $filter;
                         continue;
                     }
-                    $filteredArray[] = $filter;
+
+                    $values = is_array($filter['value']) ? $filter['value'] : [$filter['value']];
+                    $hasSelfServiceValue = in_array(
+                        self::SELF_SERVICE_STATUS,
+                        array_map(fn ($value) => is_string($value) ? mb_strtolower($value) : $value, $values),
+                        true
+                    );
+
+                    if ($hasSelfServiceValue) {
+                        $hasSelfServiceFilter = true;
+                        $values = array_values(array_filter($values, function ($value) {
+                            return !is_string($value) || mb_strtolower($value) !== self::SELF_SERVICE_STATUS;
+                        }));
+
+                        if (empty($values)) {
+                            continue;
+                        }
+
+                        $filter['value'] = is_array($filter['value']) ? $values : $values[0];
+                    }
+
+                    $statusFilters[] = $filter;
                 }
 
-                // Apply the filtered advanced_filter (without Self Service)
-                if (!empty($filteredArray)) {
-                    Filter::filter($query, $filteredArray);
+                if (!$hasSelfServiceFilter) {
+                    Filter::filter($query, $filterArray);
+
+                    return;
+                }
+
+                if (!empty($nonStatusFilters)) {
+                    Filter::filter($query, $nonStatusFilters);
                 }
 
                 // Manually apply the Self Service filter for process managers
-                if ($hasSelfServiceFilter) {
-                    $selfServiceTaskIds = ProcessRequestToken::select(['id'])
-                        ->whereIn('process_id', $processManagerIds)
-                        ->where('is_self_service', 1)
-                        ->whereNull('user_id')
-                        ->where('status', 'ACTIVE');
+                $selfServiceTaskIds = ProcessRequestToken::select(['id'])
+                    ->whereIn('process_id', $processManagerIds)
+                    ->where('is_self_service', 1)
+                    ->whereNull('user_id')
+                    ->where('status', 'ACTIVE');
 
+                if (!empty($statusFilters)) {
+                    $query->where(function ($query) use ($statusFilters, $selfServiceTaskIds) {
+                        Filter::filter($query, $statusFilters);
+                        $query->orWhereIn('process_request_tokens.id', $selfServiceTaskIds);
+                    });
+                } else {
                     $query->whereIn('process_request_tokens.id', $selfServiceTaskIds);
                 }
             } else {
@@ -387,7 +496,7 @@ trait TaskControllerIndexMethods
         });
     }
 
-    public function applyProcessManager($query, $user)
+    public function applyProcessManager($query, $user, $request)
     {
         $ids = Process::select(['id'])
             ->where(function ($subQuery) use ($user) {
@@ -406,7 +515,8 @@ trait TaskControllerIndexMethods
             return;
         }
 
-        // Show tasks from processes the user manages that are ACTIVE
+        // Show tasks from processes the user manages. Default to ACTIVE unless the request
+        // already has an explicit status filter that will be applied later.
         // OR show self-service tasks from those processes
         // Store the process IDs in the query so we can use them later to add self-service tasks
         // We'll add self-service tasks after PMQL is applied to avoid the is_self_service = 0 filter
@@ -414,9 +524,12 @@ trait TaskControllerIndexMethods
 
         // Apply condition for regular tasks from managed processes
         // Self-service tasks will be added after PMQL to avoid conflicts
-        $query->where(function ($query) use ($ids) {
-            $query->whereIn('process_request_tokens.process_id', $ids)
-                ->where('process_request_tokens.status', 'ACTIVE');
+        $query->where(function ($query) use ($ids, $request) {
+            $query->whereIn('process_request_tokens.process_id', $ids);
+
+            if (!$this->requestHasStatusFilter($request)) {
+                $query->where('process_request_tokens.status', 'ACTIVE');
+            }
         });
     }
 
