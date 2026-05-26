@@ -11,7 +11,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
@@ -347,7 +346,6 @@ class TaskController extends Controller
             $task->setRelation('process', $this->processExecutionRaw->getProcessForAuthorizeRaw($task->process_id));
         }
         $this->authorize('update', $task);
-
         if ($request->input('status') === 'COMPLETED') {
             if ($task->status === 'CLOSED') {
                 return abort(422, __('Task already closed'));

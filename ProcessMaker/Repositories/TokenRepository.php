@@ -176,7 +176,6 @@ class TokenRepository implements TokenRepositoryInterface
         $token->getInstance()->updateCatchEvents();
         $token->saveOrFail();
         $token->setId($token->getKey());
-
         $request = $token->getInstance();
         $request->last_stage_id = $token->stage_id;
         $request->last_stage_name = $token->stage_name;
