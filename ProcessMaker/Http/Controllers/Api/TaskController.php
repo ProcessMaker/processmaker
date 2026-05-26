@@ -11,6 +11,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
@@ -27,7 +28,6 @@ use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\TaskDraft;
@@ -35,11 +35,17 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\Query\SyntaxError;
+use ProcessMaker\Repositories\ProcessExecutionRawRepository;
 use ProcessMaker\SanitizeHelper;
 use ProcessMaker\Traits\TaskControllerIndexMethods;
 
 class TaskController extends Controller
 {
+    public function __construct(
+        protected ProcessExecutionRawRepository $processExecutionRaw,
+    ) {
+    }
+
     use TaskControllerIndexMethods;
 
     /**
@@ -337,221 +343,56 @@ class TaskController extends Controller
      */
     public function update(Request $request, ProcessRequestToken $task)
     {
+        if (!$task->relationLoaded('process')) {
+            $task->setRelation('process', $this->processExecutionRaw->getProcessForAuthorizeRaw($task->process_id));
+        }
         $this->authorize('update', $task);
+
         if ($request->input('status') === 'COMPLETED') {
             if ($task->status === 'CLOSED') {
                 return abort(422, __('Task already closed'));
             }
             // Skip ConvertEmptyStringsToNull and TrimStrings middlewares
             $data = json_optimize_decode($request->getContent(), true);
-            $requestRow = $this->getProcessRequestRowForCompleteRaw($task->process_request_id);
-            $data = SanitizeHelper::sanitizeData($data['data'], null, $this->getDoNotSanitizeFromRowRaw($requestRow));
+            $requestRow = $this->processExecutionRaw->getProcessRequestRowForCompleteRaw($task->process_request_id);
+            $data = SanitizeHelper::sanitizeData($data['data'], null, $this->processExecutionRaw->getDoNotSanitizeFromRowRaw($requestRow));
+
             //Call the manager to trigger the start event
-            $process = $this->getProcessForCompleteRaw($task->process_id);
-            $instance = $this->getProcessRequestFromRowRaw($requestRow);
+            $process = $this->processExecutionRaw->getProcessForCompleteRaw($task->process_id);
+            $instance = $this->processExecutionRaw->getProcessRequestFromRowRaw($requestRow);
             $instance->setRelation('process', $process);
-            if ($processVersion = $this->getProcessVersionForCompleteRaw($requestRow->process_version_id ?? null)) {
+            if ($processVersion = $this->processExecutionRaw->getProcessVersionForCompleteRaw($requestRow->process_version_id ?? null)) {
                 $instance->setRelation('processVersion', $processVersion);
             }
             $task->setRelation('processRequest', $instance);
             $task->setRelation('process', $process);
-            if ($this->taskHasDraftRaw($task->id)) {
+
+            if ($this->processExecutionRaw->taskHasDraftRaw($task->id)) {
                 TaskDraft::moveDraftFiles($task);
             }
+
             WorkflowManager::completeTask($process, $instance, $task, $data);
 
-            $responseProcess = $this->getProcessForResponseRaw($task->process_id);
-            $responseInstance = $this->getProcessRequestForResponseRaw($task->process_request_id);
-            $responseInstance->setRelation('process', $responseProcess);
-            $taskRefreshed = $this->refreshTaskRaw($task, $responseProcess, $responseInstance);
+            $responseInstance = $this->processExecutionRaw->getProcessRequestForResponseRaw($task->process_request_id);
+            $responseInstance->setRelation('process', $process);
+            $taskRefreshed = $this->processExecutionRaw->refreshTaskRaw($task, $process, $responseInstance);
 
             return new Resource($taskRefreshed);
         } elseif (!empty($request->input('user_id'))) {
-            $process = $this->getProcessForReassignRaw($task->process_id);
+            $process = $this->processExecutionRaw->getProcessForReassignRaw($task->process_id);
             $task->setRelation('process', $process);
 
             $userToAssign = $request->input('user_id');
             $comments = $request->input('comments');
             $task->reassign($userToAssign, $request->user(), $comments);
 
-            $taskRefreshed = $this->refreshTaskRaw($task, $process, $task->processRequest);
-
+            $taskRefreshed = $this->processExecutionRaw->refreshTaskRaw($task, $process, $task->processRequest);
             CaseUpdate::dispatchSync($task->processRequest, $taskRefreshed);
 
             return new Resource($taskRefreshed);
         } else {
             return abort(422);
         }
-    }
-
-    /**
-     * Analog to $task->processRequest->do_not_sanitize (Eloquent), from a raw request row.
-     */
-    private function getDoNotSanitizeFromRowRaw(object $requestRow): array
-    {
-        $doNotSanitize = $requestRow->do_not_sanitize ?? null;
-        if ($doNotSanitize === null) {
-            return [];
-        }
-        if (is_array($doNotSanitize)) {
-            return $doNotSanitize;
-        }
-
-        return json_decode($doNotSanitize, true) ?? [];
-    }
-
-    /**
-     * Analog to ProcessRequest::find / $task->processRequest for completeTask (without loading data JSON).
-     */
-    private function getProcessRequestRowForCompleteRaw(int $processRequestId): object
-    {
-        $requestRow = DB::selectOne(
-            'SELECT do_not_sanitize, id, process_id, process_version_id, collaboration_uuid FROM process_requests WHERE id = ? LIMIT 1',
-            [$processRequestId]
-        );
-        if (!$requestRow) {
-            abort(404);
-        }
-
-        return $requestRow;
-    }
-
-    /**
-     * Analog to $task->process for completeTask (BPMN only; required by getDefinition/validateData).
-     */
-    private function getProcessForCompleteRaw(int $processId): Process
-    {
-        $processRow = DB::selectOne(
-            'SELECT id, bpmn FROM processes WHERE id = ? LIMIT 1',
-            [$processId]
-        );
-        if (!$processRow) {
-            abort(404);
-        }
-
-        return $this->hydrateModelFromRowRaw(Process::class, $processRow);
-    }
-
-    /**
-     * Analog to $task->processRequest->processVersion when a version is pinned on the request.
-     */
-    private function getProcessVersionForCompleteRaw(?int $processVersionId): ?ProcessVersion
-    {
-        if (!$processVersionId) {
-            return null;
-        }
-
-        $versionRow = DB::selectOne(
-            'SELECT id, process_id, bpmn FROM process_versions WHERE id = ? LIMIT 1',
-            [$processVersionId]
-        );
-        if (!$versionRow) {
-            abort(404);
-        }
-
-        return $this->hydrateModelFromRowRaw(ProcessVersion::class, $versionRow);
-    }
-
-    /**
-     * Analog to $task->processRequest after complete (without loading data JSON).
-     */
-    private function getProcessRequestForResponseRaw(int $processRequestId): ProcessRequest
-    {
-        $requestRow = DB::selectOne(
-            'SELECT id, process_id, process_version_id, collaboration_uuid, do_not_sanitize, name, status, case_number, case_title, parent_request_id, user_id, uuid, process_collaboration_id, callable_id, initiated_at, completed_at, created_at, updated_at FROM process_requests WHERE id = ? LIMIT 1',
-            [$processRequestId]
-        );
-        if (!$requestRow) {
-            abort(404);
-        }
-
-        return $this->hydrateModelFromRowRaw(ProcessRequest::class, $requestRow);
-    }
-
-    /**
-     * Analog to $task->process for the API response (without BPMN).
-     */
-    private function getProcessForResponseRaw(int $processId): Process
-    {
-        $processRow = DB::selectOne(
-            'SELECT id, name FROM processes WHERE id = ? LIMIT 1',
-            [$processId]
-        );
-        if (!$processRow) {
-            abort(404);
-        }
-
-        return $this->hydrateModelFromRowRaw(Process::class, $processRow);
-    }
-
-    /**
-     * Analog to $task->processRequest built from a raw row (without data JSON or BPMN).
-     */
-    private function getProcessRequestFromRowRaw(object $requestRow): ProcessRequest
-    {
-        return $this->hydrateModelFromRowRaw(ProcessRequest::class, $requestRow);
-    }
-
-    /**
-     * Analog to $task->process / Process::find for reassign (without loading bpmn).
-     */
-    private function getProcessForReassignRaw(int $processId): Process
-    {
-        $processRow = DB::selectOne(
-            'SELECT id, properties, stages, case_title FROM processes WHERE id = ? LIMIT 1',
-            [$processId]
-        );
-        if (!$processRow) {
-            abort(404);
-        }
-
-        return $this->hydrateModelFromRowRaw(Process::class, $processRow);
-    }
-
-    /**
-     * Analog to $task->draft()->exists() (Eloquent).
-     */
-    private function taskHasDraftRaw(int $taskId): bool
-    {
-        return (bool) DB::selectOne(
-            'SELECT 1 AS found FROM task_drafts WHERE task_id = ? LIMIT 1',
-            [$taskId]
-        );
-    }
-
-    /**
-     * Analog to $task->refresh() (Eloquent), keeping preloaded relations for the response.
-     */
-    private function refreshTaskRaw(
-        ProcessRequestToken $task,
-        Process $process,
-        ProcessRequest $instance
-    ): ProcessRequestToken {
-        $row = DB::selectOne(
-            'SELECT * FROM process_request_tokens WHERE id = ? LIMIT 1',
-            [$task->id]
-        );
-        if ($row) {
-            $task->setRawAttributes((array) $row, true);
-            $task->syncOriginal();
-        }
-        $task->setRelation('process', $process);
-        $task->setRelation('processRequest', $instance);
-
-        return $task;
-    }
-
-    /**
-     * Hydrate an Eloquent model from a raw DB row (used by *Raw helpers above).
-     */
-    private function hydrateModelFromRowRaw(string $modelClass, object $row)
-    {
-        $model = new $modelClass();
-        $model->setRawAttributes((array) $row, true);
-        $model->exists = true;
-        $model->syncOriginal();
-
-        return $model;
     }
 
     public function updateReassign(Request $request)

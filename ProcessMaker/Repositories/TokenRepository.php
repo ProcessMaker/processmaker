@@ -44,6 +44,8 @@ class TokenRepository implements TokenRepositoryInterface
      */
     private $instanceRepository;
 
+    private ?ProcessExecutionRawRepository $processExecutionRaw = null;
+
     /**
      * Initialize the Token Repository.
      *
@@ -52,6 +54,11 @@ class TokenRepository implements TokenRepositoryInterface
     public function __construct(ExecutionInstanceRepository $instanceRepository)
     {
         $this->instanceRepository = $instanceRepository;
+    }
+
+    private function processExecutionRaw(): ProcessExecutionRawRepository
+    {
+        return $this->processExecutionRaw ??= app(ProcessExecutionRawRepository::class);
     }
 
     /**
@@ -100,7 +107,8 @@ class TokenRepository implements TokenRepositoryInterface
         if ($isScriptOrServiceTask) {
             $user = null;
         } else {
-            $user = $token->getInstance()->getProcess()->getOwnerDocument()->getModel()->getNextUser($activity, $token);
+            $processModel = $token->getInstance()->getProcess()->getOwnerDocument()->getModel();
+            $user = $this->processExecutionRaw()->getNextUserRaw($processModel, $activity, $token);
         }
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
@@ -168,6 +176,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->getInstance()->updateCatchEvents();
         $token->saveOrFail();
         $token->setId($token->getKey());
+
         $request = $token->getInstance();
         $request->last_stage_id = $token->stage_id;
         $request->last_stage_name = $token->stage_name;
