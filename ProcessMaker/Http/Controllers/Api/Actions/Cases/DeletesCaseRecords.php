@@ -21,18 +21,30 @@ use ProcessMaker\Models\TaskDraft;
 
 trait DeletesCaseRecords
 {
-    private function deleteCasesStarted(string $caseNumber): void
+    private function deleteCasesStarted(string | array $caseNumbers): void
     {
-        CaseStarted::query()
-            ->where('case_number', $caseNumber)
-            ->delete();
+        if (is_array($caseNumbers) && $caseNumbers !== []) {
+            CaseStarted::query()
+                ->whereIn('case_number', $caseNumbers)
+                ->delete();
+        } else {
+            CaseStarted::query()
+                ->where('case_number', $caseNumbers)
+                ->delete();
+        }
     }
 
-    private function deleteCasesParticipated(string $caseNumber): void
+    private function deleteCasesParticipated(string | array $caseNumbers): void
     {
-        CaseParticipated::query()
-            ->where('case_number', $caseNumber)
-            ->delete();
+        if (is_array($caseNumbers)) {
+            CaseParticipated::query()
+                ->whereIn('case_number', $caseNumbers)
+                ->delete();
+        } else {
+            CaseParticipated::query()
+                ->where('case_number', $caseNumbers)
+                ->delete();
+        }
     }
 
     private function deleteCaseNumbers(array $requestIds): void
@@ -183,11 +195,18 @@ trait DeletesCaseRecords
             ->delete();
     }
 
-    private function deleteComments(string $caseNumber, array $requestIds, array $tokenIds): void
+    private function deleteComments(string | array $caseNumbers, array $requestIds, array $tokenIds): void
     {
-        Comment::query()
-            ->where('case_number', $caseNumber)
-            ->orWhere(function ($query) use ($requestIds, $tokenIds) {
+        if (is_array($caseNumbers) && $caseNumbers !== []) {
+            $query = Comment::query()
+                ->whereIn('case_number', $caseNumbers);
+        } else {
+            $query = Comment::query()
+                ->where('case_number', $caseNumbers);
+        }
+
+        if ($requestIds !== [] || $tokenIds !== []) {
+            $query->orWhere(function ($query) use ($requestIds, $tokenIds) {
                 $query->where('commentable_type', ProcessRequest::class)
                     ->whereIn('commentable_id', $requestIds);
 
@@ -197,8 +216,10 @@ trait DeletesCaseRecords
                             ->whereIn('commentable_id', $tokenIds);
                     });
                 }
-            })
-            ->delete();
+            });
+        }
+
+        $query->delete();
     }
 
     private function deleteNotifications(array $requestIds): void
@@ -219,5 +240,21 @@ trait DeletesCaseRecords
             ->whereIn('data->request_id', $requestIds)
             ->whereIn('data->type', $notificationTypes)
             ->delete();
+    }
+
+    private function dispatchSavedSearchRecount(): void
+    {
+        if (!config('savedsearch.count', false)) {
+            return;
+        }
+
+        $jobClass = 'ProcessMaker\\Package\\SavedSearch\\Jobs\\RecountAllSavedSearches';
+        if (!class_exists($jobClass)) {
+            return;
+        }
+
+        DB::afterCommit(static function () use ($jobClass): void {
+            $jobClass::dispatch(['request', 'task']);
+        });
     }
 }

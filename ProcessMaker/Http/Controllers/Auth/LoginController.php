@@ -16,6 +16,7 @@ use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder;
+use ProcessMaker\Services\PermissionCacheService;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class LoginController extends Controller
@@ -262,7 +263,7 @@ class LoginController extends Controller
 
             //Clear the user permissions
             $userId = Auth::user()->id;
-            Cache::forget("user_{$userId}_permissions");
+            app(PermissionCacheService::class)->forgetLegacyUserPermissions($userId);
             Cache::forget("user_{$userId}_project_assets");
 
             // Clear the user session
@@ -364,9 +365,13 @@ class LoginController extends Controller
                 return redirect()->route('password.change');
             }
             // Cache user permissions for a day to improve performance
-            Cache::remember("user_{$user->id}_permissions", 86400, function () use ($user) {
-                return $user->permissions()->pluck('name')->toArray();
-            });
+            app(PermissionCacheService::class)->rememberLegacyUserPermissions(
+                $user->id,
+                86400,
+                function () use ($user) {
+                    return $user->permissions()->pluck('name')->toArray();
+                }
+            );
 
             $this->setupLanguage($request, $user);
 

@@ -28,7 +28,7 @@ class InvalidatePermissionCacheOnUpdate
 
             // Invalidate cache for group if group permissions were updated
             if ($event->getGroupId()) {
-                $this->permissionService->invalidateAll();
+                $this->permissionService->invalidateAffectedCachesForGroup((int) $event->getGroupId());
             }
         } catch (\Exception $e) {
             Log::error('Failed to invalidate permission cache', [

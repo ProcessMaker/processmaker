@@ -439,6 +439,26 @@ How to use icon: <i class="fp-my-jonas-custom-icon" />
 npm run dev-font
 ```
 
+# Case Retention Tier (CASE_RETENTION_TIER)
+
+The case retention policy controls how long cases are stored before they are automatically and permanently deleted. The **CASE_RETENTION_TIER** environment variable determines which retention periods customers can select when configuring a process. Each tier exposes a different set of options in the UI; options for higher tiers are visible but disabled so users see what is available at higher tiers.
+
+### Supported tiers
+
+| Tier | Retention options available |
+|------|----------------------------|
+| **1** | Six months, One year |
+| **2** | Six months, One year, Three years |
+| **3** | Six months, One year, Three years, Five years |
+
+Set the variable in your `.env` file:
+```env
+CASE_RETENTION_POLICY_ENABLED=true
+CASE_RETENTION_TIER=1
+```
+Use `1`, `2`, or `3`. The default is `1` if not set. The default retention period shown in the UI for Tier 1 is one year.
+
+
 
 # Prometheus and Grafana
 

@@ -107,6 +107,43 @@ class PermissionServiceManager
     }
 
     /**
+     * Invalidate caches for multiple users.
+     */
+    public function invalidateUserCaches(array $userIds): void
+    {
+        $userIds = array_values(array_unique(array_map('intval', $userIds)));
+
+        foreach ($userIds as $userId) {
+            if ($userId <= 0) {
+                continue;
+            }
+
+            $this->cacheService->invalidateUserPermissions($userId);
+        }
+
+        Log::info('Invalidated permission cache for affected users', [
+            'user_count' => count($userIds),
+            'user_ids' => $userIds,
+        ]);
+    }
+
+    /**
+     * Invalidate the caches affected by a group permission change.
+     */
+    public function invalidateAffectedCachesForGroup(int $groupId): void
+    {
+        $this->cacheService->invalidateGroupPermissions($groupId);
+
+        $userIds = $this->repository->getAffectedUserIdsForGroup($groupId);
+        $this->invalidateUserCaches($userIds);
+
+        Log::info("Invalidated permission cache for group {$groupId}", [
+            'affected_user_count' => count($userIds),
+            'affected_user_ids' => $userIds,
+        ]);
+    }
+
+    /**
      * Invalidate all permission caches
      */
     public function invalidateAll(): void

@@ -123,6 +123,13 @@ export default {
         if (process.warnings) {
           process.warningMessages.push(this.$t("BPMN validation issues. Request cannot be started."));
         }
+        if (process.case_retention_tier_adjustment_notice) {
+          process.warningMessages.push(
+            this.$t(
+              "Case retention was automatically shortened to match your subscription tier. The new retention period applies immediately.",
+            ),
+          );
+        }
         return process;
       });
       return data;

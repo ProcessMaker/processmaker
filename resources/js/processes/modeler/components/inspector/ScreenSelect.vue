@@ -16,9 +16,9 @@
       :show-labels="false"
       label="title"
       track-by="id"
+      :name="name"
       @open="load()"
       @search-change="load"
-      :name="name"
     >
       <template slot="noResult">
         {{ $t("No elements found. Consider changing the search query.") }}
@@ -46,7 +46,7 @@
       @asset="processAssetCreation"
     />
     <a
-      v-if="content && content.id"
+      v-if="canOpenScreen"
       :href="`/designer/screen-builder/${content.id}/edit`"
       target="_blank"
     >
@@ -85,6 +85,11 @@ export default {
       uniqId: uniqueId("screen-select-"),
     };
   },
+  computed: {
+    canOpenScreen() {
+      return Boolean(this.content && this.content.id && this.isEditableScreen(this.content));
+    },
+  },
   watch: {
     content: {
       handler() {
@@ -118,6 +123,21 @@ export default {
     this.setDefault();
   },
   methods: {
+    includesWithCategory(include) {
+      const includes = new Set(
+        String(include || "")
+          .split(",")
+          .map((value) => value.trim())
+          .filter(Boolean),
+      );
+
+      includes.add("category");
+
+      return Array.from(includes).join(",");
+    },
+    isEditableScreen(screen) {
+      return !(screen?.is_system || screen?.category?.is_system);
+    },
     type() {
       if (this.params && this.params.type) {
         return this.params.type;
@@ -137,7 +157,11 @@ export default {
     loadScreen(value) {
       this.loading = true;
       ProcessMaker.apiClient
-        .get(`screens/${value}`)
+        .get(`screens/${value}`, {
+          params: {
+            include: "category",
+          },
+        })
         .then(({ data }) => {
           this.loading = false;
           this.content = data;
@@ -160,6 +184,7 @@ export default {
         type: this.type(),
         interactive: this.interactive(),
         include_system: 1,
+        include: this.includesWithCategory(this.params?.include),
         order_direction: "asc",
         status: "active",
         selectList: true,
@@ -186,15 +211,19 @@ export default {
       }
 
       ProcessMaker.apiClient
-        .get("screens", { params: { 
-          key: this.defaultKey,
-          include_system: 1,
-          order_by: "id",
-          order_direction: "ASC",
-          per_page: 1,
-        }})
+        .get("screens", {
+          params: {
+            key: this.defaultKey,
+            include_system: 1,
+            include: "category",
+            order_by: "id",
+            order_direction: "ASC",
+            per_page: 1,
+          },
+        })
         .then(({ data }) => {
-          this.content = data.data[0];
+          const [screen] = data.data;
+          this.content = screen;
         });
     },
     /**

@@ -511,6 +511,19 @@ export const initSessionSync = ({
     return localDeviceId && localDeviceId === remoteDeviceId;
   };
 
+  // initSessionSync runs from bootstrap.js before app-layout.js replaces
+  // ProcessMaker.alert (2-arg stub → navbar alert with msgLink). Resolve at event time
+  // so export/download toasts get alertLink and show the Download anchor.
+  const showNavbarAlert = (...args) => {
+    if (typeof window.ProcessMaker?.alert === "function") {
+      window.ProcessMaker.alert(...args);
+      return;
+    }
+    if (typeof alert === "function") {
+      alert(...args);
+    }
+  };
+
   if (Echo) {
     Echo.private(`ProcessMaker.Models.User.${userId}`)
       .notification((token) => {
@@ -550,15 +563,12 @@ export const initSessionSync = ({
         }
       })
       .listen(".SecurityLogDownloadJobCompleted", (e) => {
-        if (typeof alert !== "function") {
-          return;
-        }
         if (e.success) {
           const { link } = e;
           const { message } = e;
-          alert(message, "success", 0, false, false, link);
+          showNavbarAlert(message, "success", 0, false, false, link);
         } else {
-          alert(e.message, "warning");
+          showNavbarAlert(e.message, "warning");
         }
       });
   }

@@ -44,10 +44,22 @@ class MediaExporter extends ExporterBase
 
         $ref = $this->getReference(DependentType::MEDIA);
         if ($ref && isset($ref['base64'])) {
-            $this->model->model->addMediaFromBase64($ref['base64'])
+            $newMedia = $this->model->model->addMediaFromBase64($ref['base64'])
                 ->usingFileName($this->model->file_name)
                 ->withCustomProperties($this->model->custom_properties)
                 ->toMediaCollection($this->model->collection_name);
+
+            if (hasPackage('package-ai')) {
+                $updaterClass = 'ProcessMaker\\Package\\PackageAi\\Services\\FlowGenieMediaConfigUpdater';
+                if (class_exists($updaterClass)) {
+                    $updaterClass::updateForMediaImport(
+                        (string) $this->model->model_type,
+                        (int) $this->model->model_id,
+                        (int) $this->model->id,
+                        (int) $newMedia->id
+                    );
+                }
+            }
         }
 
         // We should delete the model, because the Spatie library recreates it.

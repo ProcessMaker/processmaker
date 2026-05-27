@@ -347,6 +347,124 @@
                                 </div>
                             </div>
 
+                            @if(config('app.case_retention_policy_enabled') && auth()->user()->is_administrator)
+                            <div class="card card-custom-info">
+                              <div class="card-header"
+                                   id="headingCasesRetention">
+                                <button
+                                  class="btn btn-custom-info"
+                                  type="button"
+                                  data-toggle="collapse"
+                                  data-target="#collapseCasesRetention"
+                                  aria-expanded="true"
+                                  aria-controls="collapseCasesRetention"
+                                  >
+                                  <span>
+                                    {{__('Cases Retention')}}
+                                  </span>
+                                </button>
+                              </div>
+                              <div id="collapseCasesRetention"
+                                   class="collapse show"
+                                   aria-labelledby="headingCasesRetention">
+                                <div class="card-body">
+                                  <b-row>
+                                    <b-col>
+                                      <div class="retention-body retention-policy p-4">
+                                        <h5 class="retention-header pb-1">{{ __('Retention Policy') }}</h5>
+                                        <p class="retention-text">{{ __('Each case in this process is retained from the moment it is created for the period defined in this section.')}}</p>
+                                        <p class="retention-text mb-0">{{ __('After this period expires, the case is automatically and ') }}<strong>{{ __('permanently deleted') }}</strong>{{ __(', regardless of its status. This deletion includes all files and all data associated with the case and cannot be undone.') }}</p>
+                                      </div>
+                                    </b-col>
+                                    <b-col>
+                                        <div class="retention-body retention-period">
+                                            <h5 class="retention-header pb-1">{{ __('Retention Period') }}</h5>
+                                            <p class="retention-text">{{ __('Retention periods over one year must be handled by Technical Support. Please contact Technical Support for assistance.')}}</p>
+                                        </div>
+                                        <div class="form-group p-0 mb-4">
+                                            {{ html()->label(__('Select a Retention Period'), 'selectRetentionPeriod') }}
+                                            <multiselect
+                                                id="selectRetentionPeriod"
+                                                v-model="canSelectRetentionPeriod"
+                                                :options="retentionPeriodSelectOptions"
+                                                @input="onRetentionPeriodSelect($event)"
+                                                :multiple="false"
+                                                :show-labels="false"
+                                                placeholder="{{__('Select a Retention Period')}}"
+                                                track-by="id"
+                                                label="fullname"
+                                            >
+                                                <template slot="option" slot-scope="{ option }">
+                                                    <span v-if="!option.$isDisabled">
+                                                        @{{ option.fullname }}
+                                                    </span>
+                                                    <span v-else>
+                                                        @{{ option.fullname }} ({{ __('Available on Support request') }})
+                                                    </span>
+                                                </template>
+                                            </multiselect>
+                                        </div>
+                                        <div class="retention-text retention-body default-retention p-2">
+                                            <span v-if="!retentionUpdatedBy.id && !retentionUpdatedBy.fullname" class="d-flex align-items-center font-italic"><i class="fp-check-circle-outline default-retention-icon"></i><span class="ml-1">{{ __('The default retention period is in effect.')}}</span></span>
+                                            <!-- This should display the retention updated by and the retention updated at in the format of "Updated by <fullname> on <date>" -->
+                                            <span v-if="retentionUpdatedBy.id && retentionUpdatedBy.fullname" class="d-flex align-items-center"><strong class="mr-1">{{ __('Last modified by: ') }}</strong>@{{ retentionUpdatedBy.fullname.trim() }}{{ __(', at') }} @{{formatDateUser(retentionUpdatedBy.date) }}</span>
+                                        </div>
+                                        <b-modal
+                                            v-model="showRetentionConfirmModal"
+                                            :title="null"
+                                            centered
+                                            no-close-on-backdrop
+                                            hide-header
+                                            hide-footer
+                                            @hide="onRetentionModalHide"
+                                        >
+                                            <template v-if="retentionModalStep === 'confirm'">
+                                                <div class="warning-icon-container mb-4">
+                                                    <i class="fp-exclamation-triangle warning-icon"></i>
+                                                </div>
+                                                <div class="retention-modal-text">
+                                                    <h5 class="retention-header">
+                                                        {{ __('Impact on Existing Cases') }}
+                                                    </h5>
+                                                    <p class="mb-0">
+                                                        {{ __('If you reduce the current retention period, cases older than the new period will be ') }}<strong>{{ __('permanently deleted') }}</strong>{{ __('. Only cases that meet the new retention period will be kept.') }}
+                                                    </p>
+                                                    <div class="retention-modal-footer pt-4">
+                                                        <div class="d-flex flex-column gap-2">
+                                                            <b-button variant="danger" class="px-4 retention-modal-footer-btn confirm-period-btn" @click="confirmRetentionChange">
+                                                                {{ __('Confirm New Period and Delete Old Cases') }}
+                                                            </b-button>
+                                                            <b-button variant="outline-secondary" class="px-4 retention-modal-footer-btn" @click="cancelRetentionChange">
+                                                                {{ __('Cancel and Go Back') }}
+                                                            </b-button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <template v-else>
+                                                <div class="success-icon-container mb-4">
+                                                    <i class="fp-check-circle-outline success-icon"></i>
+                                                </div>
+                                                <h5 class="retention-modal-text retention-header">
+                                                    {{ __('New Retention Period Applied') }}
+                                                </h5>
+                                                <p class="mb-0">{{ __('Cases older than the retention period will be automatically deleted during the previously set retention time.') }}</p>
+                                                <div class="retention-modal-footer pt-4">
+                                                    <div class="d-flex flex-column">
+                                                        <b-button variant="outline-secondary" class="px-4 retention-modal-footer-btn" @click="closeRetentionSuccessModal">
+                                                            {{ __('Close') }}
+                                                        </b-button>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </b-modal>
+                                    </b-col>
+                                  </b-row>
+                                </div>
+                              </div>
+                            </div>
+                            @endif
+
                             <div class="d-flex justify-content-end mt-2">
                                 {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary button-custom')->attribute('@click', 'onClose') }}
                                 {{ html()->button(__('Save'), 'button')->class('btn btn-secondary ml-3 button-custom')->attribute('@click', 'onUpdate') }}
@@ -559,6 +677,25 @@
                         groups: []
                     },
                     maxManagers: 10,
+                    retentionPeriodOptions: [
+                        { id: 'six_months', fullname: 'Six months after case creation' },
+                        { id: 'one_year', fullname: 'One year after case creation' },
+                        { id: 'three_years', fullname: 'Three years after case creation' },
+                        { id: 'five_years', fullname: 'Five years after case creation' }
+                    ],
+                    canSelectRetentionPeriod: { id: 'one_year', fullname: 'One year after case creation' },
+                    allowedRetentionPeriods: @json(config('app.case_retention_tier_options')[config('app.case_retention_tier')] ?? ['six_months', 'one_year']),
+                    showRetentionConfirmModal: false,
+                    retentionModalStep: 'confirm',
+                    pendingRetentionPeriod: null,
+                    caseRetentionPolicyEnabled: @json(config('app.case_retention_policy_enabled')),
+                    lastConfirmedRetentionPeriod: null,
+                    originalRetentionPeriodId: null,
+                    retentionUpdatedBy: {
+                        id: null,
+                        fullname: null,
+                        date: null,
+                    },
                 }
                 },
                 mounted() {
@@ -581,8 +718,35 @@
                         this.activeTab = target[1];
                     }
 
+                    if (this.caseRetentionPolicyEnabled) {
+                        const savedId = _.get(this.formData, 'properties.retention_period');
+                        const allowed = this.allowedRetentionPeriods || [];
+                        const option = this.retentionPeriodOptions.find(opt => opt.id === savedId);
+                        if (option && allowed.includes(savedId)) {
+                            this.canSelectRetentionPeriod = option;
+                        } else {
+                            const defaultId = allowed.includes('one_year') ? 'one_year' : allowed[0];
+                            this.canSelectRetentionPeriod = this.retentionPeriodOptions.find(opt => opt.id === defaultId) || null;
+                        }
+                    }
+
+                    this.lastConfirmedRetentionPeriod = this.canSelectRetentionPeriod;
+                    this.originalRetentionPeriodId = this.canSelectRetentionPeriod ? this.canSelectRetentionPeriod.id : null;
+                    this.retentionUpdatedBy = {
+                        id: _.get(this.formData, 'properties.retention_updated_by.id'),
+                        fullname: _.get(this.formData, 'properties.retention_updated_by.fullname'),
+                        date: _.get(this.formData, 'properties.retention_updated_at'),
+                    };
                 },
                 computed: {
+                    retentionPeriodSelectOptions() {
+                        const allowed = this.allowedRetentionPeriods || [];
+
+                        return this.retentionPeriodOptions.map(opt => ({
+                        ...opt,
+                        $isDisabled: !allowed.includes(opt.id)
+                        }));
+                    },
                     activeUsersAndGroupsWithManager() {
                         const usersAndGroups = _.cloneDeep(this.activeUsersAndGroups);
                         usersAndGroups[0]['items'].unshift(this.processManagerOption());
@@ -679,6 +843,30 @@
                     this.formData.manager_id = this.formatManagerId(this.manager);
                     this.formData.user_id = this.formatValueScreen(this.owner);
                     this.formData.reassignment_permissions = this.reassignmentPermissions;
+                    if (this.caseRetentionPolicyEnabled) {
+                        this.formData.properties = this.formData.properties || {};
+                        const retentionPeriod = this.canSelectRetentionPeriod
+                            ? this.canSelectRetentionPeriod.id
+                            : this.getDefaultRetentionPeriodId();
+                        this.formData.properties.retention_period = retentionPeriod;
+                        // Log retention period update only if the retention period is changed from the original value
+                        if (this.formData.properties.retention_period !== this.originalRetentionPeriodId) {
+                            // The logged in user is the one who updated the retention period
+                            const userID = document.head.querySelector("meta[name=\"user-id\"]");
+                            const userFullName = document.head.querySelector("meta[name=\"user-full-name\"]");
+                            this.formData.properties.retention_updated_by = {
+                                id: userID.content,
+                                fullname: userFullName.content,
+                            };
+                            const updatedAt = new Date().toISOString();
+                            this.formData.properties.retention_updated_at = updatedAt;
+                            this.retentionUpdatedBy = {
+                                id: parseInt(userID?.content ?? 0),
+                                fullname: userFullName?.content ?? '',
+                                date: updatedAt,
+                            };
+                        }
+                    }
                     
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                     .then(response => {
@@ -715,11 +903,69 @@
                 },
                 reassignmentClicked() {
                     this.$refs["listReassignment"].add();
+                },
+                getDefaultRetentionPeriodId() {
+                    const allowed = this.allowedRetentionPeriods || [];
+                    return allowed.includes('one_year') ? 'one_year' : (allowed[0] || null);
+                },
+                onRetentionPeriodSelect(newVal) {
+                    if (!newVal || !this.lastConfirmedRetentionPeriod) {
+                        return;
+                    }
+
+                    if (newVal.id === this.lastConfirmedRetentionPeriod.id) {
+                        return;
+                    }
+
+                    this.pendingRetentionPeriod = newVal;
+                    this.retentionModalStep = 'confirm';
+                    this.showRetentionConfirmModal = true;
+                },
+                confirmRetentionChange() {
+                    if (this.pendingRetentionPeriod) {
+                        this.canSelectRetentionPeriod = this.pendingRetentionPeriod;
+                        this.lastConfirmedRetentionPeriod = this.pendingRetentionPeriod;
+
+                        this.formData.properties = this.formData.properties || {};
+                        this.formData.properties.retention_period = this.pendingRetentionPeriod.id;
+                    }
+
+                    this.retentionModalStep = 'success';
+                },
+                cancelRetentionChange() {
+                    this.canSelectRetentionPeriod = this.lastConfirmedRetentionPeriod;
+                    this.pendingRetentionPeriod = null;
+                    this.retentionModalStep = 'confirm';
+                    this.showRetentionConfirmModal = false;
+                },
+                closeRetentionSuccessModal() {
+                    this.showRetentionConfirmModal = false;
+                    this.pendingRetentionPeriod = null;
+                },
+                onRetentionModalHide() {
+                    if (this.retentionModalStep === 'confirm') {
+                        this.cancelRetentionChange();
+                    }
+                },
+                formatDateUser(value) {
+                    let config = "";
+                    if (typeof ProcessMaker !== "undefined" && ProcessMaker.user && ProcessMaker.user.datetime_format) {
+                        config = ProcessMaker.user.datetime_format;
+                    }
+
+                    if (value) {
+                        if (moment(value).isValid()) {
+                            return window.moment(value)
+                                .format(config);
+                        }
+                        return value;
+                    }
+                    return "n/a";
                 }
                 },
+               
             });
         });
-
     </script>
 @endsection
 
@@ -881,6 +1127,96 @@
             line-height: 24px;
             letter-spacing: -0.02em;
             text-align: center;
+        }
+
+        .retention-body {
+            color: #556271;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .retention-header {
+            font-weight: 600;
+        }
+
+        .retention-text {
+            font-size: 16px;
+        }
+
+        .retention-policy {
+            border-radius: 16px;
+            background-color: #FFFCF2;
+        }
+
+        .default-retention {
+            background-color: #F1F2F4;
+            border-radius: 8px;
+        }
+
+        .default-retention-icon {
+            font-size: 20px;
+            color: #039838;
+        }
+
+        .warning-icon-container {
+            background: linear-gradient(180deg, #FEE6E5 0%, #FBD0D0 100%);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+        }
+
+        .warning-icon {
+            font-size: 30px;
+            color: #E51523;
+        }
+
+        .retention-modal-text {
+            color: #464646;
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        .retention-modal-footer-btn {
+            text-transform: none !important;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif !important;
+            border-radius: 8px;
+        }
+        
+        .confirm-period-btn {
+            background-color: #E51523 !important;
+            border-color: #E51523 !important;
+            color: white !important;
+
+            &:hover {
+                background-color: #d54a52 !important;
+                border-color: #d54a52 !important;
+            }
+
+            &:focus {
+                box-shadow: 0 0 0 0.2rem rgba(236, 89, 98, 0.25) !important;
+            }
+        }
+
+        .gap-2 {
+            gap: .5rem;
+        }
+
+        .success-icon {
+            font-size: 30px;
+            color: #039838;
+        }
+
+        .success-icon-container {
+            background: linear-gradient(180deg, #E6F9EB 0%, #D0F2E1 100%);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
         }
     </style>
 @endsection

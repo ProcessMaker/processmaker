@@ -854,8 +854,11 @@ class ScreenTemplate implements TemplateInterface
                 throw new MissingScreenPageException();
             }
 
-            $templateComponents = ScreenTemplateHelper::getScreenComponents($newTemplateScreen->config,
-                $supportedComponents, false)[0]['items'];
+            // Sanitize only imported template components so existing screen config is not altered.
+            $templateComponents = ScreenTemplateHelper::sanitizeScreenConfig(
+                ScreenTemplateHelper::getScreenComponents($newTemplateScreen->config,
+                    $supportedComponents, false)[0]['items'] ?? []
+            );
 
             $screenConfig[$currentScreenPage]['items'] =
                 array_merge($screenConfig[$currentScreenPage]['items'], $templateComponents);
@@ -866,11 +869,14 @@ class ScreenTemplate implements TemplateInterface
 
     private function getTemplateComponents($newTemplateScreen, $templateOptions, $supportedComponents)
     {
-        return !in_array('Fields', $templateOptions)
+        $templateComponents = !in_array('Fields', $templateOptions)
             ? ScreenTemplateHelper::getScreenComponents($newTemplateScreen->config,
                 $supportedComponents, false)[0]['items']
             ?? []
                 : $newTemplateScreen->config[0]['items'] ?? [];
+
+        // Sanitize only imported template components so existing screen config is not altered.
+        return ScreenTemplateHelper::sanitizeScreenConfig($templateComponents);
     }
 
     private function setScreenConfig($screen)

@@ -202,6 +202,34 @@ class ScreenTest extends TestCase
         $response->assertJsonStructure(self::STRUCTURE);
     }
 
+    public function testListScreenCanIncludeCategoryForSystemScreens()
+    {
+        $screen = Screen::getScreenByKey('interstitial');
+
+        $response = $this->apiCall(
+            'GET',
+            self::API_TEST_SCREEN . '?include_system=1&include=category&key=interstitial&per_page=1'
+        );
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('data.0.id', $screen->id);
+        $response->assertJsonPath('data.0.category.is_system', 1);
+    }
+
+    public function testGetScreenCanIncludeCategoryForSystemScreens()
+    {
+        $screen = Screen::getScreenByKey('interstitial');
+
+        $response = $this->apiCall(
+            'GET',
+            self::API_TEST_SCREEN . '/' . $screen->id . '?include=category'
+        );
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('id', $screen->id);
+        $response->assertJsonPath('category.is_system', 1);
+    }
+
     /**
      * Update Screen parameter are required
      */

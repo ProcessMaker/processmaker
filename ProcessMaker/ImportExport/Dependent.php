@@ -8,7 +8,7 @@ class Dependent
         public string $type,
         public string $uuid,
         public Manifest $manifest,
-        public $meta,
+        public mixed $meta,
         public string $exporterClass,
         public string $modelClass,
         public array $fallbackMatches,
@@ -45,45 +45,67 @@ class Dependent
         }, $array);
     }
 
-    public function __get($property)
+    public function __get(string $property)
     {
         $asset = $this->manifest->get($this->uuid);
+        $value = null;
 
         if ($property === 'model' && !$asset) {
-            // Attempt to reconstruct discarded model if it exists on the target instance
-            $assetInfo = [
-                'model' => $this->modelClass,
-                'attributes' => $this->fallbackMatches,
-            ];
-
-            list($_, $model) = Manifest::getModel($this->uuid, $assetInfo, 'discard', $this->exporterClass, false);
-
-            // Only return the model if it is persisted in the database
-            if ($model && $model->exists) {
-                return $model;
-            }
+            $value = $this->getDiscardedModel();
+        } elseif ($property === 'mode') {
+            $value = $this->getMode($asset);
+        } elseif ($property === 'name') {
+            $value = $this->getName($asset);
+        } elseif ($asset) {
+            $value = $asset->$property;
         }
 
-        if ($property === 'mode') {
-            if ($asset) {
-                return $asset->mode;
-            } else {
-                return 'discard';
-            }
+        return $value;
+    }
+
+    private function getDiscardedModel()
+    {
+        if ($this->canUseDiscardedDependentFinder()) {
+            return $this->exporterClass::findDiscardedDependentModel($this);
         }
 
-        if ($property === 'name') {
-            if ($asset) {
-                return $asset->getName($this->model);
-            } else {
-                return '';
-            }
+        return $this->findPersistedDiscardedModel();
+    }
+
+    private function canUseDiscardedDependentFinder(): bool
+    {
+        if (!method_exists($this->exporterClass, 'findDiscardedDependentModel')) {
+            return false;
         }
 
-        if (!$asset) {
-            return null;
+        if (!method_exists($this->exporterClass, 'shouldFindDiscardedDependentModel')) {
+            return true;
         }
 
-        return $asset->$property;
+        return $this->exporterClass::shouldFindDiscardedDependentModel($this);
+    }
+
+    private function findPersistedDiscardedModel()
+    {
+        // Attempt to reconstruct discarded model if it exists on the target instance
+        $assetInfo = [
+            'model' => $this->modelClass,
+            'attributes' => $this->fallbackMatches,
+        ];
+
+        [, $model] = Manifest::getModel($this->uuid, $assetInfo, 'discard', $this->exporterClass, false);
+
+        // Only return the model if it is persisted in the database
+        return $model && $model->exists ? $model : null;
+    }
+
+    private function getMode(mixed $asset): string
+    {
+        return $asset ? $asset->mode : 'discard';
+    }
+
+    private function getName(mixed $asset): string
+    {
+        return $asset ? $asset->getName($this->model) : '';
     }
 }

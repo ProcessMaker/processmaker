@@ -141,7 +141,8 @@
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   window.ProcessMaker.ai = {
     ragCollections: @json(config('ai.rag_collections.enabled')),
-    genieClientTimeout: @json(config('ai.genie_client.timeout'))
+    genieClientTimeout: @json(config('ai.genie_client.timeout')),
+    microserviceHost: @json(config('app.ai_microservice_host'))
   };
 </script>
 <script src="{{ mix('js/app-layout.js') }}"></script>

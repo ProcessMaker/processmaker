@@ -45,6 +45,7 @@ use ProcessMaker\Package\Translations\Models\Language;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Rules\BPMNValidation;
+use ProcessMaker\Services\CaseRetentionTierService;
 use ProcessMaker\Traits\ProjectAssetTrait;
 use Throwable;
 
@@ -224,6 +225,11 @@ class ProcessController extends Controller
             $process->bookmark_id = Bookmark::getBookmarked($bookmark, $process->id, $user->id);
             // Get the launchpad configuration
             $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
+
+            $process->case_retention_tier_adjustment_notice = false;
+            if ($user->is_administrator && config('app.case_retention_policy_enabled')) {
+                $process->case_retention_tier_adjustment_notice = CaseRetentionTierService::adjustmentNoticeIsActive($process);
+            }
 
             // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
             if ($request->has('without_event_definitions') && $request->input('without_event_definitions') == 'true') {
@@ -594,6 +600,17 @@ class ProcessController extends Controller
             }
         }
 
+        // Non-administrators cannot change retention metadata: persist pre-request values.
+        if (!auth()->user()->is_administrator) {
+            $this->restoreProcessRetentionPropertiesFromOriginal($process, $original);
+        }
+
+        if (auth()->user()->is_administrator && $request->has('properties') && is_array($request->input('properties')) && array_key_exists('retention_period', $request->input('properties'))) {
+            $properties = $process->properties ?? [];
+            unset($properties[CaseRetentionTierService::NOTICE_PROPERTY_KEY], $properties[CaseRetentionTierService::NOTICE_AT_PROPERTY_KEY]);
+            $process->properties = $properties;
+        }
+
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
@@ -661,6 +678,46 @@ class ProcessController extends Controller
         }
 
         return $managerIds;
+    }
+
+    /**
+     * Re-apply retention-related keys on $process->properties from the model snapshot taken before fill().
+     * Non-admins cannot add these keys if absent originally, or change values if present.
+     *
+     * @param  array<string, mixed>  $original
+     */
+    private function restoreProcessRetentionPropertiesFromOriginal(Process $process, array $original): void
+    {
+        $originalProperties = $original['properties'] ?? null;
+        if (is_string($originalProperties)) {
+            $decoded = json_decode($originalProperties, true);
+            $originalProperties = is_array($decoded) ? $decoded : [];
+        }
+        if (!is_array($originalProperties)) {
+            $originalProperties = [];
+        }
+
+        $properties = $process->properties;
+        if (!is_array($properties)) {
+            $properties = [];
+        }
+
+        $keys = [
+            'retention_updated_by',
+            'retention_updated_at',
+            'retention_period',
+            CaseRetentionTierService::NOTICE_PROPERTY_KEY,
+            CaseRetentionTierService::NOTICE_AT_PROPERTY_KEY,
+        ];
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $originalProperties)) {
+                $properties[$key] = $originalProperties[$key];
+            } else {
+                unset($properties[$key]);
+            }
+        }
+
+        $process->properties = $properties;
     }
 
     /**

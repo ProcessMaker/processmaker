@@ -6,9 +6,10 @@ export default () => {
   const notifications = [];
 
   const pushNotification = (notification) => {
-    if (notifications.filter((x) => x.id === notification).length === 0) {
-      notifications.push(notification);
+    if (!notification || notifications.some((x) => x.id === notification.id)) {
+      return;
     }
+    notifications.push(notification);
   };
 
   const removeNotifications = (messageIds = [], urls = []) => apiClient.put("/read_notifications", { message_ids: messageIds, routes: urls }).then(() => {

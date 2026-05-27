@@ -4,8 +4,6 @@ namespace ProcessMaker\Listeners;
 
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Events\GroupMembershipChanged;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Models\User;
 use ProcessMaker\Services\PermissionServiceManager;
 
 class InvalidatePermissionCacheOnGroupHierarchyChange
@@ -28,9 +26,13 @@ class InvalidatePermissionCacheOnGroupHierarchyChange
 
             // All actions (added, removed, updated) require the same cache invalidation logic
             // because they all affect the permission hierarchy for the group and its descendants
-            $this->permissionService->invalidateAll();
+            if ($group) {
+                $this->permissionService->invalidateAffectedCachesForGroup((int) $group->id);
+            }
 
-            Log::info("Successfully invalidated permission cache for group hierarchy change: {$action} for group {$group->id}");
+            Log::info(
+                "Successfully invalidated permission cache for group hierarchy change: {$action} for group " . ($group?->id ?? 'unknown')
+            );
         } catch (\Exception $e) {
             Log::error('Failed to invalidate permission cache on group hierarchy change', [
                 'error' => $e->getMessage(),
