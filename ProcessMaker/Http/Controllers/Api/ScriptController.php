@@ -187,8 +187,8 @@ class ScriptController extends Controller
      */
     public function preview(Request $request, Script $script)
     {
-        $data = json_decode($request->get('data'), true) ?: [];
-        $config = json_decode($request->get('config'), true) ?: [];
+        $data = $this->getRequestArray($request->get('data'));
+        $config = $this->getRequestArray($request->get('config'));
         $code = $request->get('code');
         $nonce = $request->get('nonce');
 
@@ -245,8 +245,8 @@ class ScriptController extends Controller
             $processRequest = ProcessRequestToken::findOrFail($request->task_id)->processRequest;
             $script = $script->versionFor($processRequest);
         }
-        $data = json_decode($request->get('data'), true) ?: [];
-        $config = json_decode($request->get('config'), true) ?: [];
+        $data = $this->getRequestArray($request->get('data'));
+        $config = $this->getRequestArray($request->get('config'));
         $watcher = $request->get('watcher', uniqid('scr', true));
         $code = $script->code;
 
@@ -560,5 +560,18 @@ class ScriptController extends Controller
         $script->deleteDraft();
 
         return response([], 204);
+    }
+
+    private function getRequestArray($value): array
+    {
+        if (is_array($value)) {
+            return $value;
+        }
+
+        if (is_string($value)) {
+            return json_decode($value, true) ?: [];
+        }
+
+        return [];
     }
 }
