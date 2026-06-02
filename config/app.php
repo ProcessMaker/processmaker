@@ -132,6 +132,9 @@ return [
     // PM Analytics Chart
     'pm_analytics_chart' => env('PM_ANALYTICS_CHART', 'https://localhost'),
 
+    // NOTIFICATIONS_SEND_TO_SAME_USER
+    'notifications_send_to_same_user' => env('NOTIFICATIONS_SEND_TO_SAME_USER', 'true'),
+
     // Enable default SSO
     'enable_default_sso' => env('ENABLE_DEFAULT_SSO', 'true'),
 
