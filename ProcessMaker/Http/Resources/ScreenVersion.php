@@ -63,7 +63,7 @@ class ScreenVersion extends ApiResource
      */
     private function setDefaultScreenForNestedScreens(array &$screenVersion): void
     {
-        $configArray = $screenVersion['config'];
+        $configArray = $screenVersion['config'] ?? [];
         foreach ($configArray as $key => $config) {
             foreach ($config['items'] as $itemKey => $item) {
                 if (isset($item['component']) && $item['component'] === 'FormNestedScreen') {
