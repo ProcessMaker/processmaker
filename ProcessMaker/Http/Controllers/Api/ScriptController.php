@@ -159,13 +159,11 @@ class ScriptController extends Controller
      *           @OA\JsonContent(
      *             @OA\Property(
      *                 property="data",
-     *                 type="array",
-     *                 @OA\Items (type="object"),
+     *                 type="object",
      *             ),
      *             @OA\Property(
      *                 property="config",
-     *                 type="array",
-     *                 @OA\Items (type="object"),
+     *                 type="object",
      *             ),
      *             @OA\Property(
      *                 property="code",
@@ -215,13 +213,11 @@ class ScriptController extends Controller
      *           @OA\JsonContent(
      *             @OA\Property(
      *                 property="data",
-     *                 type="array",
-     *                 @OA\Items (type="object"),
+     *                 type="object",
      *             ),
      *             @OA\Property(
      *                 property="config",
-     *                 type="array",
-     *                 @OA\Items (type="object"),
+     *                 type="object",
      *             ),
      *             @OA\Property(
      *                 property="sync",
@@ -562,16 +558,28 @@ class ScriptController extends Controller
         return response([], 204);
     }
 
+    /**
+     * Normalize script input before executing the script.
+     * Script data and config must be an object (associative array), the script
+     * microservice rejects list payloads like [{}] with a 422.
+     */
     private function getRequestArray($value): array
     {
-        if (is_array($value)) {
-            return $value;
-        }
-
         if (is_string($value)) {
-            return json_decode($value, true) ?: [];
+            $value = json_decode($value, true);
         }
 
-        return [];
+        $result = [];
+
+        if (is_array($value)) {
+            if (!array_is_list($value)) {
+                $result = $value;
+            } elseif (count($value) === 1 && is_array($value[0])) {
+                // Unwrap [{}] or [{"key": "value"}] to object form; ignore other lists.
+                $result = $value[0];
+            }
+        }
+
+        return $result;
     }
 }
