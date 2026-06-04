@@ -24,7 +24,7 @@
         "guzzlehttp/guzzle": "^7.9",
         "igaster/laravel-theme": "^2.0",
         "jenssegers/agent": "^2.6",
-        "laravel/framework": "^13.0",
+        "laravel/framework": "^13.13",
         "laravel/horizon": "^5.45",
         "laravel/pail": "^1.2",
         "laravel/passport": "^13.7",
