@@ -166,9 +166,9 @@ return [
                     'description' => 'Laravel passport oauth2 security.',
                     'flows' => [
                         'authorizationCode' => [
-                            'authorizationUrl' => config('app.url') . '/oauth/authorize',
-                            'tokenUrl' => config('app.url') . '/oauth/token',
-                            'refreshUrl' => config('app.url') . '/token/refresh',
+                            'authorizationUrl' => '/oauth/authorize',
+                            'tokenUrl' => '/oauth/token',
+                            'refreshUrl' => '/token/refresh',
                             'scopes' => (object) [],
                         ],
                     ],
