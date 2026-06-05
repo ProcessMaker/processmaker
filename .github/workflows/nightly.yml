@@ -1,4 +1,4 @@
-name: Nightly
+name: Nightly Vulnerability Scan
 
 on:
   schedule:
