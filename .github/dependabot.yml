@@ -42,17 +42,7 @@ updates:
         applies-to: security-updates # batches all JS security PRs into one
         patterns: # note: update-types has no effect here for security
           - "*"
-        ignore:
-          - dependency-name: "vue"
-            versions: [">=3.0.0"] # stay on Vue 2.x — suppresses security PRs requiring v3+ too
-          - dependency-name: "@vue/cli*"
-            versions: [">=5.0.0"] # CLI v5+ is Vue 3 era
-          - dependency-name: "vue-loader"
-            versions: [">=17.0.0"] # vue-loader v17+ drops Vue 2 support
-          - dependency-name: "vue-template-compiler"
-            versions: [">=3.0.0"] # must stay in sync with Vue 2.x
-          - dependency-name: "webpack"
-            versions: [">=5.107.0"] # 5.106.0 last with SizeFormatHelpers; block 5.107+ security bumps
+        # version suppressions (vue, webpack, etc.) live in top-level `ignore` above — groups do not support `ignore`
 
   - package-ecosystem: composer
     directory: /
