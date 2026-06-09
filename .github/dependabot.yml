@@ -1,0 +1,73 @@
+# PM4 package: Laravel is provided by the host app; composer.json is only for this package's own PHP code/deps.
+# JS build: Vue 2 + Laravel Mix (manifest: package.json). Built assets under public/js/ are not scanned by Dependabot.
+#
+# Policy: NO routine version-update PRs (open-pull-requests-limit: 0).
+# Security/CVE PRs are handled by Dependabot security updates (org Settings → Code security).
+# Security PRs are batched into one PR per ecosystem (patch/minor).
+# Major security PRs will still open if no patch/minor fix exists — treat as manual review.
+#
+# Vue 2 pin: security fixes requiring Vue 3+ will be suppressed — accepted risk,
+# migration not planned. Same applies to vue-loader, vue-template-compiler, @vue/cli.
+#
+# Webpack pin: develop lockfile pins 5.91.0; Dependabot security PRs may bump to 5.107+.
+# 5.106.0 is the last release that still ships SizeFormatHelpers (Laravel Mix compat).
+# Block webpack >= 5.107 so batched security PRs keep other bumps without breaking the build.
+#
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 0
+    ignore:
+      # If you ever raise `open-pull-requests-limit`, this skips routine major bumps.
+      # Note: update-types has no effect on security updates.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "vue"
+        versions: [">=3.0.0"] # stay on Vue 2.x — suppresses security PRs requiring v3+ too
+      - dependency-name: "@vue/cli*"
+        versions: [">=5.0.0"] # CLI v5+ is Vue 3 era
+      - dependency-name: "vue-loader"
+        versions: [">=17.0.0"] # vue-loader v17+ drops Vue 2 support
+      - dependency-name: "vue-template-compiler"
+        versions: [">=3.0.0"] # must stay in sync with Vue 2.x
+      - dependency-name: "webpack"
+        versions: [">=5.107.0"] # 5.106.0 last with SizeFormatHelpers; block 5.107+ security bumps
+    groups:
+      npm-security:
+        applies-to: security-updates # batches all JS security PRs into one
+        patterns: # note: update-types has no effect here for security
+          - "*"
+        ignore:
+          - dependency-name: "vue"
+            versions: [">=3.0.0"] # stay on Vue 2.x — suppresses security PRs requiring v3+ too
+          - dependency-name: "@vue/cli*"
+            versions: [">=5.0.0"] # CLI v5+ is Vue 3 era
+          - dependency-name: "vue-loader"
+            versions: [">=17.0.0"] # vue-loader v17+ drops Vue 2 support
+          - dependency-name: "vue-template-compiler"
+            versions: [">=3.0.0"] # must stay in sync with Vue 2.x
+          - dependency-name: "webpack"
+            versions: [">=5.107.0"] # 5.106.0 last with SizeFormatHelpers; block 5.107+ security bumps
+
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 0
+    ignore:
+      # If you ever raise `open-pull-requests-limit`, this skips routine major bumps.
+      # Note: update-types has no effect on security updates.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      composer-security:
+        applies-to: security-updates # batches all PHP security PRs into one
+        patterns:
+          - "*"
+          
