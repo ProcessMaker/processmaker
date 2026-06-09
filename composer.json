@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "2026.10.1",
+    "version": "2026.10.2",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -25,7 +25,7 @@
         "igaster/laravel-theme": "^2.0",
         "jenssegers/agent": "^2.6",
         "laravel/framework": "^13.13",
-        "laravel/horizon": "^5.45",
+        "laravel/horizon": "^5.47",
         "laravel/pail": "^1.2",
         "laravel/passport": "^13.7",
         "laravel/scout": "^11.1",
@@ -111,7 +111,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "444708ef",
+            "build": "dc7c7e21",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.10",
@@ -153,9 +153,9 @@
                 "connector-slack": "1.9.6",
                 "docker-executor-node-ssr": "1.7.4",
                 "package-ab-testing": "1.4.2",
-                "package-actions-by-email": "1.22.14",
+                "package-actions-by-email": "1.22.15",
                 "package-advanced-user-manager": "1.13.3",
-                "package-ai": "1.16.19",
+                "package-ai": "1.16.20",
                 "package-analytics-reporting": "1.11.5",
                 "package-auth": "1.24.15",
                 "package-collections": "2.27.6",
