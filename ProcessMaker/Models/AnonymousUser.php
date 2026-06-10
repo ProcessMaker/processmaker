@@ -3,7 +3,6 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Contracts\Session\Session;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 
 class AnonymousUser extends User
