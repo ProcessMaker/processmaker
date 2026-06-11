@@ -5,17 +5,15 @@ namespace ProcessMaker\Http\Resources\Caching;
 use Illuminate\Foundation\PackageManifest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use ProcessMaker\Filters\SaveSession;
-use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Http\Controllers\Api\UserConfigurationController;
 use ProcessMaker\Managers\PackageManager;
-use ProcessMaker\Models\GroupMember;
-use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\UserConfiguration;
-use ProcessMaker\Services\PermissionServiceManager;
 
 class TasksPageEtag
 {
@@ -74,7 +72,6 @@ class TasksPageEtag
             'saved_search_v' => $this->savedSearchPayload($user),
             'locale' => app()->getLocale(),
             'task_context' => [
-                'default_columns' => DefaultColumns::get('tasks'),
                 'user_filter' => $user ? SaveSession::getConfigFilter('taskFilter', $user) : null,
                 'user_configuration' => $this->userConfigurationPayload($user),
                 'task_drafts_enabled' => TaskDraft::draftsEnabled(),
@@ -126,6 +123,10 @@ class TasksPageEtag
 
     /**
      * Version the effective permission context used by Blade and frontend props.
+     *
+     * The full permission list can be expensive to rebuild, so this uses the session
+     * snapshot plus lightweight assignment/version markers that are enough to
+     * invalidate when direct user or direct group permission assignments change.
      */
     private function permissionsVersion(?User $user): ?array
     {
@@ -133,19 +134,18 @@ class TasksPageEtag
             return null;
         }
 
-        $permissions = $user->is_administrator
-            ? Permission::query()->pluck('name')->all()
-            : app(PermissionServiceManager::class)->getUserPermissions($user->id);
-        sort($permissions);
+        $directGroups = $this->directGroupPayload($user);
 
         return [
             'is_administrator' => $user->is_administrator,
-            'permissions' => $permissions,
             'session_permissions' => $this->sessionPermissions(),
-            'groups_updated_at' => $this->dateValue(
-                GroupMember::where('member_type', User::class)
-                    ->where('member_id', $user->id)
-                    ->max('updated_at')
+            'permissions_table' => $this->tableVersion('permissions'),
+            'direct_user_permissions' => $this->assignablePermissionVersion(User::class, [$user->id]),
+            'direct_groups' => $directGroups['ids'],
+            'direct_group_memberships' => $directGroups['version'],
+            'direct_group_permissions' => $this->assignablePermissionVersion(
+                Group::class,
+                $directGroups['ids']
             ),
         ];
     }
@@ -184,7 +184,7 @@ class TasksPageEtag
         return [
             'id' => $savedSearch->id,
             'updated_at' => $this->dateValue($savedSearch->updated_at),
-            'columns' => $savedSearch->columns,
+            'columns_hash' => $this->hashValue($savedSearch->columns),
         ];
     }
 
@@ -197,18 +197,88 @@ class TasksPageEtag
             return UserConfigurationController::DEFAULT_USER_CONFIGURATION;
         }
 
-        $configuration = UserConfiguration::where('user_id', $user->id)->first();
+        $configuration = UserConfiguration::select('updated_at', 'ui_configuration')
+            ->where('user_id', $user->id)
+            ->first();
         if (!$configuration) {
             return [
                 'updated_at' => null,
-                'ui_configuration' => UserConfigurationController::DEFAULT_USER_CONFIGURATION,
+                'ui_configuration_hash' => $this->hashValue(UserConfigurationController::DEFAULT_USER_CONFIGURATION),
             ];
         }
 
         return [
             'updated_at' => $this->dateValue($configuration->updated_at),
-            'ui_configuration' => $configuration->ui_configuration,
+            'ui_configuration_hash' => $this->hashValue($configuration->ui_configuration),
         ];
+    }
+
+    /**
+     * Return direct group ids and their version marker without loading group models.
+     */
+    private function directGroupPayload(User $user): array
+    {
+        $memberships = DB::table('group_members')
+            ->where('member_type', User::class)
+            ->where('member_id', $user->id)
+            ->orderBy('group_id')
+            ->get(['group_id', 'updated_at']);
+
+        return [
+            'ids' => $memberships->pluck('group_id')->all(),
+            'version' => [
+                'count' => $memberships->count(),
+                'updated_at' => $this->dateValue($memberships->max('updated_at')),
+            ],
+        ];
+    }
+
+    /**
+     * Hash direct permission assignment ids for an assignable type.
+     */
+    private function assignablePermissionVersion(string $assignableType, array $assignableIds): array
+    {
+        if (empty($assignableIds)) {
+            return [
+                'count' => 0,
+                'permission_ids_hash' => $this->hashValue([]),
+            ];
+        }
+
+        $permissionIds = DB::table('assignables')
+            ->where('assignable_type', $assignableType)
+            ->whereIn('assignable_id', $assignableIds)
+            ->orderBy('permission_id')
+            ->pluck('permission_id')
+            ->all();
+
+        return [
+            'count' => count($permissionIds),
+            'permission_ids_hash' => $this->hashValue($permissionIds),
+        ];
+    }
+
+    /**
+     * Version a table with a compact count and updated_at marker.
+     */
+    private function tableVersion(string $table): array
+    {
+        $version = DB::table($table)
+            ->selectRaw('COUNT(*) as count, MAX(updated_at) as updated_at')
+            ->first();
+
+        return [
+            'count' => (int) ($version->count ?? 0),
+            'updated_at' => $this->dateValue($version->updated_at ?? null),
+        ];
+    }
+
+    /**
+     * Hash structured values before placing them in the ETag payload.
+     */
+    private function hashValue($value): string
+    {
+        return hash($this->hashAlgorithm(), json_encode($value));
     }
 
     /**
