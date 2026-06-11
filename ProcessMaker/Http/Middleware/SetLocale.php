@@ -2,9 +2,11 @@
 
 namespace ProcessMaker\Http\Middleware;
 
+use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Sets the locale based on url parameter
@@ -19,18 +21,15 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next)
     {
-        // Grab the locale
-        $locale = config('app.locale');
-        $user = \Auth::user();
-        if ($user && $user->language !== null) {
-            $locale = \Auth::user()->language;
-        }
-        if ($locale) {
-            // Use the App facade to set the locale for our request lifecycle
-            App::setLocale($locale);
+        $locale = config('app.locale', 'en');
+
+        if (($user = Auth::user()) && !empty($user->language)) {
+            $locale = $user->language;
         }
 
-        // Process next
+        App::setLocale($locale);
+        Carbon::setLocale($locale);
+
         return $next($request);
     }
 }

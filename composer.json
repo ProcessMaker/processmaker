@@ -26,6 +26,7 @@
         "jenssegers/agent": "^2.6",
         "laravel/framework": "^13.0",
         "laravel/horizon": "^5.45",
+        "laravel/octane": "^2.17",
         "laravel/pail": "^1.2",
         "laravel/passport": "^13.7",
         "laravel/scout": "^11.1",
