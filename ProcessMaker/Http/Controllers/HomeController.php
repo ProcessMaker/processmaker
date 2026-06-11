@@ -60,6 +60,16 @@ class HomeController extends Controller
             return redirect($url)->withCookie(\Cookie::forget('processmaker_intended'));
         }
 
+        // No intended URL. Honor the tenant's package-dynamic-ui home page
+        // if it's installed, so admins'configured landing pages are still
+        // respected, before falling back to /requests.
+        if (Auth::check() && class_exists(\ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::class)) {
+            $homePage = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::getHomePage(Auth::user());
+            if (!empty($homePage)) {
+                return redirect($homePage);
+            }
+        }
+
         return redirect()->route('requests.index');
     }
 }
