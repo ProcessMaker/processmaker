@@ -10,6 +10,7 @@ use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\ScriptDockerBindingFilesTrait;
 use ProcessMaker\Models\ScriptDockerCopyingFilesTrait;
 use ProcessMaker\Models\ScriptDockerNayraTrait;
+use ProcessMaker\Models\ScriptDockerStreamingFilesTrait;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 use RuntimeException;
@@ -19,6 +20,7 @@ abstract class Base
     use ScriptDockerCopyingFilesTrait;
     use ScriptDockerBindingFilesTrait;
     use ScriptDockerNayraTrait;
+    use ScriptDockerStreamingFilesTrait;
 
     const NAYRA_LANG = 'php-nayra';
 
@@ -128,8 +130,11 @@ abstract class Base
         }
 
         // Execute docker
-        $executeMethod = config('app.processmaker_scripts_docker_mode') === 'binding'
-            ? 'executeBinding' : 'executeCopying';
+        $executeMethod = match (config('app.processmaker_scripts_docker_mode')) {
+            'binding' => 'executeBinding',
+            'streaming' => 'executeStreaming',
+            default => 'executeCopying',
+        };
         Log::debug('Executing docker ' . $this->getRunId() . ':', [
             'executeMethod' => $executeMethod,
         ]);
