@@ -12,6 +12,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use InvalidArgumentException;
 use Illuminate\Support\Str;
 use PDOException;
 use ProcessMaker\Facades\WorkflowManager;
@@ -203,10 +204,11 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     {
         try {
             $config = json_decode($task->configuration);
-            $lastExecution = new DateTime($task->last_execution, new DateTimeZone('UTC'));
 
-            if ($lastExecution === null) {
-                return;
+            // SCHEDULED_JOB rows use last_execution = null until first run; BPMN timers always set last_execution.
+            $lastExecution = null;
+            if ($task->last_execution !== null && $task->last_execution !== '') {
+                $lastExecution = new DateTime($task->last_execution, new DateTimeZone('UTC'));
             }
 
             $owner = $task->processRequestToken ?: $task->processRequest ?: $task->process;
@@ -888,6 +890,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      */
     public function scheduleCycleJob($interval, array $config): ScheduledTask
     {
+        if (!isset($config['job'])) {
+            throw new InvalidArgumentException('$config["job"] is required');
+        }
         $configuration = [
             'type' => 'TimeCycle',
             'interval' => $interval,
@@ -899,6 +904,36 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         $scheduledTask->last_execution = $this->today()
             ->setTimezone(new DateTimeZone('UTC'))
             ->format('Y-m-d H:i:s');
+        $scheduledTask->save();
+
+        return $scheduledTask;
+    }
+
+    /**
+     * Schedule a job for a specific datetime
+     *
+     * @param string $datetime in ISO-8601 format
+     * @param array $config configuration
+     *
+     * @return ScheduledTask
+     */
+    public function scheduleDateJob($datetime, array $config): ScheduledTask
+    {
+        if (!isset($config['job'])) {
+            throw new InvalidArgumentException('$config["job"] is required');
+        }
+
+        // Must use "interval" so nextDate(TimeDate) picks up the target datetime (same shape as BPMN timer tasks).
+        $configuration = [
+            'type' => 'TimeDate',
+            ...$config,
+            'interval' => $datetime,
+        ];
+
+        $scheduledTask = new ScheduledTask();
+        $scheduledTask->configuration = json_encode($configuration);
+        $scheduledTask->type = 'SCHEDULED_JOB';
+        $scheduledTask->last_execution = null;
         $scheduledTask->save();
 
         return $scheduledTask;
