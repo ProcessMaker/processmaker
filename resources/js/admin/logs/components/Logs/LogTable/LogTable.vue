@@ -145,7 +145,7 @@ export default {
       const emailColumns = {
         errors: [
           { key: 'id', label: this.$t('ID') },
-          { key: 'imap_server', label: this.$t('IMAP Server') },
+          { key: 'server', label: this.$t('Server') },
           { key: 'email', label: this.$t('User Email') },
           { key: 'from.email', label: this.$t('Email From') },
           { key: 'error_code', label: this.$t('Error Code') },
@@ -154,7 +154,7 @@ export default {
         ],
         matched: [
           { key: 'id', label: this.$t('ID') },
-          { key: 'imap_server', label: this.$t('IMAP Server') },
+          { key: 'server', label: this.$t('Server') },
           { key: 'email', label: this.$t('User Email') },
           { key: 'from.email', label: this.$t('Email From') },
           { key: 'subject', label: this.$t('Subject') },
@@ -168,7 +168,7 @@ export default {
         ],
         total: [
           { key: 'execution_id', label: this.$t('ID') },
-          { key: 'imap_server', label: this.$t('IMAP Server') },
+          { key: 'server', label: this.$t('Server') },
           { key: 'email', label: this.$t('User Email') },
           { key: 'total_emails', label: this.$t('Total Emails') },
           { key: 'total_matched', label: this.$t('Total Matches') },
