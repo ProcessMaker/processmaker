@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "2026.10.2",
+    "version": "2026.10.4",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -71,6 +71,7 @@
         "spatie/laravel-multitenancy": "^4.0.9",
         "spomky-labs/otphp": "^11.3",
         "swagger-api/swagger-ui": "^5.32.3",
+        "symfony/dependency-injection": "^8.1",
         "symfony/expression-language": "^7.2",
         "twilio/sdk": "^8.3",
         "typo3/class-alias-loader": "^1.2",
@@ -111,7 +112,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "dc7c7e21",
+            "build": "f8fdfc80",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.10",
@@ -149,15 +150,15 @@
                 "connector-docusign": "1.11.2",
                 "connector-idp": "1.14.2",
                 "connector-pdf-print": "1.23.3",
-                "connector-send-email": "1.32.16",
-                "connector-slack": "1.9.6",
+                "connector-send-email": "1.32.17",
+                "connector-slack": "1.9.7",
                 "docker-executor-node-ssr": "1.7.4",
                 "package-ab-testing": "1.4.2",
                 "package-actions-by-email": "1.22.15",
                 "package-advanced-user-manager": "1.13.3",
                 "package-ai": "1.16.20",
                 "package-analytics-reporting": "1.11.5",
-                "package-auth": "1.24.15",
+                "package-auth": "1.24.16",
                 "package-collections": "2.27.6",
                 "package-comments": "1.16.4",
                 "package-conversational-forms": "1.15.2",
