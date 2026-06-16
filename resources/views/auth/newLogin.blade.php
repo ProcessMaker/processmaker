@@ -18,8 +18,6 @@
 </head>
 <body>
   <div class="background-cover">
-    <img class="background-wave-left" src="/img/gradient-wave-left.svg">
-    <img class="background-wave-right" src="/img/gradient-wave-right.svg">
   </div>
   <div class="content" id="app">
     <div class="d-flex flex-column" style="min-height: 100vh">
@@ -32,27 +30,10 @@
             :show-language-code="true">
           </language-selector-button>
         </div>
-        <div class="d-flex justify-content-center align-items-center h-100-vh" align-v="center">
-          <div class="col-md-6 col-lg-6 col-xl-7 d-none d-lg-block">
-          @php
-            $isMobile = (
-              isset($_SERVER['HTTP_USER_AGENT'])
-              && \ProcessMaker\Helpers\MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])
-            ) ? true : false;
-          @endphp
-          @if (!$isMobile)
-            <div class="slogan">
-              <h2 class="title">{{ __("Business process automation") }}</h2>
-              <h1 class="title">{{ __("made") }} <span class="emphasis">{{ __("efficient") }}</span></h1>
-              <div class="subhead">
-                {{ __("All the tools to empower anyone to quickly automate processes, from custom forms to unique enterprise workflows and complex business rules.") }}
-              </div>
-            </div>
-          @endif
-          </div>
-          <div class="col-md-6 col-lg-6 col-xl-4 col-xxl-3">
-            <div class="card card-body p-2 small-screen login-container">
-              <div align="center" class="p-3 pb-4">
+        <div class="login-layout h-100-vh">
+          <div class="login-panel small-screen">
+            <div class="card card-body login-container">
+              <div class="login-logo">
                 @component('components.logo')
                 @endcomponent
               </div>
@@ -90,31 +71,55 @@
                     @endif
                   </div>
                 </div>
-                <div class="row justify-content-between mb-3">
+                <div class="login-options mb-3">
                   <div class="form-check mb-0">
                     <label class="form-check-label">
                     <input id="remember" class="form-check-input" type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }} aria-label="{{__('Remember me')}}">
                     {{ __('Remember me') }}</label>
                   </div>
                   <div class="form-group mb-0">
-                    <a href="{{ route('password.request') }}">
+                    <a class="forgot-password-link" href="{{ route('password.request') }}">
                       {{ __('Forgot Password?') }}
                     </a>
                   </div>
                 </div>
                 <div class="form-group mb-0">
-                  <button type="submit" name="login" class="btn btn-primary btn-block button-login form-control-login" dusk="login">{{ __('Sign In') }}</button>
+                  <button type="submit" name="login" class="btn btn-primary btn-block button-login" dusk="login">{{ __('Sign In') }}</button>
                 </div>
               </form>
               @endif
-              @foreach ($addons as $addon)
-                @include($addon->view, $addon->data)
-              @endforeach
+              @if (count($addons))
+              <div class="login-addons">
+                @foreach ($addons as $addon)
+                  @include($addon->view, $addon->data)
+                @endforeach
+              </div>
+              @endif
               @if(isset($footer))
                 {!! $footer !!}
               @endif
             </div>
           </div>
+          @php
+            $isMobile = (
+              isset($_SERVER['HTTP_USER_AGENT'])
+              && \ProcessMaker\Helpers\MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])
+            ) ? true : false;
+          @endphp
+          @if (!$isMobile)
+          <div class="slogan-panel d-none d-lg-flex">
+            <div class="slogan">
+              <div class="head-text">{{ __("INTELLIGENT BUSINESS ORCHESTRATION") }}</div>
+              <div class="display">
+                <span class="display-line">{{ __("Built to Master") }}</span>
+                <span class="display-line display-complexity">{{ __("Complexity") }}</span>
+              </div>
+              <div class="subtext">
+                {{ __("Orchestrate workflows, systems, and AI at a moment’s notice. Turn constant change into your greatest competitive advantage by giving your team the freedom to build, test, and iterate in real time.") }}
+              </div>
+            </div>
+          </div>
+          @endif
         </div>
       </div>
       @php
@@ -156,35 +161,72 @@
 </script>
 <script src="{{ mix('js/translations/index.js') }}"></script>
 <style>
+  body {
+    background: transparent;
+    height: unset;
+    font-family: 'Open Sans', sans-serif;
+  }
+
   .row {
     display: flex;
     flex-wrap: wrap;
     margin-right: 0;
     margin-left: 0;
   }
-  .card {
-    /* top: 50%;
-    position: relative; */
-    border-radius: 16px;
+
+  .login-layout {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: 2rem 0;
   }
+
+  .login-panel {
+    flex: 0 0 auto;
+    padding-left: clamp(1.5rem, 11.67vw, 210px);
+  }
+
+  .login-container {
+    width: 580px;
+    max-width: 100%;
+    padding: 50px 70px 40px;
+    border: none;
+    border-radius: 24px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    background: #ffffff;
+  }
+
+  .login-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 46px;
+  }
+
   .login-logo-custom,
   .login-logo-default {
-    width: 60%;
+    width: 100%;
+    max-width: 440px;
+    height: auto;
   }
+
   .form {
-    padding: 0 17px 17px 17px;
+    padding: 0;
   }
-  .formContainer {
-    width: 504px;
+
+  .form-group label {
+    color: #333333;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
   }
-  .formContainer .form {
-    margin-top: 85px;
-    text-align: left
-  }
+
   .background-cover {
-    background-color: black;
-    background-repeat: no-repeat;
-    background-size: cover;
+    background-color: #002D59;
+    background-image: url('{{ asset('img/decisions-bg-pattern.svg') }}');
+    background-repeat: repeat;
+    background-size: auto;
+    background-position: center top;
     position: fixed;
     height: 100%;
     top: 0;
@@ -194,124 +236,230 @@
   }
 
   .form-control-login {
-    height: 45px;
-    padding-bottom: 0;
-    padding-top: 0;
+    height: 49px;
+    padding: 0 1rem;
+    border-radius: 8px;
+    border: 1px solid #999999;
+    color: #333333;
+    font-size: 0.875rem;
   }
 
-  .background-wave-left {
-      position: fixed;
-      bottom: 0;
-      left: 0;
+  .form-control-login::placeholder {
+    color: #808080;
+    opacity: 1;
   }
 
-  .background-wave-right {
-      position: fixed;
-      top: 0;
-      right: 0;
-      height: 50%;
+  .form-control-login:focus {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
   }
 
-  body {
-    background: transparent;
-  }
-  .slogan {
-    max-width: 600px;
-    margin-left: 10%;
-    font-family: 'Poppins', sans-serif;
-    display: inline-flex;
-    flex-direction: column;
-    align-items: flex-start;
-    text-transform: uppercase;
-    text-shadow: 0 0 20px rgba(0, 0, 0, 0.95);
+  .login-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
   }
 
-  .slogan .title {
-    font-weight: 900;
-    color: #ffffff;
+  .form-check-label {
+    color: #333333;
+    font-size: 0.875rem;
+    font-weight: 400;
   }
 
-  .slogan h2.title {
-      font-size: 1.4rem;
+  .form-check-input {
+    width: 27px;
+    height: 17px;
+    border: 1px solid #666666;
+    border-radius: 8px;
   }
 
-  .slogan h1.title {
-      font-size: 3.4rem;
+  .forgot-password-link {
+    color: #2563EB;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
   }
 
-  .slogan .emphasis{
-    color: #3982ff;
+  .forgot-password-link:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
   }
-  .slogan .subhead {
-    color: #ffffff;
-    font-size: 1.23rem;
-    font-weight: 100;
+
+  .btn-primary {
+    background-color: #2563EB;
+    border-color: #2563EB;
   }
-  .footer {
-    margin-left: 10%;
-  }
-  #togglePassword{
-    position: absolute;
-    top: 32%;
-    right: 4%;
-    cursor: pointer;
-    color: #51585E;
-  }
-  .password-container {
-    position: relative;
-  }
-  .head-text {
-    color: #FFF;
-    font-size: 46.067px;
-    font-weight: 600;
-    font-family: 'Poppins', sans-serif;
-  }
-  .display {
-    color: #FFC107;
-    font-size: 61.987px;
-    font-weight: 600;
-  }
-  .superscript {
-    color: #FFF;
-    position: relative;
-    top: -1.5em;
-    font-weight: 600;
-    font-family: 'Poppins', sans-serif;
-  }
-  .subtext {
-    width: 60%;
-    color: #FFF;
-    font-size: 24.017px;
-    font-family: 'Poppins', sans-serif;
+
+  .btn-primary:hover,
+  .btn-primary:focus {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
   }
 
   .button-login {
-      text-transform: none;
+    height: 50px;
+    border-radius: 9px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: none;
   }
 
-  .login-container {
-    max-width: 500px;
+  .login-addons {
+    margin-top: 1.5rem;
   }
+
+  .login-addons .btn,
+  .login-addons a.btn {
+    height: 49px;
+    border-radius: 8px;
+    border: 1px solid #94A1B8;
+    background: #ffffff;
+    color: #333333;
+    font-weight: 500;
+  }
+
+  .login-addons hr,
+  .login-addons .divider {
+    border: 0;
+    border-top: 1px solid #E6E6E6;
+    margin: 1.5rem 0;
+  }
+
+  .login-addons .text-muted,
+  .login-addons .divider-text {
+    color: #808080 !important;
+    font-size: 0.875rem;
+  }
+
+  .slogan-panel {
+    flex: 1;
+    align-items: center;
+    padding-left: clamp(2rem, 12.6vw, 227px);
+    padding-right: clamp(1.5rem, 5vw, 5rem);
+    min-height: 100vh;
+  }
+
+  .slogan {
+    max-width: 560px;
+    font-family: 'Open Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .slogan .head-text {
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #A6F252;
+    margin: 0 0 1.5rem 0;
+    font-size: 0.875rem;
+    letter-spacing: 0.28em;
+    line-height: 1.4;
+  }
+
+  .slogan .display {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-size: clamp(3rem, 5.5vw, 5.5rem);
+    line-height: 0.95;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 1.5rem 0;
+    max-width: 100%;
+  }
+
+  .slogan .display-line {
+    display: block;
+  }
+
+  .slogan .display-complexity {
+    color: #ffffff;
+    font-size: clamp(3rem, 5.5vw, 5.5rem);
+    font-weight: 800;
+    line-height: 0.95;
+  }
+
+  .slogan .subtext {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.75;
+    max-width: 520px;
+    margin-top: 0;
+  }
+
+  .slogan .display,
+  .slogan .subtext {
+    text-transform: none;
+  }
+
+  .footer {
+    margin-left: clamp(1.5rem, 11.67vw, 210px);
+  }
+
+  #togglePassword {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #51585E;
+  }
+
+  .password-container {
+    position: relative;
+  }
+
+  .h-100-vh {
+    height: 100vh;
+  }
+
+  .language-button-container {
+    right: 2.4rem;
+    top: 2.4rem;
+    z-index: 1041;
+  }
+
+  @media (max-width: 991px) {
+    .login-layout {
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .login-panel {
+      padding-left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 580px;
+      padding: 2rem 1.5rem;
+    }
+  }
+
   @media (max-width: 767px) {
     .small-screen {
       border: 0;
-      background: white;
+      background: transparent;
     }
-    .small-screen.login-container {
-      max-width: 100%;
-    }
-}
 
-body {
-  height: unset;
-}
-.h-100-vh {
-  height: 100vh;
-}
-.language-button-container {
-  right: 2.4rem;
-  top: 2.4rem;
-  z-index: 1041;
-}
+    .login-container {
+      max-width: 100%;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .login-options {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+  }
 </style>
 </html>
