@@ -307,30 +307,7 @@
   }
 
   .login-addons {
-    margin-top: 1.5rem;
-  }
-
-  .login-addons .btn,
-  .login-addons a.btn {
-    height: 49px;
-    border-radius: 8px;
-    border: 1px solid #94A1B8;
-    background: #ffffff;
-    color: #333333;
-    font-weight: 500;
-  }
-
-  .login-addons hr,
-  .login-addons .divider {
-    border: 0;
-    border-top: 1px solid #E6E6E6;
-    margin: 1.5rem 0;
-  }
-
-  .login-addons .text-muted,
-  .login-addons .divider-text {
-    color: #808080 !important;
-    font-size: 0.875rem;
+    margin-top: 0;
   }
 
   .slogan-panel {
