@@ -210,7 +210,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->p
 
     // Permissions
     Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
-    Route::put('permissions', [PermissionController::class, 'update'])->name('permissions.update')->middleware('can:edit-users');
+    Route::put('permissions', [PermissionController::class, 'update'])->name('permissions.update');
 
     // Tenant Jobs Dashboard API
     Route::get('tenant-queues/tenants', [TenantQueueController::class, 'getTenants'])->name('tenant-queue.tenants');
