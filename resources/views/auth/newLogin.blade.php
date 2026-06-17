@@ -19,17 +19,17 @@
 <body>
   <div class="background-cover">
   </div>
+  <div id="language-selector" class="language-button-container">
+    <language-selector-button
+      id="language-login"
+      :type="'login'"
+      :show-language-code="true"
+      :show-flag="false">
+    </language-selector-button>
+  </div>
   <div class="content" id="app">
     <div class="d-flex flex-column" style="min-height: 100vh">
       <div class="flex-fill small-screen">
-        <div id="language-selector"
-          class="d-flex justify-content-end position-absolute language-button-container">
-          <language-selector-button
-            id="language-login"
-            :type="'login'"
-            :show-language-code="true">
-          </language-selector-button>
-        </div>
         <div class="login-layout h-100-vh">
           <div class="login-panel small-screen">
             <div class="card card-body login-container">
@@ -72,16 +72,23 @@
                   </div>
                 </div>
                 <div class="login-options mb-3">
-                  <div class="form-check mb-0">
-                    <label class="form-check-label">
-                    <input id="remember" class="form-check-input" type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }} aria-label="{{__('Remember me')}}">
-                    {{ __('Remember me') }}</label>
-                  </div>
-                  <div class="form-group mb-0">
-                    <a class="forgot-password-link" href="{{ route('password.request') }}">
-                      {{ __('Forgot Password?') }}
-                    </a>
-                  </div>
+                  <label class="login-remember" for="remember">
+                    <span class="login-toggle">
+                      <input
+                        id="remember"
+                        class="login-remember-input"
+                        type="checkbox"
+                        name="remember"
+                        {{ old('remember') ? 'checked' : '' }}>
+                      <span class="login-toggle-track" aria-hidden="true">
+                        <span class="login-toggle-knob"></span>
+                      </span>
+                    </span>
+                    <span class="login-remember-text">{{ __('Remember me') }}</span>
+                  </label>
+                  <a class="forgot-password-link" href="{{ route('password.request') }}">
+                    {{ __('Forgot Password?') }}
+                  </a>
                 </div>
                 <div class="form-group mb-0">
                   <button type="submit" name="login" class="btn btn-primary btn-block button-login" dusk="login">{{ __('Sign In') }}</button>
@@ -261,17 +268,74 @@
     gap: 1rem;
   }
 
-  .form-check-label {
+  .login-remember {
+    align-items: center;
+    cursor: pointer;
+    display: inline-flex;
+    gap: 0.5rem;
+    margin: 0;
+  }
+
+  .login-toggle {
+    display: inline-flex;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .login-remember-input {
+    cursor: pointer;
+    height: 17px;
+    margin: 0;
+    opacity: 0;
+    position: absolute;
+    width: 27px;
+    z-index: 1;
+  }
+
+  .login-toggle-track {
+    background: #ffffff;
+    border: 1px solid #666666;
+    border-radius: 8.5px;
+    box-sizing: border-box;
+    display: block;
+    height: 17px;
+    position: relative;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    width: 27px;
+  }
+
+  .login-toggle-knob {
+    background: #666666;
+    border-radius: 50%;
+    height: 12px;
+    left: 2.5px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: left 0.2s ease, background-color 0.2s ease;
+    width: 12px;
+  }
+
+  .login-remember-input:checked + .login-toggle-track {
+    background: #2563EB;
+    border-color: #2563EB;
+  }
+
+  .login-remember-input:checked + .login-toggle-track .login-toggle-knob {
+    background: #ffffff;
+    left: calc(100% - 14.5px);
+  }
+
+  .login-toggle:focus-within .login-toggle-track {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  .login-remember-text {
     color: #333333;
     font-size: 0.875rem;
     font-weight: 400;
-  }
-
-  .form-check-input {
-    width: 27px;
-    height: 17px;
-    border: 1px solid #666666;
-    border-radius: 8px;
+    line-height: 1.25rem;
+    user-select: none;
   }
 
   .forgot-password-link {
@@ -396,9 +460,44 @@
   }
 
   .language-button-container {
-    right: 2.4rem;
-    top: 2.4rem;
+    position: fixed;
+    left: 13.5px;
+    bottom: 13.5px;
     z-index: 1041;
+  }
+
+  .language-button-container .btn-language-selector-login {
+    align-items: center;
+    background: transparent;
+    border: 1px solid #ffffff;
+    border-radius: 15.5px;
+    box-shadow: none;
+    color: #ffffff;
+    height: 31px;
+    justify-content: center;
+    min-width: 31px;
+    padding: 0 0.5rem;
+    text-transform: uppercase;
+    width: 31px;
+  }
+
+  .language-button-container .btn-language-selector-login > div {
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .language-button-container .btn-language-selector-login:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .language-button-container .btn-language-selector-login:active,
+  .language-button-container .btn-language-selector-login:focus,
+  .language-button-container .btn-language-selector-login:focus-within {
+    box-shadow: none;
+    outline: none;
   }
 
   @media (max-width: 991px) {
@@ -436,6 +535,10 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 0.75rem;
+    }
+
+    .login-remember {
+      width: 100%;
     }
   }
 </style>
