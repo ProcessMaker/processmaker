@@ -60,7 +60,13 @@
                   </div>
                 </div>
                 <div class="form-group mb-3">
-                  <label for="password">{{ __('Password') }}</label>
+                  <div class="password-field-header">
+                    <label for="password">{{ __('Password') }}</label>
+                    <span id="capsLockWarning" class="caps-lock-warning" hidden aria-live="polite">
+                      <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                      {{ __('Caps lock is on') }}
+                    </span>
+                  </div>
                   <div class="password-container">
                     <input id="password" type="password" class="form-control form-control-login {{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('Enter your password')}}" required>
                     <i class="fa fa-eye" id="togglePassword"></i>
@@ -148,12 +154,29 @@
 
   const togglePassword = document.querySelector('#togglePassword');
   const password = document.querySelector('#password');
+  const capsLockWarning = document.querySelector('#capsLockWarning');
 
   togglePassword.addEventListener('click', function (e) {
     const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
     password.setAttribute('type', type);
     this.classList.toggle('fa-eye-slash');
-});
+  });
+
+  function updateCapsLockWarning(event) {
+    if (!password || !capsLockWarning || !event.getModifierState) {
+      return;
+    }
+
+    capsLockWarning.hidden = !event.getModifierState('CapsLock');
+  }
+
+  if (password && capsLockWarning) {
+    password.addEventListener('keydown', updateCapsLockWarning);
+    password.addEventListener('keyup', updateCapsLockWarning);
+    password.addEventListener('blur', function () {
+      capsLockWarning.hidden = true;
+    });
+  }
 </script>
 <script src="{{ mix('builds/login/js/manifest.js') }}"></script>
 <script src="{{ mix('builds/login/js/vendor.js') }}"></script>
@@ -226,6 +249,33 @@
     font-size: 0.875rem;
     font-weight: 500;
     margin-bottom: 0.5rem;
+  }
+
+  .password-field-header {
+    align-items: center;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .password-field-header label {
+    margin-bottom: 0;
+  }
+
+  .caps-lock-warning {
+    align-items: center;
+    color: #C66E00;
+    display: inline-flex;
+    font-size: 0.75rem;
+    font-weight: 500;
+    gap: 0.375rem;
+    line-height: 1.25rem;
+    white-space: nowrap;
+  }
+
+  .caps-lock-warning[hidden] {
+    display: none !important;
   }
 
   .background-cover {
