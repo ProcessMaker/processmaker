@@ -58,9 +58,12 @@ class ScriptDockerStreamingTest extends TestCase
         $app = new Application(dirname(__DIR__, 3));
         $app->singleton('config', fn () => new ConfigRepository($config));
         $app->singleton(DockerManager::class, fn () => new DockerManager());
-        $app->singleton('log', fn () => new Logger('test', [new NullHandler()]));
+        $logger = new Logger('test', [new NullHandler()]);
+        $app->singleton('log', fn () => $logger);
 
+        Facade::clearResolvedInstances();
         Facade::setFacadeApplication($app);
+        LogFacade::swap($logger);
 
         AliasLoader::getInstance(
             Facade::defaultAliases()->merge([
@@ -178,8 +181,8 @@ class ScriptDockerStreamingTest extends TestCase
 
     private function getMockDockerScript(): string
     {
-        return <<<'BASH'
-#!/bin/bash
+        return <<<'SH'
+#!/bin/sh
 set -e
 
 LOG_FILE="__LOG_FILE__"
@@ -189,43 +192,49 @@ REST="$*"
 
 case "$CMD" in
   run)
-    if [[ "$REST" == *"test -f /opt/executor/run-stream.sh"* ]]; then
-      [[ "${PM_MOCK_STREAMING}" == "1" ]] && exit 0 || exit 1
-    fi
-    if [[ "$REST" == *"run-stream.sh"* ]]; then
-      cat > /dev/null
-      TMPDIR=$(mktemp -d)
-      mkdir -p "$TMPDIR/opt/executor"
-      printf '%s' '{"mocked":true}' > "$TMPDIR/opt/executor/output.json"
-      tar cf - -C "$TMPDIR" opt/executor/output.json
-      rm -rf "$TMPDIR"
-      exit 0
-    fi
+    case "$REST" in
+      *"test -f /opt/executor/run-stream.sh"*)
+        if [ "${PM_MOCK_STREAMING}" = "1" ]; then exit 0; else exit 1; fi
+        ;;
+    esac
+    case "$REST" in
+      *run-stream.sh*)
+        cat > /dev/null
+        TMPDIR=$(mktemp -d)
+        mkdir -p "$TMPDIR/opt/executor"
+        printf '%s' '{"mocked":true}' > "$TMPDIR/opt/executor/output.json"
+        tar cf - -C "$TMPDIR" opt/executor/output.json
+        rm -rf "$TMPDIR"
+        exit 0
+        ;;
+    esac
     ;;
   create)
     CIDFILE=""
     PREV=""
     for arg in $REST; do
-      if [[ "$PREV" == "--cidfile" ]]; then
+      if [ "$PREV" = "--cidfile" ]; then
         CIDFILE="$arg"
       fi
       PREV="$arg"
     done
-    if [[ -n "$CIDFILE" ]]; then
+    if [ -n "$CIDFILE" ]; then
       printf '%s' 'mock-container-id' > "$CIDFILE"
     fi
     exit 0
     ;;
   cp)
-    if [[ "$REST" == mock-container-id:* ]]; then
-      DEST=$(echo "$REST" | awk '{print $NF}')
-      printf '%s' '{"copied":true}' > "$DEST"
-      exit 0
-    fi
+    case "$REST" in
+      mock-container-id:*)
+        DEST=$(echo "$REST" | awk '{print $NF}')
+        printf '%s' '{"copied":true}' > "$DEST"
+        exit 0
+        ;;
+    esac
     exit 0
     ;;
   start)
-    if [[ "${PM_MOCK_START_FAIL}" == "1" ]]; then
+    if [ "${PM_MOCK_START_FAIL}" = "1" ]; then
       echo "mock start failure" >&2
       exit 1
     fi
@@ -238,7 +247,7 @@ case "$CMD" in
 esac
 
 exit 0
-BASH;
+SH;
     }
 }
 
