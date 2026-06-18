@@ -121,25 +121,8 @@ export default {
           this.disabled = false;
           this.setRenewingState(false);
           const timeout = window.ProcessMaker.AccountTimeoutLength;
-          if (window.ProcessMaker.sessionSync?.setSessionState) {
-            window.ProcessMaker.sessionSync.setSessionState(timeout);
-          }
-          if (window.ProcessMaker.sessionSync?.clearWarningState) {
-            window.ProcessMaker.sessionSync.clearWarningState();
-          }
-          if (window.ProcessMaker.sessionSync?.broadcast) {
-            window.ProcessMaker.sessionSync.broadcast("renewed", { timeout });
-          }
-          // If reponse is correct, the timer is started again.
-          if (window.ProcessMaker.sessionSync?.isLeader?.() && typeof window.ProcessMaker.AccountTimeoutWorker !== "undefined") {
-            window.ProcessMaker.AccountTimeoutWorker.postMessage({
-              method: "start",
-              data: {
-                timeout,
-                warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
-                enabled: window.ProcessMaker.AccountTimeoutEnabled,
-              },
-            });
+          if (ProcessMaker.sessionSync?.renewSession) {
+            ProcessMaker.sessionSync.renewSession(timeout);
           }
           this.onClose();
         })
@@ -154,7 +137,7 @@ export default {
           }
           this.disabled = false;
           this.setRenewingState(false);
-          this.errors = error.response.data.errors;
+          this.errors = error?.response?.data?.errors || {};
         });
     },
     setRenewingState(isRenewing) {

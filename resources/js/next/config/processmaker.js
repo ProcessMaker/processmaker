@@ -75,10 +75,11 @@ export default () => {
     if (error.code && error.code === "ERR_CANCELED") {
       return Promise.reject(error);
     }
+
     EventBus.$emit("api-client-error", error);
     if (error.response && error.response.status && error.response.status === 401) {
       // stop 401 error consuming endpoints with data-sources
-      const { url } = error.config;
+      const url = error.config?.url || "";
       if (url.includes("/data_sources/")) {
         if (url.includes("requests/") || url.includes("/test")) {
           throw error;
