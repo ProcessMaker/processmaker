@@ -133,6 +133,16 @@ export const installApiClientCache = (apiClient) => {
 
   let globallyEnabled = false;
   let disabled = false;
+  let debugEnabled = false;
+
+  const debug = (config, message, details = {}) => {
+    if (!debugEnabled && !(config.cache && config.cache.debug)) {
+      return;
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(`[ProcessMaker.apiClient.cache] ${message}`, details);
+  };
 
   const cleanup = () => {
     const now = Date.now();
@@ -160,28 +170,45 @@ export const installApiClientCache = (apiClient) => {
     get disabled() {
       return disabled;
     },
+    get debug() {
+      return debugEnabled;
+    },
     enable() {
       globallyEnabled = true;
       disabled = false;
+      debug({}, "cache enabled globally");
     },
     disable() {
       disabled = true;
+      debug({}, "cache disabled for current window");
+    },
+    enableDebug() {
+      debugEnabled = true;
+      debug({}, "debug logging enabled");
+    },
+    disableDebug() {
+      debug({}, "debug logging disabled");
+      debugEnabled = false;
     },
     clear() {
       responseCache.clear();
       pendingRequests.clear();
+      debug({}, "cache cleared");
     },
     cleanup,
     invalidate(urlOrKey) {
       invalidateByMatcher((key, entry) => key === urlOrKey || entry.url === urlOrKey);
+      debug({}, "cache invalidated", { urlOrKey });
     },
     invalidateByPattern(pattern) {
       if (pattern instanceof RegExp) {
         invalidateByMatcher((key, entry) => pattern.test(key) || pattern.test(entry.url));
+        debug({}, "cache invalidated by RegExp pattern", { pattern });
         return;
       }
 
       invalidateByMatcher((key, entry) => key.includes(pattern) || entry.url.includes(pattern));
+      debug({}, "cache invalidated by pattern", { pattern });
     },
   };
 
@@ -204,6 +231,11 @@ export const installApiClientCache = (apiClient) => {
     const method = (config.method || CACHEABLE_METHOD).toLowerCase();
 
     if (method !== CACHEABLE_METHOD || !isCacheEnabledForRequest(config)) {
+      debug(config, "bypassing cache", {
+        method,
+        url: config.url,
+        reason: method !== CACHEABLE_METHOD ? "non-get request" : "cache disabled",
+      });
       return originalAdapter(config);
     }
 
@@ -213,12 +245,20 @@ export const installApiClientCache = (apiClient) => {
     const cachedResponse = responseCache.get(key);
 
     if (cachedResponse && cachedResponse.expiresAt > Date.now()) {
+      debug(config, "cache hit", {
+        key,
+        url,
+        expiresAt: cachedResponse.expiresAt,
+      });
       return Promise.resolve(cloneResponse(cachedResponse.response));
     }
 
     if (pendingRequests.has(key)) {
+      debug(config, "deduplicated in-flight request", { key, url });
       return pendingRequests.get(key).then(cloneResponse);
     }
+
+    debug(config, "cache miss; sending network request", { key, url });
 
     const request = originalAdapter(config)
       .then((response) => {
@@ -229,10 +269,28 @@ export const installApiClientCache = (apiClient) => {
           expiresAt: Date.now() + getTTL(config),
         });
 
+        debug(config, "response cached", {
+          key,
+          url,
+          ttl: getTTL(config),
+          status: response.status,
+        });
+
         return cloneResponse(response);
+      })
+      .catch((error) => {
+        debug(config, "request failed; response not cached", {
+          key,
+          url,
+          message: error.message,
+          status: error.response && error.response.status,
+        });
+
+        return Promise.reject(error);
       })
       .finally(() => {
         pendingRequests.delete(key);
+        debug(config, "in-flight request removed", { key, url });
       });
 
     pendingRequests.set(key, request);
