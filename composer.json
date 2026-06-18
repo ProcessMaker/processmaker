@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "2026.10.4",
+    "version": "2026.10.5",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -46,12 +46,12 @@
         "paragonie/sodium_compat": "^2.5",
         "php-amqplib/php-amqplib": "^3.7",
         "php-http/promise": "~1.2.0",
-        "phpseclib/phpseclib": "^3.0",
+        "phpseclib/phpseclib": "^3.0.54",
         "pion/laravel-chunk-upload": "dev-master",
         "predis/predis": "^2.3",
         "processmaker/docker-executor-lua": "1.0.1",
         "processmaker/docker-executor-node": "1.1.0",
-        "processmaker/docker-executor-php": "1.4.3",
+        "processmaker/docker-executor-php": "1.4.4",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.12.4",
         "processmaker/pmql": "1.13.3",
@@ -69,7 +69,7 @@
         "spatie/laravel-ignition": "^2.12",
         "spatie/laravel-medialibrary": "^11.21",
         "spatie/laravel-multitenancy": "^4.0.9",
-        "spomky-labs/otphp": "^11.3",
+        "spomky-labs/otphp": "^11.4.3",
         "swagger-api/swagger-ui": "^5.32.3",
         "symfony/dependency-injection": "^8.1",
         "symfony/expression-language": "^7.2",
@@ -112,7 +112,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "f8fdfc80",
+            "build": "5bf930ea",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.10",
@@ -158,7 +158,7 @@
                 "package-advanced-user-manager": "1.13.3",
                 "package-ai": "1.16.20",
                 "package-analytics-reporting": "1.11.5",
-                "package-auth": "1.24.16",
+                "package-auth": "1.24.17",
                 "package-collections": "2.27.6",
                 "package-comments": "1.16.4",
                 "package-conversational-forms": "1.15.2",
@@ -177,7 +177,7 @@
                 "package-rpa": "1.1.2",
                 "package-savedsearch": "1.43.13",
                 "package-slideshow": "1.4.3",
-                "package-smart-extract": "0.0.6",
+                "package-smart-extract": "0.0.7",
                 "package-signature": "1.15.5",
                 "package-testing": "1.8.2",
                 "package-translations": "2.14.6",
