@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="{{ app()->getLocale() }}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline' 'unsafe-eval'; object-src 'none';">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
+  <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
+  <title>@yield('title') - {{ __('ProcessMaker') }}</title>
+  <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
+  @if (hasPackage('package-accessibility'))
+    @include('package-accessibility::userway')
+  @endif
+  @include('auth.partials.auth-styles')
+  @yield('css')
+</head>
+<body>
+  <div class="background-cover"></div>
+  @hasSection('skip-login-scripts')
+  @else
+  <div id="language-selector" class="language-button-container">
+    <language-selector-button
+      id="language-login"
+      :type="'login'"
+      :show-language-code="true"
+      :show-flag="false">
+    </language-selector-button>
+  </div>
+  @endif
+  <div class="content" id="app">
+    <div class="d-flex flex-column" style="min-height: 100vh">
+      <div class="flex-fill small-screen">
+        <div class="login-layout h-100-vh">
+          <div class="login-panel small-screen">
+            <div class="card card-body login-container">
+              <div class="login-logo">
+                @component('components.logo')
+                @endcomponent
+              </div>
+              @yield('content')
+            </div>
+          </div>
+          @php
+            $isMobile = (
+              isset($_SERVER['HTTP_USER_AGENT'])
+              && \ProcessMaker\Helpers\MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])
+            ) ? true : false;
+          @endphp
+          @if (!$isMobile)
+          <div class="slogan-panel d-none d-lg-flex">
+            <div class="slogan">
+              <div class="head-text">{{ __("INTELLIGENT BUSINESS ORCHESTRATION") }}</div>
+              <div class="display">
+                <span class="display-line">{{ __("Built to Master") }}</span>
+                <span class="display-line display-complexity">{{ __("Complexity") }}</span>
+              </div>
+              <div class="subtext">
+                {{ __("Orchestrate workflows, systems, and AI at a moment’s notice. Turn constant change into your greatest competitive advantage by giving your team the freedom to build, test, and iterate in real time.") }}
+              </div>
+            </div>
+          </div>
+          @endif
+        </div>
+      </div>
+      @php
+        $loginFooterSetting = \ProcessMaker\Models\Setting::byKey('login-footer');
+      @endphp
+      @if ($loginFooterSetting)
+        <div class="footer">{!! $loginFooterSetting->config['html'] !!}</div>
+      @endif
+    </div>
+  </div>
+  @yield('js')
+  @stack('scripts')
+  @hasSection('skip-login-scripts')
+  @else
+  <script src="{{ mix('builds/login/js/manifest.js') }}"></script>
+  <script src="{{ mix('builds/login/js/vendor.js') }}"></script>
+  <script src="{{ mix('builds/login/js/app-login.js') }}"></script>
+  <script src="{{ mix('js/translations/index.js') }}"></script>
+  @endif
+</body>
+</html>
