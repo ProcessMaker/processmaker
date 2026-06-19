@@ -27,6 +27,14 @@
       ], 'attributes' => 'v-cloak'])
 @endsection
 @section('content')
+@push('preload')
+  <link rel="preload" href="{{ mix('js/manifest.js') }}" as="script">
+  <link rel="preload" href="{{ mix('js/vue-vendor.js') }}" as="script">
+  <link rel="preload" href="{{ mix('js/bootstrap-vendor.js') }}" as="script">
+  <link rel="preload" href="{{ mix('js/fortawesome-vendor.js') }}" as="script">
+  <link rel="preload" href="{{ mix('js/tasks/loaderEdit.js') }}" as="script">
+  <link rel="preload" href="{{ mix('js/tasks/edit.js') }}" as="script">
+@endpush
 <div
   id="task"
   v-cloak
@@ -77,7 +85,7 @@
                     role="tab"
                     aria-controls="tab-data"
                     aria-selected="false"
-                    @click="resizeMonaco"
+                    @click="openDataTab"
                     class="nav-link">
                     {{__('Data')}}
                   </a>
@@ -86,7 +94,7 @@
             @endcan
             <div id="tabContent" class="tab-content tw-flex tw-flex-col tw-grow tw-overflow-y-scroll">
               <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
-                @can('update', $task)
+                @if($canUpdateTask)
                   @unless($hitlEnabled)
                   <span v-if="tceEnableCaseNumberScreen" class="tw-block tw-gap-2 tw-mb-0 tw-px-2 tw-bg-white tw-border-l tw-border-l-[#d7dde5] tw-border-r tw-border-r-[#d7dde5]" v-cloak>
                     <span class="tw-font-medium tw-text-[#728092] tw-text-xs">Case #:</span> <span class="tw-font-normal tw-text-[#9fa8b5] tw-text-xs">{{ $caseNumber }}</span>
@@ -113,7 +121,7 @@
                   @else
                     @include('tasks.partials.hitl-iframe', ['iframeSrc' => $iframeSrc ?? null])
                   @endunless
-                @endcan
+                @endif
                 <div v-if="taskHasComments">
                   <timeline :commentable_id="task.id"
                     commentable_type="ProcessMaker\Models\ProcessRequestToken"
@@ -126,6 +134,7 @@
               <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
                 <!-- data edit -->
                   <monaco-editor
+                      v-if="loadedTabs.data"
                       v-show="!showTree"
                       ref="monaco"
                       data-cy="editorViewFrame"
@@ -437,8 +446,11 @@
     );
 
     const task = @json($task);
+    //const task = @json($taskForFrontend);
+    
     let draftTask = task.draft;
-    const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
+    // const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
+    const userHasAccessToTask = @json($canUpdateTask);
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ in_array(Auth::user()->id, $task->process?->manager_id ?? []) ? "true": "false" }};
     const caseNumber = @json($caseNumber);
