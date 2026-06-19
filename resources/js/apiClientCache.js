@@ -428,7 +428,7 @@ export const installApiClientCache = (apiClient) => {
 
     if (pendingRequests.has(key)) {
       debug(config, "deduplicated in-flight request", { key, url });
-      return pendingRequests.get(key).then(cloneResponse);
+      return pendingRequests.get(key);
     }
 
     debug(config, "cache miss; sending network request", { key, url });
@@ -468,7 +468,7 @@ export const installApiClientCache = (apiClient) => {
 
     pendingRequests.set(key, request);
 
-    return request.then(cloneResponse);
+    return request;
   };
 
   return client;
