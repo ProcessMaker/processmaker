@@ -108,13 +108,25 @@ class TaskController extends Controller
     {
         $task = $task->loadTokenInstance();
         $dataManager = new DataManager();
-        $userHasComments = Comment::where('commentable_type', ProcessRequestToken::class)
-                                    ->where('commentable_id', $task->id)
-                                    ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
-                                    ->count() > 0;
 
-        if (!\Auth::user()->can('update', $task) && !$userHasComments) {
-            $this->authorize('update', $task);
+        // $userHasComments = Comment::where('commentable_type', ProcessRequestToken::class)
+        //                             ->where('commentable_id', $task->id)
+        //                             ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
+        //                             ->count() > 0;
+
+        // if (!\Auth::user()->can('update', $task) && !$userHasComments) {
+        //     $this->authorize('update', $task);
+        // }
+
+        if (!\Auth::user()->can('update', $task)) {
+            $userHasComments = Comment::where('commentable_type', ProcessRequestToken::class)
+                                        ->where('commentable_id', $task->id)
+                                        ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
+                                        ->count() > 0;
+
+            if (!$userHasComments) {
+                $this->authorize('update', $task);
+            }
         }
 
         //Mark notification as read
@@ -178,7 +190,10 @@ class TaskController extends Controller
                 ]);
             }
 
-            UserResourceView::setViewed(Auth::user(), $task);
+            // UserResourceView::setViewed(Auth::user(), $task);
+            dispatch(function () use ($task) {
+                UserResourceView::setViewed(Auth::user(), $task);
+            })->afterResponse();
             $currentUser = Auth::user()->only([
                 'id',
                 'username',
@@ -189,7 +204,8 @@ class TaskController extends Controller
                 'timezone',
                 'datetime_format',
             ]);
-            $userConfiguration = (new UserConfigurationController())->index();
+            //$userConfiguration = (new UserConfigurationController())->index();
+            $userConfiguration = app(UserConfigurationController::class)->index();
             $hitlEnabled = config('smart-extract.hitl_enabled', false) && $isSmartExtractTask;
 
             // Build the iframe source
@@ -209,9 +225,11 @@ class TaskController extends Controller
                     $iframeSrc = $dashboardUrl . '?' . $queryParams;
                 }
             }
+            $canUpdateTask = Auth::user()->can('update', $task);
 
             return view('tasks.edit', [
                 'task' => $task,
+                'canUpdateTask' => $canUpdateTask,
                 'dueLabels' => self::$dueLabels,
                 'manager' => $manager,
                 'submitUrl' => $submitUrl,
