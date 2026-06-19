@@ -329,6 +329,14 @@ export const initSessionSync = ({
     if (isLeader()) {
       startTimeoutWorker(timeout);
     }
+
+    // After user clicks "STAY CONNECTED", refresh to ensure UI/state is in sync.
+    // Best-effort: we don't block leader worker start.
+    try {
+      window.location.reload();
+    } catch (e) {
+      console.error('renewSession error', e);
+    }
   };
 
   const getRemainingTimeout = (timeoutMinutes) => {
