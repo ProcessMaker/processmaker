@@ -109,15 +109,6 @@ class TaskController extends Controller
         $task = $task->loadTokenInstance();
         $dataManager = new DataManager();
 
-        // $userHasComments = Comment::where('commentable_type', ProcessRequestToken::class)
-        //                             ->where('commentable_id', $task->id)
-        //                             ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
-        //                             ->count() > 0;
-
-        // if (!\Auth::user()->can('update', $task) && !$userHasComments) {
-        //     $this->authorize('update', $task);
-        // }
-
         if (!\Auth::user()->can('update', $task)) {
             $userHasComments = Comment::where('commentable_type', ProcessRequestToken::class)
                                         ->where('commentable_id', $task->id)
@@ -190,7 +181,6 @@ class TaskController extends Controller
                 ]);
             }
 
-            // UserResourceView::setViewed(Auth::user(), $task);
             dispatch(function () use ($task) {
                 UserResourceView::setViewed(Auth::user(), $task);
             })->afterResponse();

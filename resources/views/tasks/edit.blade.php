@@ -446,10 +446,8 @@
     );
 
     const task = @json($task);
-    //const task = @json($taskForFrontend);
     
     let draftTask = task.draft;
-    // const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userHasAccessToTask = @json($canUpdateTask);
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ in_array(Auth::user()->id, $task->process?->manager_id ?? []) ? "true": "false" }};
