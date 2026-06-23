@@ -117,9 +117,20 @@ export default {
 
       ProcessMaker.apiClient
         .post("/keep-alive", {}, { baseURL: "" })
-        .then(() => {
+        .then((response) => {
+          const { token } = response.data || {};
+
           this.disabled = false;
           this.setRenewingState(false);
+
+          if (token && ProcessMaker.applyCsrfToken) {
+            ProcessMaker.applyCsrfToken(token);
+          }
+
+          if (token) {
+            this.$emit("xsrf-updated", { token });
+          }
+
           const timeout = window.ProcessMaker.AccountTimeoutLength;
           if (ProcessMaker.sessionSync?.renewSession) {
             ProcessMaker.sessionSync.renewSession(timeout);
