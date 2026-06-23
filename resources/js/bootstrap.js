@@ -1,8 +1,6 @@
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import * as bootstrap from "bootstrap";
-import TenantAwareEcho from "./common/TenantAwareEcho";
-import { initSessionSync } from "./common/sessionSync";
 import Router from "vue-router";
 import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
 import * as VueDeepSet from "vue-deepset";
@@ -20,6 +18,13 @@ import MonacoEditor from "vue-monaco";
 import Vue from "vue";
 import * as vue from "vue";
 import VueCookies from "vue-cookies";
+import { initSessionSync } from "./common/sessionSync";
+import {
+  applyCsrfToken,
+  attachCsrfRequestInterceptor,
+  getCsrfToken,
+} from "./common/csrfToken";
+import TenantAwareEcho from "./common/TenantAwareEcho";
 import GlobalStore from "./globalStore";
 import Pagination from "./components/common/Pagination";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
@@ -242,7 +247,17 @@ window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
  */
 window.ProcessMaker.apiClient = require("axios");
 
+window.ProcessMaker.apiClient.defaults.withCredentials = true;
+
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+
+const token = document.head.querySelector("meta[name=\"csrf-token\"]");
+const isProd = document.head.querySelector("meta[name=\"is-prod\"]")?.content === "true";
+
+window.ProcessMaker.applyCsrfToken = applyCsrfToken;
+window.ProcessMaker.getCsrfToken = getCsrfToken;
+// Attach CSRF interceptor before other interceptors so it runs last in the axios chain.
+attachCsrfRequestInterceptor(window.ProcessMaker.apiClient);
 
 /**
  * Next we will register the CSRF Token as a common header with Axios so that
@@ -250,11 +265,8 @@ window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XML
  * a simple convenience so we don't have to attach every token manually.
  */
 
-const token = document.head.querySelector("meta[name=\"csrf-token\"]");
-const isProd = document.head.querySelector("meta[name=\"is-prod\"]")?.content === "true";
-
 if (token) {
-  window.ProcessMaker.apiClient.defaults.headers.common["X-CSRF-TOKEN"] = token.content;
+  applyCsrfToken(token.content, "page-load");
 } else {
   console.error("CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token");
 }
