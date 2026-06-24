@@ -3,6 +3,8 @@
     id="sessionModal"
     ref="sessionModal"
     :title="title"
+    modal-class="session-timeout-modal"
+    backdrop-class="session-timeout-backdrop"
     footer-class="pm-modal-footer"
     no-close-on-backdrop
     centered
@@ -190,13 +192,12 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+.session-timeout-backdrop {
+  z-index: 20000 !important;
+}
 
-    .modal {
-        position: fixed;
-        background: rgba(0, 0, 0, .5);
-        z-index: 1060;
-        display: flex;
-    }
-
+.session-timeout-modal {
+  z-index: 20010 !important;
+}
 </style>
