@@ -558,9 +558,11 @@ export const initSessionSync = ({
     }
   };
 
+  if (document.visibilityState === "visible") {
+    markActivity("load");
+  }
   updateLeadership();
   if (isLeader()) {
-    markActivity("load");
     ensureWorkerRunning("load");
   }
   const leadershipInterval = setInterval(updateLeadership, leaderHeartbeatMs);
