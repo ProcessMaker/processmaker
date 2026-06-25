@@ -90,6 +90,32 @@ if (!function_exists('color')) {
     }
 }
 
+if (!function_exists('color_rgb')) {
+    /**
+     * Returns the comma-separated RGB values for a theme color.
+     *
+     * @param string $key
+     *
+     * @return string
+     */
+    function color_rgb($key)
+    {
+        $hex = ltrim(color($key), '#');
+
+        if (strlen($hex) === 3) {
+            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+        }
+
+        if (strlen($hex) !== 6 || !ctype_xdigit($hex)) {
+            return '39, 115, 243';
+        }
+
+        return hexdec(substr($hex, 0, 2))
+            . ', ' . hexdec(substr($hex, 2, 2))
+            . ', ' . hexdec(substr($hex, 4, 2));
+    }
+}
+
 if (!function_exists('sidebar_class')) {
     /**
      * Returns the class for the sidebar based on admin settings.

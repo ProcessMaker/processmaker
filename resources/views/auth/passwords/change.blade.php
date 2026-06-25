@@ -1,7 +1,6 @@
 @extends('auth.layouts.auth')
 
-@section('skip-login-scripts')
-@endsection
+@section('skip-auth-language-scripts', 'skip')
 
 @section('title')
 {{ __('Change Password') }}
@@ -130,4 +129,5 @@
     }
   });
 </script>
+@include('auth.partials.auth-language-scripts-minimal')
 @endsection

@@ -10,25 +10,19 @@
   <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
   <title>@yield('title') - {{ __('ProcessMaker') }}</title>
   <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+  @include('auth.partials.login-critical-styles')
+  @include('auth.partials.auth-styles')
   <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
   @if (hasPackage('package-accessibility'))
     @include('package-accessibility::userway')
   @endif
-  @include('auth.partials.auth-styles')
   @yield('css')
 </head>
 <body>
   <div class="background-cover"></div>
-  @hasSection('skip-login-scripts')
+  @hasSection('skip-language-selector')
   @else
-  <div id="language-selector" class="language-button-container">
-    <language-selector-button
-      id="language-login"
-      :type="'login'"
-      :show-language-code="true"
-      :show-flag="false">
-    </language-selector-button>
-  </div>
+    @include('auth.partials.language-selector')
   @endif
   <div class="content" id="app">
     <div class="d-flex flex-column" style="min-height: 100vh">
@@ -75,12 +69,9 @@
   </div>
   @yield('js')
   @stack('scripts')
-  @hasSection('skip-login-scripts')
+  @hasSection('skip-auth-language-scripts')
   @else
-  <script src="{{ mix('builds/login/js/manifest.js') }}"></script>
-  <script src="{{ mix('builds/login/js/vendor.js') }}"></script>
-  <script src="{{ mix('builds/login/js/app-login.js') }}"></script>
-  <script src="{{ mix('js/translations/index.js') }}"></script>
+    @include('auth.partials.auth-language-scripts')
   @endif
 </body>
 </html>
