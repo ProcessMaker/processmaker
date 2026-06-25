@@ -400,6 +400,7 @@ if (!function_exists('feelExpression')) {
         $formalExp = new FormalExpression();
         $formalExp->setLanguage('FEEL');
         $formalExp->setBody($expression);
+
         return $formalExp($data);
     }
 }
