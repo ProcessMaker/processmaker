@@ -1,5 +1,6 @@
 import axios from "axios";
 import { setGlobalPMVariables, getGlobalPMVariable } from "../globalVariables";
+import { installApiClientCache } from "../../apiClientCache";
 
 export default () => {
   const token = document.head.querySelector("meta[name=\"csrf-token\"]");
@@ -20,6 +21,7 @@ export default () => {
    */
 
   const apiClient = axios;
+  installApiClientCache(apiClient);
 
   apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
