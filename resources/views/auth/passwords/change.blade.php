@@ -14,7 +14,9 @@
       <avatar-image size="75" :input-data="{{ $user }}" hide-name="true"></avatar-image>
       <h5 class="mt-3 mb-0">{{ __('Welcome', ['name' => $user->fullname]) }}</h5>
     </div>
-    <h1 class="auth-card-title mb-3">{{ __('Please change your account password') }}</h1>
+    <div class="auth-card-header">
+      <h1 class="auth-card-title">{{ __('Please change your account password') }}</h1>
+    </div>
     <div class="alert alert-primary mb-3">{{ __('Password Requirements') }}:
       <ul class="mb-0">
         <li>{{ __('Minimum of 8 characters in length') }}</li>
@@ -44,7 +46,7 @@
       {{ html()->password('confpassword')->class('form-control form-control-login')->attribute('v-model', 'formData.confpassword')->attribute('v-bind:class', '{\'form-control\':true, \'form-control-login\':true}')->attribute('autocomplete', 'new-password') }}
     </div>
     <div class="form-group mb-0">
-      <button type="button" @click.prevent="submit" name="changepassword" class="btn btn-primary btn-block button-login" dusk="changepassword">{{ __('Change Password') }}</button>
+      <button type="button" @click.prevent="submit" name="changepassword" class="btn btn-primary btn-block button-login button-login-uppercase" dusk="changepassword">{{ __('Change Password') }}</button>
     </div>
   </form>
 </div>

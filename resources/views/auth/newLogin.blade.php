@@ -97,7 +97,7 @@
                   </a>
                 </div>
                 <div class="form-group mb-0">
-                  <button type="submit" name="login" class="btn btn-primary btn-block button-login" dusk="login">{{ __('Sign In') }}</button>
+                  <button type="submit" name="login" class="btn btn-primary btn-block button-login button-login-uppercase" dusk="login">{{ __('Login') }}</button>
                 </div>
               </form>
               @endif

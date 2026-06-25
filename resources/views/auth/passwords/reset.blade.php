@@ -5,7 +5,9 @@
 @endsection
 
 @section('content')
-<h1 class="auth-card-title">{{ __('Reset Your Password') }}</h1>
+<div class="auth-card-header">
+  <h1 class="auth-card-title">{{ __('Reset Your Password') }}</h1>
+</div>
 
 <form role="form" class="form" method="POST" action="{{ url('/password/reset') }}">
   @csrf
@@ -82,7 +84,7 @@
     </div>
   </div>
   <div class="form-group mb-0">
-    <button type="submit" class="btn btn-primary btn-block button-login">{{ __('Reset Password') }}</button>
+    <button type="submit" class="btn btn-primary btn-block button-login button-login-uppercase">{{ __('Reset Password') }}</button>
   </div>
 </form>
 @endsection

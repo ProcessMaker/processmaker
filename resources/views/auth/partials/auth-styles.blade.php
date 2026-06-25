@@ -65,6 +65,24 @@
     text-align: center;
   }
 
+  .auth-card-header .auth-card-title,
+  .auth-card-header .auth-card-subtitle {
+    text-align: left;
+  }
+
+  .auth-card-header .auth-card-title {
+    margin-bottom: 0.75rem;
+  }
+
+  .auth-card-header .auth-card-subtitle {
+    margin-bottom: 2rem;
+  }
+
+  .auth-card-footer {
+    margin-top: 3.25rem;
+    text-align: center;
+  }
+
   .form {
     padding: 0;
   }
@@ -168,6 +186,11 @@
     font-weight: 600;
     font-size: 1rem;
     text-transform: none;
+  }
+
+  .button-login.button-login-uppercase {
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
   }
 
   .slogan-panel {

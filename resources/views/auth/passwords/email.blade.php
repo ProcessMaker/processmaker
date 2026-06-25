@@ -1,12 +1,14 @@
 @extends('auth.layouts.auth')
 
 @section('title')
-{{ __('Forgot Your Password?') }}
+{{ __('Password Assistance') }}
 @endsection
 
 @section('content')
-<h1 class="auth-card-title">{{ __('Forgot Your Password?') }}</h1>
-<p class="auth-card-subtitle">{{ __("Enter your email address and we'll send you a reset link.") }}</p>
+<div class="auth-card-header">
+  <h1 class="auth-card-title">{{ __('Password Assistance') }}</h1>
+  <p class="auth-card-subtitle">{{ __("Please enter your email address and we'll send you a reset link.") }}</p>
+</div>
 
 <form method="POST" class="form" action="{{ route('password.email') }}">
   @csrf
@@ -15,8 +17,8 @@
     {{ session('status') }}
   </div>
   @endif
-  <div class="form-group mb-3">
-    <label for="email">{{ __('Email Address') }}</label>
+  <div class="form-group mb-4">
+    <label for="email">{{ __('Email') }}</label>
     <div class="password-container">
       <input
         id="email"
@@ -24,7 +26,6 @@
         class="form-control form-control-login{{ $errors->has('email') ? ' is-invalid' : '' }}"
         name="email"
         value="{{ old('email') }}"
-        placeholder="{{ __('Enter your email address') }}"
         required>
       @if ($errors->has('email'))
       <span class="invalid-feedback" role="alert">
@@ -33,11 +34,11 @@
       @endif
     </div>
   </div>
-  <div class="form-group mb-3">
-    <button type="submit" class="btn btn-primary btn-block button-login">{{ __('Request Reset Link') }}</button>
+  <div class="form-group mb-0">
+    <button type="submit" class="btn btn-primary btn-block button-login button-login-uppercase">{{ __('Request Reset Link') }}</button>
   </div>
-  <div class="form-group mb-0 text-center">
-    <a href="{{ route('login') }}" class="auth-link">{{ __('Back to Login') }}</a>
+  <div class="auth-card-footer">
+    <a href="{{ route('login') }}" class="auth-link">{{ __('Back To Login') }}</a>
   </div>
 </form>
 @endsection
