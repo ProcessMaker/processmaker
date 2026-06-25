@@ -1,0 +1,11 @@
+name: Nightly Vulnerability Scan
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # midnight UTC
+  workflow_dispatch:
+
+jobs:
+  nightly:
+    uses: processmaker/.github/.github/workflows/nightly.yml@main
+    secrets: inherit

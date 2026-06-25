@@ -292,3 +292,8 @@ Route::get('/metrics', function () {
         'Content-Type' => 'text/plain; version=0.0.4',
     ]);
 });
+
+Route::get('api/oauth2-redirect.js', function () {
+    // Fix l5-swagger and swagger-ui mismatch. See https://github.com/DarkaOnLine/L5-Swagger/issues/648
+    return response()->file(base_path('vendor/swagger-api/swagger-ui/dist/oauth2-redirect.js'));
+})->name('oauth2-redirect.js');
