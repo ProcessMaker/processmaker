@@ -10,6 +10,17 @@
   <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
   <title>{{ __('Login') }} - {{ __('ProcessMaker') }}</title>
   <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+  <style>
+    html,
+    body {
+      background-color: #002D59;
+    }
+
+    .login-container .btn-primary.button-login {
+      background-color: #2563EB;
+      border-color: #2563EB;
+    }
+  </style>
   <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
   @if (hasPackage('package-accessibility'))
     @include('package-accessibility::userway')
@@ -192,7 +203,6 @@
 <script src="{{ mix('js/translations/index.js') }}"></script>
 <style>
   body {
-    background: transparent;
     height: unset;
     font-family: 'Open Sans', sans-serif;
   }
@@ -573,7 +583,6 @@
   @media (max-width: 767px) {
     .small-screen {
       border: 0;
-      background: transparent;
     }
 
     .login-container {
