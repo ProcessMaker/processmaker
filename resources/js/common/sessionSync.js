@@ -337,6 +337,48 @@ export const initSessionSync = ({
     return Math.max(0, remaining);
   };
 
+  const getRemainingSeconds = () => {
+    refreshSessionStateFromStorage();
+    return Math.ceil(getRemainingTimeout(sessionState.timeout) * 60);
+  };
+
+  const getRequestRenewalThresholdSeconds = (thresholdSeconds) => {
+    const configuredThreshold = Number(thresholdSeconds);
+    const timeoutSeconds = normalizedTimeoutLength * 60;
+    const fallbackThreshold = Math.min(120, Math.floor(timeoutSeconds * 0.25));
+    const defaultThreshold = normalizedTimeoutWarnSeconds
+      ? normalizedTimeoutWarnSeconds * 2
+      : fallbackThreshold;
+    const baseThreshold = Number.isFinite(configuredThreshold) && configuredThreshold > 0
+      ? configuredThreshold
+      : defaultThreshold;
+    const maxThreshold = Math.max(0, Math.floor(timeoutSeconds * 0.5));
+
+    return Math.min(baseThreshold, maxThreshold);
+  };
+
+  const shouldRenewBeforeRequest = (thresholdSeconds) => {
+    if (!AccountTimeoutWorker || !normalizedTimeoutEnabled || normalizedTimeoutLength <= 0) {
+      return false;
+    }
+
+    const remainingSeconds = getRemainingSeconds();
+    const renewalThresholdSeconds = getRequestRenewalThresholdSeconds(thresholdSeconds);
+
+    return remainingSeconds > 0 && remainingSeconds <= renewalThresholdSeconds;
+  };
+
+  const getRequestRenewalStatus = (thresholdSeconds) => {
+    const remainingSeconds = getRemainingSeconds();
+    const renewalThresholdSeconds = getRequestRenewalThresholdSeconds(thresholdSeconds);
+
+    return {
+      remainingSeconds,
+      renewalThresholdSeconds,
+      shouldRenew: remainingSeconds > 0 && remainingSeconds <= renewalThresholdSeconds,
+    };
+  };
+
   const getRemainingWarningTime = () => {
     if (!warningState?.time || !warningState?.ts) {
       return 0;
@@ -694,6 +736,9 @@ export const initSessionSync = ({
       setSessionState,
       clearWarningState,
       setRenewingState,
+      getRemainingSeconds,
+      getRequestRenewalStatus,
+      shouldRenewBeforeRequest,
     },
   };
 };

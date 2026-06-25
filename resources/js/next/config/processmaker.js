@@ -3,6 +3,7 @@ import { setGlobalPMVariables, getGlobalPMVariable } from "../globalVariables";
 import {
   applyCsrfToken,
   attachCsrfRequestInterceptor,
+  attachSessionRenewalInterceptor,
   getCsrfToken,
 } from "../../common/csrfToken";
 
@@ -56,6 +57,7 @@ export default () => {
   });
 
   attachCsrfRequestInterceptor(apiClient);
+  attachSessionRenewalInterceptor(apiClient);
 
   // flags print forms
   apiClient.requestCount = 0;

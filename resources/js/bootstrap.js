@@ -22,6 +22,7 @@ import { initSessionSync } from "./common/sessionSync";
 import {
   applyCsrfToken,
   attachCsrfRequestInterceptor,
+  attachSessionRenewalInterceptor,
   getCsrfToken,
 } from "./common/csrfToken";
 import TenantAwareEcho from "./common/TenantAwareEcho";
@@ -295,6 +296,8 @@ window.ProcessMaker.apiClient.interceptors.request.use((config) => {
 
   return config;
 });
+
+attachSessionRenewalInterceptor(window.ProcessMaker.apiClient);
 
 // Set the default API timeout
 let apiTimeout = 5000;
