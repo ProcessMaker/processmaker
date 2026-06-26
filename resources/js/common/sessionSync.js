@@ -348,7 +348,7 @@ export const initSessionSync = ({
   const getRequestRenewalThresholdSeconds = (thresholdSeconds) => {
     const configuredThreshold = Number(thresholdSeconds);
     const timeoutSeconds = normalizedTimeoutLength * 60;
-    const defaultThreshold = Math.floor(timeoutSeconds * 0.5);
+    const defaultThreshold = Math.floor(timeoutSeconds * 0.8);
     const baseThreshold = Number.isFinite(configuredThreshold) && configuredThreshold > 0
       ? configuredThreshold
       : defaultThreshold;
