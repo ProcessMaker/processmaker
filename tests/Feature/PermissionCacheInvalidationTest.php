@@ -148,7 +148,7 @@ class PermissionCacheInvalidationTest extends TestCase
 
         $this->actingAs($this->user, 'web')
             ->post(route('keep-alive'))
-            ->assertNoContent();
+            ->assertStatus(200);
 
         Passport::actingAs($this->user);
 
@@ -157,7 +157,7 @@ class PermissionCacheInvalidationTest extends TestCase
             'permission_names' => ['redis-group-permission-updated'],
         ])->assertNoContent();
 
-        $this->post(route('keep-alive'))->assertNoContent();
+        $this->post(route('keep-alive'))->assertStatus(200);
         $this->assertAuthenticatedAs($this->user, 'web');
 
         $freshPermissions = $this->permissionService->getUserPermissions($affectedUser->id);

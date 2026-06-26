@@ -17,10 +17,11 @@ export default () => {
   }
 
   // Backend provides minutes for lifetime and seconds for warnings.
-  const accountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]")?.content));
-  const warnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
+  const timeoutEnabledMeta = document.head.querySelector("meta[name=\"timeout-enabled\"]")?.content;
+  const accountTimeoutLength = Number(document.head.querySelector("meta[name=\"timeout-length\"]")?.content);
+  const warnSeconds = Number(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
   const accountTimeoutWarnSeconds = Number.isNaN(warnSeconds) ? 0 : warnSeconds;
-  const accountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]")?.content) : 1;
+  const accountTimeoutEnabled = timeoutEnabledMeta ? Number(timeoutEnabledMeta) : 1;
 
   const sessionSyncState = initSessionSync({
     userId: user.id,
