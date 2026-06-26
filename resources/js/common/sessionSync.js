@@ -327,6 +327,9 @@ export const initSessionSync = ({
       closeSessionModal();
     }
     if (isLeader()) {
+      if (AccountTimeoutWorker) {
+        AccountTimeoutWorker.postMessage({ method: "stop" });
+      }
       startTimeoutWorker(timeout);
     }
   };
@@ -345,14 +348,11 @@ export const initSessionSync = ({
   const getRequestRenewalThresholdSeconds = (thresholdSeconds) => {
     const configuredThreshold = Number(thresholdSeconds);
     const timeoutSeconds = normalizedTimeoutLength * 60;
-    const fallbackThreshold = Math.min(120, Math.floor(timeoutSeconds * 0.25));
-    const defaultThreshold = normalizedTimeoutWarnSeconds
-      ? normalizedTimeoutWarnSeconds * 2
-      : fallbackThreshold;
+    const defaultThreshold = Math.floor(timeoutSeconds * 0.5);
     const baseThreshold = Number.isFinite(configuredThreshold) && configuredThreshold > 0
       ? configuredThreshold
       : defaultThreshold;
-    const maxThreshold = Math.max(0, Math.floor(timeoutSeconds * 0.5));
+    const maxThreshold = Math.max(0, timeoutSeconds - 5);
 
     return Math.min(baseThreshold, maxThreshold);
   };
@@ -537,6 +537,17 @@ export const initSessionSync = ({
 
     if (e.data.method === "countdown") {
       sessionDebugLog("worker:countdown", e.data.data);
+      refreshSessionStateFromStorage();
+      const remainingSeconds = getRemainingTimeout(sessionState.timeout) * 60;
+      if (remainingSeconds > normalizedTimeoutWarnSeconds) {
+        sessionDebugLog("worker:countdown:stale", { remainingSeconds, sessionState });
+        clearWarningState();
+        const closeSessionModal = resolveCloseSessionModal();
+        if (closeSessionModal) {
+          closeSessionModal();
+        }
+        return;
+      }
       setWarningState(e.data.data.time);
       showWarningIfActive();
       broadcastSessionEvent("warning", { time: e.data.data.time });
