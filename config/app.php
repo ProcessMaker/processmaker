@@ -155,7 +155,7 @@ return [
         'icon_path' => env('ICON_PATH_PATH', '/img/processmaker-icon.svg'),
 
         // Path to site-wide favicon
-        'favicon_path' => env('FAVICON_PATH', '/img/favicon.svg'),
+        'favicon_path' => env('FAVICON_PATH', '/img/favicon.ico'),
 
         // Maximum file size for images to be set as default (in bytes) (5MB)
         'img_max_filesize_limit' => env('IMG_MAX_FILESIZE_LIMIT', '5M'),
