@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Validation\ValidationException;
+use Laravel\Passport\ApiTokenCookieFactory;
 use Laravel\Passport\Passport;
 use ProcessMaker\Events\Logout;
 use ProcessMaker\Http\Controllers\Controller;
@@ -243,9 +244,29 @@ class LoginController extends Controller
         return 'username';
     }
 
-    public function keepAlive()
+    public function keepAlive(Request $request)
     {
-        return response('', 204);
+        // Touch the Laravel session to extend its server-side expiration.
+        // Return the session CSRF token and refresh Passport's API cookie.
+        $token = '';
+        try {
+            $request->session()->put('_pm_keep_alive', time());
+            $token = (string) $request->session()->token();
+        } catch (\Throwable $e) {
+            // If session is unavailable, return an empty token and let the frontend handle auth failure.
+        }
+
+        $response = response()->json(['token' => $token]);
+
+        if (Auth::check() && $token !== '') {
+            // Passport's CreateFreshApiToken middleware only refreshes this
+            // cookie on GET requests. keep-alive is POST, so refresh it here.
+            $response->withCookie(
+                app(ApiTokenCookieFactory::class)->make(Auth::id(), $token)
+            );
+        }
+
+        return $response;
     }
 
     protected function authenticated(Request $request, $user)

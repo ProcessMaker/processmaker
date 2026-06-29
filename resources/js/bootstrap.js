@@ -1,8 +1,6 @@
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import * as bootstrap from "bootstrap";
-import TenantAwareEcho from "./common/TenantAwareEcho";
-import { initSessionSync } from "./common/sessionSync";
 import Router from "vue-router";
 import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
 import * as VueDeepSet from "vue-deepset";
@@ -20,6 +18,14 @@ import MonacoEditor from "vue-monaco";
 import Vue from "vue";
 import * as vue from "vue";
 import VueCookies from "vue-cookies";
+import { initSessionSync } from "./common/sessionSync";
+import {
+  applyCsrfToken,
+  attachCsrfRequestInterceptor,
+  attachSessionRenewalInterceptor,
+  getCsrfToken,
+} from "./common/csrfToken";
+import TenantAwareEcho from "./common/TenantAwareEcho";
 import GlobalStore from "./globalStore";
 import Pagination from "./components/common/Pagination";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
@@ -245,7 +251,17 @@ window.ProcessMaker.apiClient = require("axios");
 
 installApiClientCache(window.ProcessMaker.apiClient);
 
+window.ProcessMaker.apiClient.defaults.withCredentials = true;
+
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+
+const token = document.head.querySelector("meta[name=\"csrf-token\"]");
+const isProd = document.head.querySelector("meta[name=\"is-prod\"]")?.content === "true";
+
+window.ProcessMaker.applyCsrfToken = applyCsrfToken;
+window.ProcessMaker.getCsrfToken = getCsrfToken;
+// Attach CSRF interceptor before other interceptors so it runs last in the axios chain.
+attachCsrfRequestInterceptor(window.ProcessMaker.apiClient);
 
 /**
  * Next we will register the CSRF Token as a common header with Axios so that
@@ -253,11 +269,8 @@ window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XML
  * a simple convenience so we don't have to attach every token manually.
  */
 
-const token = document.head.querySelector("meta[name=\"csrf-token\"]");
-const isProd = document.head.querySelector("meta[name=\"is-prod\"]")?.content === "true";
-
 if (token) {
-  window.ProcessMaker.apiClient.defaults.headers.common["X-CSRF-TOKEN"] = token.content;
+  applyCsrfToken(token.content, "page-load");
 } else {
   console.error("CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token");
 }
@@ -286,6 +299,8 @@ window.ProcessMaker.apiClient.interceptors.request.use((config) => {
 
   return config;
 });
+
+attachSessionRenewalInterceptor(window.ProcessMaker.apiClient);
 
 // Set the default API timeout
 let apiTimeout = 5000;
@@ -356,10 +371,11 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
 
 if (userID) {
   const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]")?.content;
-  const accountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]")?.content));
-  const warnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
+  const timeoutEnabledMeta = document.head.querySelector("meta[name=\"timeout-enabled\"]")?.content;
+  const accountTimeoutLength = Number(document.head.querySelector("meta[name=\"timeout-length\"]")?.content);
+  const warnSeconds = Number(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
   const accountTimeoutWarnSeconds = Number.isNaN(warnSeconds) ? 0 : warnSeconds;
-  const accountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]")?.content) : 1;
+  const accountTimeoutEnabled = timeoutEnabledMeta ? Number(timeoutEnabledMeta) : 1;
 
   const sessionSyncState = initSessionSync({
     userId: userID.content,
