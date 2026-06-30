@@ -13,7 +13,7 @@
   @include('auth.partials.login-critical-styles')
   @include('auth.partials.auth-styles')
   @include('auth.partials.login-extra-styles')
-  <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
+  <link rel="icon" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
   @if (hasPackage('package-accessibility'))
     @include('package-accessibility::userway')
   @endif
