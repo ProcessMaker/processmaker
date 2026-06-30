@@ -79,6 +79,9 @@ return [
     // System-level scripts timeout
     'processmaker_system_scripts_timeout_seconds' => env('PROCESSMAKER_SYSTEM_SCRIPTS_TIMEOUT_SECONDS', 300),
 
+    // Enable optimized tasks
+    'processmaker_optimized_tasks_enabled' => env('OPTIMIZED_TASKS_ENABLED', true),
+
     // Since the task scheduler has a preset of one minute (crontab), the times
     // must be rounded or truncated to the nearest HH:MM:00 before compare
     'timer_events_seconds' => env('TIMER_EVENTS_SECONDS', 'truncate'),
