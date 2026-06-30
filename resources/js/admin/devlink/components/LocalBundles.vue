@@ -8,11 +8,15 @@ import BundleModal from './BundleModal.vue';
 import DeleteModal from './DeleteModal.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 import UpdateBundle from './UpdateBundle.vue';
+import PaginationTable from '../../../components/shared/PaginationTable.vue';
 
 const vue = getCurrentInstance().proxy;
 const router = useRouter();
 const route = useRoute();
 const bundles = ref([]);
+const meta = ref({});
+const page = ref(1);
+const perPage = ref(15);
 const editModal = ref(null);
 const confirmDeleteModal = ref(null);
 const confirmPublishNewVersion = ref(null);
@@ -50,9 +54,18 @@ onMounted(() => {
 
 const load = () => {
   ProcessMaker.apiClient
-    .get(`/devlink/local-bundles?filter=${filter.value}`)
+    .get('/devlink/local-bundles', {
+      params: {
+        filter: filter.value,
+        page: page.value,
+        per_page: perPage.value,
+        order_by: 'created_at',
+        order_direction: 'desc',
+      }
+    })
     .then((result) => {
       bundles.value = result.data.data;
+      meta.value = result.data.meta;
       refreshKey.value++;
     });
 };
@@ -131,6 +144,7 @@ const create = () => {
   ProcessMaker.apiClient
     .post('/devlink/local-bundles', selected.value)
     .then((result) => {
+      page.value = 1;
       load();
     });
 };
@@ -197,7 +211,19 @@ const debouncedLoad = debounce(load, 300);
 
 // Function called on change
 const handleFilterChange = () => {
+  page.value = 1;
   debouncedLoad();
+};
+
+const handlePageChange = (newPage) => {
+  page.value = newPage;
+  load();
+};
+
+const handlePerPageChange = (newPerPage) => {
+  page.value = 1;
+  perPage.value = newPerPage;
+  load();
 };
 
 const canEdit = (bundle) => {
@@ -280,9 +306,9 @@ const handleInstallationComplete = () => {
           <Origin :dev-link="data.item.dev_link"></Origin>
         </template>
         <template #cell(version)="data">
-          {{ data.item.version }} <VersionCheck 
-            :key="`version-check-${data.item.id}-${refreshKey}`" 
-            @updateAvailable="setUpdateAvailable(data.item, $event)" 
+          {{ data.item.version }} <VersionCheck
+            :key="`version-check-${data.item.id}-${refreshKey}`"
+            @updateAvailable="setUpdateAvailable(data.item, $event)"
             :dev-link="data.item">
           </VersionCheck>
         </template>
@@ -301,6 +327,12 @@ const handleInstallationComplete = () => {
         <div>{{ $t("Create a bundle to easily share assets and settings between ProcessMaker instances.") }}</div>
       </div>
     </div>
+    <pagination-table
+      :meta="meta"
+      data-cy="local-bundles-pagination"
+      @page-change="handlePageChange"
+      @per-page-change="handlePerPageChange"
+    />
   </div>
 </template>
 

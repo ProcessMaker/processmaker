@@ -23,6 +23,78 @@ class DevLinkTest extends TestCase
         $this->assertEquals($bundle->id, $response->json()['id']);
     }
 
+    public function testLocalBundlesCanOrderNewestBundlesFirst()
+    {
+        $oldBundle = Bundle::factory()->create([
+            'created_at' => now()->subDays(2),
+        ]);
+        $newBundle = Bundle::factory()->create([
+            'created_at' => now(),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.local-bundles', [
+            'order_by' => 'created_at',
+            'order_direction' => 'desc',
+        ]));
+
+        $response->assertStatus(200);
+        $this->assertEquals($newBundle->id, $response->json('data.0.id'));
+        $this->assertNotEquals($oldBundle->id, $response->json('data.0.id'));
+    }
+
+    public function testLocalBundlesCanReturnOneHundredRecords()
+    {
+        Bundle::factory()->count(101)->create();
+
+        $response = $this->apiCall('GET', route('api.devlink.local-bundles', [
+            'per_page' => 100,
+        ]));
+
+        $response->assertStatus(200);
+        $this->assertCount(100, $response->json('data'));
+        $this->assertEquals(100, $response->json('meta.per_page'));
+    }
+
+    public function testLocalBundlesFilterFindsBundleOutsideFirstPage()
+    {
+        $targetBundle = Bundle::factory()->create([
+            'name' => 'FOUR-31727 Search Target',
+            'created_at' => now()->subDays(2),
+        ]);
+        Bundle::factory()->count(15)->create([
+            'created_at' => now(),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.local-bundles', [
+            'filter' => 'FOUR-31727 Search Target',
+        ]));
+
+        $response->assertStatus(200);
+        $this->assertEquals($targetBundle->id, $response->json('data.0.id'));
+        $this->assertCount(1, $response->json('data'));
+    }
+
+    public function testLocalBundlesEditableFilterExcludesRemoteBundles()
+    {
+        $devLink = DevLink::factory()->create();
+        $localBundle = Bundle::factory()->create([
+            'dev_link_id' => null,
+        ]);
+        $remoteBundle = Bundle::factory()->create([
+            'dev_link_id' => $devLink->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.local-bundles', [
+            'editable' => true,
+            'per_page' => 100,
+        ]));
+
+        $response->assertStatus(200);
+        $bundleIds = collect($response->json('data'))->pluck('id');
+        $this->assertTrue($bundleIds->contains($localBundle->id));
+        $this->assertFalse($bundleIds->contains($remoteBundle->id));
+    }
+
     public function testAddAssets()
     {
         $screen1 = Screen::factory()->create();
