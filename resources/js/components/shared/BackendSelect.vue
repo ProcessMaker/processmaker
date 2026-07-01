@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, onMounted, ref, watch, defineEmits, getCurrentInstance } from 'vue';
+import { defineProps, onMounted, onBeforeUnmount, ref, watch, defineEmits, getCurrentInstance } from 'vue';
 import debounce from 'lodash/debounce';
 
 const vue = getCurrentInstance().proxy;
@@ -36,6 +36,8 @@ const props = defineProps({
 
 const value = ref(props.value);
 const loading = ref(false);
+const lastSearchTerm = ref('');
+let requestSequence = 0;
 
 watch(value, () => {
   emit('input', value.value);
@@ -46,15 +48,23 @@ watch(() => props.value, () => {
 });
 
 const loadOptions = (filter = '') => {
+  const requestId = ++requestSequence;
+  const remoteFilter = typeof filter === 'string' ? filter : '';
+
   loading.value = true;
   const params = { ...props.queryParams };
   if (props.remoteSearch) {
-    params.filter = typeof filter === 'string' ? filter : '';
+    lastSearchTerm.value = remoteFilter;
+    params.filter = remoteFilter;
   }
   globalThis.ProcessMaker.apiClient.get(props.url, { params }).then((response) => {
-    options.value = response.data.data;
+    if (requestId === requestSequence) {
+      options.value = response.data.data;
+    }
   }).finally(() => {
-    loading.value = false;
+    if (requestId === requestSequence) {
+      loading.value = false;
+    }
   });
 };
 
@@ -62,12 +72,29 @@ const debouncedLoadOptions = debounce(loadOptions, 300);
 
 const search = (filter) => {
   if (props.remoteSearch) {
-    debouncedLoadOptions(filter);
+    const remoteFilter = typeof filter === 'string' ? filter : '';
+    lastSearchTerm.value = remoteFilter;
+    debouncedLoadOptions(remoteFilter);
+  }
+};
+
+const handleOpen = () => {
+  if (!props.remoteSearch) {
+    loadOptions();
+    return;
+  }
+
+  if (options.value.length === 0) {
+    loadOptions(lastSearchTerm.value);
   }
 };
 
 onMounted(() => {
   loadOptions();
+});
+
+onBeforeUnmount(() => {
+  debouncedLoadOptions.cancel();
 });
 </script>
 
@@ -75,7 +102,7 @@ onMounted(() => {
   <div>
     <multiselect v-model="value" :deselect-label="vue.$t('Can\'t remove this value')" :track-by="props.valueField" :label="props.textField"
                  :placeholder="vue.$t('Type here to search')" :options="options" :searchable="true" :allow-empty="false"
-                 :multiple="true" :loading="loading" :internal-search="!props.remoteSearch" @open="loadOptions" @search-change="search">
+                 :multiple="true" :loading="loading" :internal-search="!props.remoteSearch" @open="handleOpen" @search-change="search">
       <template slot="noResult">
         {{ vue.$t('No elements found. Consider changing the search query.') }}
       </template>
