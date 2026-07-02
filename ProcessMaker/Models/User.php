@@ -160,8 +160,8 @@ class User extends Authenticatable implements HasMedia
         });
 
         static::restoring(function ($user) {
+            // SoftDeletes::restore() saves this with deleted_at=null; avoid a second updated event.
             $user->status = 'ACTIVE';
-            $user->save();
         });
 
         static::deleted(function ($user) {

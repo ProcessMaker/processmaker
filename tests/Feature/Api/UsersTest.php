@@ -5,7 +5,9 @@ namespace Tests\Feature\Api;
 use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Redis;
+use ProcessMaker\Jobs\ThrowSignalEvent;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
@@ -642,6 +644,44 @@ class UsersTest extends TestCase
         // Assert that the user is listed
         $response = $this->apiCall('GET', self::API_TEST_URL);
         $response->assertJsonFragment(['id' => $id]);
+    }
+
+    public function testRestoreSoftDeletedUserDispatchesOneUserUpdateSignal()
+    {
+        config(['user-signal.update' => true]);
+
+        Bus::fake([
+            ThrowSignalEvent::class,
+        ]);
+
+        $deletedUser = null;
+        User::withoutEvents(function () use (&$deletedUser) {
+            $deletedUser = User::factory()->create([
+                'deleted_at' => now(),
+                'status' => 'INACTIVE',
+            ]);
+        });
+
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/restore', [
+            'id' => $deletedUser->id,
+        ]);
+
+        $response->assertStatus(200);
+
+        $restoredUser = User::find($deletedUser->id);
+        $this->assertSame('ACTIVE', $restoredUser->status);
+        $this->assertNull($restoredUser->deleted_at);
+        $this->assertFalse($restoredUser->trashed());
+
+        $userUpdateSignalCount = 0;
+        Bus::assertDispatched(ThrowSignalEvent::class, function (ThrowSignalEvent $job) use (&$userUpdateSignalCount) {
+            if ($job->signalRef === 'user_update') {
+                $userUpdateSignalCount++;
+            }
+
+            return true;
+        });
+        $this->assertSame(1, $userUpdateSignalCount);
     }
 
     public function testCreateWithoutPassword()
