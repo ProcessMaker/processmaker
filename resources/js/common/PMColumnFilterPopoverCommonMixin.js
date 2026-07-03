@@ -218,12 +218,12 @@ const PMColumnFilterCommonMixin = {
       return key;
     },
     /**
-     * Columns that use stringSelect with "=" rows; multiple sibling "=" filters are AND-ed
-     * by the API and can never match (e.g. status In Progress AND Completed). Collapse those
-     * into one filter object using nested `or` so each value stays operator "=" (OR semantics
-     * in SQL — same as IN). Leaves existing OR-nested structures unchanged.
+     * Normalize legacy persisted filters only: flat sibling "=" rows on enum columns are AND-ed
+     * by the API and never match. Collapse them into nested `or` (same semantics as IN).
+     * New filters from PMColumnFilterForm already use explicit OR for stringSelect columns;
+     * this helper leaves OR-nested payloads unchanged.
      *
-     * @param {Array} filters - Filters for one column from PMColumnFilterForm
+     * @param {Array} filters - Filters for one column
      * @param {string} columnField - Column field name (e.g. status)
      * @returns {Array}
      */
@@ -292,7 +292,8 @@ const PMColumnFilterCommonMixin = {
     },
     onApply(json, index) {
       this.advancedFilterInit();
-      this.advancedFilter[index] = this.mergeFlatEnumEqualsToOrChainForColumn(json, index);
+      // Form emits explicit OR for stringSelect "=" rows; merge is a no-op for those payloads.
+      this.advancedFilter[index] = json;
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
       this.fetch(true);

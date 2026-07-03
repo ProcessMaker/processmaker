@@ -41,7 +41,7 @@
           <b-form-group :key="'logical' + index"
                         v-if="switchLogical(index)">
             <b-form-select v-model="item.logical" 
-                           :options="getLogicals()"
+                           :options="getLogicals(index)"
                            :data-cy="'logical' + index"
                            class="pm-filter-form-logical-operators"
                            @change="onChangeLogicalOp(item,index)"
@@ -121,6 +121,7 @@
         this.$emit("onChangeSort", value);
       },
       onApply() {
+        this.normalizeEnumEqualsLogicals();
         let json = this.getValues();
         this.$emit("onApply", json);
       },
@@ -134,6 +135,7 @@
       },
       onClickButtonAdd() {
         this.addItem(this.items.length);
+        this.normalizeEnumEqualsLogicals();
       },
       onClickButtonRemove(item, index) {
         if (this.items.length === 1) {
@@ -143,11 +145,16 @@
       },
       onChangeOperator(item) {
         this.switchViewControl(item);
+        this.normalizeEnumEqualsLogicals();
       },
-      onChangeLogicalOp() {
+      onChangeLogicalOp(item, index) {
+        if (this.requiresOrLogicalOperator(index)) {
+          item.logical = "or";
+        }
       },
       setValues(json) {
         let items = this.transformToFilterSyntax(json);
+        this.normalizeEnumEqualsLogicals(items);
         this.items = items;
       },
       getValues() {
@@ -236,7 +243,32 @@
         }
         return operators;
       },
-      getLogicals() {
+      /**
+       * stringSelect columns (status, process version) only support OR between "=" rows;
+       * a single row cannot satisfy two different enum values with AND.
+       */
+      requiresOrLogicalOperator(index) {
+        if (this.format !== "stringSelect") {
+          return false;
+        }
+        const current = this.items[index];
+        const next = this.items[index + 1];
+        return current?.operator === "=" && next?.operator === "=";
+      },
+      normalizeEnumEqualsLogicals(items = this.items) {
+        if (this.format !== "stringSelect") {
+          return;
+        }
+        for (let i = 0; i < items.length - 1; i++) {
+          if (items[i].operator === "=" && items[i + 1].operator === "=") {
+            items[i].logical = "or";
+          }
+        }
+      },
+      getLogicals(index) {
+        if (this.requiresOrLogicalOperator(index)) {
+          return [{ value: "or", text: "or" }];
+        }
         return [
           {value: "and", text: "and"},
           {value: "or", text: "or"}
