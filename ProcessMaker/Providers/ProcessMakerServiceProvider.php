@@ -509,6 +509,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
     }
 
     /**
+     * Reset per-request query timing metrics.
+     */
+    public static function beginRequestTiming(): void
+    {
+        self::$queryTime = 0;
+    }
+
+    /**
      * Get the query time for the request.
      *
      * @return float
