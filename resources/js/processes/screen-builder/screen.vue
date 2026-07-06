@@ -1,5 +1,14 @@
 <template>
-  <div class="h-100">
+  <vibe-app-shell
+    v-if="builderMode === 'vibe'"
+    :used-screen-paths="usedVibeScreenPaths"
+    @switch-mode="setBuilderMode"
+    @use-screen="useVibeScreen"
+  />
+  <div
+    v-else
+    class="h-100"
+  >
     <b-card
       id="app"
       no-body
@@ -333,6 +342,7 @@
       modal-size="lg"
     />
   </div>
+  </div>
 </template>
 
 <script>
@@ -342,6 +352,9 @@ import {
   WatchersPopup,
   ComputedProperties,
   CustomCSS,
+  VibeAppShell,
+  extractUsedVibeScreenPaths,
+  invalidateVibeScreenRuntimeCache,
 } from "@processmaker/screen-builder";
 import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
 import MonacoEditor from "vue-monaco";
@@ -367,6 +380,7 @@ export default {
     TopMenu,
     DataLoadingBasic,
     CreateTemplateModal,
+    VibeAppShell,
   },
   mixins: [...autosaveMixins, AssetRedirectMixin],
   props: {
@@ -521,6 +535,16 @@ export default {
         ],
       },
       {
+        id: "button_vibe",
+        section: "right",
+        type: "button",
+        title: "Vibe IDE",
+        name: "Vibe IDE",
+        variant: "link",
+        icon: "fas fa-wand-magic-sparkles",
+        action: "setBuilderMode(\"vibe\")",
+      },
+      {
         id: "button_save",
         section: "right",
         type: "button",
@@ -535,6 +559,9 @@ export default {
     ];
 
     return {
+      builderMode: "classic",
+      classicInitialized: false,
+      pendingVibeScreenPath: null,
       user: {},
       previewDataStringify: "",
       numberOfElements: 0,
@@ -616,6 +643,9 @@ export default {
     };
   },
   computed: {
+    usedVibeScreenPaths() {
+      return extractUsedVibeScreenPaths(this.config);
+    },
     previewInputValid() {
       try {
         JSON.parse(this.previewInput);
@@ -741,6 +771,82 @@ export default {
   },
   methods: {
     ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),
+    setBuilderMode(mode) {
+      if (mode === "vibe") {
+        this.classicInitialized = false;
+        this.pendingVibeScreenPath = null;
+      }
+      this.builderMode = mode;
+      if (mode === "classic") {
+        this.$nextTick(() => this.initClassicBuilder());
+      }
+    },
+    useVibeScreen(screenPath) {
+      if (!screenPath) return;
+      invalidateVibeScreenRuntimeCache(screenPath);
+      this.pendingVibeScreenPath = screenPath;
+      this.setBuilderMode("classic");
+    },
+    initClassicBuilder() {
+      if (this.classicInitialized) {
+        this.applyPendingVibeScreen();
+        return;
+      }
+
+      const tryInit = (attempts = 0) => {
+        if (!this.$refs.builder) {
+          if (attempts < 20) {
+            this.$nextTick(() => tryInit(attempts + 1));
+          }
+          return;
+        }
+
+        ProcessMaker.EventBus.$emit("screen-builder-init", this);
+        ProcessMaker.EventBus.$emit("screen-builder-start", this);
+        this.classicInitialized = true;
+        this.applyPendingVibeScreen();
+      };
+
+      tryInit();
+    },
+    applyPendingVibeScreen() {
+      const screenPath = this.pendingVibeScreenPath;
+      if (!screenPath) return;
+
+      const tryAdd = (attempts = 0) => {
+        const builder = this.$refs.builder;
+        if (!builder?.addVibeScreenControl) {
+          if (attempts < 30) {
+            this.$nextTick(() => tryAdd(attempts + 1));
+          } else {
+            // eslint-disable-next-line no-alert
+            window.alert(
+              "Vue Component Editor control is not available. Is package-plg installed?"
+            );
+            this.pendingVibeScreenPath = null;
+          }
+          return;
+        }
+
+        const added = builder.addVibeScreenControl(screenPath);
+        if (added) {
+          this.pendingVibeScreenPath = null;
+          return;
+        }
+
+        if (attempts < 30) {
+          this.$nextTick(() => tryAdd(attempts + 1));
+        } else {
+          // eslint-disable-next-line no-alert
+          window.alert(
+            "Vue Component Editor control is not available. Is package-plg installed?"
+          );
+          this.pendingVibeScreenPath = null;
+        }
+      };
+
+      tryAdd();
+    },
     translateScreen(language) {
       const postData = {
         inputData: this.previewData,
@@ -872,8 +978,6 @@ export default {
         window.setTimeout(() => this.mountWhenTranslationAvailable(), 100);
       } else {
         const that = this;
-        // Call our init lifecycle event
-        ProcessMaker.EventBus.$emit("screen-builder-init", that);
         if (that.screen.type === "CONVERSATIONAL") {
           that.renderComponent = "ConversationalForm";
         }
@@ -882,7 +986,6 @@ export default {
         that.watchers = that.screen.watchers ? that.screen.watchers : [];
         that.previewInput = "{}";
         that.preview.custom_css = that.customCSS;
-        ProcessMaker.EventBus.$emit("screen-builder-start", that);
         ProcessMaker.EventBus.$on(
           "save-screen",
           (value, onSuccess, onError) => {
@@ -898,6 +1001,10 @@ export default {
         ProcessMaker.EventBus.$on("screen-discard", () => {
           that.discardDraft();
         });
+
+        if (that.builderMode === "classic") {
+          that.initClassicBuilder();
+        }
       }
     },
     changeMode(mode) {
@@ -1079,13 +1186,12 @@ export default {
       builderBinding,
     ) {
       this.translateControl(control);
-      // Add it to the renderer
-      if (!this.$refs.renderer) {
-        return;
+      if (this.$refs.renderer) {
+        this.$refs.renderer.$options.components[rendererBinding] = rendererComponent;
       }
-      this.$refs.renderer.$options.components[rendererBinding] = rendererComponent;
-      // Add it to the form builder
-      this.$refs.builder.addControl(control, builderComponent, builderBinding);
+      if (this.$refs.builder) {
+        this.$refs.builder.addControl(control, builderComponent, builderBinding);
+      }
     },
     setGroupOrder(config) {
       this.$refs.builder.setGroupOrder(config);

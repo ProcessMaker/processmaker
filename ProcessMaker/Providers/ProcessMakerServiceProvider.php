@@ -261,6 +261,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
             // Add any extensions to form builder
             // and renderer from packages
             $event->manager->addPackageScripts($event->type);
+            $event->manager->addScript(mix('js/vibe-project-entry/previewLoader.js'));
 
             switch ($event->type) {
                 case 'FORM':

@@ -28,6 +28,10 @@ mix.webpackConfig({
     alias: {
       "vue-monaco": path.resolve(__dirname, "resources/js/vue-monaco-amd.js"),
       styles: path.resolve(__dirname, "resources/sass"),
+      "@vibe-project": path.resolve(
+        __dirname,
+        "node_modules/@processmaker/screen-builder/src/vibe-project"
+      ),
     },
   },
 });
@@ -133,6 +137,10 @@ mix
   .js("resources/js/processes/screen-builder/main.js", "public/js/processes/screen-builder")
   .js("resources/js/processes/screen-builder/typeForm.js", "public/js/processes/screen-builder")
   .js("resources/js/processes/screen-builder/typeDisplay.js", "public/js/processes/screen-builder")
+  .js(
+    "node_modules/@processmaker/screen-builder/src/vibe-project/previewLoader.js",
+    "public/js/vibe-project-entry"
+  )
   .js("resources/js/leave-warning.js", "public/js")
   .js("resources/js/requests/index.js", "public/js/requests")
   .js("resources/js/requests/mobile.js", "public/js/requests/mobile.js")

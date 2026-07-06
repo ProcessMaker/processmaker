@@ -35,6 +35,7 @@ use ProcessMaker\Http\Controllers\Process\ScreenBuilderController;
 use ProcessMaker\Http\Controllers\Process\ScreenController;
 use ProcessMaker\Http\Controllers\Process\ScriptController;
 use ProcessMaker\Http\Controllers\Process\SignalController;
+use ProcessMaker\Http\Controllers\Process\VibeProjectController;
 use ProcessMaker\Http\Controllers\ProcessController;
 use ProcessMaker\Http\Controllers\ProcessesCatalogueController;
 use ProcessMaker\Http\Controllers\ProfileController;
@@ -107,6 +108,20 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     });
 
     Route::get('admin', [AdminController::class, 'index'])->name('admin.index');
+
+    Route::prefix('api/vibe-project')->group(function () {
+        Route::get('tree', [VibeProjectController::class, 'tree']);
+        Route::get('file', [VibeProjectController::class, 'read']);
+        Route::put('file', [VibeProjectController::class, 'write']);
+        Route::post('mkdir', [VibeProjectController::class, 'mkdir']);
+        Route::delete('file', [VibeProjectController::class, 'delete']);
+        Route::post('move', [VibeProjectController::class, 'move']);
+        Route::post('duplicate', [VibeProjectController::class, 'duplicate']);
+        Route::get('export', [VibeProjectController::class, 'export']);
+        Route::post('import', [VibeProjectController::class, 'import']);
+        Route::get('ai/config', [VibeProjectController::class, 'aiConfig']);
+        Route::post('ai/chat', [VibeProjectController::class, 'aiChat']);
+    });
 
     Route::prefix('designer')->group(function () {
         Route::get('environment-variables', [EnvironmentVariablesController::class, 'index'])->name('environment-variables.index')->middleware('can:view-environment_variables');
