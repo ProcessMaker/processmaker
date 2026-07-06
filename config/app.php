@@ -11,6 +11,9 @@ return [
     // The url of our host, will usually be set during installation
     'url' => env('APP_URL', 'http://localhost'),
 
+    // Comma-separated list of additional trusted hosts (e.g. https://www.google.com)
+    'trusted_hosts_links' => env('TRUSTED_HOSTS_LINKS', ''),
+
     // The application key to be used for hashing secrets
     'key' => env('APP_KEY', 'base64:x80I9vQNxwllSuwBkTwfUa5qkgPTRdwqHCPSz7zHi1U='),
 

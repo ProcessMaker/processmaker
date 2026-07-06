@@ -14,7 +14,7 @@ class TrustHosts extends Middleware
             $this->allSubdomainsOfApplicationUrl(),
         ]);
 
-        $trustedHostsEnv = env('TRUSTED_HOSTS_LINKS', '');
+        $trustedHostsEnv = config('app.trusted_hosts_links', '');
         if ($trustedHostsEnv !== '') {
             foreach (array_filter(array_map('trim', explode(',', $trustedHostsEnv))) as $host) {
                 if (str_contains($host, '://')) {
