@@ -183,7 +183,9 @@ class RedisMetricsManagerTest extends TestCase
     protected function tearDown(): void
     {
         // Clean up after each test
-        $this->metrics->resetMetrics();
+        if (isset($this->metrics)) {
+            $this->metrics->resetMetrics();
+        }
         parent::tearDown();
     }
 }

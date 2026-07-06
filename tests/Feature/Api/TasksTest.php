@@ -20,6 +20,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Providers\AuthServiceProvider;
@@ -830,6 +831,225 @@ class TasksTest extends TestCase
         $this->assertEquals($hitTask->id, $json['data'][0]['id']);
     }
 
+    public function testAdvancedStatusFilterOverridesPmqlStatus()
+    {
+        $user = User::factory()->create(['is_administrator' => true]);
+
+        $activeTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'user_id' => $user->id,
+            'is_self_service' => 0,
+        ]);
+
+        $completedTask = ProcessRequestToken::factory()->create([
+            'status' => 'CLOSED',
+            'element_type' => 'task',
+            'user_id' => $user->id,
+            'is_self_service' => 0,
+        ]);
+
+        $statusFilter = json_encode([
+            [
+                'subject' => ['type' => 'Status'],
+                'operator' => '=',
+                'value' => 'Completed',
+            ],
+        ]);
+
+        $response = $this->actingAs($user, 'api')->get(route('api.tasks.index', [
+            'pmql' => '(user_id = ' . $user->id . ') AND (status = "In Progress")',
+            'advanced_filter' => $statusFilter,
+        ]));
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $returnedIds = collect($data)->pluck('id')->toArray();
+
+        $this->assertContains($completedTask->id, $returnedIds);
+        $this->assertNotContains($activeTask->id, $returnedIds);
+    }
+
+    public function testProcessManagerAdvancedStatusFilterCanReturnCompletedTasks()
+    {
+        $manager = User::factory()->create();
+        $process = Process::factory()->create([
+            'properties' => ['manager_id' => $manager->id],
+        ]);
+        $unmanagedProcess = Process::factory()->create();
+        $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
+
+        $activeTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'is_self_service' => 0,
+        ]);
+
+        $completedTask = ProcessRequestToken::factory()->create([
+            'status' => 'CLOSED',
+            'element_type' => 'task',
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'is_self_service' => 0,
+        ]);
+
+        $unmanagedCompletedTask = ProcessRequestToken::factory()->create([
+            'status' => 'CLOSED',
+            'element_type' => 'task',
+            'process_id' => $unmanagedProcess->id,
+            'is_self_service' => 0,
+        ]);
+
+        $statusFilter = json_encode([
+            [
+                'subject' => ['type' => 'Status'],
+                'operator' => '=',
+                'value' => 'Completed',
+            ],
+        ]);
+
+        $response = $this->actingAs($manager, 'api')->get(route('api.tasks.index', [
+            'processesIManage' => 'true',
+            'advanced_filter' => $statusFilter,
+        ]));
+
+        $response->assertStatus(200);
+        $returnedIds = collect($response->json('data'))->pluck('id')->toArray();
+
+        $this->assertContains($completedTask->id, $returnedIds);
+        $this->assertNotContains($activeTask->id, $returnedIds);
+        $this->assertNotContains($unmanagedCompletedTask->id, $returnedIds);
+    }
+
+    public function testProcessManagerAdvancedStatusFilterCanReturnInProgressCompletedAndSelfServiceTasks()
+    {
+        $manager = User::factory()->create();
+        $process = Process::factory()->create([
+            'properties' => ['manager_id' => $manager->id],
+        ]);
+
+        $activeTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'process_id' => $process->id,
+            'is_self_service' => 0,
+        ]);
+
+        $completedTask = ProcessRequestToken::factory()->create([
+            'status' => 'CLOSED',
+            'element_type' => 'task',
+            'process_id' => $process->id,
+            'is_self_service' => 0,
+        ]);
+
+        $selfServiceTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'process_id' => $process->id,
+            'user_id' => null,
+            'is_self_service' => 1,
+        ]);
+
+        $statusFilter = json_encode([
+            [
+                'subject' => ['type' => 'Status'],
+                'operator' => '=',
+                'value' => ['In Progress', 'Completed', 'Self Service'],
+            ],
+        ]);
+
+        $response = $this->actingAs($manager, 'api')->get(route('api.tasks.index', [
+            'processesIManage' => 'true',
+            'advanced_filter' => $statusFilter,
+        ]));
+
+        $response->assertStatus(200);
+        $returnedIds = collect($response->json('data'))->pluck('id')->toArray();
+
+        $this->assertContains($activeTask->id, $returnedIds);
+        $this->assertContains($completedTask->id, $returnedIds);
+        $this->assertContains($selfServiceTask->id, $returnedIds);
+    }
+
+    public function testPmqlStatusPreservedWhenNoAdvancedStatusFilter()
+    {
+        $user = User::factory()->create(['is_administrator' => true]);
+
+        $activeTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'user_id' => $user->id,
+            'is_self_service' => 0,
+        ]);
+
+        $completedTask = ProcessRequestToken::factory()->create([
+            'status' => 'CLOSED',
+            'element_type' => 'task',
+            'user_id' => $user->id,
+            'is_self_service' => 0,
+        ]);
+
+        $response = $this->actingAs($user, 'api')->get(route('api.tasks.index', [
+            'pmql' => '(user_id = ' . $user->id . ') AND (status = "In Progress")',
+        ]));
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $returnedIds = collect($data)->pluck('id')->toArray();
+
+        $this->assertContains($activeTask->id, $returnedIds);
+        $this->assertNotContains($completedTask->id, $returnedIds);
+    }
+
+    public function testSelfServiceFilterOverridesPmqlStatusAndUserId()
+    {
+        $user = User::factory()->create(['is_administrator' => true]);
+        $group = Group::factory()->create();
+
+        GroupMember::factory()->create([
+            'group_id' => $group->id,
+            'member_id' => $user->id,
+            'member_type' => User::class,
+        ]);
+
+        $selfServiceTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'user_id' => null,
+            'is_self_service' => 1,
+            'self_service_groups' => ['groups' => [strval($group->id)], 'users' => []],
+        ]);
+
+        $regularTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'user_id' => $user->id,
+            'is_self_service' => 0,
+        ]);
+
+        $statusFilter = json_encode([
+            [
+                'subject' => ['type' => 'Status'],
+                'operator' => '=',
+                'value' => 'Self Service',
+            ],
+        ]);
+
+        $response = $this->actingAs($user, 'api')->get(route('api.tasks.index', [
+            'pmql' => '(user_id = ' . $user->id . ') AND (status = "In Progress")',
+            'advanced_filter' => $statusFilter,
+        ]));
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $returnedIds = collect($data)->pluck('id')->toArray();
+
+        $this->assertContains($selfServiceTask->id, $returnedIds);
+        $this->assertNotContains($regularTask->id, $returnedIds);
+    }
+
     public function testGetScreenFields()
     {
         $this->be($this->user);
@@ -912,5 +1132,116 @@ class TasksTest extends TestCase
         $this->assertEquals($userTask->id, $response['data'][0]['id']);
         $this->assertEquals($scriptTask->id, $response['data'][1]['id']);
         $this->assertEquals($gatewayTask->id, $response['data'][2]['id']);
+    }
+
+    /**
+     * Test that the free-text filter parameter works on the tasks endpoint.
+     */
+    public function testFilterByFreeTextSearch()
+    {
+        $request = ProcessRequest::factory()->create();
+
+        $matchingTask = ProcessRequestToken::factory()->create([
+            'element_type' => 'task',
+            'element_name' => 'UniqueSearchableTaskName',
+            'status' => 'ACTIVE',
+            'process_request_id' => $request->id,
+        ]);
+
+        ProcessRequestToken::factory()->create([
+            'element_type' => 'task',
+            'element_name' => 'OtherTask',
+            'status' => 'ACTIVE',
+            'process_request_id' => $request->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', [
+            'filter' => 'UniqueSearchableTaskName',
+            'per_page' => 50,
+        ]));
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertNotEmpty($data);
+        $this->assertTrue(
+            collect($data)->contains('id', $matchingTask->id),
+            'Expected matching task to appear in filtered results'
+        );
+        $this->assertFalse(
+            collect($data)->contains('element_name', 'OtherTask'),
+            'Expected non-matching task to be excluded from filtered results'
+        );
+    }
+
+    /**
+     * Build a query that joins process_request_tokens to itself via a
+     * subquery aliased `cte`, matching the pattern used by the Saved Search
+     * package. Any WHERE clauses added afterwards must use qualified column
+     * names or they will hit an "ambiguous column" error.
+     */
+    private function buildJoinedSubquery()
+    {
+        $query = ProcessRequestToken::query()->where('element_type', 'task');
+
+        $subQuery = clone $query;
+        $subQuery->select('id', 'updated_at')->latest('updated_at')->take(25);
+
+        $query->select('process_request_tokens.*')
+            ->joinSub($subQuery, 'cte', function ($join) {
+                $join->on('process_request_tokens.id', '=', 'cte.id');
+            });
+
+        return $query;
+    }
+
+    /**
+     * Test that scopeFilter's non-indexed branch works when the query has
+     * a join that introduces duplicate column names (Saved Search pattern).
+     */
+    public function testScopeFilterWorksWithJoinedSubquery()
+    {
+        $request = ProcessRequest::factory()->create();
+
+        ProcessRequestToken::factory()->create([
+            'element_type' => 'task',
+            'element_name' => 'JoinTestTask',
+            'status' => 'ACTIVE',
+            'process_request_id' => $request->id,
+        ]);
+
+        $query = $this->buildJoinedSubquery();
+        $query->filter('JoinTestTask');
+
+        $results = $query->get();
+
+        $this->assertNotEmpty($results);
+        $this->assertTrue($results->contains('element_name', 'JoinTestTask'));
+    }
+
+    /**
+     * Test that scopeFilter's indexed-search branch (numeric filter path)
+     * uses a qualified `id` column so it works with the Saved Search join.
+     */
+    public function testScopeFilterIndexedSearchNumericWorksWithJoinedSubquery()
+    {
+        Setting::updateOrCreate(
+            ['key' => 'indexed-search'],
+            ['config' => ['enabled' => true]]
+        );
+
+        $request = ProcessRequest::factory()->create();
+
+        $task = ProcessRequestToken::factory()->create([
+            'element_type' => 'task',
+            'status' => 'ACTIVE',
+            'process_request_id' => $request->id,
+        ]);
+
+        $query = $this->buildJoinedSubquery();
+        $query->filter((string) $task->id);
+
+        $results = $query->get();
+
+        $this->assertTrue($results->contains('id', $task->id));
     }
 }

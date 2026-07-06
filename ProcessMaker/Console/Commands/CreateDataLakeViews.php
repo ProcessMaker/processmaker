@@ -181,9 +181,10 @@ class CreateDataLakeViews extends Command
      */
     protected function getTables(): array
     {
+        $database = \DB::connection()->getDatabaseName();
         $tables = array_map(function ($item) {
             return $item['name'];
-        }, Schema::getTables());
+        }, Schema::getTables($database));
 
         return $tables;
     }
@@ -193,9 +194,10 @@ class CreateDataLakeViews extends Command
      */
     protected function getViews(): array
     {
+        $database = \DB::connection()->getDatabaseName();
         $views = array_map(function ($item) {
             return $item['name'];
-        }, Schema::getViews());
+        }, Schema::getViews($database));
 
         return $views;
     }

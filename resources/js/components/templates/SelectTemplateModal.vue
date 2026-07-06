@@ -27,7 +27,8 @@
         @ai-process-button-clicked="createAiProcess()"
         @process-intelligence-clicked="importPI()"
         :showTemplateOptionsActionBar="true"
-        :package-ai="packageAi" />
+        :package-ai="packageAi"
+        :show-pi-import="showPiImport" />
     </modal>
     <create-process-modal ref="create-process-modal" 
       :blank-template="blankTemplate" 
@@ -55,7 +56,16 @@
 
   export default {
     components: { Modal, TemplateSearch, CreateProcessModal, ImportPIModal },
-    props: ['type', 'countCategories', 'packageAi', 'isProjectsInstalled', 'hideAddBtn', 'projectId', 'isAbTestingInstalled'],
+    props: {
+      type: String,
+      countCategories: [Number, String, Boolean],
+      packageAi: [Boolean, Number],
+      isProjectsInstalled: [Boolean, String, Number],
+      hideAddBtn: [Boolean, String, Number],
+      projectId: [Number, String],
+      isAbTestingInstalled: Boolean,
+      showPiImport: { type: Boolean, default: true },
+    },
     data: function() {
       return {
         title: '',

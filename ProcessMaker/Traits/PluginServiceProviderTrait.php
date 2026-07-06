@@ -272,11 +272,14 @@ trait PluginServiceProviderTrait
 
         $configString = 'l5-swagger.documentations.default.paths.annotations';
 
-        config([
-            $configString => array_merge(
-                config($configString),
-                $paths
-            ),
-        ]);
+        // Avoid duplicate directories: with config cached, paths may already include
+        // plugin folders; each console boot would otherwise merge them again and
+        // swagger-php would scan the same files twice (duplicate @OA paths/operations).
+        $merged = array_values(array_unique(array_merge(
+            config($configString),
+            $paths
+        )));
+
+        config([$configString => $merged]);
     }
 }

@@ -27,6 +27,16 @@ class ScreenTemplateTest extends TestCase
 
     private const SCREEN_PATH = 'tests/Feature/Templates/fixtures/screen-config-with-two-pages.json';
 
+    private const RENDERABLE_STRING_FIELDS = [
+        'ariaLabel',
+        'content',
+        'fieldValue',
+        'helper',
+        'label',
+        'loadingLabel',
+        'placeholder',
+    ];
+
     public function testCreateScreenTemplate()
     {
         $screenCategoryId = ScreenCategory::factory()->create()->id;
@@ -392,13 +402,11 @@ class ScreenTemplateTest extends TestCase
 
     public function testApplyCssToExistingScreen()
     {
-        // Create a new screen with two pages and no custom_css
-        $screenPath = base_path(self::SCREEN_PATH);
-        $screenData = json_decode(File::get($screenPath), true);
-
+        // Create a new screen with no config and no custom_css
         $screen = Screen::factory()->create([
-            'config' => $screenData,
+            'config' => null,
         ]);
+        $this->assertNull($screen->config);
         $this->assertNull($screen->custom_css);
 
         // Create a screen template with custom_css
@@ -420,13 +428,14 @@ class ScreenTemplateTest extends TestCase
         $response->assertStatus(200);
 
         if (class_exists(VersionHistory::class)) {
-            $updatedScreen = \ProcessMaker\Models\ScreenVersion::select('custom_css')->where('screen_id', $screen->id)->latest()->firstOrFail();
+            $updatedScreen = \ProcessMaker\Models\ScreenVersion::select('config', 'custom_css')->where('screen_id', $screen->id)->latest()->firstOrFail();
         } else {
-            $updatedScreen = Screen::select('custom_css')->where('id', $screen->id)->firstOrFail();
+            $updatedScreen = Screen::select('config', 'custom_css')->where('id', $screen->id)->firstOrFail();
         }
 
         // Check that the screen has the custom_css
         $this->assertNotNull($updatedScreen->custom_css);
+        $this->assertNull($updatedScreen->config);
     }
 
     public function testApplyFieldsToExistingScreen()
@@ -475,6 +484,91 @@ class ScreenTemplateTest extends TestCase
 
         // Check that the screen config is not empty
         $this->assertNotEmpty($updatedScreen->config[1]['items']);
+        $this->assertScreenConfigSanitized($updatedScreen->config);
+    }
+
+    public function testApplyTemplateSanitizesSerializedInspectorComponents()
+    {
+        $templatePath = base_path(self::SCREEN_TEMPLATE_PATH);
+        $screenTemplateData = File::get($templatePath);
+
+        $screenTemplate = $this->createScreenTemplateFromManifest($screenTemplateData);
+
+        $screenPath = base_path(self::SCREEN_PATH);
+        $screenData = json_decode(File::get($screenPath), true);
+
+        $newScreen = Screen::factory()->create([
+            'config' => $screenData,
+        ]);
+
+        $route = route('api.template.applyTemplate', [
+            'type' => 'screen',
+            'id' => $screenTemplate->id,
+        ]);
+
+        $response = $this->apiCall('POST', $route, [
+            'screenId' => $newScreen->id,
+            'templateOptions' => ['Fields', 'Layout'],
+            'currentScreenPage' => 1,
+        ]);
+
+        $response->assertStatus(200);
+
+        if (class_exists(VersionHistory::class)) {
+            $updatedScreen = \ProcessMaker\Models\ScreenVersion::select('config')->where('screen_id', $newScreen->id)->latest()->firstOrFail();
+        } else {
+            $updatedScreen = Screen::select('config')->where('id', $newScreen->id)->firstOrFail();
+        }
+
+        $this->assertScreenConfigSanitized($updatedScreen->config);
+    }
+
+    public function testApplyTemplateSanitizesDatePickerRenderableStrings()
+    {
+        $templatePath = base_path(self::SCREEN_TEMPLATE_PATH);
+        $screenTemplateData = $this->addDatePickerWithInvalidRenderableFields(File::get($templatePath));
+
+        $screenTemplate = $this->createScreenTemplateFromManifest($screenTemplateData);
+
+        $screenPath = base_path(self::SCREEN_PATH);
+        $screenData = json_decode(File::get($screenPath), true);
+
+        $newScreen = Screen::factory()->create([
+            'config' => $screenData,
+        ]);
+
+        $route = route('api.template.applyTemplate', [
+            'type' => 'screen',
+            'id' => $screenTemplate->id,
+        ]);
+
+        $response = $this->apiCall('POST', $route, [
+            'screenId' => $newScreen->id,
+            'templateOptions' => ['Fields'],
+            'currentScreenPage' => 1,
+        ]);
+
+        $response->assertStatus(200);
+
+        if (class_exists(VersionHistory::class)) {
+            $updatedScreen = \ProcessMaker\Models\ScreenVersion::select('config')->where('screen_id', $newScreen->id)->latest()->firstOrFail();
+        } else {
+            $updatedScreen = Screen::select('config')->where('id', $newScreen->id)->firstOrFail();
+        }
+
+        $datePicker = $this->findScreenConfigItem(
+            $updatedScreen->config[1]['items'],
+            'FormDatePicker',
+            'date'
+        );
+
+        $this->assertNotNull($datePicker);
+        $this->assertSame('', $datePicker['config']['label']);
+        $this->assertSame('', $datePicker['config']['placeholder']);
+        $this->assertSame('', $datePicker['config']['helper']);
+        $this->assertSame('', $datePicker['config']['ariaLabel']);
+        $this->assertNull($datePicker['config']['validation']);
+        $this->assertScreenConfigSanitized($updatedScreen->config);
     }
 
     public function testApplyLayoutToExistingScreen()
@@ -573,5 +667,189 @@ class ScreenTemplateTest extends TestCase
 
         // Check that the screen has the custom_css
         $this->assertNotNull($updatedScreen->custom_css);
+    }
+
+    private function assertScreenConfigSanitized(array $config): void
+    {
+        foreach ($config as $page) {
+            $this->assertScreenConfigValueSanitized($page);
+        }
+    }
+
+    private function createScreenTemplateFromManifest(string $manifest): ScreenTemplates
+    {
+        $screenTemplate = ScreenTemplates::make([
+            'unique_template_id' => 'serialized-inspector-regression',
+            'name' => 'Serialized Inspector Regression',
+            'description' => 'Template with serialized Vue component inspector metadata.',
+            'version' => '1.0.0',
+            'user_id' => null,
+            'editing_screen_uuid' => null,
+            'screen_category_id' => ScreenCategory::factory()->create()->getKey(),
+            'screen_type' => 'FORM',
+            'media_collection' => 'serialized-inspector-regression-media',
+            'manifest' => $manifest,
+            'screen_custom_css' => null,
+            'is_public' => true,
+            'is_default_template' => false,
+            'is_system' => false,
+            'asset_type' => null,
+        ]);
+        $screenTemplate->saveOrFail();
+
+        return $screenTemplate;
+    }
+
+    private function addDatePickerWithInvalidRenderableFields(string $manifest): string
+    {
+        $payload = json_decode($manifest, true);
+        $root = $payload['root'];
+        $config = json_decode($payload['export'][$root]['attributes']['config'], true);
+
+        $config[0]['items'][] = [
+            'label' => 'Date Picker',
+            'config' => [
+                'icon' => 'far fa-calendar-alt',
+                'name' => 'date',
+                'type' => 'datetime',
+                'label' => null,
+                'helper' => null,
+                'placeholder' => null,
+                'ariaLabel' => null,
+                'minDate' => null,
+                'maxDate' => null,
+                'dataFormat' => 'date',
+                'validation' => [],
+            ],
+            'component' => 'FormDatePicker',
+            'inspector' => [
+                [
+                    'type' => 'FormInput',
+                    'field' => 'label',
+                    'config' => [
+                        'label' => 'Label',
+                        'helper' => 'The label describes the field\'s name',
+                    ],
+                ],
+                [
+                    'type' => 'ValidationSelect',
+                    'field' => 'validation',
+                    'config' => [
+                        'label' => 'Validation Rules',
+                        'helper' => 'The validation rules needed for this field',
+                    ],
+                ],
+            ],
+            'editor-control' => 'FormDatePicker',
+            'editor-component' => 'FormDatePicker',
+        ];
+
+        $payload['export'][$root]['attributes']['config'] = json_encode($config);
+
+        return json_encode($payload);
+    }
+
+    private function findScreenConfigItem(array $items, string $component, string $name): ?array
+    {
+        $matchingItem = null;
+
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            if (($item['component'] ?? null) === $component && ($item['config']['name'] ?? null) === $name) {
+                $matchingItem = $item;
+                break;
+            }
+
+            $nestedItem = $this->findScreenConfigItemInChildren($item, $component, $name);
+            if ($nestedItem !== null) {
+                $matchingItem = $nestedItem;
+                break;
+            }
+        }
+
+        return $matchingItem;
+    }
+
+    private function findScreenConfigItemInChildren(array $item, string $component, string $name): ?array
+    {
+        foreach ($this->screenConfigChildCollections($item) as $childItems) {
+            $nestedItem = $this->findScreenConfigItem($childItems, $component, $name);
+            if ($nestedItem !== null) {
+                return $nestedItem;
+            }
+        }
+
+        return null;
+    }
+
+    private function assertScreenConfigValueSanitized(mixed $value): void
+    {
+        if (!is_array($value)) {
+            return;
+        }
+
+        $this->assertInspectorItemsSanitized($value);
+        $this->assertRenderableFieldsSanitized($value);
+        $this->assertTooltipSanitized($value);
+        $this->assertValidationSanitized($value);
+
+        foreach ($value as $childValue) {
+            $this->assertScreenConfigValueSanitized($childValue);
+        }
+    }
+
+    private function assertInspectorItemsSanitized(array $value): void
+    {
+        if (array_key_exists('inspector', $value) && is_array($value['inspector'])) {
+            foreach ($value['inspector'] as $inspector) {
+                if (is_array($inspector) && array_key_exists('type', $inspector)) {
+                    $this->assertFalse(is_array($inspector['type']));
+                }
+            }
+        }
+    }
+
+    private function assertRenderableFieldsSanitized(array $value): void
+    {
+        foreach (self::RENDERABLE_STRING_FIELDS as $field) {
+            if (!array_key_exists($field, $value)) {
+                continue;
+            }
+
+            $this->assertIsString($value[$field]);
+        }
+    }
+
+    private function assertTooltipSanitized(array $value): void
+    {
+        $tooltip = $value['tooltip'] ?? null;
+        if (is_array($tooltip) && array_key_exists('content', $tooltip)) {
+            $this->assertIsString($value['tooltip']['content']);
+        }
+    }
+
+    private function assertValidationSanitized(array $value): void
+    {
+        if (array_key_exists('validation', $value) && is_array($value['validation'])) {
+            $this->assertNotEmpty($value['validation']);
+        }
+    }
+
+    private function screenConfigChildCollections(array $item): array
+    {
+        $collections = [];
+
+        if (array_key_exists('items', $item) && is_array($item['items'])) {
+            $collections[] = $item['items'];
+        }
+
+        if (array_is_list($item)) {
+            $collections[] = $item;
+        }
+
+        return $collections;
     }
 }

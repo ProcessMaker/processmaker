@@ -48,6 +48,8 @@ class PermissionRepositoryTest extends TestCase
 
         // Create test user
         $this->user = User::factory()->create(['username' => 'testuser']);
+        // remove all permissions from user
+        $this->user->permissions()->detach();
     }
 
     /**

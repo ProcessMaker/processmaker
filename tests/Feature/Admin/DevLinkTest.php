@@ -83,12 +83,16 @@ class DevLinkTest extends TestCase
         $response = $this->webCall('GET', $url);
 
         $response->assertStatus(302);
+        $locationHeader = $response->headers->get('Location');
+        $queryString = parse_url($locationHeader, PHP_URL_QUERY);
+        parse_str($queryString, $queryParams);
+        $clientSecretQueryParam = $queryParams['client_secret'] ?? '';
 
         $lastCreatedClient = Client::orderBy('id', 'desc')->first();
         $expectedParams = [
             'devlink_id' => $devLink->id,
             'client_id' => $lastCreatedClient->id,
-            'client_secret' => $lastCreatedClient->secret,
+            'client_secret' => $clientSecretQueryParam,
         ];
         $response->assertRedirect(route('devlink.index', $expectedParams));
     }

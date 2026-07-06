@@ -33,4 +33,9 @@ interface PermissionRepositoryInterface
      * Get nested group permissions (recursive)
      */
     public function getNestedGroupPermissions(int $groupId): array;
+
+    /**
+     * Get all users affected by permissions inherited from the given group subtree.
+     */
+    public function getAffectedUserIdsForGroup(int $groupId): array;
 }

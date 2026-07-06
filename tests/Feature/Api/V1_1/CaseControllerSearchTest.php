@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Api\V1_1;
 
+use Illuminate\Support\Facades\Gate;
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\User;
 use ProcessMaker\Repositories\CaseUtils;
 use Tests\Feature\Shared\RequestHelper;
@@ -16,6 +18,17 @@ class CaseControllerSearchTest extends TestCase
         parent::setUp();
 
         $this->user = CaseControllerTest::createUser('user_a');
+
+        // These tests intentionally exercise the unscoped `get_all_cases`
+        // endpoint, which now requires `view-all_cases`. Grant the
+        // non-admin test user the permission so each `apiCall` reaches
+        // the search logic rather than being short-circuited with a 403.
+        Permission::firstOrCreate(
+            ['name' => 'view-all_cases'],
+            ['title' => 'View All Cases'],
+        );
+        Gate::define('view-all_cases', fn ($user) => $user->hasPermission('view-all_cases'));
+        $this->user->giveDirectPermission('view-all_cases');
     }
 
     public function tearDown(): void

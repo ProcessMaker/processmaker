@@ -123,9 +123,8 @@ class IndexedSearchEnable extends Command
                 $env .= "\n\nSCOUT_DRIVER={$driver}";
                 $env .= "\nELASTIC_HOST={$url}";
                 break;
-            case 'sqlite':
-                $driver = 'tntsearch';
-                $env .= "\n\nSCOUT_DRIVER={$driver}";
+            default:
+                throw new \Exception('Only Elasticsearch is supported for indexed search.');
                 break;
         }
 

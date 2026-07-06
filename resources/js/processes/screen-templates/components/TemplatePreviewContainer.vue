@@ -17,6 +17,24 @@
               :close="onClose"
               :templateId="template.id"
             >
+              <b-button-group>
+                <b-button
+                  class="arrow-button"
+                  variant="outline-secondary"
+                  :disabled="!existPrev"
+                  @click="goPrevNext('Prev')"
+                >
+                  <i class="fas fa-chevron-left" />
+                </b-button>
+                <b-button
+                  class="arrow-button"
+                  variant="outline-secondary"
+                  :disabled="!existNext"
+                  @click="goPrevNext('Next')"
+                >
+                  <i class="fas fa-chevron-right" />
+                </b-button>
+              </b-button-group>
               <div class="ml-auto mr-0 text-right">
                 <b-button
                   class="btn-light text-secondary"

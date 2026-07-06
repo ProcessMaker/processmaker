@@ -63,8 +63,6 @@ class UserTest extends TestCase
 
     public function testCanAnyFirst()
     {
-        dump('Starting test');
-
         $user = User::factory()->create();
 
         $p1 = Permission::factory()->create(['name' => 'foo']);
@@ -129,5 +127,20 @@ class UserTest extends TestCase
         $testFor('process', 'processes');
         $testFor('screen', 'screens');
         $testFor('script', 'scripts');
+    }
+
+    public function testRefreshInvalidatesBothPermissionCacheFamilies()
+    {
+        $user = User::factory()->create(['password' => Hash::make('password')]);
+
+        Cache::put("user_permissions:{$user->id}", ['cached'], 3600);
+        Cache::put("user_{$user->id}_permissions", ['legacy'], 3600);
+        Cache::put('unrelated-cache-key', 'keep-me', 3600);
+
+        $user->refresh();
+
+        $this->assertNull(Cache::get("user_permissions:{$user->id}"));
+        $this->assertNull(Cache::get("user_{$user->id}_permissions"));
+        $this->assertSame('keep-me', Cache::get('unrelated-cache-key'));
     }
 }

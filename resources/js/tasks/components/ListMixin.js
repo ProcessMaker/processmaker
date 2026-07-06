@@ -83,10 +83,12 @@ const ListMixin = {
         }
         this.previousAdvancedFilter = advancedFilter;
         let includeString = "process,processRequest,processRequest.user,user,data";
-        // If columns are default (isDefaultColumns = true), don't include data
-        // If columns are NOT default (isDefaultColumns = false), include data
+        // Omit data only for default columns without form fields (FOUR-24946 payload optimization)
         const isDefaultColumns = window.ProcessMaker?.isDefaultColumns ?? false;
-        if (isDefaultColumns) {
+        const hasDataColumns = (this.columns || []).some(
+          (column) => String(column.field || "").startsWith("data."),
+        );
+        if (isDefaultColumns && !hasDataColumns) {
           includeString = "process,processRequest,processRequest.user,user";
         }
         const include = includeString.split(",");

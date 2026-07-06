@@ -586,7 +586,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         $errors[] = $error;
         $this->errors = $errors;
         $this->status = 'ERROR';
-        Log::error($exception);
+        Log::error($exception->getMessage());
+        Log::debug($exception->getTraceAsString());
         if (!$this->isNonPersistent()) {
             $this->save();
             // Update Case status

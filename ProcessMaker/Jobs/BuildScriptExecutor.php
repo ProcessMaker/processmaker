@@ -19,7 +19,7 @@ class BuildScriptExecutor implements ShouldQueue
     protected $userId;
 
     // Do not retry this job if it fails
-    public $tries = 10;
+    public $tries = 1;
 
     // Building can take some time
     public $timeout = 600;

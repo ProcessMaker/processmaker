@@ -154,7 +154,7 @@ abstract class TestCase extends BaseTestCase
     {
         $clients = app()->make('Laravel\Passport\ClientRepository');
         try {
-            $clients->personalAccessClient();
+            $clients->personalAccessClient('users');
         } catch (\RuntimeException $e) {
             Artisan::call('passport:install --no-interaction');
         }
@@ -234,7 +234,7 @@ abstract class TestCase extends BaseTestCase
         $filename = 'snapshot_' . $id . '.db';
 
         $snapshotFile = base_path($filename);
-        $command = 'mysqldump ' . $this->mysqlConnectionString();
+        $command = $this->getDumpCommand() . $this->mysqlConnectionString();
         $command .= ' ' . env('DB_DATABASE') . ' > ' . $snapshotFile;
         exec($command, $output, $return);
         if ($return !== 0) {
@@ -255,7 +255,7 @@ abstract class TestCase extends BaseTestCase
         if (!file_exists(base_path($filename))) {
             throw new \Exception("Database snapshot not found: $filename");
         }
-        $command = 'mysql ' . $this->mysqlConnectionString();
+        $command = $this->getMysqlCommand() . $this->mysqlConnectionString();
         $command .= ' ' . env('DB_DATABASE') . ' < ' . base_path($filename);
         if (system($command) === false) {
             dd("Failed to restore database from snapshot: $command");
@@ -281,5 +281,31 @@ abstract class TestCase extends BaseTestCase
         }
 
         return $command;
+    }
+
+    private function getDumpCommand()
+    {
+        // Check if mariadb-dump is available (common in Alpine environments)
+        $result = \Illuminate\Support\Facades\Process::run('command -v mariadb-dump');
+
+        if ($result->successful()) {
+            return 'mariadb-dump ';
+        }
+
+        // Fall back to mysqldump
+        return 'mysqldump ';
+    }
+
+    private function getMysqlCommand()
+    {
+        // Check if mariadb client is available (common in Alpine environments)
+        $result = \Illuminate\Support\Facades\Process::run('command -v mariadb');
+
+        if ($result->successful()) {
+            return 'mariadb ';
+        }
+
+        // Fall back to mysql
+        return 'mysql ';
     }
 }

@@ -160,6 +160,7 @@
     <template-preview-container
       ref="preview"
       :selected-template="selectedTemplate"
+      @select-template="handleSelectTemplate"
       @mark-selected-row="markSelectedRow"
     />
   </div>
@@ -251,7 +252,17 @@ export default {
       this.loading = false;
     });
   },
+  mounted() {
+    this.bindPreviewTabClose("#nav-myTemplates-tab");
+  },
+  beforeDestroy() {
+    this.unbindPreviewTabClose();
+  },
   methods: {
+    handleSelectTemplate(template) {
+      this.selectedTemplate = template;
+      this.markSelectedRow(template.id);
+    },
     fetch() {
       this.loading = true;
       this.apiDataLoading = true;

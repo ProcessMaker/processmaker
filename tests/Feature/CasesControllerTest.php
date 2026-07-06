@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Gate;
 use ProcessMaker\Http\Controllers\CasesController;
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -58,6 +60,60 @@ class CasesControllerTest extends TestCase
 
         // Check the status
         $response->assertStatus(403);
+    }
+
+    public function testCasesAllPageReturns403WithoutViewAllCasesPermission()
+    {
+        Permission::firstOrCreate(
+            ['name' => 'view-all_cases'],
+            ['title' => 'View All Cases'],
+        );
+        Gate::define('view-all_cases', fn ($user) => $user->hasPermission('view-all_cases'));
+
+        $user = User::factory()->create(['is_administrator' => false]);
+        $this->actingAs($user);
+
+        $response = $this->get(route('cases-main.index', ['type' => 'all']));
+
+        $response->assertStatus(403);
+        // Confirms the standard ProcessMaker "Not Authorized" page renders
+        // rather than the cases shell with an empty list.
+        $response->assertSee('Not Authorized');
+    }
+
+    public function testCasesAllPageReturns200WithViewAllCasesPermission()
+    {
+        Permission::firstOrCreate(
+            ['name' => 'view-all_cases'],
+            ['title' => 'View All Cases'],
+        );
+        Gate::define('view-all_cases', fn ($user) => $user->hasPermission('view-all_cases'));
+
+        $user = User::factory()->create(['is_administrator' => false]);
+        $user->giveDirectPermission('view-all_cases');
+        $this->actingAs($user);
+
+        $response = $this->get(route('cases-main.index', ['type' => 'all']));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('cases.casesMain');
+    }
+
+    public function testCasesOtherTabsRemainAccessibleWithoutViewAllCasesPermission()
+    {
+        $user = User::factory()->create(['is_administrator' => false]);
+        $this->actingAs($user);
+
+        foreach (['in_progress', 'completed'] as $type) {
+            $response = $this->get(route('cases-main.index', ['type' => $type]));
+            $response->assertStatus(200);
+            $response->assertViewIs('cases.casesMain');
+        }
+
+        // Default `/cases` landing should also work for everyone.
+        $response = $this->get(route('cases-main.index'));
+        $response->assertStatus(200);
+        $response->assertViewIs('cases.casesMain');
     }
 
     public function testShowCaseWithUserAdmin()

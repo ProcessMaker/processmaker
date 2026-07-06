@@ -31,7 +31,7 @@ class PopulateCaseStarted extends Upgrade
         $this->validateDataConsistency();
 
         DB::table('cases_started')->delete();
-        echo PHP_EOL . '    Populating case_started from process_requests' . PHP_EOL;
+        // echo PHP_EOL . '    Populating case_started from process_requests' . PHP_EOL;
 
         $startTime = microtime(true); // Start the timer
 
@@ -49,9 +49,9 @@ class PopulateCaseStarted extends Upgrade
 
         $count = DB::table('cases_started')->count();
 
-        echo PHP_EOL . "Cases started have been populated successfully. Total cases: {$count}" . PHP_EOL;
+        // echo PHP_EOL . "Cases started have been populated successfully. Total cases: {$count}" . PHP_EOL;
 
-        echo PHP_EOL;
+        // echo PHP_EOL;
     }
 
     /**
@@ -67,7 +67,7 @@ class PopulateCaseStarted extends Upgrade
         $timeElapsed = $currentTime - $startTime;
 
         // Format the elapsed time to 4 decimal places for higher precision
-        echo "    {$message} - Time elapsed: " . number_format($timeElapsed, 4) . ' seconds' . PHP_EOL;
+        Log::debug("{$message} - Time elapsed: " . number_format($timeElapsed, 4) . ' seconds');
     }
 
     /**
@@ -125,7 +125,7 @@ class PopulateCaseStarted extends Upgrade
 
         DB::statement('CREATE TEMPORARY TABLE process_requests_temp AS ' . $query->toSql(), $query->getBindings());
 
-        DB::statement(<<<SQL
+        DB::statement(<<<'SQL'
         CREATE TEMPORARY TABLE process_requests_children_temp AS SELECT 
             pr.`case_number`, 
             JSON_ARRAYAGG(
@@ -167,7 +167,7 @@ class PopulateCaseStarted extends Upgrade
      */
     private function createTemporaryParticipantsTable()
     {
-        DB::statement(<<<SQL
+        DB::statement(<<<'SQL'
             CREATE temporary table participants_temp as
             SELECT JSON_ARRAYAGG(user_id) as participants,
             case_number
@@ -326,7 +326,7 @@ class PopulateCaseStarted extends Upgrade
         if (!is_null($results)) {
             $warning = 'Inconsistency detected, multiple records with null parent for the same request. '
                 . 'Case number: ' . $results->case_number . ' Count of parent Requests: ' . $results->total;
-            echo PHP_EOL . $warning . PHP_EOL;
+            // echo PHP_EOL . $warning . PHP_EOL;
             // Ask to continue
             if ($this->confirm($warning . ' Do you want to continue?')) {
                 return;
@@ -334,16 +334,16 @@ class PopulateCaseStarted extends Upgrade
         }
     }
 
-    function confirm($message)
+    public function confirm($message)
     {
         // Show the confirmation message with a "yes/no" prompt
-        echo $message . " (yes/no): ";
-    
+        echo $message . ' (yes/no): ';
+
         // Get user input from the command line
-        $handle = fopen("php://stdin", "r");
+        $handle = fopen('php://stdin', 'r');
         $response = trim(fgets($handle));
         fclose($handle);
-    
+
         // Check if the response is "yes"
         return strtolower($response) === 'yes';
     }

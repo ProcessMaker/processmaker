@@ -1,5 +1,11 @@
 import axios from "axios";
 import { setGlobalPMVariables, getGlobalPMVariable } from "../globalVariables";
+import {
+  applyCsrfToken,
+  attachCsrfRequestInterceptor,
+  attachSessionRenewalInterceptor,
+  getCsrfToken,
+} from "../../common/csrfToken";
 
 export default () => {
   const token = document.head.querySelector("meta[name=\"csrf-token\"]");
@@ -21,9 +27,16 @@ export default () => {
 
   const apiClient = axios;
 
+  // Laravel web sessions / CSRF with cookie requires axios to send cookies.
+  apiClient.defaults.withCredentials = true;
+
   apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
   apiClient.defaults.baseURL = apiVersionConfig[0].baseURL;
+
+  setGlobalPMVariables({
+    apiClient,
+  });
 
   apiClient.interceptors.request.use((config) => {
     if (typeof config.url !== "string" || !config.url) {
@@ -42,6 +55,9 @@ export default () => {
 
     return config;
   });
+
+  attachCsrfRequestInterceptor(apiClient);
+  attachSessionRenewalInterceptor(apiClient);
 
   // flags print forms
   apiClient.requestCount = 0;
@@ -66,7 +82,7 @@ export default () => {
       apiClient.requestCount -= 1;
     }
     return response;
-  }, (error) => {
+  }, async (error) => {
     // Set in your .catch to false to not show the alert inside window.ProcessMaker.apiClient
     if (!error?.response?.showAlert) {
       return Promise.reject(error);
@@ -75,15 +91,18 @@ export default () => {
     if (error.code && error.code === "ERR_CANCELED") {
       return Promise.reject(error);
     }
+
     EventBus.$emit("api-client-error", error);
+
     if (error.response && error.response.status && error.response.status === 401) {
+      const url = error.config?.url || "";
       // stop 401 error consuming endpoints with data-sources
-      const { url } = error.config;
       if (url.includes("/data_sources/")) {
         if (url.includes("requests/") || url.includes("/test")) {
           throw error;
         }
       }
+
       window.location = "/login";
     } else {
       if (_.has(error, "config.url") && !error.config.url.match("/debug")) {
@@ -107,7 +126,7 @@ export default () => {
    */
 
   if (token) {
-    apiClient.defaults.headers.common["X-CSRF-TOKEN"] = token.content;
+    applyCsrfToken(token.content, "page-load");
   } else {
     console.error("CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token");
   }
@@ -135,7 +154,6 @@ export default () => {
     }
   });
 
-  setGlobalPMVariables({
-    apiClient,
-  });
+  window.ProcessMaker.applyCsrfToken = applyCsrfToken;
+  window.ProcessMaker.getCsrfToken = getCsrfToken;
 };

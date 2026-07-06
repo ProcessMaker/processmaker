@@ -44,6 +44,7 @@
               ref="formRender"
               v-model="previewData"
               :data="previewData"
+              :current-page="page"
               :config="configScreen"
               :custom-css="screen.custom_css"
               :show-errors="true"

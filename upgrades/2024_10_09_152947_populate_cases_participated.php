@@ -15,7 +15,7 @@ class PopulateCasesParticipated extends Upgrade
         $total_participants = $this->validateDataConsistency();
 
         DB::table('cases_participated')->delete();
-        echo PHP_EOL . '    Populating case_participated from cases_started' . PHP_EOL;
+        // echo PHP_EOL . '    Populating case_participated from cases_started' . PHP_EOL;
 
         $startTime = microtime(true); // Start the timer
 
@@ -27,10 +27,10 @@ class PopulateCasesParticipated extends Upgrade
 
         $count = DB::table('cases_participated')->count();
 
-        echo PHP_EOL . "Cases Started participants. Total cases started participants: {$total_participants}" . PHP_EOL;
-        echo PHP_EOL . "Cases Participated have been populated successfully. Total cases participated: {$count}" . PHP_EOL;
+        // echo PHP_EOL . "Cases Started participants. Total cases started participants: {$total_participants}" . PHP_EOL;
+        // echo PHP_EOL . "Cases Participated have been populated successfully. Total cases participated: {$count}" . PHP_EOL;
 
-        echo PHP_EOL;
+        // echo PHP_EOL;
     }
 
     /**
@@ -56,7 +56,7 @@ class PopulateCasesParticipated extends Upgrade
         $timeElapsed = $currentTime - $startTime;
 
         // Format the elapsed time to 4 decimal places for higher precision
-        echo "    {$message} - Time elapsed: " . number_format($timeElapsed, 4) . ' seconds' . PHP_EOL;
+        Log::debug("{$message} - Time elapsed: " . number_format($timeElapsed, 4) . ' seconds');
     }
 
     /**

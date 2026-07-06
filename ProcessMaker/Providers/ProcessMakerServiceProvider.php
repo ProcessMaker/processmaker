@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
+use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Filesystem\Filesystem;
@@ -9,9 +10,6 @@ use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
-use Illuminate\Queue\Events\JobAttempted;
-use Illuminate\Queue\Events\JobProcessing;
-use Illuminate\Queue\Events\JobRetryRequested;
 use Illuminate\Queue\Listener;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
@@ -22,11 +20,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
-use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Horizon\SystemProcessCounter;
 use Laravel\Horizon\WorkerCommandString;
+use Laravel\Passport\Client as PassportClient;
 use Lavary\Menu\Menu;
+use OpenApi\Analysers\AttributeAnnotationFactory;
+use OpenApi\Analysers\DocBlockAnnotationFactory;
+use OpenApi\Analysers\ReflectionAnalyser;
 use ProcessMaker\Cache\Settings\SettingCacheManager;
 use ProcessMaker\Console\Commands\HorizonListen;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
@@ -116,12 +117,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
             DB::listen(function ($query) {
                 self::$queryTime += $query->time;
             });
-        }
-
-        // Dusk, if env is appropriate
-        // TODO Remove Dusk references and remove from composer dependencies
-        if (!$this->app->environment('production')) {
-            $this->app->register(DuskServiceProvider::class);
         }
 
         // Register our permission services
@@ -331,6 +326,17 @@ class ProcessMakerServiceProvider extends ServiceProvider
                 throw new MultitenancyNoTenantFound();
             }
         });
+
+        Facades\Event::listen(function (CommandStarting $event) {
+            if ($event->command === 'l5-swagger:generate') {
+                // Set the analyser to use the legacy DocBlockAnnotationFactory. This must
+                // be set here because this config value is not serializable and cannot be cached.
+                config(['l5-swagger.defaults.scanOptions.analyser' => new ReflectionAnalyser([
+                    new AttributeAnnotationFactory(),
+                    new DocBlockAnnotationFactory(),
+                ])]);
+            }
+        });
     }
 
     /**
@@ -349,6 +355,24 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Models\ProcessRequestToken::observe(Observers\ProcessRequestTokenObserver::class);
 
         Models\ProcessCollaboration::observe(Observers\ProcessCollaborationObserver::class);
+
+        // Due to this change https://github.com/laravel/passport/blob/ea020190123953426a439f0267c6cfa478f6e6e7/src/Guards/TokenGuard.php#L146
+        // user ID is now required for bearer tokens clients. Any user will work here, the token itself
+        // is what's associated with the real user. For now, we'll use the first administrator user.
+        PassportClient::creating(function (PassportClient $client): void {
+            if (!$client->personal_access_client || $client->user_id !== null) {
+                return;
+            }
+
+            $adminUserId = Models\User::query()
+                ->where('is_administrator', true)
+                ->orderBy('id')
+                ->value('id');
+
+            if ($adminUserId !== null) {
+                $client->user_id = $adminUserId;
+            }
+        });
     }
 
     /**

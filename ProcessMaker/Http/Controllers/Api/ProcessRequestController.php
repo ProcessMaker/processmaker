@@ -31,7 +31,9 @@ use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Query\SyntaxError;
@@ -609,6 +611,19 @@ class ProcessRequestController extends Controller
         // Close process request
         $request->status = 'CANCELED';
         $request->save();
+
+        // Close any token still open after status is CANCELED (race: task submit commits after CancelRequest job).
+        ProcessRequestToken::query()
+            ->where('process_request_id', $request->getKey())
+            ->where('status', '!=', ActivityInterface::TOKEN_STATE_CLOSED)
+            ->update([
+                'status' => ActivityInterface::TOKEN_STATE_CLOSED,
+                'completed_at' => now(),
+                'due_at' => null,
+                'riskchanges_at' => null,
+                'user_id' => null,
+            ]);
+
         // Update case status
         CaseUpdateStatus::dispatchSync($request);
 
@@ -779,8 +794,8 @@ class ProcessRequestController extends Controller
         $query = ProcessRequestToken::query();
         $query->select('id', 'element_id', 'process_id', 'process_request_id', 'data')
             ->where('process_request_id', $request->id)
-            ->whereNotIn('element_type', ['startEvent', 'end_event', 'scriptTask'])
-            ->where('status', 'CLOSED')
+            ->whereNotIn('element_type', ['end_event', 'scriptTask'])
+            ->whereIn('status', ['CLOSED', 'TRIGGERED'])
             ->orderBy('completed_at');
 
         $response =
@@ -792,19 +807,23 @@ class ProcessRequestController extends Controller
         $collection = $response->getCollection()
             ->transform(function ($token): ?object {
                 $definition = $token->getDefinition();
-                if (array_key_exists('screenRef', $definition)) {
-                    $screen = $token->getScreenVersion();
-                    if ($screen) {
-                        $dataManager = new DataManager();
-                        $screen->data = $dataManager->getData($token, true);
-                        $screen->screen_id = $screen->id;
-                        $screen->id = $token->id;
-
-                        return $screen;
+                if (!array_key_exists('screenRef', $definition)) {
+                    $config = isset($definition['config']) ? json_decode($definition['config']) : null;
+                    $screenRef = (isset($config) && isset($config->web_entry)) ? $config->web_entry->screen_id ?? null : null;
+                    if (!$screenRef) {
+                        return null;
                     }
                 }
+                $screen = $token->getScreenVersion() ?? null;
 
-                return null;
+                if ($screen) {
+                    $dataManager = new DataManager();
+                    $screen->data = $dataManager->getData($token, true);
+                    $screen->screen_id = $screen->id;
+                    $screen->id = $token->id;
+                }
+
+                return $screen;
             })
             ->reject(fn ($item) => $item === null)
             ->values();

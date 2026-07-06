@@ -160,8 +160,9 @@ class BuildScriptExecutors extends Command
         $this->info('Building the docker executor');
 
         $image = $scriptExecutor->dockerImageName();
+        $cacheArg = $this->option('rebuild') ? '--no-cache ' : '';
         $command = Docker::command() .
-            " build --build-arg SDK_DIR=./sdk -t {$image} -f {$packagePath}/Dockerfile.custom {$packagePath}";
+            " build {$cacheArg}--build-arg SDK_DIR=./sdk -t {$image} -f {$packagePath}/Dockerfile.custom {$packagePath}";
 
         $buildArgs = $this->getBuildArgs();
 
@@ -169,6 +170,7 @@ class BuildScriptExecutors extends Command
             $command .= ' ' . $buildArg;
         }
 
+        $this->info("Running command: $command");
         $this->execCommand($command);
 
         $isNayra = $scriptExecutor->language === Base::NAYRA_LANG;

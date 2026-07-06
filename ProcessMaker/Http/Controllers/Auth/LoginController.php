@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Validation\ValidationException;
+use Laravel\Passport\ApiTokenCookieFactory;
 use Laravel\Passport\Passport;
 use ProcessMaker\Events\Logout;
 use ProcessMaker\Http\Controllers\Controller;
@@ -16,6 +17,7 @@ use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder;
+use ProcessMaker\Services\PermissionCacheService;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class LoginController extends Controller
@@ -91,7 +93,7 @@ class LoginController extends Controller
                     true,
                     true,
                     false,
-                    'none'
+                    $this->sessionSameSite()
                 );
 
                 // Redirect to SSO and attach the cookie
@@ -111,7 +113,7 @@ class LoginController extends Controller
             true,
             true,
             false,
-            'none'
+            $this->sessionSameSite()
         );
         $loginView = empty(config('app.login_view')) ? 'auth.login' : config('app.login_view');
         $response = response(view($loginView, compact('addons', 'block')));
@@ -242,9 +244,29 @@ class LoginController extends Controller
         return 'username';
     }
 
-    public function keepAlive()
+    public function keepAlive(Request $request)
     {
-        return response('', 204);
+        // Touch the Laravel session to extend its server-side expiration.
+        // Return the session CSRF token and refresh Passport's API cookie.
+        $token = '';
+        try {
+            $request->session()->put('_pm_keep_alive', time());
+            $token = (string) $request->session()->token();
+        } catch (\Throwable $e) {
+            // If session is unavailable, return an empty token and let the frontend handle auth failure.
+        }
+
+        $response = response()->json(['token' => $token]);
+
+        if (Auth::check() && $token !== '') {
+            // Passport's CreateFreshApiToken middleware only refreshes this
+            // cookie on GET requests. keep-alive is POST, so refresh it here.
+            $response->withCookie(
+                app(ApiTokenCookieFactory::class)->make(Auth::id(), $token)
+            );
+        }
+
+        return $response;
     }
 
     protected function authenticated(Request $request, $user)
@@ -262,7 +284,7 @@ class LoginController extends Controller
 
             //Clear the user permissions
             $userId = Auth::user()->id;
-            Cache::forget("user_{$userId}_permissions");
+            app(PermissionCacheService::class)->forgetLegacyUserPermissions($userId);
             Cache::forget("user_{$userId}_project_assets");
 
             // Clear the user session
@@ -358,15 +380,19 @@ class LoginController extends Controller
                     true,
                     true,
                     false,
-                    'none',
+                    $this->sessionSameSite(),
                 );
 
                 return redirect()->route('password.change');
             }
             // Cache user permissions for a day to improve performance
-            Cache::remember("user_{$user->id}_permissions", 86400, function () use ($user) {
-                return $user->permissions()->pluck('name')->toArray();
-            });
+            app(PermissionCacheService::class)->rememberLegacyUserPermissions(
+                $user->id,
+                86400,
+                function () use ($user) {
+                    return $user->permissions()->pluck('name')->toArray();
+                }
+            );
 
             $this->setupLanguage($request, $user);
 
@@ -405,5 +431,10 @@ class LoginController extends Controller
             $user->language = json_decode($language)->code;
             $user->save();
         }
+    }
+
+    private function sessionSameSite(): string
+    {
+        return config('session.same_site') ?: 'lax';
     }
 }

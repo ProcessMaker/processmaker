@@ -188,8 +188,12 @@ abstract class Base
         // Add the url to the host
         if ($useEscape) {
             $variablesParameter[] = 'HOST_URL=' . escapeshellarg(config('app.docker_host_url'));
+            $variablesParameter[] = 'SMART_EXTRACT_API_HOST=' . escapeshellarg(config('smart-extract.api_host'));
+            $variablesParameter[] = 'SMART_EXTRACT_REQUEST_TIMEOUT=' . escapeshellarg((string) config('smart-extract.request_timeout'));
         } else {
             $variablesParameter[] = 'HOST_URL=' . config('app.docker_host_url');
+            $variablesParameter[] = 'SMART_EXTRACT_API_HOST=' . config('smart-extract.api_host');
+            $variablesParameter[] = 'SMART_EXTRACT_REQUEST_TIMEOUT=' . config('smart-extract.request_timeout');
         }
 
         return $variablesParameter;

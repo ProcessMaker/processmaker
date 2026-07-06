@@ -17,18 +17,39 @@ export const initSessionSync = ({
     return null;
   }
 
-  const sessionChannelName = "pm-session-sync";
-  const sessionLeaderKey = "pm:session:leader";
-  const sessionStateKey = "pm:session:state";
-  const sessionWarningKey = "pm:session:warning";
+  const safeStorageGetItem = (key) => {
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const safeTimeoutLength = Number(accountTimeoutLength);
+  const safeTimeoutWarnSeconds = Number(accountTimeoutWarnSeconds);
+  const safeTimeoutEnabled = Number(accountTimeoutEnabled);
+  const normalizedTimeoutLength = Number.isFinite(safeTimeoutLength) && safeTimeoutLength > 0
+    ? safeTimeoutLength
+    : 0;
+  const normalizedTimeoutWarnSeconds = Number.isFinite(safeTimeoutWarnSeconds) && safeTimeoutWarnSeconds > 0
+    ? safeTimeoutWarnSeconds
+    : 0;
+  const normalizedTimeoutEnabled = Number.isFinite(safeTimeoutEnabled) ? safeTimeoutEnabled : 1;
+  const sessionOrigin = window.location?.origin || "unknown-origin";
+  const sessionScope = encodeURIComponent(`${sessionOrigin}:${userId}`);
+  const sessionKeyPrefix = `pm:session:${sessionScope}`;
+  const sessionChannelName = `${sessionKeyPrefix}:sync`;
+  const sessionLeaderKey = `${sessionKeyPrefix}:leader`;
+  const sessionStateKey = `${sessionKeyPrefix}:state`;
+  const sessionWarningKey = `${sessionKeyPrefix}:warning`;
   // Track keep-alive progress across tabs.
-  const sessionRenewingKey = "pm:session:renewing";
-  const sessionSuppressKey = "pm:session:suppress-warning";
-  const sessionMessageKey = "pm:session:message";
+  const sessionRenewingKey = `${sessionKeyPrefix}:renewing`;
+  const sessionSuppressKey = `${sessionKeyPrefix}:suppress-warning`;
+  const sessionMessageKey = `${sessionKeyPrefix}:message`;
   const sessionTabId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const leaderHeartbeatMs = 4000;
   const leaderTtlMs = 8000;
-  const sessionDebugEnabled = localStorage.getItem("pm:session:debug") === "1";
+  const sessionDebugEnabled = safeStorageGetItem("pm:session:debug") === "1";
   const sessionDebugLog = (...args) => {
     if (sessionDebugEnabled && !isProd) {
       console.info("[SessionSync]", `[tab:${sessionTabId}]`, ...args);
@@ -36,15 +57,24 @@ export const initSessionSync = ({
   };
 
   sessionDebugLog("worker:init", { timeoutScript });
-  const AccountTimeoutWorker = new Worker(timeoutScript);
-  sessionDebugLog("worker:created");
+  let AccountTimeoutWorker = null;
+  if (timeoutScript && normalizedTimeoutEnabled && normalizedTimeoutLength > 0) {
+    try {
+      AccountTimeoutWorker = new Worker(timeoutScript);
+      sessionDebugLog("worker:created");
+    } catch (error) {
+      sessionDebugLog("worker:create-failed", error);
+    }
+  } else {
+    sessionDebugLog("worker:disabled", { timeoutScript, normalizedTimeoutEnabled, normalizedTimeoutLength });
+  }
 
   const resolveSessionModal = () => (typeof getSessionModal === "function" ? getSessionModal() : null);
   const resolveCloseSessionModal = () => (typeof getCloseSessionModal === "function" ? getCloseSessionModal() : null);
 
   const readStorageJson = (key) => {
     try {
-      const raw = localStorage.getItem(key);
+      const raw = safeStorageGetItem(key);
       return raw ? JSON.parse(raw) : null;
     } catch (error) {
       return null;
@@ -68,7 +98,7 @@ export const initSessionSync = ({
   };
 
   let sessionState = {
-    timeout: accountTimeoutLength,
+    timeout: normalizedTimeoutLength,
     startedAt: Date.now(),
   };
 
@@ -94,8 +124,13 @@ export const initSessionSync = ({
   refreshSessionStateFromStorage();
 
   const setSessionState = (timeoutMinutes) => {
+    const normalizedTimeout = Number(timeoutMinutes);
+    if (!Number.isFinite(normalizedTimeout) || normalizedTimeout <= 0) {
+      sessionDebugLog("session-state:invalid-timeout", { timeoutMinutes });
+      return;
+    }
     sessionState = {
-      timeout: timeoutMinutes,
+      timeout: normalizedTimeout,
       startedAt: Date.now(),
     };
     writeStorageJson(sessionStateKey, sessionState);
@@ -180,7 +215,14 @@ export const initSessionSync = ({
     writeStorageJson(sessionSuppressKey, suppressWarningState);
   };
 
-  const sessionChannel = "BroadcastChannel" in window ? new BroadcastChannel(sessionChannelName) : null;
+  let sessionChannel = null;
+  if ("BroadcastChannel" in window) {
+    try {
+      sessionChannel = new BroadcastChannel(sessionChannelName);
+    } catch (error) {
+      sessionDebugLog("broadcast-channel:create-failed", error);
+    }
+  }
   const recentMessageIds = new Map();
   const recentMessageTtlMs = 5000;
   const maxRecentMessageIds = 100;
@@ -258,11 +300,11 @@ export const initSessionSync = ({
   };
 
   const markActivity = (source) => {
-    setSessionState(accountTimeoutLength);
+    setSessionState(normalizedTimeoutLength);
     clearWarningState();
     setSuppressWarning(2000);
-    broadcastSessionEvent("activity", { timeout: accountTimeoutLength, source });
-    sessionDebugLog("activity", { source, timeout: accountTimeoutLength });
+    broadcastSessionEvent("activity", { timeout: normalizedTimeoutLength, source });
+    sessionDebugLog("activity", { source, timeout: normalizedTimeoutLength });
     const closeSessionModal = resolveCloseSessionModal();
     if (closeSessionModal) {
       closeSessionModal();
@@ -273,10 +315,68 @@ export const initSessionSync = ({
     }
   };
 
+  const renewSession = (timeoutMinutes = normalizedTimeoutLength) => {
+    const timeout = Number(timeoutMinutes) || normalizedTimeoutLength;
+    clearWarningState();
+    setRenewingState(false);
+    setSuppressWarning(1000);
+    setSessionState(timeout);
+    broadcastSessionEvent("renewed", { timeout });
+    const closeSessionModal = resolveCloseSessionModal();
+    if (closeSessionModal) {
+      closeSessionModal();
+    }
+    if (isLeader()) {
+      if (AccountTimeoutWorker) {
+        AccountTimeoutWorker.postMessage({ method: "stop" });
+      }
+      startTimeoutWorker(timeout);
+    }
+  };
+
   const getRemainingTimeout = (timeoutMinutes) => {
     const elapsedMinutes = (Date.now() - sessionState.startedAt) / 60000;
     const remaining = timeoutMinutes - elapsedMinutes;
     return Math.max(0, remaining);
+  };
+
+  const getRemainingSeconds = () => {
+    refreshSessionStateFromStorage();
+    return Math.ceil(getRemainingTimeout(sessionState.timeout) * 60);
+  };
+
+  const getRequestRenewalThresholdSeconds = (thresholdSeconds) => {
+    const configuredThreshold = Number(thresholdSeconds);
+    const timeoutSeconds = normalizedTimeoutLength * 60;
+    const defaultThreshold = Math.floor(timeoutSeconds * 0.8);
+    const baseThreshold = Number.isFinite(configuredThreshold) && configuredThreshold > 0
+      ? configuredThreshold
+      : defaultThreshold;
+    const maxThreshold = Math.max(0, timeoutSeconds - 5);
+
+    return Math.min(baseThreshold, maxThreshold);
+  };
+
+  const shouldRenewBeforeRequest = (thresholdSeconds) => {
+    if (!AccountTimeoutWorker || !normalizedTimeoutEnabled || normalizedTimeoutLength <= 0) {
+      return false;
+    }
+
+    const remainingSeconds = getRemainingSeconds();
+    const renewalThresholdSeconds = getRequestRenewalThresholdSeconds(thresholdSeconds);
+
+    return remainingSeconds > 0 && remainingSeconds <= renewalThresholdSeconds;
+  };
+
+  const getRequestRenewalStatus = (thresholdSeconds) => {
+    const remainingSeconds = getRemainingSeconds();
+    const renewalThresholdSeconds = getRequestRenewalThresholdSeconds(thresholdSeconds);
+
+    return {
+      remainingSeconds,
+      renewalThresholdSeconds,
+      shouldRenew: remainingSeconds > 0 && remainingSeconds <= renewalThresholdSeconds,
+    };
   };
 
   const getRemainingWarningTime = () => {
@@ -288,6 +388,10 @@ export const initSessionSync = ({
   };
 
   const startTimeoutWorker = (timeoutMinutes) => {
+    if (!AccountTimeoutWorker || !normalizedTimeoutEnabled || normalizedTimeoutLength <= 0) {
+      sessionDebugLog("worker:start:skip", { hasWorker: !!AccountTimeoutWorker, normalizedTimeoutEnabled, normalizedTimeoutLength });
+      return;
+    }
     const remaining = getRemainingTimeout(timeoutMinutes);
     sessionDebugLog("worker:start", { timeoutMinutes, remaining });
     if (remaining <= 0) {
@@ -300,8 +404,8 @@ export const initSessionSync = ({
       method: "start",
       data: {
         timeout: remaining,
-        warnSeconds: accountTimeoutWarnSeconds,
-        enabled: accountTimeoutEnabled,
+        warnSeconds: normalizedTimeoutWarnSeconds,
+        enabled: normalizedTimeoutEnabled,
       },
     });
   };
@@ -330,11 +434,15 @@ export const initSessionSync = ({
     const sessionModal = resolveSessionModal();
     // Guard for layouts that don't include the session modal.
     if (typeof sessionModal === "function") {
+      const warningMessage = [
+        "<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p>",
+        "<p>Would you like to stay connected?</p>",
+      ].join("");
       sessionModal(
         "Session Warning",
-        "<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>",
+        warningMessage,
         remainingTime,
-        accountTimeoutWarnSeconds,
+        normalizedTimeoutWarnSeconds,
       );
     }
   };
@@ -373,7 +481,7 @@ export const initSessionSync = ({
     }
 
     if (message.type === "renewed" || message.type === "started" || message.type === "activity") {
-      const timeout = Number(message.data?.timeout) || accountTimeoutLength;
+      const timeout = Number(message.data?.timeout) || normalizedTimeoutLength;
       clearWarningState();
       setRenewingState(false);
       setSuppressWarning(1000);
@@ -401,25 +509,45 @@ export const initSessionSync = ({
     }
   };
 
+  const handleBroadcastMessage = (event) => handleSessionMessage(event.data);
   if (sessionChannel) {
-    sessionChannel.onmessage = (event) => handleSessionMessage(event.data);
+    sessionChannel.onmessage = handleBroadcastMessage;
   }
 
-  window.addEventListener("storage", (event) => {
+  const handleStorageMessage = (event) => {
     if (event.key !== sessionMessageKey || !event.newValue) {
       return;
     }
 
     handleSessionMessage(readStorageJson(sessionMessageKey));
-  });
+  };
+  window.addEventListener("storage", handleStorageMessage);
 
-  AccountTimeoutWorker.onmessage = (e) => {
+  const handleStoredTerminalSessionMessage = () => {
+    const message = readStorageJson(sessionMessageKey);
+    if (message?.type === "logout" || message?.type === "expired") {
+      handleSessionMessage(message);
+    }
+  };
+
+  const handleWorkerMessage = (e) => {
     if (!isLeader()) {
       return;
     }
 
     if (e.data.method === "countdown") {
       sessionDebugLog("worker:countdown", e.data.data);
+      refreshSessionStateFromStorage();
+      const remainingSeconds = getRemainingTimeout(sessionState.timeout) * 60;
+      if (remainingSeconds > normalizedTimeoutWarnSeconds) {
+        sessionDebugLog("worker:countdown:stale", { remainingSeconds, sessionState });
+        clearWarningState();
+        const closeSessionModal = resolveCloseSessionModal();
+        if (closeSessionModal) {
+          closeSessionModal();
+        }
+        return;
+      }
       setWarningState(e.data.data.time);
       showWarningIfActive();
       broadcastSessionEvent("warning", { time: e.data.data.time });
@@ -438,6 +566,9 @@ export const initSessionSync = ({
       window.location = "/logout?timeout=true";
     }
   };
+  if (AccountTimeoutWorker) {
+    AccountTimeoutWorker.onmessage = handleWorkerMessage;
+  }
 
   let wasLeader = false;
   const updateLeadership = () => {
@@ -468,22 +599,28 @@ export const initSessionSync = ({
       if (leaderNow) {
         ensureWorkerRunning("leadership-change");
       } else {
+        workerStarted = false;
+        if (AccountTimeoutWorker) {
+          AccountTimeoutWorker.postMessage({ method: "stop" });
+        }
         const closeSessionModal = resolveCloseSessionModal();
         if (closeSessionModal) {
-          workerStarted = false;
           closeSessionModal();
         }
       }
     }
   };
 
+  if (document.visibilityState === "visible") {
+    markActivity("load");
+  }
   updateLeadership();
   if (isLeader()) {
-    markActivity("load");
     ensureWorkerRunning("load");
   }
-  setInterval(updateLeadership, leaderHeartbeatMs);
-  window.addEventListener("visibilitychange", () => {
+  const leadershipInterval = setInterval(updateLeadership, leaderHeartbeatMs);
+  const handleVisibilityChange = () => {
+    handleStoredTerminalSessionMessage();
     updateLeadership();
     // Keep warning state in sync when switching tabs.
     refreshWarningStateFromStorage();
@@ -493,22 +630,38 @@ export const initSessionSync = ({
       refreshSessionStateFromStorage();
       startTimeoutWorker(sessionState.timeout);
     }
-  });
+  };
+  window.addEventListener("visibilitychange", handleVisibilityChange);
+  window.addEventListener("focus", handleStoredTerminalSessionMessage);
 
   // Broadcast manual logout so all tabs close warning and redirect.
-  document.addEventListener("click", (event) => {
-    const logoutLink = event.target.closest('a[href="/logout"], a[href^="/logout?"]');
+  const handleDocumentClick = (event) => {
+    const logoutLink = event.target.closest("a[href=\"/logout\"], a[href^=\"/logout?\"]");
     if (!logoutLink) {
       return;
     }
     clearWarningState();
     broadcastSessionEvent("logout");
-  });
+  };
+  document.addEventListener("click", handleDocumentClick);
 
   const isSameDevice = (e) => {
     const localDeviceId = Vue.$cookies.get(e.device_variable);
     const remoteDeviceId = e.device_id;
     return localDeviceId && localDeviceId === remoteDeviceId;
+  };
+
+  // initSessionSync runs from bootstrap.js before app-layout.js replaces
+  // ProcessMaker.alert (2-arg stub → navbar alert with msgLink). Resolve at event time
+  // so export/download toasts get alertLink and show the Download anchor.
+  const showNavbarAlert = (...args) => {
+    if (typeof window.ProcessMaker?.alert === "function") {
+      window.ProcessMaker.alert(...args);
+      return;
+    }
+    if (typeof alert === "function") {
+      alert(...args);
+    }
   };
 
   if (Echo) {
@@ -519,8 +672,12 @@ export const initSessionSync = ({
         }
       })
       .listen(".SessionStarted", (e) => {
-        const lifetime = parseInt(eval(e.lifetime));
+        const lifetime = Number(e.lifetime);
         if (!isSameDevice(e)) {
+          return;
+        }
+        if (!Number.isFinite(lifetime) || lifetime <= 0) {
+          sessionDebugLog("event:session-started:invalid-lifetime", { lifetime: e.lifetime });
           return;
         }
 
@@ -544,7 +701,8 @@ export const initSessionSync = ({
             const newDeviceId = Vue.$cookies.get(e.device_variable);
             if (localDeviceId !== newDeviceId) {
               clearInterval(redirectLogoutinterval);
-              window.location.href = "/logout";
+              // eslint-disable-next-line no-undef
+              globalThis.location.href = "/logout";
             }
           }, 100);
         }
@@ -568,17 +726,37 @@ export const initSessionSync = ({
   }
 
   return {
-    AccountTimeoutLength: accountTimeoutLength,
-    AccountTimeoutWarnSeconds: accountTimeoutWarnSeconds,
-    AccountTimeoutWarnMinutes: accountTimeoutWarnSeconds / 60,
-    AccountTimeoutEnabled: accountTimeoutEnabled,
+    AccountTimeoutLength: normalizedTimeoutLength,
+    AccountTimeoutWarnSeconds: normalizedTimeoutWarnSeconds,
+    AccountTimeoutWarnMinutes: normalizedTimeoutWarnSeconds / 60,
+    AccountTimeoutEnabled: normalizedTimeoutEnabled,
     AccountTimeoutWorker,
     sessionSync: {
       broadcast: broadcastSessionEvent,
+      destroy() {
+        clearInterval(leadershipInterval);
+        // eslint-disable-next-line no-undef
+        globalThis.removeEventListener("storage", handleStorageMessage);
+        // eslint-disable-next-line no-undef
+        globalThis.removeEventListener("visibilitychange", handleVisibilityChange);
+        // eslint-disable-next-line no-undef
+        globalThis.removeEventListener("focus", handleStoredTerminalSessionMessage);
+        document.removeEventListener("click", handleDocumentClick);
+        if (sessionChannel) {
+          sessionChannel.close();
+        }
+        if (AccountTimeoutWorker) {
+          AccountTimeoutWorker.terminate();
+        }
+      },
       isLeader,
+      renewSession,
       setSessionState,
       clearWarningState,
       setRenewingState,
+      getRemainingSeconds,
+      getRequestRenewalStatus,
+      shouldRenewBeforeRequest,
     },
   };
 };

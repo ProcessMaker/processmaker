@@ -56,6 +56,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        // Explicitly disable client UUIDs to match the database schema (integer id)
+        // In newer versions of Passport, UUIDs are enabled by default
+        Passport::$clientUuids = false;
+
         Passport::enablePasswordGrant();
 
         Passport::authorizationView('auth.oauth2.authorize');

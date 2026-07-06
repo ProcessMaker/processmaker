@@ -314,13 +314,20 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
-     * Scope to filter by status
+     * Scope to filter by status.
+     * Supports single value (e.g. ACTIVE) or comma-separated values (e.g. CLOSED,TRIGGERED).
      */
     public function scopeFilterByStatus($query, $request)
     {
         $status = $request->input('status', 'ACTIVE');
+        $statuses = array_map(fn ($v) => mb_strtoupper(trim($v)), explode(',', $status));
+        $statuses = array_filter($statuses);
 
-        return $query->where('status', $status);
+        if (count($statuses) === 1) {
+            return $query->where('status', $statuses[0]);
+        }
+
+        return $query->whereIn('status', $statuses);
     }
 
     /**
@@ -443,7 +450,14 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     public function getScreen(): ?Screen
     {
         $definition = $this->getDefinition();
-        $screenRef = $definition['screenRef'] ?? null;
+        $screenRef = isset($definition['screenRef']) ? $definition['screenRef'] : null;
+
+        if (!$screenRef) {
+            $config = isset($definition['config']) ? json_decode($definition['config']) : null;
+
+            $screenRef = (isset($config) && isset($config->web_entry)) ? $config->web_entry->screen_id ?? null : null;
+        }
+
         $screen = Screen::find($screenRef);
 
         if ($screen === null) {
@@ -640,10 +654,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $setting = Setting::byKey('indexed-search');
         if ($setting && $setting->config['enabled'] === true) {
             if (is_numeric($filter)) {
-                $query->whereIn('id', [$filter]);
+                $query->whereIn('process_request_tokens.id', [$filter]);
             } else {
                 $matches = self::search($filter)->take(10000)->get()->pluck('id');
-                $query->whereIn('id', $matches);
+                $query->whereIn('process_request_tokens.id', $matches);
             }
         } else {
             $filter = '%' . mb_strtolower($filter) . '%';
@@ -651,10 +665,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
-                    ->orWhere('id', 'like', $filter)
-                    ->orWhere('created_at', 'like', $filter)
-                    ->orWhere('due_at', 'like', $filter)
-                    ->orWhere('updated_at', 'like', $filter)
+                    ->orWhere('process_request_tokens.id', 'like', $filter)
+                    ->orWhere('process_request_tokens.created_at', 'like', $filter)
+                    ->orWhere('process_request_tokens.due_at', 'like', $filter)
+                    ->orWhere('process_request_tokens.updated_at', 'like', $filter)
                     ->orWhereHas('processRequest', function ($query) use ($filter) {
                         $query->where(DB::raw('LOWER(name)'), 'like', $filter);
                     })
