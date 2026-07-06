@@ -64,7 +64,7 @@
         "@processmaker/modeler": "1.69.41",
         "@processmaker/processmaker-bpmn-moddle": "0.16.1",
         "@processmaker/screen-builder": "github:processmaker/screen-builder#v3.9.0-performance.1",
-        "@processmaker/vue-form-elements": "github:processmaker/vue-form-elements#feature/FOUR-30918",
+        "@processmaker/vue-form-elements": "github:processmaker/vue-form-elements#v0.66.0-performance.1",
         "@processmaker/vue-multiselect": "2.3.2",
         "@tinymce/tinymce-vue": "2.0.0",
         "axios": "^0.27.2",
