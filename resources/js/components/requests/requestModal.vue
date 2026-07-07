@@ -192,6 +192,18 @@ export default {
       }
       this.fetch();
     },
+    changePerPage(value) {
+      this.perPage = value;
+      const pagination = this.$refs.listProcess ? this.$refs.listProcess.tablePagination : null;
+      const total = pagination && pagination.total ? pagination.total : 0;
+      if (total > 0 && this.page * value > total) {
+        this.page = Math.floor(total / value) + 1;
+      }
+      if (this.page <= 0) {
+        this.page = 1;
+      }
+      this.fetch();
+    },
     fetch() {
       if (!this.loaded) {
         return;
