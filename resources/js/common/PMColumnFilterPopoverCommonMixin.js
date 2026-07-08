@@ -39,8 +39,9 @@ const PMColumnFilterCommonMixin = {
   },
   methods: {
     /**
-     * Task inbox: if no Status column filter is present, default to the same behavior as
-     * tasks/index.js (In Progress, or Completed / Self Service from URL query).
+     * Task inbox bootstrap only: if no Status column filter is present, default to the same
+     * behavior as tasks/index.js (In Progress, or Completed / Self Service from URL query).
+     * Do not call from storeFilterConfiguration()/onClear() or a user clear is silently restored.
      */
     applyTaskInboxDefaultStatusIfMissing() {
       if (typeof this.filterConfiguration !== "function") {
@@ -96,7 +97,8 @@ const PMColumnFilterCommonMixin = {
         return;
       }
 
-      this.applyTaskInboxDefaultStatusIfMissing();
+      // Do not re-apply inbox Status defaults here: store/clear are user-initiated.
+      // Defaults belong in getFilterConfiguration() during bootstrap/reload only.
       const { order, type } = this.filterConfiguration();
 
       let url = "users/store_filter_configuration/";

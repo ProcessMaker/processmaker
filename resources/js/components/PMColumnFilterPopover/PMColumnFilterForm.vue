@@ -260,9 +260,10 @@
           return;
         }
         for (let i = 0; i < items.length - 1; i++) {
-          if (items[i].operator === "=" && items[i + 1].operator === "=") {
-            items[i].logical = "or";
-          }
+          items[i].logical =
+            items[i].operator === "=" && items[i + 1].operator === "="
+              ? "or"
+              : "and";
         }
       },
       getLogicals(index) {
