@@ -101,16 +101,15 @@ const create = (name, url) => {
       ProcessMaker.apiClient
         .get(`devlink/${newId}/ping`)
         .then((response) => {
-          status.value = 'success';
-          window.location.href = fullUrl;
-        })
-        .catch((e) => {
-          if (e.response.status === 401) {
+          if (['ok', 'authorization_required'].includes(response.data.status)) {
             status.value = 'success';
             window.location.href = fullUrl;
           } else {
             status.value = 'error';
           }
+        })
+        .catch(() => {
+          status.value = 'error';
         });
     });
 };

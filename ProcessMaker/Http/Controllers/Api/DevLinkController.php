@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Notification;
@@ -91,10 +92,20 @@ class DevLinkController extends Controller
     public function ping(DevLink $devLink)
     {
         try {
-            return $devLink->client()->get(route('api.devlink.pong', [], false));
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'DevLink connection error'], $e->getCode());
+            $response = $devLink->client()->get(route('api.devlink.pong', [], false));
+        } catch (RequestException $e) {
+            $status = $e->response->status();
+
+            return response()->json([
+                'status' => in_array($status, [401, 403], true) ? 'authorization_required' : 'error',
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json(['status' => 'error']);
         }
+
+        return response()->json([
+            'status' => $response->json('status') === 'ok' ? 'ok' : 'error',
+        ]);
     }
 
     public function pong()
