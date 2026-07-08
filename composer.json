@@ -36,6 +36,7 @@
         "lavary/laravel-menu": "^1.8",
         "lcobucci/jwt": "^5.6",
         "league/commonmark": "^2.8.1",
+        "league/flysystem-aws-s3-v3": "^3.25.1",
         "mateusjunges/laravel-kafka": "^2.11",
         "mittwald/vault-php": "^2.1",
         "mustache/mustache": "^2.14",
@@ -74,6 +75,7 @@
         "swagger-api/swagger-ui": "^5.32.3",
         "symfony/dependency-injection": "^8.1",
         "symfony/expression-language": "^7.2",
+        "symfony/filesystem": "^7.1",
         "twilio/sdk": "^8.3",
         "typo3/class-alias-loader": "^1.2",
         "whichbrowser/parser": "^2.1"
