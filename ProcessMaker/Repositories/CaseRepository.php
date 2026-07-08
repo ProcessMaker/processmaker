@@ -38,7 +38,7 @@ class CaseRepository implements CaseRepositoryInterface
     public function create(ExecutionInstanceInterface $instance): void
     {
         if (is_null($instance->case_number)) {
-            Log::error('case number is required, method=create, instance=' . $instance->getKey());
+            Log::info('case number is required, method=create, instance=' . $instance->getKey());
 
             return;
         }
