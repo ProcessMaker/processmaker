@@ -10,7 +10,7 @@
         </div>
       </div>
       <div v-if="button.showAiSlogan" class="ai-slogan-container mb-2">
-        <div class="ai-slogan"><img src="/img/favicon.svg" :alt="$t('ProcessMaker')"> {{ $t("Powered by ProcessMaker AI") }}</div>
+        <div class="ai-slogan"><img src="/img/favicon.ico" :alt="$t('Decisions')"> {{ $t("Powered by Decisions AI") }}</div>
       </div>
     </b-card>
   </div>
