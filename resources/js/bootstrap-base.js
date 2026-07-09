@@ -73,6 +73,13 @@ window.VueFormElements = require("@processmaker/vue-form-elements");
 
 window.VueRouter = Router;
 
+/**
+ * We'll load jQuery and the Bootstrap jQuery plugin which provides support
+ * for JavaScript based Bootstrap features such as modals and tabs. This
+ * code may be modified to fit the specific needs of your application.
+ */
+window.$ = window.jQuery = require("jquery");
+
 window.Vue.use(VueI18Next);
 VuetableInstall(window.Vue);
 window.Vue.component("pagination", Pagination);
