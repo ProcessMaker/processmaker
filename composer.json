@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "2026.12.1",
+    "version": "2026.12.1-FOUR-26166",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -178,7 +178,7 @@
                 "package-product-analytics": "1.5.11",
                 "package-projects": "1.12.9",
                 "package-rpa": "1.1.2",
-                "package-savedsearch": "1.43.14",
+                "package-savedsearch": "dev-feature/FOUR-26166",
                 "package-slideshow": "1.4.3",
                 "package-smart-extract": "1.0.0",
                 "package-signature": "1.15.6",
