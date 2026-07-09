@@ -2,16 +2,13 @@
 
 namespace Tests\Unit\ProcessMaker\Mail;
 
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Cache;
 use Mockery;
 use ProcessMaker\Mail\MicrosoftGraphTokenProvider;
 use RuntimeException;
 use Tests\TestCase;
 
-/**
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
- */
 class MicrosoftGraphTokenProviderTest extends TestCase
 {
     protected function tearDown(): void
@@ -46,7 +43,7 @@ class MicrosoftGraphTokenProviderTest extends TestCase
         $tokenResponse->shouldReceive('getStatusCode')->andReturn(200);
         $tokenResponse->shouldReceive('getBody')->andReturn($tokenResponseBody);
 
-        $guzzle = Mockery::mock('overload:GuzzleHttp\Client');
+        $guzzle = Mockery::mock(Client::class);
         $guzzle->shouldReceive('post')
             ->once()
             ->with(
@@ -65,7 +62,7 @@ class MicrosoftGraphTokenProviderTest extends TestCase
             'tenant_id' => 'tenant-id-123',
             'key' => 'client-id-123',
             'secret' => 'client-secret-123',
-        ], 1);
+        ], 1, $guzzle);
 
         $this->assertSame('token-from-azure', $provider->getAccessToken());
         $this->assertSame('token-from-azure', $provider->getAccessToken());

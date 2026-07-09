@@ -14,7 +14,8 @@ class MicrosoftGraphTokenProvider
 
     public function __construct(
         private array $config,
-        private int|string $serverIndex = 0
+        private int|string $serverIndex = 0,
+        private ?Client $httpClient = null,
     ) {
     }
 
@@ -37,7 +38,7 @@ class MicrosoftGraphTokenProvider
             throw new RuntimeException('Microsoft Graph credentials are not configured.');
         }
 
-        $client = new Client();
+        $client = $this->httpClient ?? new Client();
         $response = $client->post(sprintf(self::TOKEN_URL, $tenantId), [
             'form_params' => [
                 'client_id' => $clientId,
