@@ -153,8 +153,14 @@ $isInboxPage = request()->is('inbox', 'inbox/*');
     microserviceHost: @json(config('app.ai_microservice_host'))
   };
 </script>
+@if($isInboxPage)
+<script src="{{ mix('js/app-layout-core.js') }}"></script>
+@else
 <script src="{{ mix('js/app-layout.js') }}"></script>
+@endif
+@if(!$isInboxPage)
 @include('shared.monaco')
+@endif
 @foreach(GlobalScripts::getScripts() as $script)
   <script src="{{$script}}"></script>
 @endforeach
