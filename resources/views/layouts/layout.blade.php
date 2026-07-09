@@ -127,6 +127,9 @@
     <p>{{__('Something went wrong. Try refreshing the application')}}</p>
   </div>
 </div>
+@php
+$isInboxPage = request()->is('inbox', 'inbox/*');
+@endphp
 <!-- Scripts -->
 @if(config('broadcasting.default') == 'redis')
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
@@ -134,9 +137,14 @@
 <script src="{{ mix('js/manifest.js') }}"></script>
 <script src="{{ mix('js/vue-vendor.js') }}"></script>
 <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
+@if($isInboxPage)
+<script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
+<script src="{{ mix('js/app-core.js') }}"></script>
+@else
 <script src="{{ mix('js/modeler-vendor.js') }}"></script>
 <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
 <script src="{{ mix('js/app.js') }}"></script>
+@endif
 <script>
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   window.ProcessMaker.ai = {
