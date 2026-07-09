@@ -8,6 +8,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
   <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
+  @include('auth.partials.login-credential-encryption')
   <title>{{ __('Login') }} - {{ __('ProcessMaker') }}</title>
   <link href="{{ mix('css/app.css') }}" rel="stylesheet">
   @include('auth.partials.login-critical-styles')

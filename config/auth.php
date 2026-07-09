@@ -111,6 +111,10 @@ return [
 
     'log_auth_events' => env('LOG_AUTH_EVENTS', true),
 
+    'login_encrypt_credentials' => env('LOGIN_ENCRYPT_CREDENTIALS', true),
+
+    'login_encrypt_ttl' => env('LOGIN_ENCRYPT_TTL', 300),
+
     /*
     |--------------------------------------------------------------------------
     | Password Confirmation Timeout

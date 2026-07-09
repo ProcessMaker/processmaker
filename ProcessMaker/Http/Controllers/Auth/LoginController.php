@@ -17,6 +17,7 @@ use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder;
+use ProcessMaker\Services\LoginCredentialEncryption;
 use ProcessMaker\Services\PermissionCacheService;
 use ProcessMaker\Traits\HasControllerAddons;
 
@@ -115,8 +116,15 @@ class LoginController extends Controller
             false,
             $this->sessionSameSite()
         );
+        $loginEncryption = app(LoginCredentialEncryption::class);
+        $loginPublicKey = null;
+        if ($loginEncryption->isEnabled()) {
+            $loginEncryption->ensureKeyPair();
+            $loginPublicKey = $loginEncryption->getPublicKeyPem();
+        }
+
         $loginView = empty(config('app.login_view')) ? 'auth.login' : config('app.login_view');
-        $response = response(view($loginView, compact('addons', 'block')));
+        $response = response(view($loginView, compact('addons', 'block', 'loginPublicKey')));
         $response->withCookie($cookie);
 
         // Remove 'password_hash_web' from session
@@ -194,6 +202,10 @@ class LoginController extends Controller
 
     public function loginWithIntendedCheck(Request $request)
     {
+        if (!$this->decryptLoginCredentialsIfNeeded($request)) {
+            $this->sendFailedLoginResponse($request);
+        }
+
         $intended = Cookie::get('processmaker_intended');
         if ($intended) {
             // Check if the route is a fallback, meaning it's invalid (like favicon.ico)
@@ -436,5 +448,29 @@ class LoginController extends Controller
     private function sessionSameSite(): string
     {
         return config('session.same_site') ?: 'lax';
+    }
+
+    private function decryptLoginCredentialsIfNeeded(Request $request): bool
+    {
+        if (!$request->boolean('encrypted')) {
+            return true;
+        }
+
+        $encryption = app(LoginCredentialEncryption::class);
+        if (!$encryption->isEnabled() || !$encryption->hasKeyPair()) {
+            return false;
+        }
+
+        $credentials = $encryption->decryptCredentials((string) $request->input('encrypted_credentials', ''));
+        if ($credentials === null) {
+            return false;
+        }
+
+        $request->merge([
+            'username' => $credentials['username'],
+            'password' => $credentials['password'],
+        ]);
+
+        return true;
     }
 }

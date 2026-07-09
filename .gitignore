@@ -4,6 +4,7 @@
 /public/js
 /public/css
 /storage/*.key
+/storage/app/keys/
 /storage/*.index
 /storage/tenant_*
 /vendor

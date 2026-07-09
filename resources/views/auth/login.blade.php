@@ -82,6 +82,7 @@ Login
 @endsection
 
 @section('js')
+    @include('auth.partials.login-credential-encryption')
     <script>
         const browser = navigator.userAgent;
         const isMobileDevice  = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(browser);
