@@ -390,7 +390,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
     {
         $options = new Options([
             'mode' => $mode,
-        ]);
+        ], $logger?->userId);
 
         $assets = [];
         foreach ($payloads as $payload) {
