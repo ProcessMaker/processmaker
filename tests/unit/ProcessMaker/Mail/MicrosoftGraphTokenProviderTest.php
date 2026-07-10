@@ -3,6 +3,7 @@
 namespace Tests\Unit\ProcessMaker\Mail;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Cache;
 use Mockery;
 use ProcessMaker\Mail\MicrosoftGraphTokenProvider;
@@ -35,13 +36,7 @@ class MicrosoftGraphTokenProviderTest extends TestCase
     {
         Cache::flush();
 
-        $tokenResponseBody = Mockery::mock();
-        $tokenResponseBody->shouldReceive('getContents')
-            ->andReturn(json_encode(['access_token' => 'token-from-azure']));
-
-        $tokenResponse = Mockery::mock();
-        $tokenResponse->shouldReceive('getStatusCode')->andReturn(200);
-        $tokenResponse->shouldReceive('getBody')->andReturn($tokenResponseBody);
+        $tokenResponse = new Response(200, [], json_encode(['access_token' => 'token-from-azure']));
 
         $guzzle = Mockery::mock(Client::class);
         $guzzle->shouldReceive('post')
