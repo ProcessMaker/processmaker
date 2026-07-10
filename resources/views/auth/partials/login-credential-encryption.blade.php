@@ -14,7 +14,18 @@
         return;
       }
 
-      const toBase64 = (bytes) => btoa(String.fromCharCode(...new Uint8Array(bytes)));
+      const toBase64 = function (input) {
+        const bytes = typeof input === 'string'
+          ? new TextEncoder().encode(input)
+          : new Uint8Array(input);
+        let binary = '';
+
+        bytes.forEach(function (byte) {
+          binary += String.fromCharCode(byte);
+        });
+
+        return btoa(binary);
+      };
 
       const importRsaKey = () => subtle.importKey(
         'spki',
@@ -51,13 +62,15 @@
         event.preventDefault();
 
         try {
+          const encryptedCredentials = await encryptCredentials();
+
           username.removeAttribute('name');
           password.removeAttribute('name');
 
           const credentials = document.createElement('input');
           credentials.type = 'hidden';
           credentials.name = 'encrypted_credentials';
-          credentials.value = await encryptCredentials();
+          credentials.value = encryptedCredentials;
           form.appendChild(credentials);
 
           const flag = document.createElement('input');
