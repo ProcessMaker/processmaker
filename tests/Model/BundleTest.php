@@ -2,10 +2,13 @@
 
 namespace Tests\Model;
 
+use ProcessMaker\ImportExport\Exporters\ScreenExporter;
+use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\BundleAsset;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
@@ -84,5 +87,44 @@ class BundleTest extends TestCase
         $this->assertEquals('New Screen Name', $screen->refresh()->title);
         $bundle->reinstall('update');
         $this->assertEquals('Original Screen Name', $screen->refresh()->title);
+    }
+
+    public function testReinstallPassesImportingUserIdToExporter()
+    {
+        $screen = Screen::factory()->create();
+        $screenUuid = $screen->uuid;
+        $remoteBundle = Bundle::factory()->create();
+        $remoteBundle->syncAssets([$screen]);
+        $payloads = $remoteBundle->export();
+        $payloads[0]['export'][$screenUuid]['exporter'] = ReinstallContextScreenExporter::class;
+
+        $remoteBundle->delete();
+        $screen->delete();
+
+        $localBundle = Bundle::factory()->create();
+        $localBundle->install($payloads, 'update');
+        $localBundle->savePayloadsToFile($payloads, [0 => []], null);
+
+        $importingUser = User::factory()->create();
+        ReinstallContextScreenExporter::$receivedImportingUserId = null;
+
+        $localBundle->reinstall('update', new Logger($importingUser->id));
+
+        $this->assertSame(
+            $importingUser->id,
+            ReinstallContextScreenExporter::$receivedImportingUserId
+        );
+    }
+}
+
+class ReinstallContextScreenExporter extends ScreenExporter
+{
+    public static ?int $receivedImportingUserId = null;
+
+    public function import(): bool
+    {
+        self::$receivedImportingUserId = $this->options->importingUserId;
+
+        return parent::import();
     }
 }
