@@ -8,6 +8,7 @@
       hide-footer
       :title="$t('New Case')"
       :size="size"
+      @hidden="hideModal"
     >
       <progress-loader
         ref="progressLoader"
@@ -171,14 +172,19 @@ export default {
     },
     showModal() {
       this.loaded = true;
+      this.$refs.requestModalAdd.show();
+      this.fetch();
+    },
+    hideModal() {
+      this.loaded = false;
+      this.filter = "";
+      this.error = false;
+      this.processes = {};
       this.page = 1;
       this.perPage = 15;
-      this.$refs.requestModalAdd.show();
       const pagination = this.$refs.listProcess;
       if (pagination && String(pagination.perPage) !== "15") {
         pagination.perPage = "15";
-      } else {
-        this.fetch();
       }
     },
     // Overwrite handler to change the page based on events fired
