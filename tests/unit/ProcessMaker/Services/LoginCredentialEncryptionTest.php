@@ -44,4 +44,17 @@ class LoginCredentialEncryptionTest extends TestCase
     {
         $this->assertNull($this->loginEncryption->decryptCredentials('not-valid-base64-cipher'));
     }
+
+    public function test_it_encrypts_long_credentials_with_hybrid_encryption(): void
+    {
+        $cipher = $this->loginEncryption->encryptCredentials(
+            str_repeat('u', 255),
+            str_repeat('p', 200)
+        );
+
+        $credentials = $this->loginEncryption->decryptCredentials($cipher);
+
+        $this->assertSame(str_repeat('u', 255), $credentials['username']);
+        $this->assertSame(str_repeat('p', 200), $credentials['password']);
+    }
 }

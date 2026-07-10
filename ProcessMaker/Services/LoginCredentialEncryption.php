@@ -14,6 +14,10 @@ class LoginCredentialEncryption
 
     private const PUBLIC_KEY = 'login_public.pem';
 
+    private const HYBRID_VERSION = 2;
+
+    private const GCM_TAG_LENGTH = 16;
+
     public function isEnabled(): bool
     {
         return (bool) config('auth.login_encrypt_credentials', true);
@@ -55,19 +59,17 @@ class LoginCredentialEncryption
      */
     public function decryptCredentials(string $cipherTextBase64): ?array
     {
-        $privateKey = openssl_pkey_get_private((string) file_get_contents($this->path(self::PRIVATE_KEY)));
-        $cipher = base64_decode($cipherTextBase64, true);
-        $plain = '';
-
-        if ($privateKey === false || $cipher === false) {
+        $decoded = base64_decode($cipherTextBase64, true);
+        if ($decoded === false) {
             return null;
         }
 
-        if (!openssl_private_decrypt($cipher, $plain, $privateKey, OPENSSL_PKCS1_OAEP_PADDING)) {
-            return null;
+        $bundle = json_decode($decoded, true);
+        if (is_array($bundle) && (int) ($bundle['v'] ?? 0) === self::HYBRID_VERSION) {
+            return $this->decryptHybridBundle($bundle);
         }
 
-        return $this->parsePayload($plain);
+        return $this->decryptLegacyRsaPayload($cipherTextBase64);
     }
 
     public function encryptCredentials(string $username, string $password, ?int $timestamp = null): string
@@ -80,14 +82,29 @@ class LoginCredentialEncryption
             't' => $timestamp ?? time(),
         ], JSON_THROW_ON_ERROR);
 
-        $publicKey = openssl_pkey_get_public((string) file_get_contents($this->path(self::PUBLIC_KEY)));
-        $encrypted = '';
-
-        if ($publicKey === false || !openssl_public_encrypt($payload, $encrypted, $publicKey, OPENSSL_PKCS1_OAEP_PADDING)) {
+        $aesKey = random_bytes(32);
+        $iv = random_bytes(12);
+        $tag = '';
+        $ciphertext = openssl_encrypt($payload, 'aes-256-gcm', $aesKey, OPENSSL_RAW_DATA, $iv, $tag);
+        if ($ciphertext === false) {
             throw new \RuntimeException('Unable to encrypt login credentials.');
         }
 
-        return base64_encode($encrypted);
+        $publicKey = openssl_pkey_get_public((string) file_get_contents($this->path(self::PUBLIC_KEY)));
+        $encryptedKey = '';
+        if (
+            $publicKey === false
+            || !openssl_public_encrypt($aesKey, $encryptedKey, $publicKey, OPENSSL_PKCS1_OAEP_PADDING)
+        ) {
+            throw new \RuntimeException('Unable to encrypt login credentials key.');
+        }
+
+        return base64_encode(json_encode([
+            'v' => self::HYBRID_VERSION,
+            'k' => base64_encode($encryptedKey),
+            'i' => base64_encode($iv),
+            'd' => base64_encode($ciphertext . $tag),
+        ], JSON_THROW_ON_ERROR));
     }
 
     public function generateKeyPair(): void
@@ -130,6 +147,60 @@ class LoginCredentialEncryption
         if (!$this->hasKeyPair()) {
             $this->generateKeyPair();
         }
+    }
+
+    /**
+     * @param array<string, mixed> $bundle
+     * @return array{username: string, password: string}|null
+     */
+    private function decryptHybridBundle(array $bundle): ?array
+    {
+        if (!isset($bundle['k'], $bundle['i'], $bundle['d'])) {
+            return null;
+        }
+
+        $privateKey = openssl_pkey_get_private((string) file_get_contents($this->path(self::PRIVATE_KEY)));
+        $encryptedKey = base64_decode((string) $bundle['k'], true);
+        $iv = base64_decode((string) $bundle['i'], true);
+        $payload = base64_decode((string) $bundle['d'], true);
+        $aesKey = '';
+
+        if (
+            $privateKey === false
+            || $encryptedKey === false
+            || $iv === false
+            || $payload === false
+            || strlen($payload) <= self::GCM_TAG_LENGTH
+            || !openssl_private_decrypt($encryptedKey, $aesKey, $privateKey, OPENSSL_PKCS1_OAEP_PADDING)
+        ) {
+            return null;
+        }
+
+        $tag = substr($payload, -self::GCM_TAG_LENGTH);
+        $ciphertext = substr($payload, 0, -self::GCM_TAG_LENGTH);
+        $plain = openssl_decrypt($ciphertext, 'aes-256-gcm', $aesKey, OPENSSL_RAW_DATA, $iv, $tag);
+
+        return is_string($plain) ? $this->parsePayload($plain) : null;
+    }
+
+    /**
+     * @return array{username: string, password: string}|null
+     */
+    private function decryptLegacyRsaPayload(string $cipherTextBase64): ?array
+    {
+        $privateKey = openssl_pkey_get_private((string) file_get_contents($this->path(self::PRIVATE_KEY)));
+        $cipher = base64_decode($cipherTextBase64, true);
+        $plain = '';
+
+        if ($privateKey === false || $cipher === false) {
+            return null;
+        }
+
+        if (!openssl_private_decrypt($cipher, $plain, $privateKey, OPENSSL_PKCS1_OAEP_PADDING)) {
+            return null;
+        }
+
+        return $this->parsePayload($plain);
     }
 
     /**
