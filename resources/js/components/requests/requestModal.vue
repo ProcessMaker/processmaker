@@ -171,9 +171,15 @@ export default {
     },
     showModal() {
       this.loaded = true;
-      // Perform initial load of requests from backend
+      this.page = 1;
+      this.perPage = 15;
       this.$refs.requestModalAdd.show();
-      this.fetch();
+      const pagination = this.$refs.listProcess;
+      if (pagination && String(pagination.perPage) !== "15") {
+        pagination.perPage = "15";
+      } else {
+        this.fetch();
+      }
     },
     // Overwrite handler to change the page based on events fired
     onPageChange: function onPageChange(page) {
@@ -193,11 +199,12 @@ export default {
       this.fetch();
     },
     changePerPage(value) {
-      this.perPage = value;
+      const perPage = Number(value);
+      this.perPage = perPage;
       const pagination = this.$refs.listProcess ? this.$refs.listProcess.tablePagination : null;
       const total = pagination && pagination.total ? pagination.total : 0;
-      if (total > 0 && this.page * value > total) {
-        this.page = Math.floor(total / value) + 1;
+      if (total > 0 && this.page * perPage > total) {
+        this.page = Math.ceil(total / perPage);
       }
       if (this.page <= 0) {
         this.page = 1;
