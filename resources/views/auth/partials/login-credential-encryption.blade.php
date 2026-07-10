@@ -1,107 +1,60 @@
 @if (!empty($loginPublicKey))
-<meta name="login-public-key" content="{{ $loginPublicKey }}">
 <script>
   (function () {
-    const publicKeyMeta = document.querySelector('meta[name="login-public-key"]');
-    const form = document.querySelector('form.form[action="{{ route('login') }}"]');
+    const pem = @json($loginPublicKey);
+    const alertMessage = @json(__('Unable to submit login credentials securely. Please try again.'));
 
-    if (!publicKeyMeta || !form || !window.crypto || !window.crypto.subtle) {
-      return;
-    }
+    window.addEventListener('load', function () {
+      const form = document.querySelector('form.login-form');
+      const username = form?.querySelector('#username');
+      const password = form?.querySelector('#password');
+      const subtle = window.crypto?.subtle;
 
-    const usernameInput = form.querySelector('#username');
-    const passwordInput = form.querySelector('#password');
-
-    if (!usernameInput || !passwordInput) {
-      return;
-    }
-
-    function pemToArrayBuffer(pem) {
-      const contents = pem
-        .replace('-----BEGIN PUBLIC KEY-----', '')
-        .replace('-----END PUBLIC KEY-----', '')
-        .replace(/\s/g, '');
-      const binary = atob(contents);
-      const bytes = new Uint8Array(binary.length);
-
-      for (let index = 0; index < binary.length; index += 1) {
-        bytes[index] = binary.charCodeAt(index);
+      if (!pem || !form || !username || !password || !subtle) {
+        return;
       }
 
-      return bytes.buffer;
-    }
-
-    async function importPublicKey(pem) {
-      return window.crypto.subtle.importKey(
+      const importKey = () => subtle.importKey(
         'spki',
-        pemToArrayBuffer(pem),
+        Uint8Array.from(atob(pem.replace(/-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----|\s/g, '')), (c) => c.charCodeAt(0)),
         { name: 'RSA-OAEP', hash: 'SHA-1' },
         false,
         ['encrypt']
       );
-    }
 
-    async function encryptCredentials(publicKeyPem, username, password) {
-      const key = await importPublicKey(publicKeyPem);
-      const payload = JSON.stringify({
-        u: username,
-        p: password,
-        t: Math.floor(Date.now() / 1000),
-      });
-      const encoded = new TextEncoder().encode(payload);
-      const encrypted = await window.crypto.subtle.encrypt(
-        { name: 'RSA-OAEP' },
-        key,
-        encoded
-      );
-      const bytes = new Uint8Array(encrypted);
-      let binary = '';
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault();
 
-      bytes.forEach(function (byte) {
-        binary += String.fromCharCode(byte);
-      });
+        try {
+          const encrypted = await subtle.encrypt(
+            { name: 'RSA-OAEP' },
+            await importKey(),
+            new TextEncoder().encode(JSON.stringify({
+              u: username.value,
+              p: password.value,
+              t: Math.floor(Date.now() / 1000),
+            }))
+          );
 
-      return btoa(binary);
-    }
+          username.removeAttribute('name');
+          password.removeAttribute('name');
 
-    function ensureHiddenField(name) {
-      let field = form.querySelector('[name="' + name + '"]');
+          const credentials = document.createElement('input');
+          credentials.type = 'hidden';
+          credentials.name = 'encrypted_credentials';
+          credentials.value = btoa(String.fromCharCode(...new Uint8Array(encrypted)));
+          form.appendChild(credentials);
 
-      if (!field) {
-        field = document.createElement('input');
-        field.type = 'hidden';
-        field.name = name;
-        form.appendChild(field);
-      }
+          const flag = document.createElement('input');
+          flag.type = 'hidden';
+          flag.name = 'encrypted';
+          flag.value = '1';
+          form.appendChild(flag);
 
-      return field;
-    }
-
-    form.addEventListener('submit', function (event) {
-      event.preventDefault();
-
-      const submit = async function () {
-        const encryptedCredentials = await encryptCredentials(
-          publicKeyMeta.content,
-          usernameInput.value,
-          passwordInput.value
-        );
-
-        usernameInput.removeAttribute('name');
-        passwordInput.removeAttribute('name');
-        usernameInput.value = '';
-        passwordInput.value = '';
-
-        ensureHiddenField('encrypted_credentials').value = encryptedCredentials;
-        ensureHiddenField('encrypted').value = '1';
-
-        form.submit();
-      };
-
-      submit().catch(function () {
-        usernameInput.setAttribute('name', 'username');
-        passwordInput.setAttribute('name', 'password');
-        window.alert(@json(__('Unable to submit login credentials securely. Please try again.')));
+          form.submit();
+        } catch (error) {
+          window.alert(alertMessage);
+        }
       });
     });
   })();

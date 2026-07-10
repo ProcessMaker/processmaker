@@ -9,8 +9,7 @@ use ProcessMaker\Services\LoginCredentialEncryption;
 
 class GenerateLoginKeys extends Command
 {
-    protected $signature = 'login:generate-keys
-                            {--force : Overwrite existing key files}';
+    protected $signature = 'login:generate-keys {--force : Overwrite existing key files}';
 
     protected $description = 'Generate RSA key pair for encrypted login credentials';
 

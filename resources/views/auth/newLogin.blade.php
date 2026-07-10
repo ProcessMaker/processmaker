@@ -8,7 +8,6 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
   <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
-  @include('auth.partials.login-credential-encryption')
   <title>{{ __('Login') }} - {{ __('ProcessMaker') }}</title>
   <link href="{{ mix('css/app.css') }}" rel="stylesheet">
   @include('auth.partials.login-critical-styles')
@@ -35,7 +34,8 @@
                 @endcomponent
               </div>
               @if (! $block)
-              <form method="POST" class="form" action="{{ route('login') }}">
+              <form method="POST" class="form login-form" action="{{ route('login') }}">
+                @csrf
                 @if (session()->has('timeout'))
                 <div class="alert alert-danger">{{ __("Your account has been timed out for security.") }}</div>
                 @endif
@@ -140,8 +140,7 @@
       @endif
     </div>
   </div>
-</body>
-<script>
+  <script>
   const browser = navigator.userAgent;
   const isMobileDevice  = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(browser);
   document.cookie = "isMobile=false"
@@ -174,6 +173,8 @@
       capsLockWarning.hidden = true;
     });
   }
-</script>
-@include('auth.partials.auth-language-scripts')
+  </script>
+  @include('auth.partials.auth-language-scripts')
+  @include('auth.partials.login-credential-encryption')
+</body>
 </html>

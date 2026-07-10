@@ -14,7 +14,8 @@ Login
     <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
       <div class="card card-body p-3">
         @if (! $block)
-          <form method="POST" class="form" action="{{ route('login') }}">
+          <form method="POST" class="form login-form" action="{{ route('login') }}">
+            @csrf
             @if (session()->has('timeout'))
               <div class="alert alert-danger">{{ __("Your account has been timed out for security.") }}</div>
             @endif

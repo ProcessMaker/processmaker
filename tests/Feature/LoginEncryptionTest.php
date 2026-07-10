@@ -6,31 +6,22 @@ namespace Tests\Feature;
 
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
-use ProcessMaker\Services\LoginCredentialEncryption;
+use Tests\Support\InteractsWithLoginEncryptionKeys;
 use Tests\TestCase;
 
 class LoginEncryptionTest extends TestCase
 {
-    private LoginCredentialEncryption $encryption;
+    use InteractsWithLoginEncryptionKeys;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        config([
-            'auth.login_encrypt_credentials' => true,
-            'auth.login_encrypt_ttl' => 300,
-        ]);
-
-        $this->encryption = app(LoginCredentialEncryption::class);
-        $this->encryption->generateKeyPair();
+        $this->setUpLoginEncryptionKeys();
     }
 
     protected function tearDown(): void
     {
-        @unlink(storage_path('app/keys/login_private.pem'));
-        @unlink(storage_path('app/keys/login_public.pem'));
-
+        $this->tearDownLoginEncryptionKeys();
         parent::tearDown();
     }
 
@@ -42,11 +33,9 @@ class LoginEncryptionTest extends TestCase
             'status' => 'ACTIVE',
         ]);
 
-        $cipher = $this->encryption->encryptCredentials('encrypted-user', 'encrypted-password');
-
         $response = $this->post('login', [
             'encrypted' => 1,
-            'encrypted_credentials' => $cipher,
+            'encrypted_credentials' => $this->loginEncryption->encryptCredentials('encrypted-user', 'encrypted-password'),
         ]);
 
         $response->assertRedirect('/');
@@ -77,7 +66,7 @@ class LoginEncryptionTest extends TestCase
         $response = $this->get(route('login'));
 
         $response->assertOk();
-        $response->assertSee('login-public-key', false);
-        $response->assertSee($this->encryption->getPublicKeyPem(), false);
+        $response->assertSee('BEGIN PUBLIC KEY', false);
+        $response->assertSee('login-form', false);
     }
 }
