@@ -25,6 +25,8 @@ class Bundle extends ProcessMakerModel implements HasMedia
         'ui_menus' => 'menu_package',
     ];
 
+    private const SETTINGS_PAYLOADS_COMPLETE_PROPERTY = 'settings_payloads_complete';
+
     protected $guarded = ['id'];
 
     protected $appends = ['asset_count'];
@@ -171,7 +173,11 @@ class Bundle extends ProcessMakerModel implements HasMedia
     private function readNewestPayloads(): ?array
     {
         $media = $this->newestVersionFile();
-        if ($media === null || !is_readable($media->getPath())) {
+        if (
+            $media === null
+            || $media->getCustomProperty(self::SETTINGS_PAYLOADS_COMPLETE_PROPERTY) !== true
+            || !is_readable($media->getPath())
+        ) {
             return null;
         }
 
@@ -409,8 +415,9 @@ class Bundle extends ProcessMakerModel implements HasMedia
                 $media->getCustomProperty('version'),
             ];
         })->sort(function ($a, $b) {
-            // newest versions first
-            return version_compare($a[1], $b[1]) * -1;
+            $versionComparison = version_compare($a[1], $b[1]) * -1;
+
+            return $versionComparison ?: $b[0]->getKey() <=> $a[0]->getKey();
         })->map(function ($item) {
             return $item[0];
         });
@@ -439,10 +446,13 @@ class Bundle extends ProcessMakerModel implements HasMedia
                 json_encode($payloads)
             ),
         )->usingFileName('payloads.json.gz')
-        ->withCustomProperties(['version' => $this->version])
+        ->withCustomProperties([
+            'version' => $this->version,
+            self::SETTINGS_PAYLOADS_COMPLETE_PROPERTY => true,
+        ])
         ->toMediaCollection();
 
-        // Keep only the 3 most recent versions
+        // Keep only the 3 most recent snapshots
         $count = 0;
         foreach ($this->filesSortedByVersion() as $media) {
             if ($count >= 3) {

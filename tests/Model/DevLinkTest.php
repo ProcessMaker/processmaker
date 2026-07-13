@@ -208,6 +208,8 @@ class DevLinkTest extends TestCase
         $this->assertSame(1, Menu::where('uuid', $excludedMenuUuid)->count());
 
         $installedBundle = Bundle::where('remote_id', 456)->firstOrFail();
+        $installedMedia = $installedBundle->newestVersionFile();
+        $this->assertTrue($installedMedia->getCustomProperty('settings_payloads_complete'));
         $this->assertSame([
             'setting' => 'ui_menus',
             'selection' => 'partial',
@@ -219,7 +221,7 @@ class DevLinkTest extends TestCase
         ], $installedBundle->settingPreview('ui_menus'));
 
         $savedPayloads = json_decode(
-            gzdecode(file_get_contents($installedBundle->newestVersionFile()->getPath())),
+            gzdecode(file_get_contents($installedMedia->getPath())),
             true
         );
         $savedRoots = array_column($savedPayloads, 'root');
