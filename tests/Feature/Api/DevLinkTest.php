@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Support\Facades\Http;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ProcessMaker\Http\Controllers\Api\DevLinkController;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\DevLink;
@@ -67,25 +68,26 @@ class DevLinkTest extends TestCase
         ], $menuOptions);
     }
 
-    public function testAddSettingsPersistsPartialAllAndEmptySelections()
+    #[DataProvider('selectableUiSettingsProvider')]
+    public function testAddSettingsPersistsPartialAllAndEmptySelections(string $settingKey)
     {
         $bundle = Bundle::factory()->create();
         $url = route('api.devlink.add-settings', ['bundle' => $bundle->id]);
 
         $partialSelection = [41, 42];
         $response = $this->apiCall('POST', $url, [
-            'setting' => 'ui_dashboards',
+            'setting' => $settingKey,
             'config' => json_encode(['id' => $partialSelection]),
             'type' => null,
             'replaceIds' => true,
         ]);
         $response->assertOk();
 
-        $bundleSetting = $bundle->settings()->where('setting', 'ui_dashboards')->firstOrFail();
+        $bundleSetting = $bundle->settings()->where('setting', $settingKey)->firstOrFail();
         $this->assertSame($partialSelection, json_decode($bundleSetting->config, true)['id']);
 
         $response = $this->apiCall('POST', $url, [
-            'setting' => 'ui_dashboards',
+            'setting' => $settingKey,
             'config' => null,
             'type' => null,
             'replaceIds' => true,
@@ -94,7 +96,7 @@ class DevLinkTest extends TestCase
         $this->assertNull($bundleSetting->refresh()->config);
 
         $response = $this->apiCall('POST', $url, [
-            'setting' => 'ui_dashboards',
+            'setting' => $settingKey,
             'config' => json_encode(['id' => []]),
             'type' => null,
             'replaceIds' => true,
@@ -102,8 +104,16 @@ class DevLinkTest extends TestCase
         $response->assertOk();
         $this->assertDatabaseMissing('bundle_settings', [
             'bundle_id' => $bundle->id,
-            'setting' => 'ui_dashboards',
+            'setting' => $settingKey,
         ]);
+    }
+
+    public static function selectableUiSettingsProvider(): array
+    {
+        return [
+            'Dashboards' => ['ui_dashboards'],
+            'Menus' => ['ui_menus'],
+        ];
     }
 
     public function testAddAssets()

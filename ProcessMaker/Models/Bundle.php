@@ -341,18 +341,10 @@ class Bundle extends ProcessMakerModel implements HasMedia
         }
         $logger->status('Saving the bundle locally');
 
-        // Filter and extract export payloads from nested array
-        $exportPayloads = array_filter($payloadsSettings, function ($payload) {
-            return !empty($payload[0]) && isset($payload[0]['export']);
-        });
+        $exportPayloads = $this->extractSettingExportPayloads($payloadsSettings);
 
-        // Extract payloads from nested array structure
-        $flattenedExportPayloads = array_map(function ($payload) {
-            return $payload[0];  // Tomar solo el primer elemento del array anidado
-        }, array_values($exportPayloads));
-
-        if (!empty($flattenedExportPayloads)) {
-            $payloads = array_merge($payloads, $flattenedExportPayloads);
+        if (!empty($exportPayloads)) {
+            $payloads = array_merge($payloads, $exportPayloads);
         }
 
         $this->addMediaFromString(
@@ -388,27 +380,50 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     public function installSettingsPayloads(array $payloads, $mode, $logger = null)
     {
+        if ($logger === null) {
+            $logger = new Logger();
+        }
+
         $options = new Options([
             'mode' => $mode,
-        ], $logger?->userId);
+        ], $logger->userId);
 
-        $assets = [];
-        foreach ($payloads as $payload) {
-            // Verify the type of payload without considering the order
-            if (!empty($payload) && is_array($payload[0])) {
-                // If it is a settings payload
-                if (isset($payload[0]['setting_type'])) {
-                    $this->processSettingsPayload($payload);
-                }
+        foreach ($payloads as $payloadGroup) {
+            $settingPayloads = array_filter($payloadGroup, function ($payload) {
+                return is_array($payload) && isset($payload['setting_type']);
+            });
 
-                // If it is an export payload (it can be the same or another element)
-                if (isset($payload[0]['export'])) {
-                    $logger->status('Installing bundle settings on the this instance');
-                    $logger->setSteps($payload);
-                    $assets[] = DevLink::import($payload[0], $options, $logger);
+            if (!empty($settingPayloads)) {
+                $this->processSettingsPayload($settingPayloads);
+            }
+        }
+
+        $exportPayloads = $this->extractSettingExportPayloads($payloads);
+        if (empty($exportPayloads)) {
+            return;
+        }
+
+        $logger->status('Installing bundle settings on the this instance');
+        $logger->setSteps($exportPayloads);
+
+        foreach ($exportPayloads as $payload) {
+            DevLink::import($payload, $options, $logger);
+        }
+    }
+
+    private function extractSettingExportPayloads(array $payloadGroups): array
+    {
+        $exportPayloads = [];
+
+        foreach ($payloadGroups as $payloadGroup) {
+            foreach ($payloadGroup as $payload) {
+                if (is_array($payload) && isset($payload['export'])) {
+                    $exportPayloads[] = $payload;
                 }
             }
         }
+
+        return $exportPayloads;
     }
 
     // Auxiliary method to process the settings
