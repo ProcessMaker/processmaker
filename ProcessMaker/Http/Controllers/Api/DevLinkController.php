@@ -4,14 +4,12 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Jobs\CompileSass;
 use ProcessMaker\Jobs\CompileUI;
 use ProcessMaker\Jobs\DevLinkInstall;
 use ProcessMaker\Models\Bundle;
@@ -23,6 +21,8 @@ use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\SettingsMenus;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\BundleUpdatedNotification;
+use ProcessMaker\Package\PackageDynamicUI\Models\Dashboard;
+use ProcessMaker\Package\PackageDynamicUI\Models\Menu;
 
 class DevLinkController extends Controller
 {
@@ -180,7 +180,7 @@ class DevLinkController extends Controller
         return $bundle;
     }
 
-    public function bundleUpdated($bundleId, $token)
+    public function bundleUpdated(int $bundleId, string $token)
     {
         try {
             $bundle = Bundle::where('remote_id', $bundleId)->firstOrFail();
@@ -208,7 +208,7 @@ class DevLinkController extends Controller
         $bundle->delete();
     }
 
-    public function installRemoteBundle(Request $request, DevLink $devLink, $remoteBundleId)
+    public function installRemoteBundle(Request $request, DevLink $devLink, int $remoteBundleId)
     {
         $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
         DevLinkInstall::dispatch(
@@ -342,7 +342,7 @@ class DevLinkController extends Controller
         $sharedAsset->saveOrFail();
     }
 
-    public function removeSharedAsset($id)
+    public function removeSharedAsset(int $id)
     {
         $deleted = Setting::destroy($id);
 
@@ -371,7 +371,7 @@ class DevLinkController extends Controller
         ];
     }
 
-    public function remoteBundleVersion(DevLink $devLink, $remoteBundleId)
+    public function remoteBundleVersion(DevLink $devLink, int $remoteBundleId)
     {
         return $devLink->remoteBundle($remoteBundleId);
     }
@@ -390,80 +390,63 @@ class DevLinkController extends Controller
         return response()->json(['message' => 'Bundle setting deleted.'], 200);
     }
 
-    public function getBundleSetting(Bundle $bundle, $settingKey)
+    public function getBundleSetting(Bundle $bundle, string $settingKey)
     {
-        $setting = $bundle->settings()->where('setting', $settingKey)->first();
-
-        return $setting;
+        return $bundle->settings()->where('setting', $settingKey)->first();
     }
 
-    public function getBundleAllSettings($settingKey)
+    public function getBundleAllSettings(string $settingKey)
     {
-        if ($settingKey === 'ui_settings') {
-            return Setting::whereIn('key', ['css-override', 'login-footer', 'logo-alt-text'])
-                         ->get();
+        return match ($settingKey) {
+            'ui_dashboards' => $this->getAvailableDashboards(),
+            'ui_menus' => $this->getAvailableMenus(),
+            'ui_settings' => Setting::whereIn('key', ['css-override', 'login-footer', 'logo-alt-text'])->get(),
+            default => Setting::where([
+                ['group_id', SettingsMenus::getId($settingKey)],
+                ['hidden', 0],
+            ])->get(),
+        };
+    }
+
+    private function getAvailableDashboards()
+    {
+        if (!class_exists(Dashboard::class)) {
+            return [];
         }
 
-        return Setting::where([
-            ['group_id', SettingsMenus::getId($settingKey)],
-            ['hidden', 0],
-        ])->get();
+        return Dashboard::query()
+            ->orderBy('title')
+            ->get(['id', 'title'])
+            ->map(function (Dashboard $dashboard) {
+                return [
+                    'key' => $dashboard->id,
+                    'name' => $dashboard->title,
+                ];
+            })
+            ->values();
     }
 
-    public function refreshUi()
+    private function getAvailableMenus()
     {
-        CompileUI::dispatch(auth()->user()?->id);
+        if (!class_exists(Menu::class)) {
+            return [];
+        }
+
+        return Menu::query()
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(function (Menu $menu) {
+                return [
+                    'key' => $menu->id,
+                    'name' => $menu->name,
+                ];
+            })
+            ->values();
+    }
+
+    public function refreshUi(Request $request)
+    {
+        CompileUI::dispatch($request->user()?->id);
         CustomizeUiUpdated::dispatch([], [], false);
-    }
-
-    private function writeColors($data)
-    {
-        // Now generate the _colors.scss file
-        $contents = "// Changed theme colors\n";
-        foreach ($data as $value) {
-            $contents .= $value->id . ': ' . $value->value . ";\n";
-        }
-        File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
-    }
-
-    /**
-     * Write variables font in file
-     *
-     * @param $sansSerif
-     * @param $serif
-     */
-    private function writeFonts($sansSerif)
-    {
-        $sansSerif = $sansSerif ? $sansSerif : $this->sansSerifFontDefault();
-        // Generate the _fonts.scss file
-        $contents = "// Changed theme fonts\n";
-        $contents .= '$font-family-sans-serif: ' . $sansSerif['id'] . " !default;\n";
-        File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
-    }
-
-    /**
-     * run jobs compile
-     */
-    private function compileSass($userId)
-    {
-        // Compile the Sass files
-        $this->dispatch(new CompileSass([
-            'tag' => 'sidebar',
-            'origin' => 'resources/sass/sidebar/sidebar.scss',
-            'target' => 'public/css/sidebar.css',
-            'user' => $userId,
-        ]));
-        $this->dispatch(new CompileSass([
-            'tag' => 'app',
-            'origin' => 'resources/sass/app.scss',
-            'target' => 'public/css/app.css',
-            'user' => $userId,
-        ]));
-        $this->dispatch(new CompileSass([
-            'tag' => 'queues',
-            'origin' => 'resources/sass/admin/queues.scss',
-            'target' => 'public/css/admin/queues.css',
-            'user' => $userId,
-        ]));
     }
 }

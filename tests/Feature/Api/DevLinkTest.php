@@ -7,6 +7,8 @@ use ProcessMaker\Http\Controllers\Api\DevLinkController;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Package\PackageDynamicUI\Models\Dashboard;
+use ProcessMaker\Package\PackageDynamicUI\Models\Menu;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -21,6 +23,87 @@ class DevLinkTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertEquals($bundle->id, $response->json()['id']);
+    }
+
+    public function testGetBundleAllSettingsReturnsDashboardAndMenuOptions()
+    {
+        if (!hasPackage('package-dynamic-ui')) {
+            $this->markTestSkipped('package-dynamic-ui is not installed');
+        }
+
+        $dashboardZeta = Dashboard::factory()->create(['title' => 'ZZ DevLink Dashboard']);
+        $dashboardAlpha = Dashboard::factory()->create(['title' => 'AA DevLink Dashboard']);
+        $menuZeta = Menu::factory()->create(['name' => 'ZZ DevLink Menu']);
+        $menuAlpha = Menu::factory()->create(['name' => 'AA DevLink Menu']);
+
+        $dashboardResponse = $this->apiCall(
+            'GET',
+            route('api.devlink.local-bundle-all-settings', ['settingKey' => 'ui_dashboards'])
+        );
+        $dashboardResponse->assertOk();
+
+        $dashboardOptions = collect($dashboardResponse->json())
+            ->whereIn('key', [$dashboardAlpha->id, $dashboardZeta->id])
+            ->values()
+            ->all();
+        $this->assertSame([
+            ['key' => $dashboardAlpha->id, 'name' => $dashboardAlpha->title],
+            ['key' => $dashboardZeta->id, 'name' => $dashboardZeta->title],
+        ], $dashboardOptions);
+
+        $menuResponse = $this->apiCall(
+            'GET',
+            route('api.devlink.local-bundle-all-settings', ['settingKey' => 'ui_menus'])
+        );
+        $menuResponse->assertOk();
+
+        $menuOptions = collect($menuResponse->json())
+            ->whereIn('key', [$menuAlpha->id, $menuZeta->id])
+            ->values()
+            ->all();
+        $this->assertSame([
+            ['key' => $menuAlpha->id, 'name' => $menuAlpha->name],
+            ['key' => $menuZeta->id, 'name' => $menuZeta->name],
+        ], $menuOptions);
+    }
+
+    public function testAddSettingsPersistsPartialAllAndEmptySelections()
+    {
+        $bundle = Bundle::factory()->create();
+        $url = route('api.devlink.add-settings', ['bundle' => $bundle->id]);
+
+        $partialSelection = [41, 42];
+        $response = $this->apiCall('POST', $url, [
+            'setting' => 'ui_dashboards',
+            'config' => json_encode(['id' => $partialSelection]),
+            'type' => null,
+            'replaceIds' => true,
+        ]);
+        $response->assertOk();
+
+        $bundleSetting = $bundle->settings()->where('setting', 'ui_dashboards')->firstOrFail();
+        $this->assertSame($partialSelection, json_decode($bundleSetting->config, true)['id']);
+
+        $response = $this->apiCall('POST', $url, [
+            'setting' => 'ui_dashboards',
+            'config' => null,
+            'type' => null,
+            'replaceIds' => true,
+        ]);
+        $response->assertOk();
+        $this->assertNull($bundleSetting->refresh()->config);
+
+        $response = $this->apiCall('POST', $url, [
+            'setting' => 'ui_dashboards',
+            'config' => json_encode(['id' => []]),
+            'type' => null,
+            'replaceIds' => true,
+        ]);
+        $response->assertOk();
+        $this->assertDatabaseMissing('bundle_settings', [
+            'bundle_id' => $bundle->id,
+            'setting' => 'ui_dashboards',
+        ]);
     }
 
     public function testAddAssets()
