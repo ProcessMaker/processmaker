@@ -20,6 +20,11 @@ class Bundle extends ProcessMakerModel implements HasMedia
     use HasFactory;
     use InteractsWithMedia;
 
+    private const SETTING_PREVIEW_PAYLOAD_TYPES = [
+        'ui_dashboards' => 'dashboard_package',
+        'ui_menus' => 'menu_package',
+    ];
+
     protected $guarded = ['id'];
 
     protected $appends = ['asset_count'];
@@ -102,6 +107,88 @@ class Bundle extends ProcessMakerModel implements HasMedia
         return $this->settings()->get()->map(function ($setting) {
             return $setting->export();
         });
+    }
+
+    public function settingPreview(string $settingKey): array
+    {
+        if (!array_key_exists($settingKey, self::SETTING_PREVIEW_PAYLOAD_TYPES)) {
+            throw new \InvalidArgumentException('Unsupported bundle setting preview.');
+        }
+
+        $bundleSetting = $this->settings()->where('setting', $settingKey)->first();
+        $selection = match (true) {
+            $bundleSetting === null => 'none',
+            $bundleSetting->config === null => 'all',
+            default => 'partial',
+        };
+
+        $preview = [
+            'setting' => $settingKey,
+            'selection' => $selection,
+            'available' => true,
+            'items' => [],
+        ];
+
+        if ($selection === 'none') {
+            return $preview;
+        }
+
+        $payloads = $this->readNewestPayloads();
+        if ($payloads === null) {
+            $preview['available'] = false;
+
+            return $preview;
+        }
+
+        $payloadType = self::SETTING_PREVIEW_PAYLOAD_TYPES[$settingKey];
+        $items = [];
+        foreach ($payloads as $payload) {
+            if (!is_array($payload) || ($payload['type'] ?? null) !== $payloadType) {
+                continue;
+            }
+
+            $key = $payload['root'] ?? null;
+            $name = $payload['name'] ?? null;
+            if (!is_string($key) || !is_string($name)) {
+                continue;
+            }
+
+            $items[$key] = [
+                'key' => $key,
+                'name' => $name,
+            ];
+        }
+
+        $preview['items'] = array_values($items);
+        usort($preview['items'], function (array $left, array $right) {
+            return strcasecmp($left['name'], $right['name'])
+                ?: strcmp($left['key'], $right['key']);
+        });
+
+        return $preview;
+    }
+
+    private function readNewestPayloads(): ?array
+    {
+        $media = $this->newestVersionFile();
+        if ($media === null || !is_readable($media->getPath())) {
+            return null;
+        }
+
+        $compressedPayloads = file_get_contents($media->getPath());
+        $payloads = null;
+        if ($compressedPayloads !== false && str_starts_with($compressedPayloads, "\x1f\x8b")) {
+            $decodedPayloads = gzdecode($compressedPayloads);
+            if ($decodedPayloads !== false) {
+                try {
+                    $payloads = json_decode($decodedPayloads, true, flags: JSON_THROW_ON_ERROR);
+                } catch (\JsonException) {
+                    $payloads = null;
+                }
+            }
+        }
+
+        return is_array($payloads) ? $payloads : null;
     }
 
     public function syncAssets($assets)

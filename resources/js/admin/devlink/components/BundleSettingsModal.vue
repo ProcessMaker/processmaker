@@ -64,7 +64,7 @@ import { useRoute } from "vue-router/composables";
 
 const emit = defineEmits(["settings-saved"]);
 
-defineProps({
+const props = defineProps({
   editable: {
     type: Boolean,
     default: false,
@@ -81,6 +81,7 @@ const selectedIds = ref([]);
 const allSelected = ref(false);
 const loading = ref(false);
 const bundleSettingExists = ref(false);
+const previewAvailable = ref(true);
 
 const computedFields = computed(() => [
   {
@@ -106,6 +107,10 @@ const isPlatformConfiguration = computed(() => (
 ));
 
 const modalDescription = computed(() => {
+  if (isPlatformConfiguration.value && !props.editable) {
+    return `These ${modalTitle.value.toLowerCase()} are included in the installed bundle.`;
+  }
+
   if (settingKey.value === "ui_dashboards") {
     return [
       "Select the dashboards to include in this bundle.",
@@ -126,6 +131,15 @@ const modalDescription = computed(() => {
 });
 
 const emptyText = computed(() => {
+  if (isPlatformConfiguration.value && !props.editable && !previewAvailable.value) {
+    return "Bundle content preview is unavailable for this version";
+  }
+  if (settingKey.value === "ui_dashboards" && !props.editable) {
+    return "No dashboards included";
+  }
+  if (settingKey.value === "ui_menus" && !props.editable) {
+    return "No menus included";
+  }
   if (settingKey.value === "ui_dashboards") {
     return "No dashboards available";
   }
@@ -142,10 +156,31 @@ const hide = () => {
   }
 };
 
+const loadSettingPreview = async () => {
+  const response = await window.ProcessMaker.apiClient.get(
+    `devlink/local-bundles/${bundleId}/setting-preview/${settingKey.value}`,
+  );
+  const preview = response.data;
+
+  previewAvailable.value = preview.available;
+  bundleSettingExists.value = preview.selection !== "none";
+  settings.value = (preview.items || []).map((setting) => ({
+    ...setting,
+    enabled: true,
+  }));
+  selectedIds.value = settings.value.map((setting) => setting.key);
+  allSelected.value = preview.selection === "all" && settings.value.length > 0;
+};
+
 const loadSettings = async () => {
   loading.value = true;
 
   try {
+    if (isPlatformConfiguration.value && !props.editable) {
+      await loadSettingPreview();
+      return;
+    }
+
     const [response, settingsResponse] = await Promise.all([
       window.ProcessMaker.apiClient.get(`devlink/local-bundles/${bundleId}/setting/${settingKey.value}`),
       window.ProcessMaker.apiClient.get(`devlink/local-bundles/all-settings/${settingKey.value}`),
@@ -182,6 +217,11 @@ const loadSettings = async () => {
 };
 
 const onOk = async () => {
+  if (!props.editable) {
+    hide();
+    return;
+  }
+
   if (selectedIds.value.length === 0 && !bundleSettingExists.value) {
     hide();
     return;
@@ -215,6 +255,7 @@ const show = (config) => {
   selectedIds.value = [];
   allSelected.value = false;
   bundleSettingExists.value = false;
+  previewAvailable.value = true;
   if (bundleSettingsModal.value) {
     bundleSettingsModal.value.show();
     loadSettings();

@@ -2,6 +2,7 @@
 
 namespace Tests\Model;
 
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\Models\Bundle;
@@ -114,6 +115,93 @@ class BundleTest extends TestCase
             $importingUser->id,
             ReinstallContextScreenExporter::$receivedImportingUserId
         );
+    }
+
+    public function testSettingPreviewUsesInstalledPayloadMetadata()
+    {
+        Storage::fake(config('media-library.disk_name'));
+
+        $bundle = Bundle::factory()->create(['version' => 1]);
+        $bundle->addSettings('ui_dashboards', json_encode(['id' => [9001, 9002]]));
+        $bundle->addSettings('ui_menus', null);
+        $bundle->savePayloadsToFile([], [[
+            self::settingPayload('dashboard_package', 'dashboard-zulu', 'Zulu Dashboard'),
+            self::settingPayload('menu_package', 'menu-bravo', 'Bravo Menu'),
+            self::settingPayload('dashboard_package', 'dashboard-alpha', 'Alpha Dashboard'),
+            self::settingPayload('menu_package', 'menu-alpha', 'Alpha Menu'),
+        ]]);
+
+        $this->assertSame([
+            'setting' => 'ui_dashboards',
+            'selection' => 'partial',
+            'available' => true,
+            'items' => [
+                ['key' => 'dashboard-alpha', 'name' => 'Alpha Dashboard'],
+                ['key' => 'dashboard-zulu', 'name' => 'Zulu Dashboard'],
+            ],
+        ], $bundle->settingPreview('ui_dashboards'));
+
+        $this->assertSame([
+            'setting' => 'ui_menus',
+            'selection' => 'all',
+            'available' => true,
+            'items' => [
+                ['key' => 'menu-alpha', 'name' => 'Alpha Menu'],
+                ['key' => 'menu-bravo', 'name' => 'Bravo Menu'],
+            ],
+        ], $bundle->settingPreview('ui_menus'));
+    }
+
+    public function testSettingPreviewReturnsNoneWhenSettingIsNotShared()
+    {
+        $bundle = Bundle::factory()->create();
+
+        $this->assertSame([
+            'setting' => 'ui_dashboards',
+            'selection' => 'none',
+            'available' => true,
+            'items' => [],
+        ], $bundle->settingPreview('ui_dashboards'));
+    }
+
+    public function testSettingPreviewIsUnavailableWithoutAValidSnapshot()
+    {
+        Storage::fake(config('media-library.disk_name'));
+
+        $bundleWithoutSnapshot = Bundle::factory()->create();
+        $bundleWithoutSnapshot->addSettings('ui_dashboards', null);
+
+        $this->assertSame([
+            'setting' => 'ui_dashboards',
+            'selection' => 'all',
+            'available' => false,
+            'items' => [],
+        ], $bundleWithoutSnapshot->settingPreview('ui_dashboards'));
+
+        $bundleWithInvalidSnapshot = Bundle::factory()->create(['version' => 1]);
+        $bundleWithInvalidSnapshot->addSettings('ui_menus', json_encode(['id' => [9001]]));
+        $bundleWithInvalidSnapshot->addMediaFromString(gzencode('{invalid json'))
+            ->usingFileName('payloads.json.gz')
+            ->withCustomProperties(['version' => $bundleWithInvalidSnapshot->version])
+            ->toMediaCollection();
+
+        $this->assertSame([
+            'setting' => 'ui_menus',
+            'selection' => 'partial',
+            'available' => false,
+            'items' => [],
+        ], $bundleWithInvalidSnapshot->settingPreview('ui_menus'));
+    }
+
+    private static function settingPayload(string $type, string $key, string $name): array
+    {
+        return [
+            'type' => $type,
+            'version' => '2',
+            'root' => $key,
+            'name' => $name,
+            'export' => [],
+        ];
     }
 }
 

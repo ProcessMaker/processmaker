@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\DataProvider;
 use ProcessMaker\Http\Controllers\Api\DevLinkController;
 use ProcessMaker\Models\Bundle;
@@ -66,6 +67,72 @@ class DevLinkTest extends TestCase
             ['key' => $menuAlpha->id, 'name' => $menuAlpha->name],
             ['key' => $menuZeta->id, 'name' => $menuZeta->name],
         ], $menuOptions);
+    }
+
+    public function testGetBundleSettingPreviewReturnsInstalledSourceMetadata()
+    {
+        Storage::fake(config('media-library.disk_name'));
+
+        $bundle = Bundle::factory()->create(['version' => 1]);
+        $bundle->addSettings('ui_dashboards', json_encode(['id' => [9001, 9002]]));
+        $bundle->savePayloadsToFile([], [[
+            [
+                'type' => 'dashboard_package',
+                'version' => '2',
+                'root' => 'dashboard-zulu',
+                'name' => 'Zulu Dashboard',
+                'export' => [],
+            ],
+            [
+                'type' => 'dashboard_package',
+                'version' => '2',
+                'root' => 'dashboard-alpha',
+                'name' => 'Alpha Dashboard',
+                'export' => [],
+            ],
+        ]]);
+
+        $response = $this->apiCall(
+            'GET',
+            route('api.devlink.local-bundle-setting-preview', [
+                'bundle' => $bundle->id,
+                'settingKey' => 'ui_dashboards',
+            ])
+        );
+
+        $response->assertOk()->assertExactJson([
+            'setting' => 'ui_dashboards',
+            'selection' => 'partial',
+            'available' => true,
+            'items' => [
+                ['key' => 'dashboard-alpha', 'name' => 'Alpha Dashboard'],
+                ['key' => 'dashboard-zulu', 'name' => 'Zulu Dashboard'],
+            ],
+        ]);
+
+        $bundleWithoutSnapshot = Bundle::factory()->create();
+        $bundleWithoutSnapshot->addSettings('ui_menus', null);
+        $unavailableResponse = $this->apiCall(
+            'GET',
+            route('api.devlink.local-bundle-setting-preview', [
+                'bundle' => $bundleWithoutSnapshot->id,
+                'settingKey' => 'ui_menus',
+            ])
+        );
+        $unavailableResponse->assertOk()->assertJson([
+            'selection' => 'all',
+            'available' => false,
+            'items' => [],
+        ]);
+
+        $unsupportedResponse = $this->apiCall(
+            'GET',
+            route('api.devlink.local-bundle-setting-preview', [
+                'bundle' => $bundle->id,
+                'settingKey' => 'users',
+            ])
+        );
+        $unsupportedResponse->assertNotFound();
     }
 
     #[DataProvider('selectableUiSettingsProvider')]

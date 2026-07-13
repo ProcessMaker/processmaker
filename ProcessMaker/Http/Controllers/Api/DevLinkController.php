@@ -395,6 +395,13 @@ class DevLinkController extends Controller
         return $bundle->settings()->where('setting', $settingKey)->first();
     }
 
+    public function getBundleSettingPreview(Bundle $bundle, string $settingKey): array
+    {
+        abort_unless(in_array($settingKey, ['ui_dashboards', 'ui_menus'], true), 404);
+
+        return $bundle->settingPreview($settingKey);
+    }
+
     public function getBundleAllSettings(string $settingKey)
     {
         return match ($settingKey) {

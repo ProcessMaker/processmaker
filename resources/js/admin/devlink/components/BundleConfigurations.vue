@@ -19,7 +19,7 @@
         </div>
         <div class="config-action">
           <button
-            v-if="props.type || (config.configurable && !props.disabled)"
+            v-if="props.type || config.configurable"
             class="config-action-button"
             @click="$emit('open-settings-modal', {
               key: config.type,

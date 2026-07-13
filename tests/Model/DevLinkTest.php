@@ -208,6 +208,16 @@ class DevLinkTest extends TestCase
         $this->assertSame(1, Menu::where('uuid', $excludedMenuUuid)->count());
 
         $installedBundle = Bundle::where('remote_id', 456)->firstOrFail();
+        $this->assertSame([
+            'setting' => 'ui_menus',
+            'selection' => 'partial',
+            'available' => true,
+            'items' => [
+                ['key' => $firstMenuUuid, 'name' => 'First DevLink Menu'],
+                ['key' => $secondMenuUuid, 'name' => 'Second DevLink Menu'],
+            ],
+        ], $installedBundle->settingPreview('ui_menus'));
+
         $savedPayloads = json_decode(
             gzdecode(file_get_contents($installedBundle->newestVersionFile()->getPath())),
             true
