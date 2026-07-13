@@ -18,7 +18,7 @@
     <div id="script-executors" class="px-3">
         <div class="card card-body">
             <script-executors
-                    :script_microservice_enabled="{{$script_microservice_enabled}}"
+                    :script_microservice_enabled="@json($script_microservice_enabled)"
             ></script-executors>
         </div>
     </div>
