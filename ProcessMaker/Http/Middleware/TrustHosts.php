@@ -10,8 +10,21 @@ class TrustHosts extends Middleware
 {
     public function hosts(): array
     {
-        $trustedHost = $this->allSubdomainsOfApplicationUrl();
-        return [$trustedHost];
+        $hosts = array_filter([
+            $this->allSubdomainsOfApplicationUrl(),
+        ]);
+
+        $trustedHostsEnv = config('app.trusted_hosts_links', '');
+        if ($trustedHostsEnv !== '') {
+            foreach (array_filter(array_map('trim', explode(',', $trustedHostsEnv))) as $host) {
+                if (str_contains($host, '://')) {
+                    $host = parse_url($host, PHP_URL_HOST) ?: $host;
+                }
+                $hosts[] = '^(.+\.)?' . preg_quote($host) . '$';
+            }
+        }
+
+        return array_values($hosts);
     }
 
     public function handle(Request $request, $next)

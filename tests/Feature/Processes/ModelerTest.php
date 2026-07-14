@@ -59,4 +59,23 @@ class ModelerTest extends TestCase
         $response = $this->actingAs($user)->get($anotherRoute);
         $response->assertStatus(200);
     }
+
+    public function testModelerShowExposesDefaultEmailNotificationWithQuotedUserFirstName()
+    {
+        $user = User::factory()->admin()->create();
+        $process = Process::factory()->create();
+
+        $route = route('modeler.show', ['process' => $process->id]);
+        $response = $this->actingAs($user)->get($route);
+
+        $response->assertStatus(200);
+        $response->assertViewHas('defaultEmailNotification');
+
+        $defaultEmailNotification = $response->viewData('defaultEmailNotification');
+
+        $this->assertSame(
+            'RE: "{{_user.firstname}}" assigned you in "{{_task_name}}"',
+            $defaultEmailNotification['subject']
+        );
+    }
 }
