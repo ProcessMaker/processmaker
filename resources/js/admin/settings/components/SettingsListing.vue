@@ -607,7 +607,9 @@ export default {
     filterEmailServerButtons(groupName, groupData, btn) {
       const authMethod = groupData.find(data => data.key.includes("EMAIL_CONNECTOR_MAIL_AUTH_METHOD"));
       const selectedAuthMethod = authMethod ? authMethod.ui.options[authMethod.config] : null;
-      const showAuthAccBtn = selectedAuthMethod && selectedAuthMethod !== 'standard' ? true : false;
+      const mailDriver = groupData.find(data => data.key.includes("EMAIL_CONNECTOR_MAIL_DRIVER"));
+      const selectedDriver = mailDriver ? mailDriver.ui.options[mailDriver.config] : null;
+      const showAuthAccBtn = (selectedAuthMethod && selectedAuthMethod !== 'standard') || selectedDriver === 'microsoft_graph';
 
       if (groupName.includes('Email Server') && !showAuthAccBtn)  {
         // Returns all 'top' position buttons except the '+ Mail Server' and 'Authorize Account' button for email server tabs
