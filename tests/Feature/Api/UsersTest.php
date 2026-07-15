@@ -5,9 +5,7 @@ namespace Tests\Feature\Api;
 use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Redis;
-use ProcessMaker\Jobs\ThrowSignalEvent;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
@@ -646,20 +644,19 @@ class UsersTest extends TestCase
         $response->assertJsonFragment(['id' => $id]);
     }
 
-    public function testRestoreSoftDeletedUserDispatchesOneUserUpdateSignal()
+    public function testRestoreSoftDeletedUserDispatchesOneUpdatedEvent()
     {
-        config(['user-signal.update' => true]);
-
-        Bus::fake([
-            ThrowSignalEvent::class,
-        ]);
-
         $deletedUser = null;
         User::withoutEvents(function () use (&$deletedUser) {
             $deletedUser = User::factory()->create([
                 'deleted_at' => now(),
                 'status' => 'INACTIVE',
             ]);
+        });
+
+        $updatedEventCount = 0;
+        User::updated(function () use (&$updatedEventCount) {
+            $updatedEventCount++;
         });
 
         $response = $this->apiCall('PUT', self::API_TEST_URL . '/restore', [
@@ -672,16 +669,40 @@ class UsersTest extends TestCase
         $this->assertSame('ACTIVE', $restoredUser->status);
         $this->assertNull($restoredUser->deleted_at);
         $this->assertFalse($restoredUser->trashed());
+        $this->assertSame(1, $updatedEventCount);
+    }
 
-        $userUpdateSignalCount = 0;
-        Bus::assertDispatched(ThrowSignalEvent::class, function (ThrowSignalEvent $job) use (&$userUpdateSignalCount) {
-            if ($job->signalRef === 'user_update') {
-                $userUpdateSignalCount++;
-            }
+    public function testDeleteUserDispatchesDeletedWithoutUpdatedEvent()
+    {
+        $user = User::factory()->create();
+        $group = Group::factory()->create();
+        $user->groups()->attach($group->id);
 
-            return true;
+        $updatedEventCount = 0;
+        $deletedEventCount = 0;
+        User::updated(function () use (&$updatedEventCount) {
+            $updatedEventCount++;
         });
-        $this->assertSame(1, $userUpdateSignalCount);
+        User::deleted(function () use (&$deletedEventCount) {
+            $deletedEventCount++;
+        });
+
+        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/' . $user->id);
+
+        $response->assertStatus(204);
+
+        $deletedUser = User::withTrashed()->findOrFail($user->id);
+        $this->assertSame('INACTIVE', $deletedUser->status);
+        $this->assertNotNull($deletedUser->deleted_at);
+        $this->assertTrue($deletedUser->trashed());
+        $this->assertSame(0, $updatedEventCount);
+        $this->assertSame(1, $deletedEventCount);
+
+        $this->assertDatabaseMissing('group_members', [
+            'group_id' => $group->id,
+            'member_id' => $user->id,
+            'member_type' => User::class,
+        ]);
     }
 
     public function testCreateWithoutPassword()
