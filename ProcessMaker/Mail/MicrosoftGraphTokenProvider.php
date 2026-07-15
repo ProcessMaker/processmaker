@@ -15,7 +15,7 @@ class MicrosoftGraphTokenProvider
     public function __construct(
         private array $config,
         private int|string $serverIndex = 0,
-        private ?Client $httpClient = null,
+        private ?Client $httpClient = null
     ) {
     }
 
