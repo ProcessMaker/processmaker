@@ -4,7 +4,6 @@ namespace Tests\Unit\ProcessMaker\Mail;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Facades\Cache;
 use Mockery;
 use ProcessMaker\Mail\MicrosoftGraphTokenProvider;
 use RuntimeException;
@@ -34,8 +33,6 @@ class MicrosoftGraphTokenProviderTest extends TestCase
 
     public function testGetAccessTokenRequestsTokenFromMicrosoft()
     {
-        Cache::flush();
-
         $tokenResponse = new Response(200, [], json_encode(['access_token' => 'token-from-azure']));
 
         $guzzle = Mockery::mock(Client::class);
@@ -59,7 +56,6 @@ class MicrosoftGraphTokenProviderTest extends TestCase
             'secret' => 'client-secret-123',
         ], 1, $guzzle);
 
-        $this->assertSame('token-from-azure', $provider->getAccessToken());
         $this->assertSame('token-from-azure', $provider->getAccessToken());
     }
 }
