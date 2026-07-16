@@ -3,7 +3,6 @@
 namespace ProcessMaker\Mail;
 
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Cache;
 use RuntimeException;
 
 class MicrosoftGraphTokenProvider
@@ -15,17 +14,13 @@ class MicrosoftGraphTokenProvider
     public function __construct(
         private array $config,
         private int|string $serverIndex = 0,
-        private ?Client $httpClient = null
+        private ?Client $httpClient = null,
     ) {
     }
 
     public function getAccessToken(): string
     {
-        $cacheKey = 'microsoft_graph_access_token_' . ($this->serverIndex ?: 'default');
-
-        return Cache::remember($cacheKey, now()->addMinutes(50), function () {
-            return $this->requestAccessToken();
-        });
+        return $this->requestAccessToken();
     }
 
     private function requestAccessToken(): string
