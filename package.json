@@ -21,11 +21,15 @@
         "lint": "eslint --fix --ignore-path .eslintignore resources/",
         "font": "node ./devhub/pm-font/svgtofont.js && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font",
         "dev-font": "node ./devhub/pm-font/svgtofont.js && http-server ./devhub/pm-font/dist -p 7771 && cp -f ./devhub/pm-font/dist/*.* ./resources/fonts/pm-font ",
-        "stats": "STATS=1 NODE_OPTIONS=\"--max-old-space-size=8000\" mix"
+        "stats": "STATS=1 NODE_OPTIONS=\"--max-old-space-size=8000\" mix",
+        "vite:dev": "vite",
+        "vite:build": "vite build",
+        "build:all": "npm run development && npm run vite:build"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.15.8",
         "@babel/preset-env": "^7.23.9",
+        "@vitejs/plugin-vue2": "^2.3.4",
         "accounting": "^0.4.1",
         "autoprefixer": "^10.4.20",
         "babel-plugin-istanbul": "^6.1.1",
@@ -39,6 +43,7 @@
         "expr-eval": "^2.0.2",
         "js-yaml-loader": "^1.2.2",
         "laravel-mix": "^6.0.49",
+        "laravel-vite-plugin": "^2.1.0",
         "moment": "^2.30.1",
         "moment-timezone": "^0.5.45",
         "postcss": "^8.4.45",
@@ -46,6 +51,7 @@
         "sass": "^1.77.4",
         "sass-loader": "^12.6.0",
         "tailwindcss": "^3.4.10",
+        "vite": "^7.3.6",
         "vue-loader": "^15.10.0",
         "vue-template-compiler": "^2.7.16",
         "webpack-bundle-analyzer": "^4.10.2"

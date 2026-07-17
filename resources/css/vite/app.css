@@ -1,0 +1,41 @@
+.vite-demo-page {
+  min-height: 100vh;
+  margin: 0;
+  font-family: "Segoe UI", "Avenir Next", "Helvetica Neue", sans-serif;
+  color: #0f172a;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 40%),
+    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.16), transparent 45%),
+    linear-gradient(160deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.vite-demo-shell {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+}
+
+.vite-demo-shell h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  letter-spacing: -0.03em;
+}
+
+.vite-demo-shell p {
+  margin: 0;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.vite-demo-meta {
+  margin-top: 1.25rem;
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.vite-demo-meta code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  background: rgba(15, 23, 42, 0.06);
+  font-size: 0.9em;
+}
