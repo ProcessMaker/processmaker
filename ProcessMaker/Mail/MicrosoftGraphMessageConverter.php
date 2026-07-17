@@ -31,6 +31,11 @@ class MicrosoftGraphMessageConverter
             $message['bccRecipients'] = $bccRecipients;
         }
 
+        $attachments = self::convertAttachments($email);
+        if ($attachments) {
+            $message['attachments'] = $attachments;
+        }
+
         return [
             'message' => $message,
             'saveToSentItems' => true,
@@ -51,5 +56,21 @@ class MicrosoftGraphMessageConverter
 
             return ['emailAddress' => $emailAddress];
         }, $addresses);
+    }
+
+    private static function convertAttachments(Email $email): array
+    {
+        $attachments = [];
+
+        foreach ($email->getAttachments() as $attachment) {
+            $attachments[] = [
+                '@odata.type' => '#microsoft.graph.fileAttachment',
+                'name' => $attachment->getFilename() ?: 'attachment',
+                'contentType' => $attachment->getMediaType() . '/' . $attachment->getMediaSubtype(),
+                'contentBytes' => base64_encode($attachment->getBody()),
+            ];
+        }
+
+        return $attachments;
     }
 }
