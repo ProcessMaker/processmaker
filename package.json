@@ -29,6 +29,7 @@
     "devDependencies": {
         "@babel/eslint-parser": "^7.15.8",
         "@babel/preset-env": "^7.23.9",
+        "@rollup/plugin-yaml": "^5.0.0",
         "@vitejs/plugin-vue2": "^2.3.4",
         "accounting": "^0.4.1",
         "autoprefixer": "^10.4.20",

@@ -105,7 +105,7 @@
       >
         <img
           class="m-3"
-          src="/img/new-case-load.svg"
+          :src="newCaseLoadImage"
           alt="new-case-loading"
           width="209"
           height="155"
@@ -152,6 +152,7 @@ export default {
   },
   data() {
     return {
+      newCaseLoadImage: '/img/new-case-load.svg',
       filter: "",
       loading: false,
       error: false,

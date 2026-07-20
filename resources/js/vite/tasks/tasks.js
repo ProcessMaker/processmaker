@@ -1,0 +1,207 @@
+import Vue from "vue";
+import TasksList from "../../tasks/components/TasksList.vue";
+import TasksListCounter from "../../tasks/components/TasksListCounter.vue";
+import setDefaultAdvancedFilterStatus from "../../common/setDefaultAdvancedFilterStatus";
+import ParticipantHomeScreen from "../../tasks/components/ParticipantHomeScreen.vue";
+import PmqlInput from "../../components/shared/PmqlInput.vue";
+
+Vue.component("TasksList", TasksList);
+Vue.component("participant-home-screen", ParticipantHomeScreen);
+
+// Component used in the tasks list
+Vue.component("PmqlInput", PmqlInput);
+
+const main = new Vue({
+  el: "#tasks",
+  components: {
+    TasksList,
+    TasksListCounter,
+  },
+  data: {
+    showOldTaskScreen: window.ProcessMaker.showOldTaskScreen,
+    userConfiguration: window.ProcessMaker.userConfiguration,
+    urlConfiguration: "users/configuration",
+    showMenu: true,
+    // Legacy Mix spelling used by TasksMixin / ParticipantHomeScreen
+    columns: window.Processmaker?.defaultColumns || window.ProcessMaker?.defaultColumns || null,
+    filter: "",
+    pmql: "",
+    urlPmql: "",
+    filtersPmql: "",
+    fullPmql: "",
+    status: [],
+    inOverdueMessage: "",
+    additions: [],
+    priorityField: "is_priority",
+    draftField: "draft",
+    isDataLoading: false,
+    inbox: true,
+    priority: false,
+    draft: false,
+    tab: "inbox",
+    inboxCount: null,
+    draftCount: null,
+    priorityCount: null,
+    priorityFilter: [
+      {
+        subject: {
+          type: "Field",
+          value: "is_priority",
+        },
+        operator: "=",
+        value: true,
+        _column_field: "is_priority",
+        _column_label: "Priority",
+        _hide_badge: true,
+      },
+    ],
+    draftFilter: [
+      {
+        subject: {
+          type: "Relationship",
+          value: "draft.id",
+        },
+        operator: ">",
+        value: 0,
+        _column_field: "draft",
+        _column_label: "Draft",
+        _hide_badge: true,
+      },
+    ],
+    taskDraftsEnabled: window.ProcessMaker.taskDraftsEnabled,
+  },
+  created() {
+    const params = new URL(document.location).searchParams;
+    const statusParam = params.get("status");
+    this.urlPmql = params.get("pmql");
+
+    let status = "";
+
+    switch (statusParam) {
+      case "CLOSED":
+        status = "Completed";
+        break;
+      case "SELF_SERVICE":
+        status = "Self Service";
+        break;
+      default:
+        status = "In Progress";
+        break;
+    }
+    setDefaultAdvancedFilterStatus(status);
+
+    if (this.urlPmql && this.urlPmql !== "") {
+      this.onSearch();
+    }
+  },
+  mounted() {
+    window.ProcessMaker.EventBus.$on("advanced-search-addition", (component) => {
+      this.additions.push(component);
+    });
+
+    // Blade uses :fetch-on-created="false"; list only loads when we fetch here.
+    if (!window.location.search.includes("filter_user_recommendation")) {
+      this.$nextTick(() => {
+        if (this.$refs.taskList) {
+          this.$refs.taskList.fetch();
+        }
+      });
+    }
+  },
+  methods: {
+    switchTab(tab) {
+      this.tab = tab;
+      const taskListComponent = this.$refs.taskList;
+      taskListComponent.advancedFilter[this.priorityField] = [];
+      taskListComponent.advancedFilter[this.draftField] = [];
+      switch (tab) {
+        case "priority":
+          taskListComponent.advancedFilter.is_priority = this.priorityFilter;
+          break;
+        case "draft":
+          taskListComponent.advancedFilter.draft = this.draftFilter;
+          break;
+      }
+      taskListComponent.markStyleWhenColumnSetAFilter();
+      taskListComponent.storeFilterConfiguration();
+      taskListComponent.fetch(true);
+    },
+    dataLoading(value) {
+      this.isDataLoading = value;
+    },
+    onFetchTask() {
+      this.inbox = true;
+      this.priority = this.draft = false;
+      let filters = window.ProcessMaker.advanced_filter?.filters;
+      if (!Array.isArray(filters)) {
+        filters = [];
+      }
+      filters.forEach((item) => {
+        if (item._column_field === "is_priority") {
+          this.priority = true;
+          this.inbox = this.draft = false;
+        }
+        if (item._column_field === "draft") {
+          this.draft = true;
+          this.inbox = this.priority = false;
+        }
+      });
+    },
+    handleTabCount(value) {
+      if (this.tab === "inbox") {
+        this.inboxCount = value;
+      }
+      if (this.tab === "draft") {
+        this.draftCount = value;
+      }
+      if (this.tab === "priority") {
+        this.priorityCount = value;
+      }
+    },
+    onFiltersPmqlChange(value) {
+      this.filtersPmql = value[0];
+      this.fullPmql = this.getFullPmql();
+    },
+    onNLQConversion(query) {
+      this.onChange(query);
+      this.onSearch();
+    },
+    onChange(query) {
+      this.pmql = query;
+      this.fullPmql = this.getFullPmql();
+    },
+    onSearch() {
+      if (this.$refs.taskList) {
+        this.$refs.taskList.fetch(true);
+      }
+    },
+    onInboxRules() {
+      window.location.href = "/tasks/rules";
+    },
+    setInOverdueMessage(inOverdue) {
+      let inOverdueMessage = "";
+      if (inOverdue) {
+        const taskText = (inOverdue > 1) ? this.$t("Tasks").toLowerCase() : this.$t("Task").toLowerCase();
+        inOverdueMessage = this.$t("You have {{ inOverDue }} overdue {{ taskText }} pending", { inOverDue: inOverdue, taskText });
+      }
+      this.inOverdueMessage = inOverdueMessage;
+    },
+    getFullPmql() {
+      let fullPmqlString = "";
+
+      if (this.filtersPmql && this.filtersPmql !== "") {
+        fullPmqlString = this.filtersPmql;
+      }
+
+      if (fullPmqlString !== "" && this.pmql && this.pmql !== "") {
+        fullPmqlString = `${fullPmqlString} AND ${this.pmql}`;
+      }
+
+      if (fullPmqlString === "" && this.pmql && this.pmql !== "") {
+        fullPmqlString = this.pmql;
+      }
+
+      return fullPmqlString;
+    },
+  },
+});

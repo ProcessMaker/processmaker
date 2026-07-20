@@ -49,8 +49,8 @@
 
 <script>
   import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
-  import Modal from "../../../components/shared/Modal";
-  import WarningMessage from "./WarningMessage";
+  import Modal from "../../../components/shared/Modal.vue";
+  import WarningMessage from "./WarningMessage.vue";
   
   export default {
     components: { Modal, WarningMessage },

@@ -106,11 +106,12 @@
 <script>
 import Required from "../../../components/shared/Required.vue";
 import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
-import MultiThumbnailFileUploader from '../../../components/shared/MultiThumbnailFileUploader'
+import MultiThumbnailFileUploader from '../../../components/shared/MultiThumbnailFileUploader.vue'
 import ScreenTypeDropdown from "../../screens/components/ScreenTypeDropdown.vue";
+import CategorySelect from "../../../components/shared/CategorySelect.vue";
 
 export default {
-    components: {MultiThumbnailFileUploader, ScreenTypeDropdown },
+    components: {MultiThumbnailFileUploader, ScreenTypeDropdown, CategorySelect },
     mixins: [Required, FormErrorsMixin ],
     props: ["screenType", "permission", "types", "responseErrors"],
     data() {

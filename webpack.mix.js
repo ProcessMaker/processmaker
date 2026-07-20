@@ -30,6 +30,14 @@ mix.webpackConfig({
       styles: path.resolve(__dirname, "resources/sass"),
     },
   },
+  module: {
+    rules: [
+      {
+        test: /\.ya?ml$/,
+        use: "js-yaml-loader",
+      },
+    ],
+  },
 });
 
 mix.options({

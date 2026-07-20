@@ -127,7 +127,7 @@
 </template>
 
 <script>
-import { PmqlInput } from "SharedComponents";
+import PmqlInput from "../../../components/shared/PmqlInput.vue";
 import ChartDataMixin from "../mixins/ChartData.js";
 
 export default {

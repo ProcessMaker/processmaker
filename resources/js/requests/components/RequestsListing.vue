@@ -147,7 +147,7 @@ import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
-import AvatarImage from "../../components/AvatarImage";
+import AvatarImage from "../../components/AvatarImage.vue";
 import isPMQL from "../../modules/isPMQL";
 import ListMixin from "./ListMixin";
 import { FilterTable } from "../../components/shared";

@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import DashboardViewer from "./components/DashboardViewer.vue";
-import Process from "../processes-catalogue/components/Process";
+import Process from "../processes-catalogue/components/Process.vue";
 
 Vue.use(VueRouter);
 const screen = JSON.parse(sessionStorage.getItem('dashboard_screen'));

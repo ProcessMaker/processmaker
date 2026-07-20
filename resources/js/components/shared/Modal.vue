@@ -88,7 +88,7 @@
             <required class="required-footer"></required>
           </div>
           <div v-if="showAiSlogan" class="slogan">
-            <img src="/img/favicon.ico"> {{ $t("Powered by Decisions AI") }}
+            <img :src="favicon"> {{ $t("Powered by Decisions AI") }}
           </div>
         </div>
         <div>
@@ -136,6 +136,11 @@
       "footerClass",
       "contentClass"
     ],
+    data() {
+      return {
+        favicon: '/img/favicon.ico',
+      }
+    },
     methods: {
       onEvent(name, event) {
         this.$emit(name, event);

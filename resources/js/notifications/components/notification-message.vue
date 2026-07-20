@@ -25,9 +25,9 @@
 
 <script>
 import moment from "moment";
-import NotificationTime from "./notification-time";
+import NotificationTime from "./notification-time.vue";
 import notificationsMixin from "../notifications-mixin";
-import NotificationInboxRule from "./notification-inbox-rule";
+import NotificationInboxRule from "./notification-inbox-rule.vue";
 
 export default {
   components: {
