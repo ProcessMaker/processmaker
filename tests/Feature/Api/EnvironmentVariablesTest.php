@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\EnvironmentVariable;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -254,5 +255,67 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertDatabaseHas('environment_variables', [
             'name' => 'METRICS_API_ENDPOINT',
         ]);
+    }
+
+    /** @test */
+    public function test_it_should_create_an_environment_variable_linked_to_an_asset()
+    {
+        $screen = Screen::factory()->create();
+
+        $response = $this->apiCall('POST', self::API_TEST_VARIABLES, [
+            'name' => 'MY_SCREEN_ID',
+            'description' => 'Linked screen id',
+            'asset_type' => Screen::class,
+            'asset_uuid' => $screen->uuid,
+        ]);
+
+        $response->assertStatus(201);
+        $response->assertJsonFragment([
+            'name' => 'MY_SCREEN_ID',
+            'asset_type' => Screen::class,
+            'asset_uuid' => $screen->uuid,
+        ]);
+
+        $variable = EnvironmentVariable::where('name', 'MY_SCREEN_ID')->firstOrFail();
+        $this->assertEquals((string) $screen->id, $variable->value);
+        $this->assertEquals(Screen::class, $variable->asset_type);
+        $this->assertEquals($screen->uuid, $variable->asset_uuid);
+    }
+
+    /** @test */
+    public function test_it_should_reject_invalid_asset_link()
+    {
+        $response = $this->apiCall('POST', self::API_TEST_VARIABLES, [
+            'name' => 'MY_SCREEN_ID',
+            'description' => 'Linked screen id',
+            'asset_type' => Screen::class,
+            'asset_uuid' => '00000000-0000-0000-0000-000000000000',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['asset_uuid']);
+    }
+
+    /** @test */
+    public function test_it_should_update_environment_variable_asset_link()
+    {
+        $screen = Screen::factory()->create();
+        $variable = EnvironmentVariable::factory()->create([
+            'name' => 'MY_SCREEN_ID',
+            'value' => 'old-value',
+        ]);
+
+        $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, [
+            'name' => 'MY_SCREEN_ID',
+            'description' => 'Linked screen id',
+            'asset_type' => Screen::class,
+            'asset_uuid' => $screen->uuid,
+        ]);
+
+        $response->assertStatus(200);
+        $variable->refresh();
+        $this->assertEquals((string) $screen->id, $variable->value);
+        $this->assertEquals(Screen::class, $variable->asset_type);
+        $this->assertEquals($screen->uuid, $variable->asset_uuid);
     }
 }

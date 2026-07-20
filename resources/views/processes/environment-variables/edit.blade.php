@@ -32,12 +32,13 @@
                         {{ html()->textarea('description')->class('form-control')->attribute('v-model', 'formData.description')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.description}')->rows(3)->required()->attribute('aria-required', 'true') }}
                         <div class="invalid-feedback" role="alert" v-for="description in errors.description">@{{description}}</div>
                     </div>
-                    <div class="form-group">
-                        {{ html()->label(__('Value'), 'value') }}
-                        {{ html()->textarea('value')->class('form-control')->attribute('v-model', 'formData.value')->attribute('v-bind:class', '{\'form-control\':true, \'is-invalid\':errors.description}')->rows(3)->required()->attribute('aria-required', 'true') }}
-                        <small class="form-text text-muted">{{__('For security purposes, this field will always appear empty') }}</small>
-                        <div class="invalid-feedback" role="alert" v-for="value in errors.value">@{{value}}</div>
-                    </div>
+                    <asset-link-fields
+                        :asset-type.sync="formData.asset_type"
+                        :asset-uuid.sync="formData.asset_uuid"
+                        :value.sync="formData.value"
+                        :errors="errors"
+                        value-hint="{{ __('For security purposes, this field will always appear empty') }}"
+                    ></asset-link-fields>
                     <br>
                     <div class="text-right">
                         {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary')->attribute('@click', 'onClose') }}
@@ -51,48 +52,15 @@
 
 @section('js')
     <script>
-        new Vue({
-            el: '#editEnvironmentVariable',
-            data() {
-                return {
-                    formData: {
-                        id: @json($environmentVariable->id),
-                        name: @json($environmentVariable->name),
-                        description: @json($environmentVariable->description),
-                        value: null,
-                    },
-                    errors: {
-                        'name': null,
-                        'description': null,
-                        'value': null
-                    }
-                }
-            },
-            methods: {
-                resetErrors() {
-                    this.errors = Object.assign({}, {
-                        name: this.name,
-                        description: this.description,
-                        value: this.value
-                    });
-                },
-                onClose() {
-                    window.location.href = '/designer/environment-variables';
-                },
-                onUpdate() {
-                    this.resetErrors();
-                    ProcessMaker.apiClient.put('environment_variables/' + this.formData.id, this.formData)
-                        .then(response => {
-                            ProcessMaker.alert(this.$t('The environment variable was saved.'), 'success');
-                            this.onClose();
-                        })
-                        .catch(error => {
-                            if (error.response.status && error.response.status === 422) {
-                                this.errors = error.response.data.errors;
-                            }
-                        });
-                }
-            }
-        });
+        window.ProcessMaker.EnvironmentVariableEdit = {
+            id: @json($environmentVariable->id),
+            name: @json($environmentVariable->name),
+            description: @json($environmentVariable->description),
+            asset_type: @json($environmentVariable->asset_type),
+            asset_uuid: @json($environmentVariable->asset_uuid),
+            // Safe to expose when linked: value is the asset numeric ID, not a secret.
+            value: @json($environmentVariable->asset_type ? $environmentVariable->value : null),
+        };
     </script>
+    <script src="{{mix('js/processes/environment-variables/edit.js')}}"></script>
 @endsection

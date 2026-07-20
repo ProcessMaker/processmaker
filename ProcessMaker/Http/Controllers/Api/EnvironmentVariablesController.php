@@ -104,10 +104,12 @@ class EnvironmentVariablesController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(EnvironmentVariable::rules(), EnvironmentVariable::messages());
-        $environment_variable = EnvironmentVariable::create($request->all());
+        $data = $this->prepareAssetLinkInput($request->all());
+        validator($data, EnvironmentVariable::rules(), EnvironmentVariable::messages())->validate();
+        EnvironmentVariable::validateLinkedAssetExists($data);
+        $environment_variable = EnvironmentVariable::create($data);
         // Register the Event
-        EnvironmentVariablesCreated::dispatch($request->all());
+        EnvironmentVariablesCreated::dispatch($data);
 
         return new EnvironmentVariableResource($environment_variable);
     }
@@ -172,14 +174,21 @@ class EnvironmentVariablesController extends Controller
      */
     public function update(EnvironmentVariable $environment_variable, Request $request)
     {
-        $fields = ['name', 'description'];
-        if ($request->filled('value')) {
+        $data = $this->prepareAssetLinkInput($request->all());
+        // Validate the request, passing in the existing variable to tweak unique rule on name
+        validator($data, EnvironmentVariable::rules($environment_variable), EnvironmentVariable::messages())->validate();
+        EnvironmentVariable::validateLinkedAssetExists($data);
+
+        $fields = ['name', 'description', 'asset_type', 'asset_uuid'];
+        // Only accept an explicit value when the variable is not linked to an asset.
+        if (!empty($data['asset_type']) && !empty($data['asset_uuid'])) {
+            // value is synced from the linked asset on save
+        } elseif (array_key_exists('value', $data) && $data['value'] !== null && $data['value'] !== '') {
             $fields[] = 'value';
         }
-        // Validate the request, passing in the existing variable to tweak unique rule on name
-        $request->validate(EnvironmentVariable::rules($environment_variable));
+
         $original = $environment_variable->getOriginal();
-        $environment_variable->fill($request->only($fields));
+        $environment_variable->fill(collect($data)->only($fields)->all());
         $environment_variable->save();
 
         $changes = $environment_variable->getChanges();
@@ -188,6 +197,20 @@ class EnvironmentVariablesController extends Controller
         EnvironmentVariablesUpdated::dispatch($environment_variable, $changes, $original);
 
         return new EnvironmentVariableResource($environment_variable);
+    }
+
+    /**
+     * Normalize empty asset link fields to null so both-or-neither validation works.
+     */
+    private function prepareAssetLinkInput(array $data): array
+    {
+        foreach (['asset_type', 'asset_uuid'] as $field) {
+            if (array_key_exists($field, $data) && $data[$field] === '') {
+                $data[$field] = null;
+            }
+        }
+
+        return $data;
     }
 
     /**

@@ -6,7 +6,9 @@ use Database\Seeders\CategorySystemSeeder;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\ImportExport\Exporters\ScriptExporter;
 use ProcessMaker\ImportExport\Options;
+use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\Models\EnvironmentVariable;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
@@ -191,4 +193,100 @@ class ScriptExporterTest extends TestCase
         $this->assertDatabaseHas('environment_variables', ['name' => $environmentVariable1->name . '_2']);
         $this->assertDatabaseHas('environment_variables', ['name' => $environmentVariable2->name . '_2']);
         $this->assertDatabaseMissing('environment_variables', ['name' => $environmentVariable3->name . '_2']);
-    }}
+    }
+
+    public function testLinkedAssetRemappedOnImportUpdateMode()
+    {
+        $screen = Screen::factory()->create(['title' => 'Linked Screen']);
+        $environmentVariable = EnvironmentVariable::factory()->create([
+            'name' => 'MY_SCREEN_ID',
+            'description' => 'Screen id for scripts',
+            'asset_type' => Screen::class,
+            'asset_uuid' => $screen->uuid,
+            'value' => (string) $screen->id,
+        ]);
+        $script = Script::factory()->create([
+            'title' => 'script with linked env var',
+            'code' => '<?php $screenId = getenv(\'MY_SCREEN_ID\'); return [];',
+        ]);
+
+        $payload = $this->export($script, ScriptExporter::class);
+
+        $envVarPayload = collect($payload['export'])->first(function ($asset) {
+            return ($asset['model'] ?? null) === EnvironmentVariable::class;
+        });
+        $this->assertNotNull($envVarPayload);
+        $this->assertTrue(
+            collect($envVarPayload['dependents'])->pluck('type')->contains(DependentType::ENVIRONMENT_VARIABLE_ASSET)
+        );
+
+        // Simulate a stale numeric ID on the target instance before update import.
+        // Bypass model sync (saving hook would rewrite value from the linked asset).
+        DB::table('environment_variables')
+            ->where('id', $environmentVariable->id)
+            ->update(['value' => encrypt('999999')]);
+        $this->assertEquals('999999', $environmentVariable->fresh()->value);
+
+        $options = new Options([
+            $script->uuid => ['mode' => 'update'],
+            $environmentVariable->uuid => ['mode' => 'update'],
+            $screen->uuid => ['mode' => 'update'],
+        ]);
+        $this->import($payload, $options);
+
+        $screen->refresh();
+        $environmentVariable->refresh();
+
+        $this->assertEquals(1, Screen::where('title', 'Linked Screen')->count());
+        $this->assertEquals(1, EnvironmentVariable::where('name', 'MY_SCREEN_ID')->count());
+        $this->assertEquals(Screen::class, $environmentVariable->asset_type);
+        $this->assertEquals($screen->uuid, $environmentVariable->asset_uuid);
+        $this->assertEquals((string) $screen->id, $environmentVariable->value);
+    }
+
+    public function testLinkedAssetRemappedOnImportCopyMode()
+    {
+        $screen = Screen::factory()->create(['title' => 'Linked Screen']);
+        $environmentVariable = EnvironmentVariable::factory()->create([
+            'name' => 'MY_SCREEN_ID',
+            'description' => 'Screen id for scripts',
+            'asset_type' => Screen::class,
+            'asset_uuid' => $screen->uuid,
+            'value' => (string) $screen->id,
+        ]);
+        $script = Script::factory()->create([
+            'title' => 'script with linked env var',
+            'code' => '<?php $screenId = getenv(\'MY_SCREEN_ID\'); return [];',
+        ]);
+
+        $originalScreenUuid = $screen->uuid;
+        $originalScreenId = $screen->id;
+        $originalEnvUuid = $environmentVariable->uuid;
+
+        $payload = $this->export($script, ScriptExporter::class);
+
+        $options = new Options([
+            $script->uuid => ['mode' => 'copy'],
+            $environmentVariable->uuid => ['mode' => 'copy'],
+            $screen->uuid => ['mode' => 'copy'],
+        ]);
+        $this->import($payload, $options);
+
+        // Originals remain unchanged.
+        $screen->refresh();
+        $environmentVariable->refresh();
+        $this->assertEquals($originalScreenUuid, $screen->uuid);
+        $this->assertEquals((string) $originalScreenId, $environmentVariable->value);
+        $this->assertEquals($originalScreenUuid, $environmentVariable->asset_uuid);
+        $this->assertEquals($originalEnvUuid, $environmentVariable->uuid);
+
+        $copiedScreen = Screen::where('title', 'Linked Screen 2')->firstOrFail();
+        $copiedVariable = EnvironmentVariable::where('name', 'MY_SCREEN_ID_2')->firstOrFail();
+
+        $this->assertNotEquals($originalScreenUuid, $copiedScreen->uuid);
+        $this->assertNotEquals($originalEnvUuid, $copiedVariable->uuid);
+        $this->assertEquals(Screen::class, $copiedVariable->asset_type);
+        $this->assertEquals($copiedScreen->uuid, $copiedVariable->asset_uuid);
+        $this->assertEquals((string) $copiedScreen->id, $copiedVariable->value);
+    }
+}
