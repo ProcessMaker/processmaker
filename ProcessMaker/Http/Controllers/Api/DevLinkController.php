@@ -3,12 +3,15 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Requests\DevLinkStoreRequest;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Jobs\CompileUI;
 use ProcessMaker\Jobs\DevLinkInstall;
@@ -56,20 +59,24 @@ class DevLinkController extends Controller
         return $devLink;
     }
 
-    public function store(Request $request)
+    public function store(DevLinkStoreRequest $request)
     {
-        $request->validate([
-            'name' => ['required'],
-            'url' => ['required', 'url'],
-        ]);
-        $devLink = DevLink::where('name', $request->input('name'))->first();
-        if ($devLink) {
-            $devLink->url = $request->input('url');
-        } else {
-            $devLink = new DevLink();
-            $devLink->name = $request->input('name');
-            $devLink->url = $request->input('url');
+        $normalizedUrl = $this->normalizeUrl($request->input('url'));
+        $existingDevLink = DevLink::query()
+            ->get(['id', 'name', 'url'])
+            ->first(fn (DevLink $devLink) => $this->normalizeUrl($devLink->url) === $normalizedUrl);
+        if ($existingDevLink) {
+            throw ValidationException::withMessages([
+                'url' => __(
+                    'This instance is already linked as :name. Open or reconnect the existing connection.',
+                    ['name' => $existingDevLink->name]
+                ),
+            ]);
         }
+
+        $devLink = new DevLink();
+        $devLink->name = $request->input('name');
+        $devLink->url = $normalizedUrl;
         $devLink->saveOrFail();
 
         return $devLink;
@@ -77,6 +84,13 @@ class DevLinkController extends Controller
 
     public function update(Request $request, DevLink $devLink)
     {
+        $request->merge([
+            'name' => trim((string) $request->input('name')),
+        ]);
+        $request->validate([
+            'name' => ['required', 'string', Rule::unique('dev_links', 'name')->ignore($devLink->id)],
+        ]);
+
         $devLink->name = $request->input('name');
         $devLink->saveOrFail();
 
@@ -373,7 +387,39 @@ class DevLinkController extends Controller
 
     public function remoteBundleVersion(DevLink $devLink, int $remoteBundleId)
     {
-        return $devLink->remoteBundle($remoteBundleId);
+        try {
+            $payload = $devLink->remoteBundle($remoteBundleId)->json();
+        } catch (RequestException|ConnectionException $e) {
+            return [
+                'available' => false,
+                'version' => null,
+            ];
+        }
+
+        if (!is_array($payload)) {
+            return [
+                'available' => false,
+                'version' => null,
+            ];
+        }
+
+        $payload['available'] = true;
+
+        return $payload;
+    }
+
+    private function normalizeUrl(string $url): string
+    {
+        $parts = parse_url(trim($url));
+        $scheme = strtolower($parts['scheme']);
+        $host = strtolower($parts['host']);
+        $port = $parts['port'] ?? null;
+
+        if (($scheme === 'http' && $port === 80) || ($scheme === 'https' && $port === 443)) {
+            $port = null;
+        }
+
+        return $scheme . '://' . $host . ($port === null ? '' : ':' . $port);
     }
 
     public function deleteBundleAsset(BundleAsset $bundleAsset)

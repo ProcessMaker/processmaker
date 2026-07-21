@@ -20,6 +20,7 @@
         <VersionCheck
           :dev-link="bundle"
           @updateAvailable="updateAvailable = $event"
+          @availabilityChanged="remoteAvailable = $event"
         />
       </div>
       <div class="header-actions">
@@ -37,6 +38,7 @@
         <button
           v-if="bundle.dev_link_id !== null"
           class="btn btn-outline-secondary mr-2 dropdown-toggle"
+          :disabled="remoteAvailable !== true"
           data-toggle="dropdown"
           data-offset="5, 5"
           aria-haspopup="true"
@@ -49,7 +51,7 @@
           class="dropdown-menu dropdown-menu-right"
         >
           <a
-            v-if="updateAvailable"
+            v-if="updateAvailable && remoteAvailable"
             class="dropdown-item"
             href="#"
             @click.prevent="reinstallBundle.show(bundle)"
@@ -58,7 +60,7 @@
             {{ $t('Update Bundle') }}
           </a>
           <a
-            v-if="bundle.dev_link_id !== null"
+            v-if="bundle.dev_link_id !== null && remoteAvailable"
             class="dropdown-item"
             href="#"
             @click.prevent="executeReinstall('copy')"
@@ -67,7 +69,7 @@
             {{ $t('Add a Copy') }}
           </a>
           <a
-            v-if="bundle.dev_link_id !== null"
+            v-if="bundle.dev_link_id !== null && remoteAvailable"
             class="dropdown-item"
             href="#"
             @click.prevent="executeReinstall('update')"
@@ -178,6 +180,7 @@ const route = useRoute();
 const bundleId = route.params.id;
 const bundleForEdit = ref({});
 const updateAvailable = ref(false);
+const remoteAvailable = ref(null);
 const selected = ref(null);
 const confirmPublishNewVersion = ref(null);
 

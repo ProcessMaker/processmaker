@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -17,6 +18,212 @@ use Tests\TestCase;
 class DevLinkTest extends TestCase
 {
     use RequestHelper;
+
+    private const REMOTE_QA_NAME = 'Remote QA';
+
+    private const REMOTE_INSTANCE_URL = 'https://remote-instance.test';
+
+    private const EXISTING_LINK_NAME = 'Existing Link';
+
+    private const FIRST_LINK_NAME = 'First Link';
+
+    private const SECOND_LINK_NAME = 'Second Link';
+
+    private const FIRST_INSTANCE_URL = 'https://first-instance.test';
+
+    private const SECOND_INSTANCE_URL = 'https://second-instance.test';
+
+    public function testStoreCreatesADevLinkWithANormalizedUrl()
+    {
+        $response = $this->apiCall('POST', route('api.devlink.store'), [
+            'name' => self::REMOTE_QA_NAME,
+            'url' => ' https://REMOTE-INSTANCE.test:443/ ',
+        ]);
+
+        $response->assertCreated()->assertJson([
+            'name' => self::REMOTE_QA_NAME,
+            'url' => self::REMOTE_INSTANCE_URL,
+        ]);
+        $this->assertDatabaseHas('dev_links', [
+            'name' => self::REMOTE_QA_NAME,
+            'url' => self::REMOTE_INSTANCE_URL,
+        ]);
+    }
+
+    #[DataProvider('duplicateUrlProvider')]
+    public function testStoreRejectsNormalizedDuplicateUrls(string $storedUrl, string $duplicateUrl)
+    {
+        DevLink::factory()->create([
+            'name' => self::EXISTING_LINK_NAME,
+            'url' => $storedUrl,
+        ]);
+
+        $response = $this->apiCall('POST', route('api.devlink.store'), [
+            'name' => 'Duplicate Link',
+            'url' => $duplicateUrl,
+        ]);
+
+        $response->assertUnprocessable()->assertJsonPath(
+            'errors.url.0',
+            'This instance is already linked as Existing Link. Open or reconnect the existing connection.'
+        );
+        $this->assertDatabaseCount('dev_links', 1);
+    }
+
+    public static function duplicateUrlProvider(): array
+    {
+        return [
+            'host case and trailing slash' => [
+                self::REMOTE_INSTANCE_URL,
+                'https://REMOTE-INSTANCE.test/',
+            ],
+            'default HTTPS port' => [
+                self::REMOTE_INSTANCE_URL,
+                'https://remote-instance.test:443',
+            ],
+            'default HTTP port' => [
+                'http://remote-instance.test',
+                'http://remote-instance.test:80/',
+            ],
+        ];
+    }
+
+    public function testStoreRejectsAnExistingNameWithoutUpdatingItsUrl()
+    {
+        $devLink = DevLink::factory()->create([
+            'name' => self::EXISTING_LINK_NAME,
+            'url' => self::FIRST_INSTANCE_URL,
+        ]);
+
+        $response = $this->apiCall('POST', route('api.devlink.store'), [
+            'name' => self::EXISTING_LINK_NAME,
+            'url' => self::SECOND_INSTANCE_URL,
+        ]);
+
+        $response->assertUnprocessable()->assertJsonValidationErrors('name');
+        $this->assertSame(self::FIRST_INSTANCE_URL, $devLink->fresh()->url);
+        $this->assertDatabaseMissing('dev_links', ['url' => self::SECOND_INSTANCE_URL]);
+    }
+
+    public function testStoreAllowsDifferentNormalizedUrls()
+    {
+        DevLink::factory()->create([
+            'name' => self::FIRST_LINK_NAME,
+            'url' => self::FIRST_INSTANCE_URL,
+        ]);
+
+        $response = $this->apiCall('POST', route('api.devlink.store'), [
+            'name' => self::SECOND_LINK_NAME,
+            'url' => self::SECOND_INSTANCE_URL,
+        ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseCount('dev_links', 2);
+    }
+
+    public function testUpdateRejectsANameUsedByAnotherDevLink()
+    {
+        DevLink::factory()->create([
+            'name' => self::FIRST_LINK_NAME,
+            'url' => self::FIRST_INSTANCE_URL,
+        ]);
+        $secondDevLink = DevLink::factory()->create([
+            'name' => self::SECOND_LINK_NAME,
+            'url' => self::SECOND_INSTANCE_URL,
+        ]);
+
+        $response = $this->apiCall('PUT', route('api.devlink.update', [
+            'devLink' => $secondDevLink->id,
+        ]), [
+            'name' => self::FIRST_LINK_NAME,
+        ]);
+
+        $response->assertUnprocessable()->assertJsonValidationErrors('name');
+        $this->assertSame(self::SECOND_LINK_NAME, $secondDevLink->fresh()->name);
+    }
+
+    public function testRemoteBundleVersionReportsAnAvailableRemoteBundle()
+    {
+        Http::preventStrayRequests();
+        $devLink = DevLink::factory()->create([
+            'url' => self::REMOTE_INSTANCE_URL,
+            'access_token' => 'valid-token',
+        ]);
+        Http::fake([
+            'https://remote-instance.test/api/1.0/devlink/local-bundles/123' => Http::response([
+                'id' => 123,
+                'name' => 'Remote Bundle',
+                'version' => '4',
+            ]),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.remote-version', [
+            'devLink' => $devLink->id,
+            'bundle' => 123,
+        ]));
+
+        $response->assertOk()->assertJson([
+            'id' => 123,
+            'name' => 'Remote Bundle',
+            'version' => '4',
+            'available' => true,
+        ]);
+    }
+
+    #[DataProvider('unavailableRemoteStatusProvider')]
+    public function testRemoteBundleVersionHandlesRemoteHttpErrors(int $status)
+    {
+        Http::preventStrayRequests();
+        $devLink = DevLink::factory()->create([
+            'url' => self::REMOTE_INSTANCE_URL,
+            'access_token' => 'revoked-token',
+        ]);
+        Http::fake([
+            'https://remote-instance.test/api/1.0/devlink/local-bundles/123' => Http::response([], $status),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.remote-version', [
+            'devLink' => $devLink->id,
+            'bundle' => 123,
+        ]));
+
+        $response->assertOk()->assertExactJson([
+            'available' => false,
+            'version' => null,
+        ]);
+    }
+
+    public static function unavailableRemoteStatusProvider(): array
+    {
+        return [
+            'unauthorized' => [401],
+            'forbidden' => [403],
+            'missing bundle' => [404],
+            'remote server error' => [500],
+        ];
+    }
+
+    public function testRemoteBundleVersionHandlesConnectionErrors()
+    {
+        Http::preventStrayRequests();
+        $devLink = DevLink::factory()->create([
+            'url' => self::REMOTE_INSTANCE_URL,
+            'access_token' => 'unreachable-token',
+        ]);
+        Http::fake(function () {
+            throw new ConnectionException('Unable to connect to remote instance.');
+        });
+
+        $response = $this->apiCall('GET', route('api.devlink.remote-version', [
+            'devLink' => $devLink->id,
+            'bundle' => 123,
+        ]));
+
+        $response->assertOk()->assertExactJson([
+            'available' => false,
+            'version' => null,
+        ]);
+    }
 
     public function testShowBundle()
     {
@@ -207,7 +414,7 @@ class DevLinkTest extends TestCase
     {
         $screen = Screen::factory()->create();
         $devLink = DevLink::factory()->create([
-            'url' => 'https://remote-instance.test',
+            'url' => self::REMOTE_INSTANCE_URL,
         ]);
 
         Http::fake([
