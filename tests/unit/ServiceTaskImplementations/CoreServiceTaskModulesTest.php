@@ -16,6 +16,8 @@ class CoreServiceTaskModulesTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // ScriptRuntime creates an API token for getenv('API_TOKEN') during modules execution
+        $this->withPersonalAccessClient();
         config([
             'core-service-task.enabled' => true,
             'core-service-task.execution' => 'modules',
