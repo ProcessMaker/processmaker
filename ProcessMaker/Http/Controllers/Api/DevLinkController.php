@@ -145,7 +145,7 @@ class DevLinkController extends Controller
                 $request->input('order_by', $order_by),
                 $request->input('order_direction', $order_direction)
             )
-            ->paginate($request->input('per_page', 15));
+            ->paginate($request->input('per_page', 100));
 
         return new ApiCollection($response);
     }
