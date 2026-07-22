@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, getCurrentInstance, defineEmits, defineExpose } from 'vue';
 import InstallProgress from './InstallProgress.vue';
+import createOperationId from '../createOperationId';
 
 const vue = getCurrentInstance().proxy;
 const confirmUpdateVersion = ref(null);
@@ -8,6 +9,7 @@ const selected = ref(null);
 const selectedOption = ref('update');
 const showInstallModal = ref(false);
 const reinstall = ref(false);
+const operationId = ref('');
 const title = computed(() => {
   if (reinstall.value) {
     return 'Reinstall Bundle';
@@ -40,6 +42,7 @@ const updateBundleText = computed(() => {
 });
 
 const executeUpdate = (updateType) => {
+  operationId.value = createOperationId();
   showInstallModal.value = true;
   let url;
   if (reinstall.value) {
@@ -51,6 +54,7 @@ const executeUpdate = (updateType) => {
   ProcessMaker.apiClient
     .post(url, {
       updateType,
+      operation_id: operationId.value,
     })
     .then((response) => {
       // Handle the response as needed
@@ -99,7 +103,12 @@ const handleInstallationComplete = () => {
     </b-modal>
 
     <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
-      <install-progress @installation-complete="handleInstallationComplete" />
+      <install-progress
+        v-if="operationId"
+        :key="operationId"
+        :operation-id="operationId"
+        @installation-complete="handleInstallationComplete"
+      />
     </b-modal>
   </div>
 </template>

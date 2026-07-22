@@ -2,8 +2,11 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use ProcessMaker\Http\Controllers\Api\DevLinkController;
+use ProcessMaker\Jobs\DevLinkInstall;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Screen;
@@ -77,5 +80,76 @@ class DevLinkTest extends TestCase
 
         $screen->refresh();
         $this->assertEquals('Modified title', $screen->title);
+    }
+
+    public function testInstallEndpointsPassOperationIdToQueuedJobs()
+    {
+        Bus::fake();
+
+        $operationId = (string) Str::uuid();
+        $devLink = DevLink::factory()->create();
+        $bundle = Bundle::factory()->create([
+            'dev_link_id' => $devLink->id,
+        ]);
+
+        $installResponse = $this->apiCall(
+            'POST',
+            route('api.devlink.install-remote-bundle', [
+                'devLink' => $devLink->id,
+                'remoteBundleId' => 123,
+            ]),
+            ['operation_id' => $operationId]
+        );
+        $reinstallResponse = $this->apiCall(
+            'POST',
+            route('api.devlink.reinstall-bundle', ['bundle' => $bundle->id]),
+            ['operation_id' => $operationId]
+        );
+        $assetResponse = $this->apiCall(
+            'POST',
+            route('api.devlink.install-remote-asset', ['devLink' => $devLink->id]),
+            [
+                'id' => 456,
+                'class' => Screen::class,
+                'operation_id' => $operationId,
+            ]
+        );
+
+        $installResponse->assertOk()->assertExactJson(['status' => 'queued']);
+        $reinstallResponse->assertOk()->assertExactJson(['status' => 'queued']);
+        $assetResponse->assertOk()->assertExactJson(['status' => 'queued']);
+
+        Bus::assertDispatched(DevLinkInstall::class, function (DevLinkInstall $job) use ($operationId) {
+            return $job->type === DevLinkInstall::TYPE_INSTALL_BUNDLE
+                && $job->operationId === $operationId;
+        });
+        Bus::assertDispatched(DevLinkInstall::class, function (DevLinkInstall $job) use ($operationId) {
+            return $job->type === DevLinkInstall::TYPE_REINSTALL_BUNDLE
+                && $job->operationId === $operationId;
+        });
+        Bus::assertDispatched(DevLinkInstall::class, function (DevLinkInstall $job) use ($operationId) {
+            return $job->type === DevLinkInstall::TYPE_IMPORT_ASSET
+                && $job->operationId === $operationId;
+        });
+    }
+
+    public function testInstallEndpointGeneratesOperationIdWhenMissing()
+    {
+        Bus::fake();
+
+        $devLink = DevLink::factory()->create();
+        $response = $this->apiCall(
+            'POST',
+            route('api.devlink.install-remote-asset', ['devLink' => $devLink->id]),
+            [
+                'id' => 456,
+                'class' => Screen::class,
+            ]
+        );
+
+        $response->assertOk()->assertExactJson(['status' => 'queued']);
+        Bus::assertDispatched(DevLinkInstall::class, function (DevLinkInstall $job) {
+            return Str::isUuid($job->operationId);
+        });
     }
 }

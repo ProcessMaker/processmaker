@@ -33,6 +33,14 @@ class DevLinkInstall implements ShouldQueue
 
     public $maxExceptions = 1;
 
+    /**
+     * Correlates progress events with the DevLink operation that started them.
+     *
+     * This remains nullable so jobs queued before this property was introduced
+     * can still be processed after an application upgrade.
+     */
+    public $operationId = null;
+
     public function __construct(
         public int $userId,
         public int $devLinkId,
@@ -40,7 +48,9 @@ class DevLinkInstall implements ShouldQueue
         public int $id,
         public string $importMode,
         public string $type,
+        $operationId = null,
     ) {
+        $this->operationId = $operationId;
     }
 
     /**
@@ -51,7 +61,7 @@ class DevLinkInstall implements ShouldQueue
         //log
         \Log::info('DevLinkInstall job started: ' . $this->devLinkId);
         $devLink = DevLink::findOrFail($this->devLinkId);
-        $logger = new Logger($this->userId);
+        $logger = new Logger($this->userId, $this->operationId);
 
         $lock = Cache::lock(ImportV2::CACHE_LOCK_KEY, ImportV2::RELEASE_LOCK_AFTER);
 
@@ -82,7 +92,7 @@ class DevLinkInstall implements ShouldQueue
 
     public function failed(Throwable $exception): void
     {
-        (new Logger($this->userId))->exception($exception);
+        (new Logger($this->userId, $this->operationId))->exception($exception);
 
         // Unlock the job
         // We can't use $this->lock->release() here because this is run in a new instance

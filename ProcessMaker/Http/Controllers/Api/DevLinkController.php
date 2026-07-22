@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Exception\ValidationException;
@@ -211,6 +212,7 @@ class DevLinkController extends Controller
     public function installRemoteBundle(Request $request, DevLink $devLink, $remoteBundleId)
     {
         $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
+        $operationId = $this->operationId($request);
         DevLinkInstall::dispatch(
             $request->user()->id,
             $devLink->id,
@@ -218,6 +220,7 @@ class DevLinkController extends Controller
             $remoteBundleId,
             $updateType,
             DevLinkInstall::TYPE_INSTALL_BUNDLE,
+            $operationId,
         );
 
         return [
@@ -228,6 +231,7 @@ class DevLinkController extends Controller
     public function reinstallBundle(Request $request, Bundle $bundle)
     {
         $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
+        $operationId = $this->operationId($request);
         DevLinkInstall::dispatch(
             $request->user()->id,
             $bundle->dev_link_id,
@@ -235,6 +239,7 @@ class DevLinkController extends Controller
             $bundle->id,
             $updateType,
             DevLinkInstall::TYPE_REINSTALL_BUNDLE,
+            $operationId,
         );
 
         return [
@@ -356,6 +361,7 @@ class DevLinkController extends Controller
     public function installRemoteAsset(Request $request, DevLink $devLink)
     {
         $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
+        $operationId = $this->operationId($request);
 
         DevLinkInstall::dispatch(
             $request->user()->id,
@@ -363,7 +369,8 @@ class DevLinkController extends Controller
             $request->input('class'),
             $request->input('id'),
             $updateType,
-            DevLinkInstall::TYPE_IMPORT_ASSET
+            DevLinkInstall::TYPE_IMPORT_ASSET,
+            $operationId,
         );
 
         return [
@@ -414,6 +421,15 @@ class DevLinkController extends Controller
     {
         CompileUI::dispatch(auth()->user()?->id);
         CustomizeUiUpdated::dispatch([], [], false);
+    }
+
+    private function operationId(Request $request): string
+    {
+        $validated = $request->validate([
+            'operation_id' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        return $validated['operation_id'] ?? (string) Str::uuid();
     }
 
     private function writeColors($data)

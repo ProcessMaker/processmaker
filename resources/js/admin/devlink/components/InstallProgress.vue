@@ -36,6 +36,12 @@
 import { ref, onMounted, onUnmounted, getCurrentInstance } from 'vue';
 
 const vue = getCurrentInstance().proxy;
+const props = defineProps({
+  operationId: {
+    type: String,
+    required: true,
+  },
+});
 const progress = ref(0);
 const userId = window.ProcessMaker.user.id;
 const done = ref(false);
@@ -50,6 +56,10 @@ onMounted(() => {
   window.Echo.private(`ProcessMaker.Models.User.${userId}`).listen(
     '.ImportLog',
     (response) => {
+      if (response.operationId !== props.operationId) {
+        return;
+      }
+
       showSpinner.value = false;
       if (response.type === 'progress') {
         progress.value = response.message;
