@@ -50,8 +50,8 @@ class ScriptRunner
      */
     private function getScriptRunner(ScriptExecutor $executor): Base|ScriptMicroserviceRunner|MockRunner
     {
-        if (!config('script-runner-microservice.enabled') || $executor->type === ScriptExecutorType::Custom) {
-            $language = strtolower($executor->language);
+        $language = strtolower($executor->language);
+        if (!config('script-runner-microservice.enabled') || $language === 'php-nayra') {
             $runner = config("script-runners.{$language}.runner");
             if (!$runner) {
                 throw new ScriptLanguageNotSupported($language);
