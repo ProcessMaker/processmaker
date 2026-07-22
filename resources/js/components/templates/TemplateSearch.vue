@@ -163,7 +163,7 @@ export default {
         title: this.$t("Import a PI Process"),
         description: '',
         svgIcon: "../../../img/process-intelligence-logo-black.png",
-        svgIconStyle: "margin-left: auto; width: 60%; margin-right: auto;",
+        svgIconStyle: "width: 20%; height: auto; margin-left: auto; margin-right: auto; object-fit: contain;",
       },
       showWizardTemplateDetails: false,
     };
