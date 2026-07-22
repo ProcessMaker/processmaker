@@ -79,7 +79,7 @@
   .forgot-password-link {
     color: {{ color('primary') }};
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 400;
     text-decoration: none;
     white-space: nowrap;
   }

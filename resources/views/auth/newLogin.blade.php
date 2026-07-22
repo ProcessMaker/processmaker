@@ -9,7 +9,7 @@
   <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
   <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
   <title>{{ __('Login') }} - {{ __('ProcessMaker') }}</title>
-  <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+  @include('auth.partials.login-base-styles')
   @include('auth.partials.login-critical-styles')
   @include('auth.partials.auth-styles')
   @include('auth.partials.login-extra-styles')
@@ -59,13 +59,13 @@
                   <div class="password-field-header">
                     <label for="password">{{ __('Password') }}</label>
                     <span id="capsLockWarning" class="caps-lock-warning" hidden aria-live="polite">
-                      <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                      @include('auth.partials.icon-warning')
                       {{ __('Caps lock is on') }}
                     </span>
                   </div>
                   <div class="password-container">
                     <input id="password" type="password" class="form-control form-control-login {{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('Enter your password')}}" required>
-                    <i class="fa fa-eye" id="togglePassword"></i>
+                    @include('auth.partials.password-toggle-button', ['id' => 'togglePassword'])
                     @if ($errors->has('password'))
                     <span class="invalid-feedback" role="alert">
                       <strong>{{ $errors->first('password') }}</strong>
@@ -174,5 +174,5 @@
     });
   }
 </script>
-@include('auth.partials.auth-language-scripts')
+@include('auth.partials.auth-language-scripts-minimal')
 </html>

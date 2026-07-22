@@ -7,4 +7,4 @@
         $class = 'login-logo-custom';
     }
 @endphp
-<img src={{$loginLogo}} alt="{{ config('logo-alt-text', 'ProcessMaker') }}" class="{{ $class }}">
+<img src="{{ $loginLogo }}" alt="{{ config('logo-alt-text', 'ProcessMaker') }}" class="{{ $class }}" width="440" height="80" fetchpriority="high">

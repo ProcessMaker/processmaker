@@ -50,7 +50,7 @@
     <div class="password-field-header">
       <label for="password">{{ __('New Password') }}</label>
       <span id="capsLockWarning" class="caps-lock-warning" hidden aria-live="polite">
-        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        @include('auth.partials.icon-warning')
         {{ __('Caps lock is on') }}
       </span>
     </div>
@@ -62,7 +62,7 @@
         name="password"
         placeholder="{{ __('Enter your new password') }}"
         required>
-      <i class="fa fa-eye toggle-password" id="togglePassword" aria-hidden="true"></i>
+      @include('auth.partials.password-toggle-button', ['id' => 'togglePassword', 'class' => 'toggle-password'])
       @if ($errors->has('password'))
       <span class="invalid-feedback" role="alert">
         <strong>{{ $errors->first('password') }}</strong>
@@ -80,7 +80,7 @@
         name="password_confirmation"
         placeholder="{{ __('Confirm your new password') }}"
         required>
-      <i class="fa fa-eye toggle-password" id="togglePasswordConfirm" aria-hidden="true"></i>
+      @include('auth.partials.password-toggle-button', ['id' => 'togglePasswordConfirm', 'class' => 'toggle-password'])
     </div>
   </div>
   <div class="form-group mb-0">

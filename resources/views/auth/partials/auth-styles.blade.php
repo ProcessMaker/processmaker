@@ -51,7 +51,7 @@
   .auth-card-title {
     color: #333333;
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: 800;
     margin-bottom: 0.5rem;
     text-align: center;
   }
@@ -90,7 +90,7 @@
   .form-group label {
     color: #333333;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 400;
     margin-bottom: 0.5rem;
   }
 
@@ -111,7 +111,7 @@
     color: #C66E00;
     display: inline-flex;
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: 400;
     gap: 0.375rem;
     line-height: 1.25rem;
     white-space: nowrap;
@@ -160,7 +160,7 @@
   .auth-link {
     color: {{ color('primary') }};
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 400;
     text-decoration: none;
   }
 
@@ -177,7 +177,7 @@
   .button-login {
     height: 50px;
     border-radius: 9px;
-    font-weight: 600;
+    font-weight: 800;
     font-size: 1rem;
     text-transform: none;
   }
@@ -206,7 +206,7 @@
 
   .slogan .head-text {
     text-transform: uppercase;
-    font-weight: 700;
+    font-weight: 800;
     color: #A6F252;
     margin: 0 0 1.5rem 0;
     font-size: 0.875rem;
@@ -240,7 +240,7 @@
   .slogan .subtext {
     color: #ffffff;
     font-size: 1rem;
-    font-weight: 300;
+    font-weight: 400;
     line-height: 1.75;
     max-width: 520px;
     margin-top: 0;
@@ -256,7 +256,8 @@
   }
 
   #togglePassword,
-  .toggle-password {
+  .toggle-password,
+  .password-toggle {
     position: absolute;
     top: 50%;
     right: 1rem;
@@ -303,7 +304,7 @@
     border-radius: 0 !important;
     color: #ffffff !important;
     font-size: 0.75rem !important;
-    font-weight: 500 !important;
+    font-weight: 400 !important;
     height: auto !important;
     line-height: 1 !important;
     padding: 0 !important;

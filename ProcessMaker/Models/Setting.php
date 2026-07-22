@@ -311,6 +311,7 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
     {
         // default login
         $url = asset(config('app.settings.login_logo_path'));
+        $customized = false;
 
         //custom login
         $setting = self::byKey('css-override');
@@ -320,10 +321,18 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
 
             foreach ($mediaFile as $media) {
                 $url = $media->getFullUrl();
+                $customized = true;
             }
         }
 
-        return $url . '?id=' . bin2hex(random_bytes(16));
+        // Use a stable cache-busting key based on the setting's last update time.
+        // This allows the browser to cache the logo long-term and only re-fetch
+        // when an admin actually changes it, instead of on every page request.
+        if ($customized && $setting) {
+            return $url . '?v=' . $setting->updated_at?->timestamp;
+        }
+
+        return $url;
     }
 
     /**
@@ -359,6 +368,8 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
     {
         // default icon
         $url = asset(config('app.settings.icon_path'));
+        $setting = null;
+        $customized = false;
 
         // custom icon
         if (config()->has($key = 'css-override')) {
@@ -369,11 +380,17 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
 
                 foreach ($mediaFile as $media) {
                     $url = $media->getFullUrl();
+                    $customized = true;
                 }
             }
         }
 
-        return $url . '?id=' . bin2hex(random_bytes(16));
+        // Use a stable cache-busting key based on the setting's last update time.
+        if ($customized && $setting) {
+            return $url . '?v=' . $setting->updated_at?->timestamp;
+        }
+
+        return $url;
     }
 
     /**
@@ -384,6 +401,8 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
     {
         // default icon
         $url = asset(config('app.settings.favicon_path'));
+        $setting = null;
+        $customized = false;
 
         // custom icon
         if (config()->has($key = 'css-override')) {
@@ -394,11 +413,19 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
 
                 foreach ($mediaFile as $media) {
                     $url = $media->getFullUrl();
+                    $customized = true;
                 }
             }
         }
 
-        return $url . '?id=' . bin2hex(random_bytes(16));
+        // Use a stable cache-busting key based on the setting's last update time.
+        // Eliminates the previous random_bytes() that prevented browser caching
+        // on every request, forcing a full re-download of the favicon each visit.
+        if ($customized && $setting) {
+            return $url . '?v=' . $setting->updated_at?->timestamp;
+        }
+
+        return $url;
     }
 
     /**
