@@ -52,17 +52,27 @@ class EnvironmentVariableExporter extends ExporterBase
     {
         foreach ($this->getDependents(DependentType::ENVIRONMENT_VARIABLE_ASSET, true) as $dependent) {
             $asset = $dependent->model;
-            if (!$asset) {
-                continue;
-            }
+            if ($asset && $asset->exists) {
+                $this->model->asset_type = get_class($asset);
+                $this->model->value = (string) $asset->id;
 
-            $this->model->asset_type = get_class($asset);
-            $this->model->value = (string) $asset->id;
+                return $this->model->save();
+            }
+        }
+
+        if ($this->model->asset_type) {
+            // Linked in source, but asset was not imported and was not found on target.
+            $this->logger?->addWarning(__(
+                'Asset linked to environment variable ":env_variable" was missing on import; link and value were cleared',
+                ['env_variable' => $this->model->name]
+            ));
+            $this->model->asset_type = null;
+            $this->model->value = '';
 
             return $this->model->save();
         }
 
-        // Non-linked env vars (or discarded asset dependents): restore exported value.
+        // Standard case (non-linked) env var: restore secret/value from export.
         $this->model->value = $this->getReference(DependentType::ENVIRONMENT_VARIABLE_VALUE);
 
         return $this->model->save();
