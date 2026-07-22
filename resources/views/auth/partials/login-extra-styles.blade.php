@@ -103,5 +103,13 @@
     .login-remember {
       width: 100%;
     }
+
+    .forgot-password-link {
+      white-space: normal;
+    }
+
+    .login-addons {
+      margin-top: 0.5rem;
+    }
   }
 </style>
