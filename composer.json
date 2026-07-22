@@ -21,7 +21,7 @@
         "fakerphp/faker": "^1.24",
         "google/apiclient": "^2.18",
         "google/protobuf": "^4.33.6",
-        "guzzlehttp/guzzle": "^7.12.3",
+        "guzzlehttp/guzzle": "^7.13.1",
         "guzzlehttp/psr7": "^2.12.3",
         "igaster/laravel-theme": "^2.0",
         "jenssegers/agent": "^2.6",
