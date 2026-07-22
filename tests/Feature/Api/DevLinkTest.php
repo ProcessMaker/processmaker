@@ -88,6 +88,29 @@ class DevLinkTest extends TestCase
         ];
     }
 
+    #[DataProvider('nonOriginUrlProvider')]
+    public function testStoreRejectsUrlsThatAreNotHttpOrigins(string $url)
+    {
+        $response = $this->apiCall('POST', route('api.devlink.store'), [
+            'name' => self::REMOTE_QA_NAME,
+            'url' => $url,
+        ]);
+
+        $response->assertUnprocessable()->assertJsonValidationErrors('url');
+        $this->assertDatabaseCount('dev_links', 0);
+    }
+
+    public static function nonOriginUrlProvider(): array
+    {
+        return [
+            'path' => [self::REMOTE_INSTANCE_URL . '/api'],
+            'query' => [self::REMOTE_INSTANCE_URL . '?x=1'],
+            'fragment' => [self::REMOTE_INSTANCE_URL . '#section'],
+            'username' => ['https://user@remote-instance.test'],
+            'username and password' => ['https://user:password@remote-instance.test'],
+        ];
+    }
+
     public function testStoreRejectsAnExistingNameWithoutUpdatingItsUrl()
     {
         $devLink = DevLink::factory()->create([

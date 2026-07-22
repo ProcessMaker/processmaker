@@ -180,8 +180,27 @@ const handleNewUrlUpdate = (newValue) => {
   newUrl.value = newValue;
 };
 
+const isValidInstanceUrl = (value) => {
+  const trimmedValue = value.trim();
+  if (trimmedValue.includes('?') || trimmedValue.includes('#')) {
+    return false;
+  }
+
+  try {
+    const url = new URL(trimmedValue);
+
+    return ['http:', 'https:'].includes(url.protocol)
+      && url.hostname !== ''
+      && url.pathname === '/'
+      && url.username === ''
+      && url.password === '';
+  } catch {
+    return false;
+  }
+};
+
 const urlIsValid = computed(() => {
-  return /^(https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(:\d{1,5})?$/.test(newUrl.value);
+  return isValidInstanceUrl(newUrl.value);
 });
 
 </script>

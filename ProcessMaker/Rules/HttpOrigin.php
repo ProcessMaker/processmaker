@@ -21,7 +21,10 @@ class HttpOrigin implements ValidationRule
             !isset($parts['scheme'], $parts['host'])
             || !in_array(strtolower($parts['scheme']), ['http', 'https'], true)
             || !in_array($path, ['', '/'], true)
-            || isset($parts['query'], $parts['fragment'], $parts['user'], $parts['pass'])
+            || isset($parts['query'])
+            || isset($parts['fragment'])
+            || isset($parts['user'])
+            || isset($parts['pass'])
         ) {
             $fail(__('The instance URL must contain only an HTTP or HTTPS origin.'));
         }
