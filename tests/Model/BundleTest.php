@@ -6,6 +6,8 @@ use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\BundleAsset;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
+use ProcessMaker\Services\DevLink\BundleFingerprint;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
@@ -38,6 +40,83 @@ class BundleTest extends TestCase
         $this->assertEquals(2, count($payload));
         $this->assertEquals($process->name, $payload[0]['name']);
         $this->assertEquals($screen->title, $payload[1]['name']);
+    }
+
+    public function testPublicationFingerprintIsStableAcrossAssetOrder()
+    {
+        $screen1 = Screen::factory()->create(['title' => 'Screen 1']);
+        $screen2 = Screen::factory()->create(['title' => 'Screen 2']);
+        $bundle1 = Bundle::factory()->create();
+        $bundle2 = Bundle::factory()->create();
+
+        $bundle1->syncAssets([$screen1, $screen2]);
+        $bundle2->syncAssets([$screen2, $screen1]);
+
+        $fingerprint = app(BundleFingerprint::class);
+
+        $this->assertSame(
+            $fingerprint->calculate($bundle1->fresh()),
+            $fingerprint->calculate($bundle2->fresh()),
+        );
+    }
+
+    public function testPublicationFingerprintIgnoresTimestampsButDetectsAssetChanges()
+    {
+        $screen = Screen::factory()->create(['title' => 'Original Screen']);
+        $bundle = Bundle::factory()->create();
+        $bundle->syncAssets([$screen]);
+        $fingerprint = app(BundleFingerprint::class);
+        $originalFingerprint = $fingerprint->calculate($bundle->fresh());
+
+        $screen->timestamps = false;
+        $screen->updated_at = now()->addHour();
+        $screen->saveQuietly();
+        $screen->timestamps = true;
+
+        $this->assertSame($originalFingerprint, $fingerprint->calculate($bundle->fresh()));
+
+        $screen->title = 'Updated Screen';
+        $screen->save();
+
+        $this->assertNotSame($originalFingerprint, $fingerprint->calculate($bundle->fresh()));
+    }
+
+    public function testPublicationFingerprintIgnoresBundleMetadata()
+    {
+        $bundle = Bundle::factory()->create([
+            'name' => 'Original Bundle',
+            'description' => 'Original Description',
+            'published' => true,
+        ]);
+        $fingerprint = app(BundleFingerprint::class);
+        $originalFingerprint = $fingerprint->calculate($bundle);
+
+        $bundle->name = 'Renamed Bundle';
+        $bundle->description = 'Updated Description';
+        $bundle->published = false;
+        $bundle->save();
+
+        $this->assertSame($originalFingerprint, $fingerprint->calculate($bundle->fresh()));
+    }
+
+    public function testPublicationFingerprintNormalizesSettingSelectionOrder()
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $bundle1 = Bundle::factory()->create();
+        $bundle2 = Bundle::factory()->create();
+
+        $bundle1->addSettings('users', json_encode(['id' => [$user1->id, $user2->id]]));
+        $bundle2->addSettings('users', json_encode(['id' => [$user2->id, $user1->id]]));
+
+        $fingerprint = app(BundleFingerprint::class);
+        $originalFingerprint = $fingerprint->calculate($bundle1->fresh());
+
+        $this->assertSame($originalFingerprint, $fingerprint->calculate($bundle2->fresh()));
+
+        $bundle1->addSettings('users', json_encode(['id' => [$user1->id]]), replaceIds: true);
+
+        $this->assertNotSame($originalFingerprint, $fingerprint->calculate($bundle1->fresh()));
     }
 
     public function testSyncAssets()
