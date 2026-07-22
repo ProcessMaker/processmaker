@@ -16,14 +16,12 @@ new Vue({
         description: initial.description,
         value: initial.value || null,
         asset_type: initial.asset_type || null,
-        asset_uuid: initial.asset_uuid || null,
       },
       errors: {
         name: null,
         description: null,
         value: null,
         asset_type: null,
-        asset_uuid: null,
       },
     };
   },
@@ -34,7 +32,6 @@ new Vue({
         description: null,
         value: null,
         asset_type: null,
-        asset_uuid: null,
       };
     },
     onClose() {
@@ -46,11 +43,8 @@ new Vue({
         name: this.formData.name,
         description: this.formData.description,
         asset_type: this.formData.asset_type,
-        asset_uuid: this.formData.asset_uuid,
+        value: this.formData.value,
       };
-      if (!this.formData.asset_type && this.formData.value) {
-        payload.value = this.formData.value;
-      }
       ProcessMaker.apiClient.put(`environment_variables/${this.formData.id}`, payload)
         .then(() => {
           ProcessMaker.alert(this.$t("The environment variable was saved."), "success");

@@ -18,8 +18,8 @@
     <b-form-group
       v-if="localAssetType"
       :label="$t('Asset')"
-      :invalid-feedback="errorMessage('asset_uuid', errors)"
-      :state="errorState('asset_uuid', errors)"
+      :invalid-feedback="errorMessage('value', errors)"
+      :state="errorState('value', errors)"
     >
       <multiselect
         v-model="selectedAsset"
@@ -29,7 +29,7 @@
         :show-labels="false"
         :internal-search="false"
         :options-limit="20"
-        track-by="uuid"
+        track-by="id"
         :label="nameField"
         @search-change="loadAssets"
         @input="onAssetSelected"
@@ -56,6 +56,8 @@
     <b-form-group
       v-else
       :label="$t('Value')"
+      :invalid-feedback="errorMessage('value', errors)"
+      :state="errorState('value', errors)"
     >
       <b-form-input
         :value="derivedValueLabel"
@@ -82,12 +84,8 @@ export default {
       type: String,
       default: null,
     },
-    assetUuid: {
-      type: String,
-      default: null,
-    },
     value: {
-      type: String,
+      type: [String, Number],
       default: "",
     },
     errors: {
@@ -136,18 +134,18 @@ export default {
   watch: {
     assetType(next) {
       this.localAssetType = next || "";
-      if (this.localAssetType && this.assetUuid) {
+      if (this.localAssetType && this.value) {
         this.loadSelectedAsset();
       }
     },
-    assetUuid(next) {
+    value(next) {
       if (this.localAssetType && next) {
         this.loadSelectedAsset();
       }
     },
   },
   mounted() {
-    if (this.localAssetType && this.assetUuid) {
+    if (this.localAssetType && this.value) {
       this.loadSelectedAsset();
     } else if (this.localAssetType) {
       this.loadAssets("");
@@ -158,7 +156,6 @@ export default {
       this.selectedAsset = null;
       this.assetOptions = [];
       this.$emit("update:assetType", this.localAssetType || null);
-      this.$emit("update:assetUuid", null);
       this.$emit("update:value", this.localAssetType ? "" : this.localValue);
       if (this.localAssetType) {
         this.loadAssets("");
@@ -166,7 +163,6 @@ export default {
     },
     onAssetSelected(asset) {
       this.$emit("update:assetType", this.localAssetType || null);
-      this.$emit("update:assetUuid", asset ? asset.uuid : null);
       this.$emit("update:value", asset ? String(asset.id) : "");
     },
     emitValue() {
@@ -197,9 +193,10 @@ export default {
         });
     },
     loadSelectedAsset() {
-      if (!this.selectedTypeConfig || !this.assetUuid) {
+      if (!this.selectedTypeConfig || !this.value) {
         return;
       }
+      const assetId = String(this.value);
       this.isLoadingAssets = true;
       ProcessMaker.apiClient
         .get(this.selectedTypeConfig.apiPath, {
@@ -211,22 +208,19 @@ export default {
         .then((response) => {
           const items = response.data.data || [];
           this.assetOptions = items;
-          this.selectedAsset = items.find((item) => item.uuid === this.assetUuid) || null;
+          this.selectedAsset = items.find((item) => String(item.id) === assetId) || null;
           if (!this.selectedAsset) {
-            // Fallback: keep a stub so the UUID remains visible until search finds it
             this.selectedAsset = {
-              uuid: this.assetUuid,
-              id: this.value || "",
-              [this.nameField]: this.assetUuid,
+              id: assetId,
+              [this.nameField]: assetId,
             };
             this.assetOptions = [this.selectedAsset, ...items];
           }
         })
         .catch(() => {
           this.selectedAsset = {
-            uuid: this.assetUuid,
-            id: this.value || "",
-            [this.nameField]: this.assetUuid,
+            id: assetId,
+            [this.nameField]: assetId,
           };
           this.assetOptions = [this.selectedAsset];
         })

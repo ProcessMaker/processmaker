@@ -17,7 +17,6 @@ use ProcessMaker\Traits\Exportable;
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="value", type="string"),
  *   @OA\Property(property="asset_type", type="string", nullable=true),
- *   @OA\Property(property="asset_uuid", type="string", format="uuid", nullable=true),
  * ),
  * @OA\Schema(
  *   schema="EnvironmentVariable",
@@ -42,7 +41,6 @@ class EnvironmentVariable extends ProcessMakerModel
         'description',
         'value',
         'asset_type',
-        'asset_uuid',
     ];
 
     protected $hidden = [
@@ -55,7 +53,6 @@ class EnvironmentVariable extends ProcessMakerModel
 
         static::saving(function (self $environmentVariable) {
             $environmentVariable->normalizeAssetLink();
-            $environmentVariable->syncLinkedAssetValue();
         });
     }
 
@@ -95,49 +92,37 @@ class EnvironmentVariable extends ProcessMakerModel
 
         return [
             'description' => 'required',
-            'value' => 'nullable',
+            'value' => [
+                'nullable',
+                'required_with:asset_type',
+            ],
             'name' => ['required', "regex:{$validVariableName}", $unique],
             'asset_type' => [
                 'nullable',
                 'string',
                 Rule::in($allowedAssetTypes),
-                'required_with:asset_uuid',
-            ],
-            'asset_uuid' => [
-                'nullable',
-                'uuid',
-                'required_with:asset_type',
             ],
         ];
     }
 
     /**
-     * Validate that a linked asset exists when asset_type and asset_uuid are provided.
-     *
-     * @deprecated Use validateAssetLinkConsistency() which also checks value consistency.
-     */
-    public static function validateLinkedAssetExists(array $data): void
-    {
-        self::validateAssetLinkConsistency($data);
-    }
-
-    /**
-     * Validate asset_type + asset_uuid form a consistent pair, and that value (when sent)
-     * matches the selected asset's numeric ID.
+     * Validate that asset_type + value resolve to an existing asset of that type.
      *
      * @return Model|null The resolved asset when a link is present
      */
     public static function validateAssetLinkConsistency(array $data): ?Model
     {
         $assetType = $data['asset_type'] ?? null;
-        $assetUuid = $data['asset_uuid'] ?? null;
+        $value = $data['value'] ?? null;
 
-        if (!$assetType && !$assetUuid) {
+        if (!$assetType) {
             return null;
         }
 
-        if (!$assetType || !$assetUuid) {
-            return null;
+        if ($value === null || $value === '') {
+            throw ValidationException::withMessages([
+                'value' => [trans('environmentVariables.validation.value.required_with_asset_type')],
+            ]);
         }
 
         if (!class_exists($assetType)) {
@@ -152,10 +137,10 @@ class EnvironmentVariable extends ProcessMakerModel
             ]);
         }
 
-        $asset = $assetType::where('uuid', $assetUuid)->first();
+        $asset = $assetType::find($value);
         if (!$asset) {
             throw ValidationException::withMessages([
-                'asset_uuid' => [trans('environmentVariables.validation.asset_uuid.not_found_for_type')],
+                'value' => [trans('environmentVariables.validation.value.not_found_for_type')],
             ]);
         }
 
@@ -166,14 +151,6 @@ class EnvironmentVariable extends ProcessMakerModel
             ]);
         }
 
-        if (array_key_exists('value', $data) && $data['value'] !== null && $data['value'] !== '') {
-            if ((string) $data['value'] !== (string) $asset->id) {
-                throw ValidationException::withMessages([
-                    'value' => [trans('environmentVariables.validation.value.must_match_asset_id')],
-                ]);
-            }
-        }
-
         return $asset;
     }
 
@@ -181,8 +158,7 @@ class EnvironmentVariable extends ProcessMakerModel
     {
         return [
             'name.regex' => trans('environmentVariables.validation.name.invalid_variable_name'),
-            'asset_type.required_with' => trans('environmentVariables.validation.asset_type.required_with'),
-            'asset_uuid.required_with' => trans('environmentVariables.validation.asset_uuid.required_with'),
+            'value.required_with' => trans('environmentVariables.validation.value.required_with_asset_type'),
         ];
     }
 
@@ -200,41 +176,26 @@ class EnvironmentVariable extends ProcessMakerModel
 
     public function resolveLinkedAsset(): ?Model
     {
-        if (!$this->asset_type || !$this->asset_uuid || !class_exists($this->asset_type)) {
+        if (!$this->hasLinkedAsset() || !class_exists($this->asset_type)) {
             return null;
         }
 
-        return $this->asset_type::where('uuid', $this->asset_uuid)->first();
+        if ($this->value === null || $this->value === '') {
+            return null;
+        }
+
+        return $this->asset_type::find($this->value);
     }
 
     public function hasLinkedAsset(): bool
     {
-        return !empty($this->asset_type) && !empty($this->asset_uuid);
+        return !empty($this->asset_type);
     }
 
     protected function normalizeAssetLink(): void
     {
         if ($this->asset_type === '') {
             $this->asset_type = null;
-        }
-
-        if ($this->asset_uuid === '') {
-            $this->asset_uuid = null;
-        }
-    }
-
-    /**
-     * Keep value in sync with the linked asset's numeric ID on this instance.
-     */
-    public function syncLinkedAssetValue(): void
-    {
-        if (!$this->hasLinkedAsset()) {
-            return;
-        }
-
-        $asset = $this->resolveLinkedAsset();
-        if ($asset) {
-            $this->value = (string) $asset->id;
         }
     }
 

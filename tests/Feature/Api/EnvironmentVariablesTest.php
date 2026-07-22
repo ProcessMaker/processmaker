@@ -267,20 +267,18 @@ class EnvironmentVariablesTest extends TestCase
             'name' => 'MY_SCREEN_ID',
             'description' => 'Linked screen id',
             'asset_type' => Screen::class,
-            'asset_uuid' => $screen->uuid,
+            'value' => (string) $screen->id,
         ]);
 
         $response->assertStatus(201);
         $response->assertJsonFragment([
             'name' => 'MY_SCREEN_ID',
             'asset_type' => Screen::class,
-            'asset_uuid' => $screen->uuid,
         ]);
 
         $variable = EnvironmentVariable::where('name', 'MY_SCREEN_ID')->firstOrFail();
         $this->assertEquals((string) $screen->id, $variable->value);
         $this->assertEquals(Screen::class, $variable->asset_type);
-        $this->assertEquals($screen->uuid, $variable->asset_uuid);
     }
 
     /** @test */
@@ -290,11 +288,11 @@ class EnvironmentVariablesTest extends TestCase
             'name' => 'MY_SCREEN_ID',
             'description' => 'Linked screen id',
             'asset_type' => Screen::class,
-            'asset_uuid' => '00000000-0000-0000-0000-000000000000',
+            'value' => '999999',
         ]);
 
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['asset_uuid']);
+        $response->assertJsonValidationErrors(['value']);
     }
 
     /** @test */
@@ -310,20 +308,18 @@ class EnvironmentVariablesTest extends TestCase
             'name' => 'MY_SCREEN_ID',
             'description' => 'Linked screen id',
             'asset_type' => Screen::class,
-            'asset_uuid' => $screen->uuid,
+            'value' => (string) $screen->id,
         ]);
 
         $response->assertStatus(200);
         $variable->refresh();
         $this->assertEquals((string) $screen->id, $variable->value);
         $this->assertEquals(Screen::class, $variable->asset_type);
-        $this->assertEquals($screen->uuid, $variable->asset_uuid);
     }
 
     /** @test */
-    public function test_update_rejects_value_that_does_not_match_selected_asset_id()
+    public function test_update_rejects_value_not_found_for_asset_type()
     {
-        $screen = Screen::factory()->create();
         $variable = EnvironmentVariable::factory()->create([
             'name' => 'MY_SCREEN_ID',
             'value' => 'old-value',
@@ -333,7 +329,6 @@ class EnvironmentVariablesTest extends TestCase
             'name' => 'MY_SCREEN_ID',
             'description' => 'Linked screen id',
             'asset_type' => Screen::class,
-            'asset_uuid' => $screen->uuid,
             'value' => '999999',
         ]);
 
@@ -354,7 +349,6 @@ class EnvironmentVariablesTest extends TestCase
             'name' => 'MY_SCREEN_ID',
             'description' => 'Linked screen id',
             'asset_type' => Screen::class,
-            'asset_uuid' => $screen->uuid,
             'value' => (string) $screen->id,
         ]);
 
@@ -364,7 +358,7 @@ class EnvironmentVariablesTest extends TestCase
     }
 
     /** @test */
-    public function test_update_rejects_asset_uuid_not_found_for_asset_type()
+    public function test_update_rejects_value_id_of_wrong_asset_type()
     {
         $script = Script::factory()->create();
         $variable = EnvironmentVariable::factory()->create([
@@ -372,15 +366,15 @@ class EnvironmentVariablesTest extends TestCase
             'value' => 'old-value',
         ]);
 
-        // Script UUID with Screen type — pair is inconsistent.
+        // Script ID with Screen type — pair is inconsistent.
         $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, [
             'name' => 'MY_SCREEN_ID',
             'description' => 'Linked screen id',
             'asset_type' => Screen::class,
-            'asset_uuid' => $script->uuid,
+            'value' => (string) $script->id,
         ]);
 
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['asset_uuid']);
+        $response->assertJsonValidationErrors(['value']);
     }
 }

@@ -29,7 +29,7 @@ class EnvironmentVariableExporter extends ExporterBase
             Log::warning('EnvironmentVariableExporter: linked asset not found during export', [
                 'environment_variable' => $this->model->name,
                 'asset_type' => $this->model->asset_type,
-                'asset_uuid' => $this->model->asset_uuid,
+                'value' => $this->model->value,
             ]);
 
             return;
@@ -57,7 +57,6 @@ class EnvironmentVariableExporter extends ExporterBase
             }
 
             $this->model->asset_type = get_class($asset);
-            $this->model->asset_uuid = $asset->uuid;
             $this->model->value = (string) $asset->id;
 
             return $this->model->save();

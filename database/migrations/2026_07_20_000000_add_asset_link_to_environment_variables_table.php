@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::table('environment_variables', function (Blueprint $table) {
             $table->string('asset_type')->nullable()->after('value');
-            $table->uuid('asset_uuid')->nullable()->after('asset_type');
         });
     }
 
@@ -23,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('environment_variables', function (Blueprint $table) {
-            $table->dropColumn(['asset_type', 'asset_uuid']);
+            $table->dropColumn(['asset_type']);
         });
     }
 };

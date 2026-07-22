@@ -38,7 +38,6 @@
       </b-form-group>
       <asset-link-fields
         :asset-type.sync="assetType"
-        :asset-uuid.sync="assetUuid"
         :value.sync="value"
         :errors="errors"
       />
@@ -60,7 +59,6 @@
         description: '',
         value: '',
         assetType: null,
-        assetUuid: null,
         disabled: false,
       }
     },
@@ -70,7 +68,6 @@
         this.description = '';
         this.value = '';
         this.assetType = null;
-        this.assetUuid = null;
         this.errors = {};
         this.disabled = false;
       },
@@ -84,9 +81,8 @@
         ProcessMaker.apiClient.post('environment_variables', {
           name: this.name,
           description: this.description,
-          value: this.assetType ? null : this.value,
+          value: this.value,
           asset_type: this.assetType,
-          asset_uuid: this.assetUuid,
         })
           .then(response => {
             ProcessMaker.alert(this.$t('The environment variable was created.'), 'success');

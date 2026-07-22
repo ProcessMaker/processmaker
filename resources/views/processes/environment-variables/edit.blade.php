@@ -34,7 +34,6 @@
                     </div>
                     <asset-link-fields
                         :asset-type.sync="formData.asset_type"
-                        :asset-uuid.sync="formData.asset_uuid"
                         :value.sync="formData.value"
                         :errors="errors"
                         value-hint="{{ __('For security purposes, this field will always appear empty') }}"
@@ -57,7 +56,6 @@
             name: @json($environmentVariable->name),
             description: @json($environmentVariable->description),
             asset_type: @json($environmentVariable->asset_type),
-            asset_uuid: @json($environmentVariable->asset_uuid),
             // Safe to expose when linked: value is the asset numeric ID, not a secret.
             value: @json($environmentVariable->asset_type ? $environmentVariable->value : null),
         };

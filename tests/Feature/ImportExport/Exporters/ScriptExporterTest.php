@@ -202,7 +202,6 @@ class ScriptExporterTest extends TestCase
             'name' => 'MY_SCREEN_ID',
             'description' => 'Screen id for scripts',
             'asset_type' => Screen::class,
-            'asset_uuid' => $screen->uuid,
             'value' => (string) $screen->id,
         ]);
         $script = Script::factory()->create([
@@ -221,7 +220,6 @@ class ScriptExporterTest extends TestCase
         );
 
         // Simulate a stale numeric ID on the target instance before update import.
-        // Bypass model sync (saving hook would rewrite value from the linked asset).
         DB::table('environment_variables')
             ->where('id', $environmentVariable->id)
             ->update(['value' => encrypt('999999')]);
@@ -240,7 +238,6 @@ class ScriptExporterTest extends TestCase
         $this->assertEquals(1, Screen::where('title', 'Linked Screen')->count());
         $this->assertEquals(1, EnvironmentVariable::where('name', 'MY_SCREEN_ID')->count());
         $this->assertEquals(Screen::class, $environmentVariable->asset_type);
-        $this->assertEquals($screen->uuid, $environmentVariable->asset_uuid);
         $this->assertEquals((string) $screen->id, $environmentVariable->value);
     }
 
@@ -251,7 +248,6 @@ class ScriptExporterTest extends TestCase
             'name' => 'MY_SCREEN_ID',
             'description' => 'Screen id for scripts',
             'asset_type' => Screen::class,
-            'asset_uuid' => $screen->uuid,
             'value' => (string) $screen->id,
         ]);
         $script = Script::factory()->create([
@@ -277,7 +273,7 @@ class ScriptExporterTest extends TestCase
         $environmentVariable->refresh();
         $this->assertEquals($originalScreenUuid, $screen->uuid);
         $this->assertEquals((string) $originalScreenId, $environmentVariable->value);
-        $this->assertEquals($originalScreenUuid, $environmentVariable->asset_uuid);
+        $this->assertEquals(Screen::class, $environmentVariable->asset_type);
         $this->assertEquals($originalEnvUuid, $environmentVariable->uuid);
 
         $copiedScreen = Screen::where('title', 'Linked Screen 2')->firstOrFail();
@@ -286,7 +282,6 @@ class ScriptExporterTest extends TestCase
         $this->assertNotEquals($originalScreenUuid, $copiedScreen->uuid);
         $this->assertNotEquals($originalEnvUuid, $copiedVariable->uuid);
         $this->assertEquals(Screen::class, $copiedVariable->asset_type);
-        $this->assertEquals($copiedScreen->uuid, $copiedVariable->asset_uuid);
         $this->assertEquals((string) $copiedScreen->id, $copiedVariable->value);
     }
 }
