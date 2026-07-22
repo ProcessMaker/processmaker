@@ -28,7 +28,7 @@ export default {
       }
     },
     /**
-     * Open the shared Create Flow Genie modal in duplicate mode.
+     * Open the copy Flow Genie modal.
      */
     doDuplicateFlowGenie(data) {
       this.showFlowGenieCopyModal(data);

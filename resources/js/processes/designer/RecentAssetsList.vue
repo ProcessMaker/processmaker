@@ -124,9 +124,8 @@
             <button type="button" @click="onSubmitDuplicateScript" class="btn btn-secondary ml-2">{{ $t('Save') }}</button>
           </div>
         </b-modal>
-        <create-flow-genie-modal
-          ref="create-flow-genie-modal"
-          :duplicate="true"
+        <copy-flow-genie-modal
+          ref="copy-flow-genie-modal"
           asset-type="Flow Genie"
           :asset-name="flowGenieName"
           :asset-data="flowGenieData"
@@ -155,7 +154,7 @@ import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vu
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import AddToBundle from "../../components/shared/AddToBundle.vue";
 import CategorySelect from "../categories/components/CategorySelect.vue";
-import CreateFlowGenieModal from "./CreateFlowGenieModal.vue";
+import CopyFlowGenieModal from "./CopyFlowGenieModal.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -167,7 +166,7 @@ export default {
     EllipsisMenu,
     AddToBundle,
     CategorySelect,
-    CreateFlowGenieModal,
+    CopyFlowGenieModal,
   },
   mixins: [
     datatableMixin,
@@ -443,7 +442,7 @@ export default {
       this.flowGenieName = data.name || data.title || "";
       this.flowGenieData = data;
       this.$nextTick(() => {
-        this.$refs["create-flow-genie-modal"].show();
+        this.$refs["copy-flow-genie-modal"].show();
       });
     },
   },

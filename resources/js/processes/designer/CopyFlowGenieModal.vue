@@ -1,13 +1,12 @@
 <template>
   <div>
     <modal
-      id="createFlowGenieDesigner"
+      id="copyFlowGenieDesigner"
       size="md"
-      :title="modalSetUp"
+      :title="modalTitle"
       :set-custom-buttons="true"
       :custom-buttons="customModalButtons"
       :required-in-footer="false"
-      @addAsset="onSubmit"
       @duplicateAsset="onDuplicate"
       @close="onClose"
       @hidden="onClose"
@@ -48,7 +47,7 @@
         api-get="package-ai/flow_genie_categories"
         api-list="package-ai/flow_genie_categories"
         name="category"
-        :errors="addError.flow_genie_category_id"
+        :errors="errors.flow_genie_category_id"
       />
       <project-select
         :label="$t('Project')"
@@ -63,8 +62,6 @@
 
 <script>
 import { FormErrorsMixin, Required, Modal, CategorySelect, ProjectSelect } from "SharedComponents";
-
-const channel = new BroadcastChannel("assetCreation");
 
 export default {
   components: {
@@ -87,17 +84,11 @@ export default {
       type: Object,
       default: () => ({}),
     },
-    duplicate: {
-      type: Boolean,
-      default: false,
-    },
   },
   data() {
     return {
       autoValidate: false,
       errors: {},
-      addError: {},
-      currentUserId: window.ProcessMaker?.user?.id,
       customModalButtons: [
         {
           content: this.$t("Cancel"),
@@ -107,41 +98,26 @@ export default {
           hidden: false,
         },
         {
-          content: this.$t("Save"),
-          action: "addAsset",
-          variant: "primary",
-          disabled: false,
-          hidden: false,
-        },
-        {
           content: this.$t("Duplicate"),
           action: "duplicateAsset",
           variant: "primary",
           disabled: false,
-          hidden: true,
+          hidden: false,
         },
       ],
       formData: {
+        id: null,
         name: null,
         description: null,
-        projects: [],
+        projects: "",
         flow_genie_category_id: null,
         config: null,
-        id: null,
       },
-      disabled: false,
     };
   },
   computed: {
-    modalSetUp() {
-      if (this.duplicate) {
-        this.customModalButtons[1].hidden = true;
-        this.customModalButtons[2].hidden = false;
-        return `${this.$t("Copy of")} ${this.assetType}: ${this.assetName}`;
-      }
-      this.customModalButtons[1].hidden = false;
-      this.customModalButtons[2].hidden = true;
-      return `${this.$t("Create")} ${this.assetType}`;
+    modalTitle() {
+      return `${this.$t("Copy of")} ${this.assetType}: ${this.assetName}`;
     },
   },
   watch: {
@@ -154,28 +130,20 @@ export default {
       deep: true,
     },
   },
-  mounted() {
-    this.resetFormData();
-    this.resetErrors();
-  },
   methods: {
     show() {
       this.initializeFormData();
-      this.$bvModal.show("createFlowGenieDesigner");
+      this.$bvModal.show("copyFlowGenieDesigner");
     },
     initializeFormData() {
-      if (this.duplicate && this.assetData) {
-        this.formData = {
-          id: this.assetData.id,
-          name: `${this.assetName || this.assetData.name || ""} ${this.$t("Copy")}`.trim(),
-          description: this.assetData.description || "",
-          flow_genie_category_id: this.assetData.flow_genie_category_id,
-          config: this.assetData.config,
-          projects: this.parseProjects(this.assetData.projects),
-        };
-        return;
-      }
-      this.resetFormData();
+      this.formData = {
+        id: this.assetData.id,
+        name: `${this.assetName || this.assetData.name || ""} ${this.$t("Copy")}`.trim(),
+        description: this.assetData.description || "",
+        flow_genie_category_id: this.assetData.flow_genie_category_id,
+        config: this.assetData.config,
+        projects: this.parseProjects(this.assetData.projects),
+      };
     },
     parseProjects(projects) {
       if (!projects) {
@@ -199,50 +167,28 @@ export default {
     },
     resetFormData() {
       this.formData = {
+        id: null,
         name: null,
         description: null,
-        projects: [],
+        projects: "",
         flow_genie_category_id: null,
         config: null,
-        id: null,
       };
     },
     resetErrors() {
       this.errors = {
         name: null,
         description: null,
+        flow_genie_category_id: null,
+        projects: null,
       };
-      this.addError = {};
     },
     onClose() {
-      this.$bvModal.hide("createFlowGenieDesigner");
+      this.$bvModal.hide("copyFlowGenieDesigner");
       this.resetFormData();
       this.resetErrors();
       this.autoValidate = false;
       this.customModalButtons[1].disabled = false;
-      this.customModalButtons[2].disabled = false;
-    },
-    onSubmit() {
-      this.autoValidate = true;
-      this.validateData();
-      if (!_.isEmpty(this.errors.name) || !_.isEmpty(this.errors.description)) {
-        return;
-      }
-
-      window.ProcessMaker.apiClient
-        .post("package-ai/flow_genies", this.formData)
-        .then(({ data }) => {
-          channel.postMessage({
-            assetType: "flow-genie",
-            id: data.id,
-            title: data.name,
-          });
-          ProcessMaker.alert(this.$t("The Genie was created."), "success");
-          window.location = `/designer/flow-genies/${data.id}/edit`;
-        })
-        .catch((error) => {
-          this.handleValidationError(error);
-        });
     },
     onDuplicate() {
       this.autoValidate = true;
@@ -260,20 +206,16 @@ export default {
           this.$emit("reload");
         })
         .catch((error) => {
-          this.handleValidationError(error);
+          if (error.response?.status === 422) {
+            this.errors = error.response.data.errors;
+            Object.keys(this.errors).forEach((key) => {
+              this.errors[key] = this.errors[key].map((text) => {
+                const replaced = text.replace("Authtype", this.$t("Authentication Method"));
+                return this.$t(replaced);
+              });
+            });
+          }
         });
-    },
-    handleValidationError(error) {
-      this.disabled = false;
-      if (error.response?.status === 422) {
-        this.errors = error.response.data.errors;
-        Object.keys(this.errors).forEach((key) => {
-          this.errors[key] = this.errors[key].map((text) => {
-            const replaced = text.replace("Authtype", this.$t("Authentication Method"));
-            return this.$t(replaced);
-          });
-        });
-      }
     },
     validateData() {
       const { name, description } = this.formData;
@@ -290,9 +232,9 @@ export default {
         this.errors.description = ["The description is a required field."];
       }
 
-      const hasErrors = !(_.isEmpty(this.errors.name) && _.isEmpty(this.errors.description));
-      this.customModalButtons[1].disabled = hasErrors;
-      this.customModalButtons[2].disabled = hasErrors;
+      this.customModalButtons[1].disabled = !(
+        _.isEmpty(this.errors.name) && _.isEmpty(this.errors.description)
+      );
     },
   },
 };
