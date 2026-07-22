@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use ProcessMaker\Enums\ExporterMap;
 use ProcessMaker\Traits\Exportable;
 
@@ -112,31 +113,68 @@ class EnvironmentVariable extends ProcessMakerModel
 
     /**
      * Validate that a linked asset exists when asset_type and asset_uuid are provided.
+     *
+     * @deprecated Use validateAssetLinkConsistency() which also checks value consistency.
      */
     public static function validateLinkedAssetExists(array $data): void
+    {
+        self::validateAssetLinkConsistency($data);
+    }
+
+    /**
+     * Validate asset_type + asset_uuid form a consistent pair, and that value (when sent)
+     * matches the selected asset's numeric ID.
+     *
+     * @return Model|null The resolved asset when a link is present
+     */
+    public static function validateAssetLinkConsistency(array $data): ?Model
     {
         $assetType = $data['asset_type'] ?? null;
         $assetUuid = $data['asset_uuid'] ?? null;
 
         if (!$assetType && !$assetUuid) {
-            return;
+            return null;
         }
 
         if (!$assetType || !$assetUuid) {
-            return;
+            return null;
         }
 
         if (!class_exists($assetType)) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
+            throw ValidationException::withMessages([
                 'asset_type' => [__('The selected asset type is not available.')],
             ]);
         }
 
-        if (!$assetType::where('uuid', $assetUuid)->exists()) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'asset_uuid' => [__('The selected asset could not be found.')],
+        if (!in_array($assetType, self::allowedAssetTypes(), true)) {
+            throw ValidationException::withMessages([
+                'asset_type' => [__('The selected asset type is not allowed.')],
             ]);
         }
+
+        $asset = $assetType::where('uuid', $assetUuid)->first();
+        if (!$asset) {
+            throw ValidationException::withMessages([
+                'asset_uuid' => [trans('environmentVariables.validation.asset_uuid.not_found_for_type')],
+            ]);
+        }
+
+        // Guard against class hierarchy mismatches (e.g. subclass stored under a parent type).
+        if (get_class($asset) !== $assetType) {
+            throw ValidationException::withMessages([
+                'asset_type' => [trans('environmentVariables.validation.asset_type.mismatch')],
+            ]);
+        }
+
+        if (array_key_exists('value', $data) && $data['value'] !== null && $data['value'] !== '') {
+            if ((string) $data['value'] !== (string) $asset->id) {
+                throw ValidationException::withMessages([
+                    'value' => [trans('environmentVariables.validation.value.must_match_asset_id')],
+                ]);
+            }
+        }
+
+        return $asset;
     }
 
     public static function messages()

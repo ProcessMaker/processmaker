@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -317,5 +318,69 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertEquals((string) $screen->id, $variable->value);
         $this->assertEquals(Screen::class, $variable->asset_type);
         $this->assertEquals($screen->uuid, $variable->asset_uuid);
+    }
+
+    /** @test */
+    public function test_update_rejects_value_that_does_not_match_selected_asset_id()
+    {
+        $screen = Screen::factory()->create();
+        $variable = EnvironmentVariable::factory()->create([
+            'name' => 'MY_SCREEN_ID',
+            'value' => 'old-value',
+        ]);
+
+        $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, [
+            'name' => 'MY_SCREEN_ID',
+            'description' => 'Linked screen id',
+            'asset_type' => Screen::class,
+            'asset_uuid' => $screen->uuid,
+            'value' => '999999',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['value']);
+    }
+
+    /** @test */
+    public function test_update_accepts_value_matching_selected_asset_id()
+    {
+        $screen = Screen::factory()->create();
+        $variable = EnvironmentVariable::factory()->create([
+            'name' => 'MY_SCREEN_ID',
+            'value' => 'old-value',
+        ]);
+
+        $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, [
+            'name' => 'MY_SCREEN_ID',
+            'description' => 'Linked screen id',
+            'asset_type' => Screen::class,
+            'asset_uuid' => $screen->uuid,
+            'value' => (string) $screen->id,
+        ]);
+
+        $response->assertStatus(200);
+        $variable->refresh();
+        $this->assertEquals((string) $screen->id, $variable->value);
+    }
+
+    /** @test */
+    public function test_update_rejects_asset_uuid_not_found_for_asset_type()
+    {
+        $script = Script::factory()->create();
+        $variable = EnvironmentVariable::factory()->create([
+            'name' => 'MY_SCREEN_ID',
+            'value' => 'old-value',
+        ]);
+
+        // Script UUID with Screen type — pair is inconsistent.
+        $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, [
+            'name' => 'MY_SCREEN_ID',
+            'description' => 'Linked screen id',
+            'asset_type' => Screen::class,
+            'asset_uuid' => $script->uuid,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['asset_uuid']);
     }
 }

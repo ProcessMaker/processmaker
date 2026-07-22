@@ -106,7 +106,10 @@ class EnvironmentVariablesController extends Controller
     {
         $data = $this->prepareAssetLinkInput($request->all());
         validator($data, EnvironmentVariable::rules(), EnvironmentVariable::messages())->validate();
-        EnvironmentVariable::validateLinkedAssetExists($data);
+        $linkedAsset = EnvironmentVariable::validateAssetLinkConsistency($data);
+        if ($linkedAsset) {
+            $data['value'] = (string) $linkedAsset->id;
+        }
         $environment_variable = EnvironmentVariable::create($data);
         // Register the Event
         EnvironmentVariablesCreated::dispatch($data);
@@ -177,12 +180,13 @@ class EnvironmentVariablesController extends Controller
         $data = $this->prepareAssetLinkInput($request->all());
         // Validate the request, passing in the existing variable to tweak unique rule on name
         validator($data, EnvironmentVariable::rules($environment_variable), EnvironmentVariable::messages())->validate();
-        EnvironmentVariable::validateLinkedAssetExists($data);
+        $linkedAsset = EnvironmentVariable::validateAssetLinkConsistency($data);
 
         $fields = ['name', 'description', 'asset_type', 'asset_uuid'];
-        // Only accept an explicit value when the variable is not linked to an asset.
-        if (!empty($data['asset_type']) && !empty($data['asset_uuid'])) {
-            // value is synced from the linked asset on save
+        if ($linkedAsset) {
+            // Guarantee value is always the selected asset's ID on this instance.
+            $data['value'] = (string) $linkedAsset->id;
+            $fields[] = 'value';
         } elseif (array_key_exists('value', $data) && $data['value'] !== null && $data['value'] !== '') {
             $fields[] = 'value';
         }
