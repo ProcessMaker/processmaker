@@ -182,7 +182,7 @@ class EnvironmentVariablesController extends Controller
         validator($data, EnvironmentVariable::rules($environment_variable), EnvironmentVariable::messages())->validate();
         $linkedAsset = EnvironmentVariable::validateAssetLinkConsistency($data);
 
-        $fields = ['name', 'description', 'asset_type'];
+        $fields = ['name', 'description', 'asset_type', 'do_not_update'];
         if ($linkedAsset) {
             // Guarantee value is always the selected asset's ID on this instance.
             $data['value'] = (string) $linkedAsset->id;

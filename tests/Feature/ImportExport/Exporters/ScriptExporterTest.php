@@ -156,6 +156,63 @@ class ScriptExporterTest extends TestCase
     }
 
     /**
+     * When the target env var has do_not_update, import must preserve its value.
+     */
+    public function testDoNotUpdateEnvironmentVariablePreservedOnImport()
+    {
+        DB::beginTransaction();
+        $protected = EnvironmentVariable::factory()->create([
+            'name' => 'PROTECTED_API_TOKEN',
+            'description' => 'source description',
+            'value' => 'source-secret',
+            'do_not_update' => false,
+        ]);
+        $unprotected = EnvironmentVariable::factory()->create([
+            'name' => 'PLAIN_CONFIG',
+            'description' => 'source plain',
+            'value' => 'source-plain',
+            'do_not_update' => false,
+        ]);
+        $script = Script::factory()->create([
+            'title' => 'script with protected env',
+            'code' => '<?php $a = getenv(\'PROTECTED_API_TOKEN\'); $b = getenv(\'PLAIN_CONFIG\'); return [];',
+        ]);
+
+        $payload = $this->export($script, ScriptExporter::class);
+        DB::rollBack();
+
+        $targetProtected = EnvironmentVariable::factory()->create([
+            'name' => 'PROTECTED_API_TOKEN',
+            'description' => 'target description',
+            'value' => 'keep-me',
+            'do_not_update' => true,
+        ]);
+        $targetUnprotected = EnvironmentVariable::factory()->create([
+            'name' => 'PLAIN_CONFIG',
+            'description' => 'target plain',
+            'value' => 'replace-me',
+            'do_not_update' => false,
+        ]);
+
+        $options = new Options([
+            $script->uuid => ['mode' => 'update'],
+            $protected->uuid => ['mode' => 'update'],
+            $unprotected->uuid => ['mode' => 'update'],
+        ]);
+        $this->import($payload, $options);
+
+        $targetProtected->refresh();
+        $targetUnprotected->refresh();
+
+        $this->assertEquals('keep-me', $targetProtected->value);
+        $this->assertEquals('target description', $targetProtected->description);
+        $this->assertTrue($targetProtected->do_not_update);
+
+        $this->assertEquals('source-plain', $targetUnprotected->value);
+        $this->assertEquals('source plain', $targetUnprotected->description);
+    }
+
+    /**
      * Test that the environment variables are duplicated when they are used in the script
      * and the import options are set to create a copy
      */

@@ -164,6 +164,50 @@ class EnvironmentVariablesTest extends TestCase
     }
 
     /** @test */
+    public function test_it_should_create_an_environment_variable_with_do_not_update()
+    {
+        $data = [
+            'name' => 'protectedVar',
+            'description' => 'protected description',
+            'value' => 'secret',
+            'do_not_update' => true,
+        ];
+
+        $response = $this->apiCall('POST', self::API_TEST_VARIABLES, $data);
+
+        $response->assertStatus(201);
+        $response->assertJsonFragment(['do_not_update' => true]);
+        $this->assertDatabaseHas('environment_variables', [
+            'name' => 'protectedVar',
+            'do_not_update' => true,
+        ]);
+    }
+
+    /** @test */
+    public function test_it_should_update_do_not_update_flag()
+    {
+        $variable = EnvironmentVariable::factory()->create([
+            'name' => 'testname',
+            'value' => 'testvalue',
+            'do_not_update' => false,
+        ]);
+
+        $data = [
+            'name' => 'testname',
+            'description' => 'updated description',
+            'do_not_update' => true,
+        ];
+        $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, $data);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment(['do_not_update' => true]);
+        $this->assertDatabaseHas('environment_variables', [
+            'id' => $variable->id,
+            'do_not_update' => true,
+        ]);
+    }
+
+    /** @test */
     public function test_it_should_return_paginated_environment_variables_during_index()
     {
         // Can't truncate because of DatabaseTransactions

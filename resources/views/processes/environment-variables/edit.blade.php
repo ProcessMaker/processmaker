@@ -38,6 +38,7 @@
                         :errors="errors"
                         value-hint="{{ __('For security purposes, this field will always appear empty') }}"
                     ></asset-link-fields>
+                    <do-not-update-switch v-model="formData.do_not_update"></do-not-update-switch>
                     <br>
                     <div class="text-right">
                         {{ html()->button(__('Cancel'), 'button')->class('btn btn-outline-secondary')->attribute('@click', 'onClose') }}
@@ -58,6 +59,7 @@
             asset_type: @json($environmentVariable->asset_type),
             // Safe to expose when linked: value is the asset numeric ID, not a secret.
             value: @json($environmentVariable->asset_type ? $environmentVariable->value : null),
+            do_not_update: @json((bool) $environmentVariable->do_not_update),
         };
     </script>
     <script src="{{mix('js/processes/environment-variables/edit.js')}}"></script>

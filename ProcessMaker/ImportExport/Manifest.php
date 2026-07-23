@@ -158,6 +158,11 @@ class Manifest
             $mode = 'discard';
         }
 
+        // Per-asset explicit discard (e.g. env vars with do_not_update on the target).
+        if ($model && $exporterClass::shouldDiscardExistingModel($model)) {
+            $mode = 'discard';
+        }
+
         if ($exporterClass::$forceUpdate) {
             $mode = 'update';
         }

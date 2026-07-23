@@ -17,6 +17,7 @@ use ProcessMaker\Traits\Exportable;
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="value", type="string"),
  *   @OA\Property(property="asset_type", type="string", nullable=true),
+ *   @OA\Property(property="do_not_update", type="boolean"),
  * ),
  * @OA\Schema(
  *   schema="EnvironmentVariable",
@@ -41,6 +42,11 @@ class EnvironmentVariable extends ProcessMakerModel
         'description',
         'value',
         'asset_type',
+        'do_not_update',
+    ];
+
+    protected $casts = [
+        'do_not_update' => 'boolean',
     ];
 
     protected $hidden = [
@@ -102,6 +108,7 @@ class EnvironmentVariable extends ProcessMakerModel
                 'string',
                 Rule::in($allowedAssetTypes),
             ],
+            'do_not_update' => 'boolean',
         ];
     }
 

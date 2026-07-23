@@ -2,9 +2,13 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Enums\ExporterMap;
 use ProcessMaker\ImportExport\DependentType;
+use ProcessMaker\ImportExport\Manifest;
+use ProcessMaker\ImportExport\Options;
+use ProcessMaker\ImportExport\Psudomodels\Psudomodel;
 
 class EnvironmentVariableExporter extends ExporterBase
 {
@@ -15,6 +19,18 @@ class EnvironmentVariableExporter extends ExporterBase
     public $handleDuplicatesByIncrementing = ['name'];
 
     public $incrementStringSeparator = '_';
+
+    public function __construct(
+        Model|Psudomodel|null $model,
+        Manifest $manifest,
+        Options $options,
+        $ignoreExplicitDiscard
+    ) {
+        parent::__construct($model, $manifest, $options, $ignoreExplicitDiscard);
+
+        // PHP does not allow closures as property defaults.
+        $this->discard = fn ($envVar) => (bool) ($envVar->do_not_update ?? false);
+    }
 
     public function export() : void
     {
