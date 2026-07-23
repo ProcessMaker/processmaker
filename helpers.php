@@ -250,7 +250,11 @@ if (!function_exists('packTemporalData')) {
     function packTemporalData($data)
     {
         $uid = uniqid('data_', true);
-        $path = storage_path('app/private/' . $uid);
+        $directory = storage_path('app/private');
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+        $path = $directory . '/' . $uid;
 
         file_put_contents($path, json_encode($data));
 
