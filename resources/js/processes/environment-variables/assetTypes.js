@@ -36,13 +36,13 @@ export default [
   {
     class: "ProcessMaker\\Package\\PackageDecisionEngine\\Models\\DecisionTable",
     label: "Decision Table",
-    apiPath: "decision-tables",
+    apiPath: "decision_tables",
     nameField: "title",
   },
   {
     class: "ProcessMaker\\Package\\PackageAi\\Models\\FlowGenie",
     label: "FlowGenie",
-    apiPath: "flow-genies",
+    apiPath: "package-ai/flow_genies",
     nameField: "name",
   },
   {
