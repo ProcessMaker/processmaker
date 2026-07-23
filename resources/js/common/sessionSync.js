@@ -708,12 +708,19 @@ export const initSessionSync = ({
         }
       })
       .listen(".SecurityLogDownloadJobCompleted", (e) => {
+        // Resolve at event time: bootstrap.js passes a 2-arg stub captured before
+        // app-layout.js replaces window.ProcessMaker.alert with the navbar toast (link support).
+        const showAlert = typeof window.ProcessMaker?.alert === "function"
+          ? window.ProcessMaker.alert.bind(window.ProcessMaker)
+          : alert;
+        if (typeof showAlert !== "function") {
+          return;
+        }
         if (e.success) {
-          const { link } = e;
-          const { message } = e;
-          showNavbarAlert(message, "success", 0, false, false, link);
+          const { link, message } = e;
+          showAlert(message, "success", 0, false, false, link);
         } else {
-          showNavbarAlert(e.message, "warning");
+          showAlert(e.message, "warning");
         }
       });
   }

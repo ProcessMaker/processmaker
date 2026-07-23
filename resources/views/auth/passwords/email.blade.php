@@ -1,72 +1,44 @@
-@extends('layouts.minimal')
+@extends('auth.layouts.auth')
 
 @section('title')
-{{__('Forgot Your Password?')}}
+{{ __('Password Assistance') }}
 @endsection
 
 @section('content')
-
-<div align="container">
-  <div align="center" class="p-5">
-    @component('components.logo')
-    @endcomponent
-    <h3>{{__('Forgot Your Password?')}}</h3>
-    <p>{{__("Enter your email address and we'll send you a reset link.")}}</p>
-  </div>
-
-  <div class="row">
-    <div class="col-md-6 offset-md-3">
-      <div class="card card-body">
-		<form method="POST" class="form" action="{{ route('password.email') }}">
-			@if (session('status'))
-			<div class="alert alert-success">
-				{{ session('status') }}
-			</div>
-			@endif
-			@csrf
-			<div class="form-group">
-				<label for="email">{{ __('Email Address') }}</label>
-				<input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required>
-				@if ($errors->has('email'))
-				<span class="invalid-feedback" role="alert">
-				<strong>{{ $errors->first('email') }}</strong>
-				</span>
-				@endif
-			</div>
-			<div class="form-group">
-				<button type="submit" class="btn btn-success btn-block">{{ __('Request Reset Link') }}</button>
-			</div>
-			<div class="form-group">
-				<a href="/login">{{__("Back to Login")}}</a>
-			</div>
-		</form>
-      </div>
-
-    </div>
-
-
-  </div>
+<div class="auth-card-header">
+  <h1 class="auth-card-title">{{ __('Password Assistance') }}</h1>
+  <p class="auth-card-subtitle">{{ __("Please enter your email address and we'll send you a reset link.") }}</p>
 </div>
-@endsection
-@section('css')
-<style media="screen">
-  .formContainer {
-    width: 400px;
-  }
 
-  .formContainer .form {
-    margin-top: 50px;
-    text-align: left;
-  }
-
-  .formContainer h3 {
-    margin-top: 52px;
-    font-size: 18px;
-    font-weight: 600;
-  }
-
-  .formContainer button {
-    margin-top: 6px;
-  }
-</style>
+<form method="POST" class="form" action="{{ route('password.email') }}">
+  @csrf
+  @if (session('status'))
+  <div class="alert alert-success mb-3">
+    {{ session('status') }}
+  </div>
+  @endif
+  <div class="form-group mb-4">
+    <label for="email">{{ __('Email') }}</label>
+    <div class="password-container">
+      <input
+        id="email"
+        type="email"
+        class="form-control form-control-login{{ $errors->has('email') ? ' is-invalid' : '' }}"
+        name="email"
+        value="{{ old('email') }}"
+        required>
+      @if ($errors->has('email'))
+      <span class="invalid-feedback" role="alert">
+        <strong>{{ $errors->first('email') }}</strong>
+      </span>
+      @endif
+    </div>
+  </div>
+  <div class="form-group mb-0">
+    <button type="submit" class="btn btn-primary btn-block button-login button-login-uppercase">{{ __('Request Reset Link') }}</button>
+  </div>
+  <div class="auth-card-footer">
+    <a href="{{ route('login') }}" class="auth-link">{{ __('Back To Login') }}</a>
+  </div>
+</form>
 @endsection

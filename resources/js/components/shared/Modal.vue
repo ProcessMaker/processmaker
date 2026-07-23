@@ -88,7 +88,7 @@
             <required class="required-footer"></required>
           </div>
           <div v-if="showAiSlogan" class="slogan">
-            <img src="/img/favicon.svg"> {{ $t("Powered by ProcessMaker AI") }}
+            <img src="/img/favicon.ico"> {{ $t("Powered by Decisions AI") }}
           </div>
         </div>
         <div>

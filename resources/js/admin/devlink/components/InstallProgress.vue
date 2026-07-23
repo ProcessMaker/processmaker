@@ -33,7 +33,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, getCurrentInstance } from 'vue';
+import {
+  ref,
+  watch,
+  onMounted,
+  onUnmounted,
+  getCurrentInstance,
+} from "vue";
+
+const props = defineProps({
+  requestError: {
+    type: String,
+    default: "",
+  },
+});
 
 const vue = getCurrentInstance().proxy;
 const progress = ref(0);
@@ -45,8 +58,27 @@ const showSpinner = ref(true);
 const error = ref('');
 const emit = defineEmits(['installation-complete']);
 
+watch(
+  () => props.requestError,
+  (message) => {
+    if (!message) {
+      return;
+    }
+
+    showSpinner.value = false;
+    currentMessage.value = "";
+    error.value = message;
+    done.value = true;
+  },
+  {
+    immediate: true,
+  },
+);
+
 onMounted(() => {
-  currentMessage.value = vue.$t('Initializing') + '...';
+  if (!props.requestError) {
+    currentMessage.value = vue.$t('Initializing') + '...';
+  }
   window.Echo.private(`ProcessMaker.Models.User.${userId}`).listen(
     '.ImportLog',
     (response) => {

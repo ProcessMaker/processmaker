@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Laravel\Passport\ClientRepository;
 use ProcessMaker\Events\AuthClientCreated;
 use ProcessMaker\Events\AuthClientDeleted;
@@ -27,7 +28,7 @@ class ClientController
 
     public function show(Request $request, $clientId)
     {
-        $client = $this->clients->findForUser($clientId, $request->user());
+        $client = $this->findActiveClient($request, $clientId);
 
         if (!$client) {
             return new Response('', 404);
@@ -72,7 +73,7 @@ class ClientController
 
     public function update(Request $request, $clientId)
     {
-        $client = $this->clients->findForUser($clientId, $request->user());
+        $client = $this->findActiveClient($request, $clientId);
 
         if (!$client) {
             return new Response('', 404);
@@ -101,7 +102,7 @@ class ClientController
 
     public function destroy(Request $request, $clientId)
     {
-        $client = $this->clients->findForUser($clientId, $request->user());
+        $client = $this->findActiveClient($request, $clientId);
 
         if (!$client) {
             return new Response('', 404);
@@ -112,6 +113,22 @@ class ClientController
         AuthClientDeleted::dispatch($attributes);
 
         return new Response('', 204);
+    }
+
+    private function findActiveClient(Request $request, $clientId)
+    {
+        $client = $this->clients->findActive($clientId);
+
+        if (!$client) {
+            Log::warning('OAuth client lookup failed.', [
+                'client_id' => $clientId,
+                'user_id' => $request->user()?->getAuthIdentifier(),
+                'route' => $request->route()?->getName(),
+                'method' => $request->method(),
+            ]);
+        }
+
+        return $client;
     }
 
     private function validate($request)
