@@ -8,8 +8,8 @@ use Google\Client as GoogleClient;
 use GuzzleHttp\Client;
 use Illuminate\Mail\MailManager;
 use ProcessMaker\Models\EnvironmentVariable;
-use ProcessMaker\Packages\Connectors\Email\EmailConfig;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Packages\Connectors\Email\EmailConfig;
 
 class OauthMailManager extends MailManager
 {
