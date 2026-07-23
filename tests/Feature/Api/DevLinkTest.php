@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\DataProvider;
 use ProcessMaker\Http\Controllers\Api\DevLinkController;
 use ProcessMaker\Models\Bundle;
+use ProcessMaker\Models\BundleAsset;
 use ProcessMaker\Models\DevLink;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Package\PackageDynamicUI\Models\Dashboard;
 use ProcessMaker\Package\PackageDynamicUI\Models\Menu;
@@ -255,6 +257,82 @@ class DevLinkTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertEquals($bundle->id, $response->json()['id']);
+    }
+
+    public function testShowBundleReportsUnavailableAssetsWithoutFailing()
+    {
+        $bundle = Bundle::factory()->create();
+        $missingProcessId = Process::max('id') + 1000;
+        $bundleAsset = BundleAsset::factory()->create([
+            'bundle_id' => $bundle->id,
+            'asset_type' => Process::class,
+            'asset_id' => $missingProcessId,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.local-bundle', ['bundle' => $bundle->id]));
+
+        $response->assertOk()
+            ->assertJsonPath('assets.0.id', $bundleAsset->id)
+            ->assertJsonPath('assets.0.name', "Missing Process #$missingProcessId")
+            ->assertJsonPath('assets.0.url', null)
+            ->assertJsonPath('assets.0.integrity_status', BundleAsset::INTEGRITY_MISSING);
+    }
+
+    public function testExportBundleRejectsUnavailableAssets()
+    {
+        $bundle = Bundle::factory()->create(['name' => 'Corrupt Bundle']);
+        $missingProcessId = Process::max('id') + 1000;
+        $bundleAsset = BundleAsset::factory()->create([
+            'bundle_id' => $bundle->id,
+            'asset_type' => Process::class,
+            'asset_id' => $missingProcessId,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.export-local-bundle', [
+            'bundle' => $bundle->id,
+        ]));
+
+        $response->assertStatus(422)
+            ->assertJsonPath('error.code', 422)
+            ->assertJsonPath(
+                'error.message',
+                'The bundle Corrupt Bundle contains unavailable assets and cannot be exported.'
+            )
+            ->assertJsonPath('errors.assets.0.bundle_asset_id', $bundleAsset->id)
+            ->assertJsonPath('errors.assets.0.asset_type', Process::class)
+            ->assertJsonPath('errors.assets.0.asset_id', $missingProcessId)
+            ->assertJsonPath('errors.assets.0.integrity_status', BundleAsset::INTEGRITY_MISSING);
+    }
+
+    public function testInstalledBundleAllowsRemovingOnlyUnavailableAssets()
+    {
+        $devLink = DevLink::factory()->create();
+        $bundle = Bundle::factory()->create([
+            'dev_link_id' => $devLink->id,
+            'remote_id' => 123,
+        ]);
+        $screen = Screen::factory()->create();
+        $validBundleAsset = BundleAsset::factory()->create([
+            'bundle_id' => $bundle->id,
+            'asset_type' => Screen::class,
+            'asset_id' => $screen->id,
+        ]);
+        $missingProcessId = Process::max('id') + 1000;
+        $invalidBundleAsset = BundleAsset::factory()->create([
+            'bundle_id' => $bundle->id,
+            'asset_type' => Process::class,
+            'asset_id' => $missingProcessId,
+        ]);
+
+        $this->apiCall('DELETE', route('api.devlink.delete-bundle-asset', [
+            'bundle_asset' => $validBundleAsset->id,
+        ]))->assertStatus(422);
+        $this->assertDatabaseHas('bundle_assets', ['id' => $validBundleAsset->id]);
+
+        $this->apiCall('DELETE', route('api.devlink.delete-bundle-asset', [
+            'bundle_asset' => $invalidBundleAsset->id,
+        ]))->assertOk();
+        $this->assertDatabaseMissing('bundle_assets', ['id' => $invalidBundleAsset->id]);
     }
 
     public function testGetBundleAllSettingsReturnsDashboardAndMenuOptions()
