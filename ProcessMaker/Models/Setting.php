@@ -300,7 +300,16 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
      */
     public static function loginIsDefault()
     {
-        return stripos(self::getLogin(), 'processmaker-login') !== false;
+        $setting = self::byKey('css-override');
+        
+        if ($setting instanceof self) {
+            $mediaFile = $setting->getMedia(self::COLLECTION_CSS_LOGIN);
+            if ($mediaFile->count() > 0) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     /**
@@ -320,10 +329,11 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
 
             foreach ($mediaFile as $media) {
                 $url = $media->getFullUrl();
+                return $url . '?id=' . $media->updated_at->timestamp;
             }
         }
 
-        return $url . '?id=' . bin2hex(random_bytes(16));
+        return $url;
     }
 
     /**
@@ -344,6 +354,7 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
 
                 foreach ($mediaFile as $media) {
                     $url = $media->getFullUrl();
+                    return $url . '?id=' . $media->updated_at->timestamp;
                 }
             }
         }
@@ -369,11 +380,12 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
 
                 foreach ($mediaFile as $media) {
                     $url = $media->getFullUrl();
+                    return $url . '?id=' . $media->updated_at->timestamp;
                 }
             }
         }
 
-        return $url . '?id=' . bin2hex(random_bytes(16));
+        return $url;
     }
 
     /**
@@ -394,11 +406,12 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
 
                 foreach ($mediaFile as $media) {
                     $url = $media->getFullUrl();
+                    return $url . '?id=' . $media->updated_at->timestamp;
                 }
             }
         }
 
-        return $url . '?id=' . bin2hex(random_bytes(16));
+        return $url;
     }
 
     /**

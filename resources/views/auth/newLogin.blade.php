@@ -13,7 +13,7 @@
   @include('auth.partials.login-critical-styles')
   @include('auth.partials.auth-styles')
   @include('auth.partials.login-extra-styles')
-  <link rel="icon" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
+  <link rel="icon" href="{{ cache()->remember('login.favicon', 3600, function () { return \ProcessMaker\Models\Setting::getFavicon(); }) }}">
   @if (hasPackage('package-accessibility'))
     @include('package-accessibility::userway')
   @endif
@@ -130,12 +130,12 @@
           </div>
           @endif
         </div>
-      </div>
+        </div>
       @php
         $loginFooterSetting = \ProcessMaker\Models\Setting::byKey('login-footer');
       @endphp
       @if ($loginFooterSetting)
-        <div class="footer">{!! $loginFooterSetting->config['html'] !!}</div>
+        <div class="footer">{!! cache()->remember('login.footer_html', 3600, function () use ($loginFooterSetting) { return $loginFooterSetting->config['html']; }) !!}</div>
       @endif
     </div>
   </div>
