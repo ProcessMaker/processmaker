@@ -3,16 +3,17 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Requests\DevLinkStoreRequest;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Jobs\CompileSass;
 use ProcessMaker\Jobs\CompileUI;
 use ProcessMaker\Jobs\DevLinkInstall;
 use ProcessMaker\Models\Bundle;
@@ -24,6 +25,8 @@ use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\SettingsMenus;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\BundleUpdatedNotification;
+use ProcessMaker\Package\PackageDynamicUI\Models\Dashboard;
+use ProcessMaker\Package\PackageDynamicUI\Models\Menu;
 use ProcessMaker\Services\DevLink\BundleFingerprint;
 
 class DevLinkController extends Controller
@@ -58,20 +61,24 @@ class DevLinkController extends Controller
         return $devLink;
     }
 
-    public function store(Request $request)
+    public function store(DevLinkStoreRequest $request)
     {
-        $request->validate([
-            'name' => ['required'],
-            'url' => ['required', 'url'],
-        ]);
-        $devLink = DevLink::where('name', $request->input('name'))->first();
-        if ($devLink) {
-            $devLink->url = $request->input('url');
-        } else {
-            $devLink = new DevLink();
-            $devLink->name = $request->input('name');
-            $devLink->url = $request->input('url');
+        $normalizedUrl = $this->normalizeUrl($request->input('url'));
+        $existingDevLink = DevLink::query()
+            ->get(['id', 'name', 'url'])
+            ->first(fn (DevLink $devLink) => $this->normalizeUrl($devLink->url) === $normalizedUrl);
+        if ($existingDevLink) {
+            throw ValidationException::withMessages([
+                'url' => __(
+                    'This instance is already linked as :name. Open or reconnect the existing connection.',
+                    ['name' => $existingDevLink->name]
+                ),
+            ]);
         }
+
+        $devLink = new DevLink();
+        $devLink->name = $request->input('name');
+        $devLink->url = $normalizedUrl;
         $devLink->saveOrFail();
 
         return $devLink;
@@ -79,6 +86,13 @@ class DevLinkController extends Controller
 
     public function update(Request $request, DevLink $devLink)
     {
+        $request->merge([
+            'name' => trim((string) $request->input('name')),
+        ]);
+        $request->validate([
+            'name' => ['required', 'string', Rule::unique('dev_links', 'name')->ignore($devLink->id)],
+        ]);
+
         $devLink->name = $request->input('name');
         $devLink->saveOrFail();
 
@@ -133,7 +147,7 @@ class DevLinkController extends Controller
                 $request->input('order_by', $order_by),
                 $request->input('order_direction', $order_direction)
             )
-            ->paginate($request->input('per_page', 15));
+            ->paginate($request->input('per_page', 100));
 
         return new ApiCollection($response);
     }
@@ -211,7 +225,7 @@ class DevLinkController extends Controller
         return $bundle;
     }
 
-    public function bundleUpdated($bundleId, $token)
+    public function bundleUpdated(int $bundleId, string $token)
     {
         try {
             $bundle = Bundle::where('remote_id', $bundleId)->firstOrFail();
@@ -242,7 +256,7 @@ class DevLinkController extends Controller
         });
     }
 
-    public function installRemoteBundle(Request $request, DevLink $devLink, $remoteBundleId)
+    public function installRemoteBundle(Request $request, DevLink $devLink, int $remoteBundleId)
     {
         $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
         DevLinkInstall::dispatch(
@@ -376,7 +390,7 @@ class DevLinkController extends Controller
         $sharedAsset->saveOrFail();
     }
 
-    public function removeSharedAsset($id)
+    public function removeSharedAsset(int $id)
     {
         $deleted = Setting::destroy($id);
 
@@ -405,9 +419,41 @@ class DevLinkController extends Controller
         ];
     }
 
-    public function remoteBundleVersion(DevLink $devLink, $remoteBundleId)
+    public function remoteBundleVersion(DevLink $devLink, int $remoteBundleId)
     {
-        return $devLink->remoteBundle($remoteBundleId);
+        try {
+            $payload = $devLink->remoteBundle($remoteBundleId)->json();
+        } catch (RequestException|ConnectionException $e) {
+            return [
+                'available' => false,
+                'version' => null,
+            ];
+        }
+
+        if (!is_array($payload)) {
+            return [
+                'available' => false,
+                'version' => null,
+            ];
+        }
+
+        $payload['available'] = true;
+
+        return $payload;
+    }
+
+    private function normalizeUrl(string $url): string
+    {
+        $parts = parse_url(trim($url));
+        $scheme = strtolower($parts['scheme']);
+        $host = strtolower($parts['host']);
+        $port = $parts['port'] ?? null;
+
+        if (($scheme === 'http' && $port === 80) || ($scheme === 'https' && $port === 443)) {
+            $port = null;
+        }
+
+        return $scheme . '://' . $host . ($port === null ? '' : ':' . $port);
     }
 
     public function deleteBundleAsset(BundleAsset $bundleAsset)
@@ -430,80 +476,70 @@ class DevLinkController extends Controller
         return response()->json(['message' => 'Bundle setting deleted.'], 200);
     }
 
-    public function getBundleSetting(Bundle $bundle, $settingKey)
+    public function getBundleSetting(Bundle $bundle, string $settingKey)
     {
-        $setting = $bundle->settings()->where('setting', $settingKey)->first();
-
-        return $setting;
+        return $bundle->settings()->where('setting', $settingKey)->first();
     }
 
-    public function getBundleAllSettings($settingKey)
+    public function getBundleSettingPreview(Bundle $bundle, string $settingKey): array
     {
-        if ($settingKey === 'ui_settings') {
-            return Setting::whereIn('key', ['css-override', 'login-footer', 'logo-alt-text'])
-                         ->get();
+        abort_unless(in_array($settingKey, ['ui_dashboards', 'ui_menus'], true), 404);
+
+        return $bundle->settingPreview($settingKey);
+    }
+
+    public function getBundleAllSettings(string $settingKey)
+    {
+        return match ($settingKey) {
+            'ui_dashboards' => $this->getAvailableDashboards(),
+            'ui_menus' => $this->getAvailableMenus(),
+            'ui_settings' => Setting::whereIn('key', ['css-override', 'login-footer', 'logo-alt-text'])->get(),
+            default => Setting::where([
+                ['group_id', SettingsMenus::getId($settingKey)],
+                ['hidden', 0],
+            ])->get(),
+        };
+    }
+
+    private function getAvailableDashboards()
+    {
+        if (!class_exists(Dashboard::class)) {
+            return [];
         }
 
-        return Setting::where([
-            ['group_id', SettingsMenus::getId($settingKey)],
-            ['hidden', 0],
-        ])->get();
+        return Dashboard::query()
+            ->orderBy('title')
+            ->get(['id', 'title'])
+            ->map(function (Dashboard $dashboard) {
+                return [
+                    'key' => $dashboard->id,
+                    'name' => $dashboard->title,
+                ];
+            })
+            ->values();
     }
 
-    public function refreshUi()
+    private function getAvailableMenus()
     {
-        CompileUI::dispatch(auth()->user()?->id);
+        if (!class_exists(Menu::class)) {
+            return [];
+        }
+
+        return Menu::query()
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(function (Menu $menu) {
+                return [
+                    'key' => $menu->id,
+                    'name' => $menu->name,
+                ];
+            })
+            ->values();
+    }
+
+    public function refreshUi(Request $request)
+    {
+        CompileUI::dispatch($request->user()?->id);
         CustomizeUiUpdated::dispatch([], [], false);
-    }
-
-    private function writeColors($data)
-    {
-        // Now generate the _colors.scss file
-        $contents = "// Changed theme colors\n";
-        foreach ($data as $value) {
-            $contents .= $value->id . ': ' . $value->value . ";\n";
-        }
-        File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
-    }
-
-    /**
-     * Write variables font in file
-     *
-     * @param $sansSerif
-     * @param $serif
-     */
-    private function writeFonts($sansSerif)
-    {
-        $sansSerif = $sansSerif ? $sansSerif : $this->sansSerifFontDefault();
-        // Generate the _fonts.scss file
-        $contents = "// Changed theme fonts\n";
-        $contents .= '$font-family-sans-serif: ' . $sansSerif['id'] . " !default;\n";
-        File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
-    }
-
-    /**
-     * run jobs compile
-     */
-    private function compileSass($userId)
-    {
-        // Compile the Sass files
-        $this->dispatch(new CompileSass([
-            'tag' => 'sidebar',
-            'origin' => 'resources/sass/sidebar/sidebar.scss',
-            'target' => 'public/css/sidebar.css',
-            'user' => $userId,
-        ]));
-        $this->dispatch(new CompileSass([
-            'tag' => 'app',
-            'origin' => 'resources/sass/app.scss',
-            'target' => 'public/css/app.css',
-            'user' => $userId,
-        ]));
-        $this->dispatch(new CompileSass([
-            'tag' => 'queues',
-            'origin' => 'resources/sass/admin/queues.scss',
-            'target' => 'public/css/admin/queues.css',
-            'user' => $userId,
-        ]));
     }
 }

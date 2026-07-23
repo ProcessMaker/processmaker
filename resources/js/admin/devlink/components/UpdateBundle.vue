@@ -7,6 +7,9 @@ const confirmUpdateVersion = ref(null);
 const selected = ref(null);
 const selectedOption = ref('update');
 const showInstallModal = ref(false);
+const installationInProgress = ref(false);
+const installationAttempt = ref(0);
+const requestError = ref("");
 const reinstall = ref(false);
 const title = computed(() => {
   if (reinstall.value) {
@@ -40,6 +43,13 @@ const updateBundleText = computed(() => {
 });
 
 const executeUpdate = (updateType) => {
+  if (installationInProgress.value) {
+    return;
+  }
+
+  installationInProgress.value = true;
+  installationAttempt.value += 1;
+  requestError.value = "";
   showInstallModal.value = true;
   let url;
   if (reinstall.value) {
@@ -52,12 +62,18 @@ const executeUpdate = (updateType) => {
     .post(url, {
       updateType,
     })
-    .then((response) => {
-      // Handle the response as needed
+    .catch((error) => {
+      const message = error?.response?.data?.message || error?.message;
+      requestError.value = typeof message === "string"
+        ? message
+        : vue.$t("Unable to start installation.");
     });
 };
 
 const handleInstallationComplete = () => {
+  installationInProgress.value = false;
+  showInstallModal.value = false;
+  requestError.value = "";
   emit('installation-complete');
 };
 
@@ -98,8 +114,21 @@ const handleInstallationComplete = () => {
       </div>
     </b-modal>
 
-    <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
-      <install-progress @installation-complete="handleInstallationComplete" />
+    <b-modal
+      id="install-progress"
+      v-model="showInstallModal"
+      size="lg"
+      :title="$t('Installation Progress')"
+      hide-footer
+      hide-header-close
+      no-close-on-backdrop
+      no-close-on-esc
+    >
+      <install-progress
+        :key="installationAttempt"
+        :request-error="requestError"
+        @installation-complete="handleInstallationComplete"
+      />
     </b-modal>
   </div>
 </template>
