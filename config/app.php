@@ -310,6 +310,9 @@ return [
 
     'multitenancy' => env('MULTITENANCY', false),
 
+    // Enable Laravel Octane compatibility mode
+    'octane_enabled' => env('OCTANE_ENABLED', false),
+
     'reassign_restrict_to_assignable_users' => env('REASSIGN_RESTRICT_TO_ASSIGNABLE_USERS', true),
 
     // When true, shows the Cases Retention section on process configuration

@@ -106,6 +106,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->checkConfigCache();
 
+        // Register Octane-specific listeners if running with Octane
+        $this->registerOctaneListeners();
+
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
     }
@@ -638,5 +641,63 @@ class ProcessMakerServiceProvider extends ServiceProvider
                 throw new \Exception('Cannot cache config for tenant instance. Must be run from landlord instance.');
             });
         }
+    }
+
+    /**
+     * Register Octane-specific listeners for state management.
+     *
+     * When running under Laravel Octane (Swoole/RoadRunner), the application
+     * instance persists across multiple requests. This method registers
+     * listeners to reset per-request state and flush stateful singletons.
+     */
+    private function registerOctaneListeners(): void
+    {
+        if (!config('app.octane_enabled', false)) {
+            return;
+        }
+
+        if (!class_exists('\Laravel\Octane\Octane')) {
+            return;
+        }
+
+        $octane = '\Laravel\Octane\Octane';
+
+        // Flush stateful singletons after each request
+        // These are removed from the container and re-resolved on the next request
+        $flushServices = config('octane.flush', []);
+        if (!empty($flushServices)) {
+            $octane::flush($flushServices);
+        }
+
+        // Reset per-request static state after each request
+        $octane::on('requestHandled', function ($request, $result) {
+            // Reset query timing metrics
+            static::beginRequestTiming();
+
+            // Reset redirect listener state
+            \ProcessMaker\Listeners\HandleRedirectListener::reset();
+        });
+
+        // Warm up services when a worker starts
+        $octane::on('workerStarting', function ($event) {
+            $warmServices = config('octane.warm', []);
+            foreach ($warmServices as $service) {
+                try {
+                    app()->make($service);
+                } catch (\Throwable $e) {
+                    Log::warning("Octane warm-up failed for {$service}: {$e->getMessage()}");
+                }
+            }
+        });
+
+        // Monitor memory usage periodically
+        $octane::tick('octane-memory-monitor', function () {
+            $usage = memory_get_usage(true);
+            $maxMemory = 128 * 1024 * 1024; // 128MB default threshold
+
+            if ($usage > $maxMemory) {
+                Log::warning('Octane worker memory high: ' . round($usage / 1024 / 1024) . 'MB');
+            }
+        }, seconds: 30);
     }
 }

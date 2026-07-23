@@ -9,6 +9,14 @@ use ProcessMaker\Models\Setting;
 class SettingsConfigRepository extends Repository
 {
     /**
+     * Request-scoped cache for settings loaded from the database.
+     * In Octane, this prevents mutation of the global config array.
+     *
+     * @var array
+     */
+    private array $settingCache = [];
+
+    /**
      * Determine if the given configuration value exists.
      *
      * @param  string  $key
@@ -42,6 +50,11 @@ class SettingsConfigRepository extends Repository
             return $settingValue ?: Arr::get($this->items, $key) ?: $default ?: 120;
         }
 
+        // Check if we already resolved this key in the current request
+        if (Arr::has($this->settingCache, $key)) {
+            return Arr::get($this->settingCache, $key);
+        }
+
         if (Arr::has($this->items, $key)) {
             return Arr::get($this->items, $key);
         }
@@ -63,7 +76,10 @@ class SettingsConfigRepository extends Repository
                 [$key, $default] = [$default, null];
             }
 
-            if (Arr::has($this->items, $key)) {
+            // Check request-scoped cache first
+            if (Arr::has($this->settingCache, $key)) {
+                $config[$key] = Arr::get($this->settingCache, $key);
+            } elseif (Arr::has($this->items, $key)) {
                 $config[$key] = Arr::get($this->items, $key);
             } elseif ($setting = $this->getFromSettings($key)) {
                 $config[$key] = $setting;
@@ -75,16 +91,32 @@ class SettingsConfigRepository extends Repository
         return $config;
     }
 
+    /**
+     * Fetch a setting from the database and cache it locally.
+     *
+     * IMPORTANT: This no longer mutates `$this->items` (the global config array).
+     * Instead, it uses a local request-scoped cache (`$this->settingCache`).
+     * This prevents config leaks between requests in Octane.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
     private function getFromSettings($key)
     {
         if (!Setting::readyToUseSettingsDatabase()) {
             return null;
         }
 
+        // Return from local cache if already fetched in this request
+        if (array_key_exists($key, $this->settingCache)) {
+            return $this->settingCache[$key];
+        }
+
         $setting = Setting::byKey($key);
 
         if ($setting !== null) {
-            Arr::set($this->items, $key, $setting->config);
+            // Store in local cache instead of mutating global config
+            $this->settingCache[$key] = $setting->config;
 
             return $setting->config;
         }
@@ -97,10 +129,17 @@ class SettingsConfigRepository extends Repository
             $setting = Setting::byKey($firstKey);
             if ($setting && $setting->format === 'array') {
                 $subPath = implode('.', $parts);
+                $value = Arr::get($setting->config, $subPath);
 
-                return Arr::get($setting->config, $subPath);
+                // Store in local cache
+                $this->settingCache[$key] = $value;
+
+                return $value;
             }
         }
+
+        // Store null in local cache to avoid repeated DB queries
+        $this->settingCache[$key] = null;
 
         return null;
     }

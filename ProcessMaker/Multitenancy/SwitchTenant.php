@@ -17,7 +17,12 @@ class SwitchTenant implements SwitchTenantTask
 {
     use UsesMultitenancyConfig;
 
-    public static $landlordValues = null;
+    /**
+     * Instance-based landlord values storage.
+     * In Octane, this prevents config leaks between requests.
+     * In PHP-FPM, behavior is identical since a new instance is created per request.
+     */
+    private $landlordValues = null;
 
     /**
      * Make the given tenant current.
@@ -32,8 +37,8 @@ class SwitchTenant implements SwitchTenantTask
         \Log::debug('SwitchTenant: ' . $tenant->id, ['domain' => request()->getHost()]);
 
         // Save the landlord values for later use
-        if (!self::$landlordValues) {
-            self::$landlordValues = $app->make('config')->all();
+        if (!$this->landlordValues) {
+            $this->landlordValues = $app->make('config')->all();
         }
 
         // Set the tenant's domain in the request headers. Used for things like the global url() helper.
@@ -70,7 +75,7 @@ class SwitchTenant implements SwitchTenantTask
 
     private function landlordConfig($key)
     {
-        return Arr::get(self::$landlordValues, $key);
+        return Arr::get($this->landlordValues, $key);
     }
 
     private function setConfig($key, $value)

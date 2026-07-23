@@ -13,6 +13,17 @@ class HandleRedirectListener
 
     private static $redirectionParams = [];
 
+    /**
+     * Reset per-request state.
+     * Called after each request when Octane is enabled.
+     */
+    public static function reset(): void
+    {
+        self::$processRequest = null;
+        self::$redirectionMethod = '';
+        self::$redirectionParams = [];
+    }
+
     protected function setRedirectTo(ProcessRequest $processRequest, string $method, ...$params): void
     {
         self::$processRequest = $processRequest;
