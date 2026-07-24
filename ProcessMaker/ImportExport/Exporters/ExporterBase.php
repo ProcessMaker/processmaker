@@ -168,8 +168,11 @@ abstract class ExporterBase implements ExporterInterface
 
     /**
      * Import-time check: should an existing target model be discarded (not overwritten)?
+     *
+     * Only callables are evaluated here. Boolean `$discard = true` (Users/Groups) is an
+     * export-time flag handled by include(), not an import-time skip.
      */
-    public static function shouldDiscardExistingModel(?Model $model): bool
+    public static function shouldDiscardExistingModelDuringImport(?Model $model): bool
     {
         if (!$model || !$model->exists) {
             return false;
@@ -177,7 +180,11 @@ abstract class ExporterBase implements ExporterInterface
 
         $exporter = new static($model, new Manifest(), new Options([]), false);
 
-        return $exporter->isExplicitlyDiscarded();
+        if (!is_callable($exporter->discard)) {
+            return false;
+        }
+
+        return (bool) ($exporter->discard)($model);
     }
 
     public function addDependent(string $type, Model|Psudomodel $dependentModel, string $exporterClass, $meta = null)
