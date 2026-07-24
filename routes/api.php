@@ -423,6 +423,10 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->p
         Route::get('devlink/local-bundles', [DevLinkController::class, 'localBundles'])->name('devlink.local-bundles');
         Route::get('devlink/local-bundles/{bundle}', [DevLinkController::class, 'showBundle'])->name('devlink.local-bundle');
         Route::get('devlink/local-bundles/{bundle}/setting/{settingKey}', [DevLinkController::class, 'getBundleSetting'])->name('devlink.local-bundle-setting');
+        Route::get(
+            'devlink/local-bundles/{bundle}/setting-preview/{settingKey}',
+            [DevLinkController::class, 'getBundleSettingPreview']
+        )->name('devlink.local-bundle-setting-preview');
         Route::get('devlink/local-bundles/all-settings/{settingKey}', [DevLinkController::class, 'getBundleAllSettings'])->name('devlink.local-bundle-all-settings');
         Route::post('devlink/local-bundles/setting/refresh-ui', [DevLinkController::class, 'refreshUi'])->name('devlink.local-bundle-setting-refresh-ui');
         Route::post('devlink/local-bundles', [DevLinkController::class, 'createBundle'])->name('devlink.create-bundle');

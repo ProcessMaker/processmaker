@@ -56,6 +56,7 @@ onMounted(() => {
 const newName = ref('');
 const newUrl = ref('');
 const status = ref('');
+const createError = ref('');
 
 const load = () => {
   ProcessMaker.apiClient
@@ -79,10 +80,12 @@ const onNavigate = (action, data, index) => {
 const clear = () => {
   newName.value = '';
   newUrl.value = '';
+  createError.value = '';
 }
 
 const create = (name, url) => {
   status.value = '';
+  createError.value = '';
   ProcessMaker.apiClient
     .post('/devlink', {
       name: name,
@@ -112,6 +115,13 @@ const create = (name, url) => {
             status.value = 'error';
           }
         });
+    })
+    .catch((error) => {
+      createError.value = error.response?.data?.errors?.url?.[0]
+        || error.response?.data?.errors?.name?.[0]
+        || error.response?.data?.error?.message
+        || error.response?.data?.message
+        || vue.$t('Unable to create the linked instance.');
     });
 };
 
@@ -162,6 +172,7 @@ const handleFilterChange = () => {
 
 const showCreateModal = () => {
   status.value = '';
+  createError.value = '';
   createDevLinkModal.value.show();
 };
 
@@ -169,8 +180,27 @@ const handleNewUrlUpdate = (newValue) => {
   newUrl.value = newValue;
 };
 
+const isValidInstanceUrl = (value) => {
+  const trimmedValue = value.trim();
+  if (trimmedValue.includes('?') || trimmedValue.includes('#')) {
+    return false;
+  }
+
+  try {
+    const url = new URL(trimmedValue);
+
+    return ['http:', 'https:'].includes(url.protocol)
+      && url.hostname !== ''
+      && url.pathname === '/'
+      && url.username === ''
+      && url.password === '';
+  } catch {
+    return false;
+  }
+};
+
 const urlIsValid = computed(() => {
-  return /^(https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(:\d{1,5})?$/.test(newUrl.value);
+  return isValidInstanceUrl(newUrl.value);
 });
 
 </script>
@@ -218,6 +248,7 @@ const urlIsValid = computed(() => {
       :newUrl="newUrl"
       :urlIsValid="urlIsValid"
       :status="status"
+      :errorMessage="createError"
       @clear="clear"
       @create="create"
       @update:newUrl="handleNewUrlUpdate"

@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "2026.12.1+26166",
+    "version": "2026.12.2",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -21,7 +21,7 @@
         "fakerphp/faker": "^1.24",
         "google/apiclient": "^2.18",
         "google/protobuf": "^4.33.6",
-        "guzzlehttp/guzzle": "^7.12.3",
+        "guzzlehttp/guzzle": "^7.13.1",
         "guzzlehttp/psr7": "^2.12.3",
         "igaster/laravel-theme": "^2.0",
         "jenssegers/agent": "^2.6",
@@ -69,7 +69,7 @@
         "spatie/laravel-fractal": "^6.4",
         "spatie/laravel-html": "^3.13",
         "spatie/laravel-ignition": "^2.12",
-        "spatie/laravel-medialibrary": "^11.21",
+        "spatie/laravel-medialibrary": "^11.23",
         "spatie/laravel-multitenancy": "^4.0.9",
         "spomky-labs/otphp": "^11.4.3",
         "swagger-api/swagger-ui": "^5.32.3",
@@ -115,7 +115,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "e35da94c",
+            "build": "39610bfe",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.10",
@@ -157,17 +157,17 @@
                 "connector-slack": "1.9.7",
                 "docker-executor-node-ssr": "1.7.4",
                 "package-ab-testing": "1.4.2",
-                "package-actions-by-email": "1.22.16",
+                "package-actions-by-email": "1.22.17",
                 "package-advanced-user-manager": "1.13.3",
-                "package-ai": "1.16.23",
+                "package-ai": "1.16.24",
                 "package-analytics-reporting": "1.11.5",
                 "package-auth": "1.24.19",
-                "package-collections": "2.27.7",
+                "package-collections": "2.27.8",
                 "package-comments": "1.16.4",
                 "package-conversational-forms": "1.15.2",
                 "package-data-sources": "1.34.11",
                 "package-decision-engine": "1.16.3",
-                "package-dynamic-ui": "1.28.4",
+                "package-dynamic-ui": "1.28.5",
                 "package-email-start-event": "1.0.13",
                 "package-files": "1.23.7",
                 "package-googleplaces": "1.12.1",
