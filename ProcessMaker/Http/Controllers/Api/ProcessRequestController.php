@@ -10,6 +10,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -792,45 +793,60 @@ class ProcessRequestController extends Controller
     public function screenRequested(Request $httpRequest, ProcessRequest $request)
     {
         $query = ProcessRequestToken::query();
-        $query->select('id', 'element_id', 'process_id', 'process_request_id', 'data')
+        $query->select('id', 'element_id', 'process_id', 'process_request_id', 'data', 'completed_at')
             ->where('process_request_id', $request->id)
             ->whereNotIn('element_type', ['end_event', 'scriptTask'])
             ->whereIn('status', ['CLOSED', 'TRIGGERED'])
             ->orderBy('completed_at');
 
-        $response =
-            $query->orderBy(
-                $httpRequest->input('order_by', 'id'),
-                $httpRequest->input('order_direction', 'asc')
-            )->paginate($httpRequest->input('per_page', 10));
+        $query->orderBy(
+            $httpRequest->input('order_by', 'id'),
+            $httpRequest->input('order_direction', 'asc')
+        );
 
-        $collection = $response->getCollection()
-            ->transform(function ($token): ?object {
-                $definition = $token->getDefinition();
-                if (!array_key_exists('screenRef', $definition)) {
-                    $config = isset($definition['config']) ? json_decode($definition['config']) : null;
-                    $screenRef = (isset($config) && isset($config->web_entry)) ? $config->web_entry->screen_id ?? null : null;
-                    if (!$screenRef) {
-                        return null;
-                    }
-                }
-                $screen = $token->getScreenVersion() ?? null;
+        $tokens = $query->get();
 
-                if ($screen) {
-                    $dataManager = new DataManager();
-                    $screen->data = $dataManager->getData($token, true);
-                    $screen->screen_id = $screen->id;
-                    $screen->id = $token->id;
-                }
+        $eligibleTokens = $tokens->filter(function ($token) {
+            $definition = $token->getDefinition();
+            if (array_key_exists('screenRef', $definition)) {
+                return true;
+            }
+            $config = isset($definition['config']) ? json_decode($definition['config']) : null;
+            $screenRef = (isset($config) && isset($config->web_entry)) ? $config->web_entry->screen_id ?? null : null;
 
-                return $screen;
-            })
-            ->reject(fn ($item) => $item === null)
-            ->values();
+            return (bool) $screenRef;
+        });
 
-        $response->setCollection($collection);
+        $total = $eligibleTokens->count();
+        $perPage = (int) $httpRequest->input('per_page', 10);
+        $page = (int) $httpRequest->input('page', 1);
 
-        return new ApiCollection($response);
+        $pagedTokens = $eligibleTokens->forPage($page, $perPage);
+
+        $collection = $pagedTokens->map(function ($token) {
+            $screen = $token->getScreenVersion() ?? null;
+
+            if ($screen) {
+                $dataManager = new DataManager();
+                $screen->data = $dataManager->getData($token, true);
+                $screen->screen_id = $screen->id;
+                $screen->id = $token->id;
+            }
+
+            return $screen;
+        })
+        ->reject(fn ($item) => $item === null)
+        ->values();
+
+        $paginator = new LengthAwarePaginator(
+            $collection,
+            $total,
+            $perPage,
+            $page,
+            ['path' => $httpRequest->url(), 'query' => $httpRequest->query()]
+        );
+
+        return new ApiCollection($paginator);
     }
 
     /**
