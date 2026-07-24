@@ -231,9 +231,10 @@ const deleteWarning = computed(() => {
   return vue.$t('Are you sure you want to delete <strong>{{name}}</strong>? The action is irreversible.', { name });
 });
 
-const confirmPublishNewVersionText = computed(() => {
-  return vue.$t('Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?', { selectedBundleName: selected.value?.name });
-});
+const confirmPublishNewVersionText = computed(() => vue.$t(
+  "Are you sure you want to increase the version of <strong>{{ selectedBundleName }}</strong>?",
+  { selectedBundleName: selected.value?.name },
+));
 
 const handleInstallationComplete = () => {
   load();

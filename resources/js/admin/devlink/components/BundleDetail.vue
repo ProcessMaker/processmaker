@@ -216,7 +216,7 @@ const updateBundle = () => {
 };
 
 const confirmPublishNewVersionText = computed(() => vue.$t(
-  "Are you sure you increase the version of <strong>{{ bundleName }}</strong>?",
+  "Are you sure you want to increase the version of <strong>{{ bundleName }}</strong>?",
   { bundleName: bundle.value?.name },
 ));
 
