@@ -171,10 +171,11 @@ abstract class ExporterBase implements ExporterInterface
      *
      * Only callables are evaluated here. Boolean `$discard = true` (Users/Groups) is an
      * export-time flag handled by include(), not an import-time skip.
+     * Psudomodels (e.g. Signal) are never discarded by this path.
      */
-    public static function shouldDiscardExistingModelDuringImport(?Model $model): bool
+    public static function shouldDiscardExistingModelDuringImport(Model|Psudomodel|null $model): bool
     {
-        if (!$model || !$model->exists) {
+        if (!$model instanceof Model || !$model->exists) {
             return false;
         }
 
