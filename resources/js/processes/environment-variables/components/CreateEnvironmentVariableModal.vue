@@ -36,28 +36,21 @@
           name="description"
         ></b-form-textarea>
       </b-form-group>
-      <b-form-group
-        :label="$t('Value')"
-        :invalid-feedback="errorMessage('value', errors)"
-        :state="errorState('value', errors)"
-      >
-        <b-form-textarea
-          v-model="value"
-          autocomplete="off"
-          rows="10"
-          :state="errorState('value', errors)"
-          name="value"
-        ></b-form-textarea>
-      </b-form-group>
+      <asset-link-fields
+        :asset-type.sync="assetType"
+        :value.sync="value"
+        :errors="errors"
+      />
     </modal>
   </div>
 </template>
 
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+  import AssetLinkFields from "./AssetLinkFields.vue";
 
   export default {
-    components: { Modal, Required },
+    components: { Modal, Required, AssetLinkFields },
     mixins: [ FormErrorsMixin ],
     data: function() {
       return {
@@ -65,6 +58,7 @@
         name: '',
         description: '',
         value: '',
+        assetType: null,
         disabled: false,
       }
     },
@@ -73,7 +67,9 @@
         this.name = '';
         this.description = '';
         this.value = '';
+        this.assetType = null;
         this.errors = {};
+        this.disabled = false;
       },
       onSubmit() {
         this.errors = {};
@@ -85,7 +81,8 @@
         ProcessMaker.apiClient.post('environment_variables', {
           name: this.name,
           description: this.description,
-          value: this.value
+          value: this.value,
+          asset_type: this.assetType,
         })
           .then(response => {
             ProcessMaker.alert(this.$t('The environment variable was created.'), 'success');

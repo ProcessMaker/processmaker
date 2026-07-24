@@ -104,10 +104,15 @@ class EnvironmentVariablesController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(EnvironmentVariable::rules(), EnvironmentVariable::messages());
-        $environment_variable = EnvironmentVariable::create($request->all());
+        $data = $this->prepareAssetLinkInput($request->all());
+        validator($data, EnvironmentVariable::rules(), EnvironmentVariable::messages())->validate();
+        $linkedAsset = EnvironmentVariable::validateAssetLinkConsistency($data);
+        if ($linkedAsset) {
+            $data['value'] = (string) $linkedAsset->id;
+        }
+        $environment_variable = EnvironmentVariable::create($data);
         // Register the Event
-        EnvironmentVariablesCreated::dispatch($request->all());
+        EnvironmentVariablesCreated::dispatch($data);
 
         return new EnvironmentVariableResource($environment_variable);
     }
@@ -172,14 +177,22 @@ class EnvironmentVariablesController extends Controller
      */
     public function update(EnvironmentVariable $environment_variable, Request $request)
     {
-        $fields = ['name', 'description'];
-        if ($request->filled('value')) {
+        $data = $this->prepareAssetLinkInput($request->all());
+        // Validate the request, passing in the existing variable to tweak unique rule on name
+        validator($data, EnvironmentVariable::rules($environment_variable), EnvironmentVariable::messages())->validate();
+        $linkedAsset = EnvironmentVariable::validateAssetLinkConsistency($data);
+
+        $fields = ['name', 'description', 'asset_type'];
+        if ($linkedAsset) {
+            // Guarantee value is always the selected asset's ID on this instance.
+            $data['value'] = (string) $linkedAsset->id;
+            $fields[] = 'value';
+        } elseif (array_key_exists('value', $data) && $data['value'] !== null && $data['value'] !== '') {
             $fields[] = 'value';
         }
-        // Validate the request, passing in the existing variable to tweak unique rule on name
-        $request->validate(EnvironmentVariable::rules($environment_variable));
+
         $original = $environment_variable->getOriginal();
-        $environment_variable->fill($request->only($fields));
+        $environment_variable->fill(collect($data)->only($fields)->all());
         $environment_variable->save();
 
         $changes = $environment_variable->getChanges();
@@ -188,6 +201,18 @@ class EnvironmentVariablesController extends Controller
         EnvironmentVariablesUpdated::dispatch($environment_variable, $changes, $original);
 
         return new EnvironmentVariableResource($environment_variable);
+    }
+
+    /**
+     * Normalize empty asset_type to null.
+     */
+    private function prepareAssetLinkInput(array $data): array
+    {
+        if (array_key_exists('asset_type', $data) && $data['asset_type'] === '') {
+            $data['asset_type'] = null;
+        }
+
+        return $data;
     }
 
     /**
