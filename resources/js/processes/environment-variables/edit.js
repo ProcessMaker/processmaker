@@ -1,5 +1,6 @@
 import Vue from "vue";
 import AssetLinkFields from "./components/AssetLinkFields.vue";
+import DoNotUpdateSwitch from "./components/DoNotUpdateSwitch.vue";
 
 const initial = window.ProcessMaker.EnvironmentVariableEdit || {};
 
@@ -7,6 +8,7 @@ new Vue({
   el: "#editEnvironmentVariable",
   components: {
     AssetLinkFields,
+    DoNotUpdateSwitch,
   },
   data() {
     return {
@@ -16,6 +18,7 @@ new Vue({
         description: initial.description,
         value: initial.value || null,
         asset_type: initial.asset_type || null,
+        do_not_update: !!initial.do_not_update,
       },
       errors: {
         name: null,
@@ -44,6 +47,7 @@ new Vue({
         description: this.formData.description,
         asset_type: this.formData.asset_type,
         value: this.formData.value,
+        do_not_update: this.formData.do_not_update,
       };
       ProcessMaker.apiClient.put(`environment_variables/${this.formData.id}`, payload)
         .then(() => {

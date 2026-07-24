@@ -41,6 +41,7 @@
         :value.sync="value"
         :errors="errors"
       />
+      <do-not-update-switch v-model="doNotUpdate" />
     </modal>
   </div>
 </template>
@@ -48,9 +49,10 @@
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
   import AssetLinkFields from "./AssetLinkFields.vue";
+  import DoNotUpdateSwitch from "./DoNotUpdateSwitch.vue";
 
   export default {
-    components: { Modal, Required, AssetLinkFields },
+    components: { Modal, Required, AssetLinkFields, DoNotUpdateSwitch },
     mixins: [ FormErrorsMixin ],
     data: function() {
       return {
@@ -59,6 +61,7 @@
         description: '',
         value: '',
         assetType: null,
+        doNotUpdate: false,
         disabled: false,
       }
     },
@@ -68,6 +71,7 @@
         this.description = '';
         this.value = '';
         this.assetType = null;
+        this.doNotUpdate = false;
         this.errors = {};
         this.disabled = false;
       },
@@ -83,6 +87,7 @@
           description: this.description,
           value: this.value,
           asset_type: this.assetType,
+          do_not_update: this.doNotUpdate,
         })
           .then(response => {
             ProcessMaker.alert(this.$t('The environment variable was created.'), 'success');
