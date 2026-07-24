@@ -115,14 +115,7 @@ class LoginController extends Controller
             false,
             $this->sessionSameSite()
         );
-
-        $viteView = json_decode(config('app.vite_view') ?: '{}', true);
-        if (!empty($viteView['app.login_view'])) {
-            $loginView = $viteView['app.login_view'];
-        } else {
-            $loginView = empty(config('app.login_view')) ? 'auth.login' : config('app.login_view');
-        }
-
+        $loginView = empty(config('app.login_view')) ? 'auth.login' : config('app.login_view');
         $response = response(view($loginView, compact('addons', 'block')));
         $response->withCookie($cookie);
 

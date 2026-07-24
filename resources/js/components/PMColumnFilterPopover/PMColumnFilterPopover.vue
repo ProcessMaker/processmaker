@@ -39,8 +39,8 @@
 </template>
 
 <script>
-  import PMColumnFilterForm from "./PMColumnFilterForm.vue"
-  import PMColumnFilterIconThreeDots from "./PMColumnFilterIconThreeDots.vue"
+  import PMColumnFilterForm from "./PMColumnFilterForm"
+  import PMColumnFilterIconThreeDots from "./PMColumnFilterIconThreeDots"
 
   export default {
     components: {

@@ -18,8 +18,8 @@
 
 <script>
 import notificationsMixin from "../notifications-mixin";
-import NotificationUser from "./notification-user.vue";
-import NotificationMessage from "./notification-message.vue";
+import NotificationUser from "./notification-user";
+import NotificationMessage from "./notification-message";
 
 export default {
   components: {

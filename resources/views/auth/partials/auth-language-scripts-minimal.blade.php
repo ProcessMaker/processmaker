@@ -1,4 +1,3 @@
-henry
 @foreach(GlobalScripts::getScripts() as $script)
   @if (strpos($script, '/vendor/processmaker/packages/package-dynamic-ui/js/global.js') !== 0)
     <script src="{{ $script }}" defer></script>

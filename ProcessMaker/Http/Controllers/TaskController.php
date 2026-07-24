@@ -83,13 +83,7 @@ class TaskController extends Controller
             $metricsApiEndpoint = EnvironmentVariable::getMetricsApiEndpoint();
         }
 
-        $viteView = json_decode(config('app.vite_view') ?: '{}', true);
-        $tasksView = 'tasks.index';
-        if (!empty($viteView['tasks.index'])) {
-            $tasksView = $viteView['tasks.index'];
-        } 
-        
-        return view($tasksView, compact(
+        return view('tasks.index', compact(
             // User and Authentication related
             'currentUser',
             'userFilter',

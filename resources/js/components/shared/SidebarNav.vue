@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import SidebarButton from "./SidebarButton.vue";
+import SidebarButton from "./SidebarButton";
 
 export default {
   components: { SidebarButton },

@@ -23,7 +23,7 @@
 
 <script>
 import notificationsMixin from "../notifications-mixin";
-import AvatarImage from "../../components/AvatarImage.vue";
+import AvatarImage from "../../components/AvatarImage";
 
 export default {
   components: { AvatarImage },

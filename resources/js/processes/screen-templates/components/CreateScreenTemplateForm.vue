@@ -106,9 +106,9 @@
 <script>
 import Required from "../../../components/shared/Required.vue";
 import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
-import MultiThumbnailFileUploader from '../../../components/shared/MultiThumbnailFileUploader.vue'
+import MultiThumbnailFileUploader from '../../../components/shared/MultiThumbnailFileUploader'
 import ScreenTypeDropdown from "../../screens/components/ScreenTypeDropdown.vue";
-import CategorySelect from "../../../components/shared/CategorySelect.vue";
+import CategorySelect from "../../../components/shared/CategorySelect";
 
 export default {
     components: {MultiThumbnailFileUploader, ScreenTypeDropdown, CategorySelect },

@@ -57,7 +57,7 @@
 
 <script>
     import Icons from './Icons';
-    import FileUploadButton from './FileUploadButton.vue';
+    import FileUploadButton from './FileUploadButton';
     export default {
         components: {
           FileUploadButton,

@@ -22,8 +22,8 @@
 </template>
 
 <script>
-  import PMColumnFilterIconAsc from "./PMColumnFilterIconAsc.vue";
-  import PMColumnFilterIconDesc from "./PMColumnFilterIconDesc.vue";
+  import PMColumnFilterIconAsc from "./PMColumnFilterIconAsc";
+  import PMColumnFilterIconDesc from "./PMColumnFilterIconDesc";
 
   export default {
     components: {

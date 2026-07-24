@@ -1,4 +1,4 @@
-import EmptySearch from "./EmptySearch.vue";
+import EmptySearch from "./EmptySearch";
 
 export {
   EmptySearch

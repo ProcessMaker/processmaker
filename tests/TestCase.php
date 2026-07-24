@@ -70,6 +70,11 @@ abstract class TestCase extends BaseTestCase
 
         parent::setUp();
 
+        // Blade @vite() needs public/build/manifest.json. Feature tests assert
+        // status/view only — skip resolving real Vite assets (same idea as Mix
+        // not needing a full frontend build for webGet assertions).
+        $this->withoutVite();
+
         // Clear Redis cache before running tests
         foreach (['default', 'cache', 'cache_settings'] as $connection) {
             Redis::connection($connection)->flushDb();

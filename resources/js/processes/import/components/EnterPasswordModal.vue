@@ -21,7 +21,7 @@
 
 <script>
   import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
-  import Modal from "../../../components/shared/Modal.vue";
+  import Modal from "../../../components/shared/Modal";
 
   import VuePassword from "vue-password";
 
