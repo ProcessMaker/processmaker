@@ -3,9 +3,7 @@
 namespace ProcessMaker\Multitenancy\Services;
 
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Request;
 use ProcessMaker\Multitenancy\Tenant;
 
 class TenantSchedulingService
@@ -58,11 +56,12 @@ class TenantSchedulingService
      */
     protected function createScheduledEvent(Schedule $schedule, Tenant $tenant, string $command)
     {
-        $fullCommand = "tenants:artisan {$command} --tenant={$tenant->id}";
+        // Run the tenant command directly. schedule:multitenant-run already
+        // makeCurrent()'s the tenant before schedule:run, and FastSchedule
+        // executes commands in-process so tenant context is preserved.
+        $event = $schedule->command($command);
 
-        $event = $schedule->command($fullCommand);
-
-        Log::info("Created scheduled event for tenant {$tenant->id}: {$fullCommand}");
+        Log::info("Created scheduled event for tenant {$tenant->id}: {$command}");
 
         return $event;
     }
