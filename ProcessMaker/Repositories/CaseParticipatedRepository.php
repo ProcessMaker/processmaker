@@ -42,14 +42,19 @@ class CaseParticipatedRepository
     /**
      * Update the cases participated.
      *
+     * Each participant row stores only the tasks assigned to that user.
+     *
      * @param CaseStarted $case
      * @return void
      */
     public function update(CaseStarted $case): void
     {
         try {
-            CaseParticipated::where('case_number', $case->case_number)
-                ->update($this->mapCaseToArray($case));
+            $participants = CaseParticipated::where('case_number', $case->case_number)->get();
+
+            foreach ($participants as $participant) {
+                $participant->update($this->mapCaseToArray($case, $participant->user_id));
+            }
         } catch (\Exception $e) {
             $this->logException($e);
         }
@@ -57,6 +62,8 @@ class CaseParticipatedRepository
 
     /**
      * Maps properties of a `CaseStarted` object to an array, optionally including a user ID.
+     *
+     * When a userId is provided, tasks are scoped to that user's assigned tasks only.
      *
      * @param CaseStarted case Takes a `CaseStarted` object and parameter as input and returns an array with specific
      * properties mapped from the `CaseStarted` object.
@@ -80,7 +87,9 @@ class CaseParticipatedRepository
             'processes' => $case->processes,
             'requests' => $case->requests,
             'request_tokens' => $case->request_tokens,
-            'tasks' => $case->tasks,
+            'tasks' => $userId !== null
+                ? CaseUtils::filterTasksByUser($case->tasks, $userId)
+                : $case->tasks,
             'participants' => $case->participants,
             'initiated_at' => $case->initiated_at,
             'completed_at' => $case->completed_at,
