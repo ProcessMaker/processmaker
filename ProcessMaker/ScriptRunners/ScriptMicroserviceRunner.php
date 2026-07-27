@@ -13,6 +13,7 @@ use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\Services\ScriptMicroserviceService;
+use ProcessMaker\Services\SmartExtractConfiguration;
 use stdClass;
 
 class ScriptMicroserviceRunner
@@ -85,9 +86,19 @@ class ScriptMicroserviceRunner
         EnvironmentVariable::chunk(50, function (Collection $variables) use (&$variablesParameter) {
             foreach ($variables as $variable) {
                 // Fix variables that have spaces
-                $variablesParameter[str_replace(' ', '_', $variable->name)] = $variable->value;
+                $name = str_replace(' ', '_', $variable->name);
+                if ($name === SmartExtractConfiguration::API_HOST) {
+                    continue;
+                }
+
+                $variablesParameter[$name] = $variable->value;
             }
         });
+
+        $smartExtractApiHost = app(SmartExtractConfiguration::class)->apiHost();
+        if ($smartExtractApiHost !== null) {
+            $variablesParameter[SmartExtractConfiguration::API_HOST] = $smartExtractApiHost;
+        }
 
         // Add the url to the host
         $variablesParameter['HOST_URL'] = config('app.docker_host_url');

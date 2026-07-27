@@ -12,6 +12,7 @@ use ProcessMaker\Models\ScriptDockerCopyingFilesTrait;
 use ProcessMaker\Models\ScriptDockerNayraTrait;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
+use ProcessMaker\Services\SmartExtractConfiguration;
 use RuntimeException;
 
 abstract class Base
@@ -177,6 +178,10 @@ abstract class Base
             foreach ($variables as $variable) {
                 // Fix variables that have spaces
                 $variable['name'] = str_replace(' ', '_', $variable['name']);
+                if ($variable['name'] === SmartExtractConfiguration::API_HOST) {
+                    continue;
+                }
+
                 if ($useEscape) {
                     $variablesParameter[] = escapeshellarg($variable['name']) . '=' . escapeshellarg($variable['value']);
                 } else {
@@ -184,6 +189,13 @@ abstract class Base
                 }
             }
         });
+
+        $smartExtractApiHost = app(SmartExtractConfiguration::class)->apiHost();
+        if ($smartExtractApiHost !== null) {
+            $variablesParameter[] = $useEscape
+                ? SmartExtractConfiguration::API_HOST . '=' . escapeshellarg($smartExtractApiHost)
+                : SmartExtractConfiguration::API_HOST . '=' . $smartExtractApiHost;
+        }
 
         // Add the url to the host
         if ($useEscape) {

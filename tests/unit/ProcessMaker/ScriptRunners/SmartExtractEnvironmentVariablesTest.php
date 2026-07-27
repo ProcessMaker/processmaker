@@ -58,6 +58,77 @@ class SmartExtractEnvironmentVariablesTest extends TestCase
         );
     }
 
+    public function test_both_runners_propagate_the_legacy_api_host_fallback(): void
+    {
+        config(['smart-extract.api_host' => 'https://legacy.example.com']);
+
+        $executor = ScriptExecutor::factory()->create(['language' => 'php']);
+        $localRunner = new class ($executor) extends Base {
+            public function config($code, array $dockerConfig)
+            {
+                return $dockerConfig;
+            }
+        };
+        $localMethod = new ReflectionMethod(Base::class, 'getEnvironmentVariables');
+        $localMethod->setAccessible(true);
+        $localVariables = $localMethod->invoke($localRunner, false);
+
+        $this->assertSame([
+            SmartExtractConfiguration::API_HOST . '=https://legacy.example.com',
+        ], array_values(array_filter(
+            $localVariables,
+            fn (string $variable) => str_starts_with($variable, SmartExtractConfiguration::API_HOST . '=')
+        )));
+
+        $script = Script::factory()->create(['language' => 'php']);
+        $user = User::factory()->create();
+        Cache::put('script-runner-' . $user->id, 'access-token');
+        $microserviceRunner = new ScriptMicroserviceRunner($script);
+        $microserviceMethod = new ReflectionMethod(ScriptMicroserviceRunner::class, 'getEnvironmentVariables');
+        $microserviceMethod->setAccessible(true);
+        $microserviceVariables = $microserviceMethod->invoke($microserviceRunner, $user);
+
+        $this->assertSame(
+            'https://legacy.example.com',
+            $microserviceVariables[SmartExtractConfiguration::API_HOST]
+        );
+    }
+
+    public function test_existing_empty_database_api_host_suppresses_fallback_in_both_runners(): void
+    {
+        config(['smart-extract.api_host' => 'https://legacy.example.com']);
+        EnvironmentVariable::factory()->create([
+            'name' => SmartExtractConfiguration::API_HOST,
+            'value' => '',
+        ]);
+
+        $executor = ScriptExecutor::factory()->create(['language' => 'php']);
+        $localRunner = new class ($executor) extends Base {
+            public function config($code, array $dockerConfig)
+            {
+                return $dockerConfig;
+            }
+        };
+        $localMethod = new ReflectionMethod(Base::class, 'getEnvironmentVariables');
+        $localMethod->setAccessible(true);
+        $localVariables = $localMethod->invoke($localRunner, false);
+
+        $this->assertSame([], array_values(array_filter(
+            $localVariables,
+            fn (string $variable) => str_starts_with($variable, SmartExtractConfiguration::API_HOST . '=')
+        )));
+
+        $script = Script::factory()->create(['language' => 'php']);
+        $user = User::factory()->create();
+        Cache::put('script-runner-' . $user->id, 'access-token');
+        $microserviceRunner = new ScriptMicroserviceRunner($script);
+        $microserviceMethod = new ReflectionMethod(ScriptMicroserviceRunner::class, 'getEnvironmentVariables');
+        $microserviceMethod->setAccessible(true);
+        $microserviceVariables = $microserviceMethod->invoke($microserviceRunner, $user);
+
+        $this->assertArrayNotHasKey(SmartExtractConfiguration::API_HOST, $microserviceVariables);
+    }
+
     private function createApiHost(): void
     {
         EnvironmentVariable::factory()->create([

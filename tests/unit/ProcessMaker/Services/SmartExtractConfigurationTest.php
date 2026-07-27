@@ -32,6 +32,14 @@ class SmartExtractConfigurationTest extends TestCase
 
     public function test_missing_empty_and_invalid_values_fail_closed(): void
     {
+        config([
+            'smart-extract.api_host' => null,
+            'smart-extract.client_id' => null,
+            'smart-extract.client_secret' => null,
+            'smart-extract.dashboard_url' => null,
+            'smart-extract.hitl_enabled' => false,
+        ]);
+
         EnvironmentVariable::factory()->create([
             'name' => SmartExtractConfiguration::HITL_ENABLED,
             'value' => 'not-a-boolean',
@@ -48,6 +56,57 @@ class SmartExtractConfigurationTest extends TestCase
         $this->assertNull($configuration->clientId());
         $this->assertNull($configuration->clientSecret());
         $this->assertNull($configuration->dashboardUrl());
+    }
+
+    public function test_missing_database_values_fall_back_to_legacy_configuration(): void
+    {
+        config([
+            'smart-extract.api_host' => 'https://legacy.example.com',
+            'smart-extract.client_id' => 'legacy-client-id',
+            'smart-extract.client_secret' => 'legacy-client-secret',
+            'smart-extract.dashboard_url' => 'https://legacy.example.com/edit.html',
+            'smart-extract.hitl_enabled' => true,
+        ]);
+
+        $configuration = new SmartExtractConfiguration();
+
+        $this->assertSame('https://legacy.example.com', $configuration->apiHost());
+        $this->assertSame('legacy-client-id', $configuration->clientId());
+        $this->assertSame('legacy-client-secret', $configuration->clientSecret());
+        $this->assertSame('https://legacy.example.com/edit.html', $configuration->dashboardUrl());
+        $this->assertTrue($configuration->hitlEnabled());
+    }
+
+    public function test_existing_database_values_never_revive_the_legacy_fallback(): void
+    {
+        config([
+            'smart-extract.api_host' => 'https://legacy.example.com',
+            'smart-extract.client_id' => 'legacy-client-id',
+            'smart-extract.client_secret' => 'legacy-client-secret',
+            'smart-extract.dashboard_url' => 'https://legacy.example.com/edit.html',
+            'smart-extract.hitl_enabled' => true,
+        ]);
+
+        foreach ([
+            SmartExtractConfiguration::API_HOST => '',
+            SmartExtractConfiguration::CLIENT_ID => null,
+            SmartExtractConfiguration::CLIENT_SECRET => false,
+            SmartExtractConfiguration::DASHBOARD_URL => '   ',
+            SmartExtractConfiguration::HITL_ENABLED => 'false',
+        ] as $name => $value) {
+            EnvironmentVariable::factory()->create([
+                'name' => $name,
+                'value' => $value,
+            ]);
+        }
+
+        $configuration = new SmartExtractConfiguration();
+
+        $this->assertNull($configuration->apiHost());
+        $this->assertNull($configuration->clientId());
+        $this->assertNull($configuration->clientSecret());
+        $this->assertNull($configuration->dashboardUrl());
+        $this->assertFalse($configuration->hitlEnabled());
     }
 
     public function test_scoped_configuration_refreshes_on_the_next_lifecycle(): void

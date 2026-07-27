@@ -16,6 +16,14 @@ class SmartExtractConfiguration
 
     public const HITL_ENABLED = 'SMART_EXTRACT_HITL_ENABLED';
 
+    private const CONFIG_KEYS = [
+        self::API_HOST => 'smart-extract.api_host',
+        self::CLIENT_ID => 'smart-extract.client_id',
+        self::CLIENT_SECRET => 'smart-extract.client_secret',
+        self::DASHBOARD_URL => 'smart-extract.dashboard_url',
+        self::HITL_ENABLED => 'smart-extract.hitl_enabled',
+    ];
+
     private ?array $values = null;
 
     public function apiHost(): ?string
@@ -40,9 +48,13 @@ class SmartExtractConfiguration
 
     public function hitlEnabled(): bool
     {
-        $value = $this->stringValue(self::HITL_ENABLED);
+        $value = $this->value(self::HITL_ENABLED);
 
-        if ($value === null) {
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        if (!is_string($value)) {
             return false;
         }
 
@@ -51,9 +63,20 @@ class SmartExtractConfiguration
 
     private function stringValue(string $name): ?string
     {
-        $value = $this->values()[$name] ?? null;
+        $value = $this->value($name);
 
         return is_string($value) && trim($value) !== '' ? $value : null;
+    }
+
+    private function value(string $name): mixed
+    {
+        $values = $this->values();
+
+        if (array_key_exists($name, $values)) {
+            return $values[$name];
+        }
+
+        return config(self::CONFIG_KEYS[$name]);
     }
 
     private function values(): array
