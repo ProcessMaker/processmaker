@@ -5,10 +5,10 @@ namespace ProcessMaker\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Services\ScriptMicroserviceService;
-use Illuminate\Support\Facades\Log;
 
 class TransitionExecutors extends Command
 {
@@ -57,6 +57,11 @@ class TransitionExecutors extends Command
 
         foreach ($executors as $executor) {
             $remaining--;
+            if ($executor->language === 'php-nayra') {
+                $this->info("skipping executor {$executor->uuid} ({$executor->language}) because it is a nayra executor.");
+                continue;
+            }
+
             $this->info("Transitioning executor {$executor->uuid} ({$executor->language}) to the microservice...");
 
             try {
