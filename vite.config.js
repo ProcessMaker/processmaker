@@ -57,6 +57,10 @@ export default defineConfig(({ mode }) => {
           'resources/js/translations/index.js',
           'resources/js/vite/tasks/loaderTasks.js',
           'resources/js/vite/tasks/tasks.js',
+          'resources/js/processes-catalogue/loaderProcessesCatalogue.js',
+          'resources/js/processes-catalogue/processesCatalogue.js',
+          'resources/jscomposition/cases/casesMain/loaderCasesMain.js',
+          'resources/jscomposition/cases/casesMain/casesMain.js',
           // Same style entrypoints as webpack.mix.js
           'resources/sass/app.scss',
           'resources/sass/sidebar/sidebar.scss',

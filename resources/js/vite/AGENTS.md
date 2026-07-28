@@ -1,6 +1,6 @@
 # Vite views (ProcessMaker)
 
-Guide for humans and coding agents working under `resources/js/vite`, Vite Blade layouts, and the parallel Vite asset pipeline.
+Guide for humans and coding agents working under Vite Blade layouts and the parallel Vite asset pipeline.
 
 Vite runs **alongside** Laravel Mix. Do not replace Mix globally. Migrate routes one at a time.
 
@@ -9,7 +9,7 @@ Vite runs **alongside** Laravel Mix. Do not replace Mix globally. Migrate routes
 | Pipeline | Owns | Blade helper | Dev server / output |
 |----------|------|--------------|---------------------|
 | **Mix** | Most of the app (`public/js`, `public/css`) | `mix('js/...')`, `mix('css/...')` | `npm run development` / `watch` → `public/` + `mix-manifest.json` |
-| **Vite** | Entries under `resources/js/vite`, shared Sass entries, Vite-backed pages | `@vite([...])` | `npm run vite:dev` → `:5173` + `storage/vite.hot`; `npm run vite:build` → `public/build` + manifest |
+| **Vite** | Page entries (under `resources/js/vite`, feature folders, or `jscomposition`), shared Sass / translations | `@vite([...])` | `npm run vite:dev` → `:5173` + `storage/vite.hot`; `npm run vite:build` → `public/build` + manifest |
 
 - Mix HMR file (if used): `public/hot` — **reserved for Mix**. Never point Vite hot here.
 - Vite hot file: `storage/vite.hot` (configured in `vite.config.js` and `Vite::useHotFile()` in `ProcessMakerServiceProvider`).
@@ -17,43 +17,78 @@ Vite runs **alongside** Laravel Mix. Do not replace Mix globally. Migrate routes
 
 ## Layouts
 
-| Layout | CSS | Use when |
-|--------|-----|----------|
-| `layouts.layoutnext` | `mix('css/app.css')` etc. | Legacy Mix pages |
-| `layouts.layoutnextvite` | `@vite` of `app.scss`, `sidebar`, `collapseDetails`, `tailwind.css` | Authenticated Vite-backed pages (e.g. tasks) |
-| Standalone Blade | `@vite` for JS + needed CSS in the page itself | Demo / auth experiments without app chrome |
+| Layout | CSS / JS | Use when |
+|--------|----------|----------|
+| `layouts.layout` / `layouts.layoutnext` | Mix CSS/JS chrome | Legacy Mix pages (e.g. catalogue mobile) |
+| `layouts.layoutnextvite` | `@vite` of `app.scss`, `sidebar`, `collapseDetails`, `tailwind.css` | Authenticated Vite pages (Tasks, Processes Catalogue desktop, Cases) |
+| Standalone / `auth.layouts.auth` | Page-level `@vite` | Login and password-reset style pages |
 
 File: `resources/views/layouts/layoutnextvite.blade.php` (must be `.blade.php`).
 
 ## How routes switch to Vite (current pattern)
 
-There is **no** `VITE_VIEW` env map anymore. Migration is done **in place** on the existing Blade (or a dedicated `resources/views/vite/...` page for demos):
+There is **no** `VITE_VIEW` env map. Migration is done **in place** on the existing Blade:
 
-1. Change `@extends(...)` to `layouts.layoutnextvite` (in-app) or keep a standalone layout.
-2. Replace `mix('js/...')` page bootstraps with `@vite(['resources/js/vite/...'])`.
+1. Change `@extends(...)` to `layouts.layoutnextvite` (in-app) or keep standalone/auth layout.
+2. Replace `mix('js/...')` page bootstraps with `@vite([...])`.
 3. Register the JS/CSS entry in `vite.config.js` → `laravel({ input: [...] })`.
-4. Keep Mix-built package scripts as classic `<script src="...">` when packages still ship Mix assets.
+4. Keep Mix-built package scripts as classic `<script src="...">` when packages still ship Mix assets (`$manager->getScripts()`, `GlobalScripts`, etc.).
 
-Login still uses the classic path: `LoginController` → `config('app.login_view')` / `LOGIN_VIEW` (default `auth.newLogin`), else `auth.login`. A Vite login **entry** (`resources/js/vite/auth/login.js`) remains registered in `vite.config.js` for a future auth migration; there is currently **no** `resources/views/vite/auth/` Blade.
+Entries may live under:
+
+- `resources/js/vite/<area>/` (Tasks, auth)
+- Feature folder next to the UI (e.g. `resources/js/processes-catalogue/`)
+- Composition tree (e.g. `resources/jscomposition/cases/casesMain/`)
+
+Prefer co-locating the Vite entry with the feature source when that tree already owns the page.
 
 ## Folder layout
 
 ```
-resources/views/vite/          ← optional Vite-only Blades (demo)
 resources/views/layouts/layoutnextvite.blade.php
-resources/views/tasks/index.blade.php  ← migrated in place to Vite layout + entries
-resources/js/vite/             ← JS entrypoints
-resources/sass/app.scss        ← shared styles also compiled by Vite (same sources as Mix)
-vite.config.js                 ← inputs, aliases, extensions, server, hotFile
+resources/views/tasks/index.blade.php                 ← Vite
+resources/views/processes-catalogue/index.blade.php   ← Vite (desktop)
+resources/views/cases/casesMain.blade.php             ← Vite
+resources/views/auth/newLogin.blade.php               ← Vite
+resources/views/auth/layouts/auth.blade.php           ← Vite scripts (reset/email)
+resources/js/vite/tasks/                              ← Tasks entries
+resources/js/vite/auth/login.js                       ← Login / auth layout entry
+resources/js/processes-catalogue/loaderProcessesCatalogue.js
+resources/js/processes-catalogue/processesCatalogue.js
+resources/jscomposition/cases/casesMain/loaderCasesMain.js
+resources/jscomposition/cases/casesMain/casesMain.js
+resources/js/translations/index.js                    ← shared i18n Vite entry
+resources/sass/*.scss|css                             ← also compiled by Vite for layoutnextvite
+vite.config.js
 ```
 
-Current examples:
+## Current migrations
 
-| Route area | View | JS entry(ies) |
-|------------|------|-----------------|
-| Tasks inbox | `tasks.index` → `resources/views/tasks/index.blade.php` + `layoutnextvite` | `loaderTasks.js`, then package scripts, then `tasks.js` |
-| Demo | `/vite` → `vite.index` | `resources/js/vite/sample/app.js` |
-| Login (not switched) | `LOGIN_VIEW` / `auth.login` | Mix / legacy; Vite entry `auth/login.js` reserved |
+| Route area | Status | View | JS entry(ies) |
+|------------|--------|------|----------------|
+| Tasks inbox | **Vite** | `tasks.index` + `layoutnextvite` | `vite/tasks/loaderTasks.js` → ScreenBuilder scripts → `vite/tasks/tasks.js` |
+| Processes Catalogue (desktop) | **Vite** | `process.browser.index` (`/process-browser`) + `layoutnextvite` | `processes-catalogue/loaderProcessesCatalogue.js` → ScreenBuilder scripts → `processesCatalogue.js` |
+| Cases | **Vite** | `cases.casesMain` (`/cases`) + `layoutnextvite` | `jscomposition/.../loaderCasesMain.js` → GlobalScripts / ScreenBuilder → `casesMain.js` |
+| Login | **Vite** | `LOGIN_VIEW` / `auth.newLogin` | Head: `app.scss` + `vite/auth/login.js`; footer: GlobalScripts (skip dynamic-ui) + `translations/index.js` |
+| Auth layout (reset / email) | **Vite scripts** | `auth.layouts.auth` | `vite/auth/login.js` → GlobalScripts (skip dynamic-ui) → packages boot → `translations/index.js` |
+| Processes Catalogue (mobile) | Mix | `processes-catalogue/mobile.blade.php` | Mix catalogue / mobile bundle |
+
+## Registered Vite inputs (`vite.config.js`)
+
+```
+resources/js/vite/auth/login.js
+resources/js/translations/index.js
+resources/js/vite/tasks/loaderTasks.js
+resources/js/vite/tasks/tasks.js
+resources/js/processes-catalogue/loaderProcessesCatalogue.js
+resources/js/processes-catalogue/processesCatalogue.js
+resources/jscomposition/cases/casesMain/loaderCasesMain.js
+resources/jscomposition/cases/casesMain/casesMain.js
+resources/sass/app.scss
+resources/sass/sidebar/sidebar.scss
+resources/sass/collapseDetails.scss
+resources/sass/tailwind.css
+```
 
 ## npm scripts
 
@@ -82,64 +117,77 @@ Dev tips:
 ## Checklist: transition a route to Vite
 
 1. **Blade**
-   - Prefer editing the existing Mix Blade in place (as with tasks), or add `resources/views/vite/<area>/<page>.blade.php` for greenfield/demo pages.
+   - Edit the existing Mix Blade in place.
    - Prefer `@extends('layouts.layoutnextvite')` for in-app pages.
-   - Load page JS with `@vite(['resources/js/vite/...'])`. Do **not** rely on `mix('css/app.css')` for Vite-only chrome if using `layoutnextvite`.
-   - Keep Mix package scripts that are still Mix-built as classic `<script src="{{ mix(...) }}">` / `$manager->getScripts()` when required.
-   - **Script order matters** when Mix packages depend on boot data / ScreenBuilder:
-     1. Inline boot (`window.temporal = {...}`)
-     2. `@vite` loader entry (e.g. `loaderTasks.js`)
+   - Load page JS with `@vite([...])`.
+   - Keep Mix package scripts as classic tags / `$manager->getScripts()` / `GlobalScripts` when required.
+   - **Script order:**
+     1. Inline boot (`window.temporal = {...}`; set `window.packages` if `setupMain` needs it)
+     2. `@vite` loader (`setupMain` + ScreenBuilder as needed)
      3. Package scripts (`defer`)
-     4. `@vite` page app (e.g. `tasks.js`)
+     4. `@vite` page app
 
 2. **JS entry**
-   - Add `resources/js/vite/<area>/<entry>.js` (Vue 2 Options API; `import Vue from 'vue'` in ESM).
-   - Register the path in `vite.config.js` → `laravel({ input: [...] })`.
-   - `.vue` extension in imports is **optional**: `resolve.extensions` includes `.vue` (see below). Explicit `.vue` is still fine and unambiguous.
-   - Side-effect modules used only for prototypes must `export default` if imported as default (see `resources/js/modules/isPMQL.js`).
-   - Prefer mirroring Mix globals when shared components expect `window.Processmaker` (lowercase `m`) as well as `window.ProcessMaker`.
+   - Vue 2 Options API; `import Vue from 'vue'` / `import VueRouter from 'vue-router'` in ESM.
+   - Register in `vite.config.js` → `laravel({ input: [...] })`.
+   - `.vue` extension optional (`resolve.extensions` includes `.vue`).
+   - Mirror `window.ProcessMaker` **and** `window.Processmaker` when legacy mixins expect the lowercase `m`.
+   - Prefer reading Blade boot data from `window.temporal` / `window.ProcessMaker` (ESM cannot see Blade `const` / `let`).
+   - Avoid circular ESM: do not import feature `EventBus` from a Mix page entry that also imports the feature graph.
 
 3. **Controller**
-   - Usually **no** controller change if the Blade name stays the same (`tasks.index`).
-   - Pass the **same** view data the page already expected. Missing vars cause Blade/Vue errors.
-   - For login later: wire a Vite Blade via `LOGIN_VIEW` or restore a map; do not leave a Vite view that expects `$block` / `addons` without providing them.
+   - Usually no change if the Blade name stays the same.
+   - Pass the same view data the page already expected.
 
 4. **Verify**
-   - With `vite:dev`: Network shows `127.0.0.1:5173` for `@vite` assets; Mix URLs stay on the app host (`/js/...`, `/css/...`).
-   - Without Vite running: `@vite` needs a prior `vite:build` (manifest), or the page errors.
-   - `mix('...')` must **not** point at `:5173` (if it does, delete stale `public/hot` and confirm `Vite::useHotFile(storage_path('vite.hot'))`).
+   - With `vite:dev`: Network shows `127.0.0.1:5173` for `@vite` assets; Mix URLs stay on the app host.
+   - Without Vite running: need a prior `vite:build` (manifest).
+   - `mix('...')` must not point at `:5173` (delete stale `public/hot` if it does).
+   - **PHPUnit:** `Tests\TestCase` calls `withoutVite()` so `@vite` Blades do not need `public/build/manifest.json`. Feature tests only see server HTML (JS-mounted DOM is not executed). Mix helpers still need `mix-manifest.json` if the Blade still calls `mix()`.
 
 5. **Do not**
    - Alias `@vite` in `vite.config.js` (shadows `@vite/client` / `@vite/env`).
-   - Assume absolute `/img/...` or `/css/...` inside Vite-served CSS resolve to Vite (fonts use `APP_URL` during `serve`).
    - Point Vite `hotFile` at `public/hot`.
+   - Include `auth.partials.auth-language-scripts` on Vite auth pages (still references dead Mix `builds/login/js/...` → `MixFileNotFoundException`).
 
 ## Known Vite config notes (`vite.config.js`)
 
-- **`resolve.extensions`**: includes `.vue` so imports may omit the extension (`import X from './Foo'` resolves `Foo.vue`). If both `Foo.js` and `Foo.vue` exist, `.js` wins (listed first).
-- **Styles alias**: `styles` / `~styles` → `resources/sass` (same as Mix) for `@import '~styles/variables'` in SFCs; Sass importer mirrors Webpack `~styles/...`.
+- **`resolve.extensions`**: includes `.vue`. If both `Foo.js` and `Foo.vue` exist, `.js` wins.
+- **Styles alias**: `styles` / `~styles` → `resources/sass`; Sass importer mirrors Webpack `~styles/...`.
 - **Tailwind**: entry `resources/sass/tailwind.css` + root `postcss.config.js`.
-- **Fonts in `serve`**: Sass `$FontPathOpenSans` / `$fa-font-path` prefixed with `APP_URL`; in `build`, root-absolute `/css/precompiled/...`.
+- **Fonts**: Sass `$FontPathOpenSans` / `$fa-font-path` are root-relative (`/css/precompiled/...`). During `vite:dev`, `server.proxy['/css']` forwards to `APP_URL` (avoids CORS).
 - **Vue2 plugin**: `includeAbsolute: false` so `/img/...` stays Laravel public URLs.
-- **`refresh`**: Blades under `resources/views/vite/**`, plus `resources/js/**/*.{js,vue}` and `resources/sass/**` (note: in-place Blades like `tasks/index.blade.php` are outside the vite views glob — hard-refresh or extend `refresh` if full reload on Blade edit is required).
-- **YAML plugin**: `@rollup/plugin-yaml` for YAML imports used by shared modules.
+- **`refresh`**: `resources/views/vite/**` (optional), `resources/js/**/*.{js,vue}`, `resources/sass/**`.
+- **YAML plugin**: `@rollup/plugin-yaml`.
 
-## Quick reference: existing migrations
+## Quick reference
 
-**Tasks (live)**
+**Tasks**
 
-- View: `resources/views/tasks/index.blade.php` → `layouts.layoutnextvite`
-- Entries: `resources/js/vite/tasks/loaderTasks.js` then package scripts then `resources/js/vite/tasks/tasks.js`
-- Boot: inline `window.temporal` **before** `@vite` loader (see `@section('js')`)
-- Loader copies `temporal.*` onto `window.ProcessMaker` / `window.Processmaker` for ScreenBuilder and legacy mixins
+- View: `resources/views/tasks/index.blade.php` → `layoutnextvite`
+- Entries: `resources/js/vite/tasks/loaderTasks.js` → `$manager->getScripts()` → `tasks.js`
+- Boot: `window.temporal` before loader
 
-**Demo**
+**Processes Catalogue (desktop)**
 
-- Route: `GET /vite` → `vite.index` (`routes/web.php`)
-- View: `resources/views/vite/index.blade.php`
-- Entry: `resources/js/vite/sample/app.js` (+ `DemoBadge.vue`)
+- Route: `/process-browser` (`process.browser.index`)
+- View: `resources/views/processes-catalogue/index.blade.php` → `layoutnextvite`
+- Entries: `resources/js/processes-catalogue/loaderProcessesCatalogue.js` → `$manager->getScripts()` → `processesCatalogue.js`
+- Mobile still Mix
 
-**Login (not migrated)**
+**Cases**
 
-- Controller: `LoginController@showLoginForm` → `config('app.login_view')` (`LOGIN_VIEW`, default `auth.newLogin`) or `auth.login`
-- Reserved Vite entry (not wired to a Blade yet): `resources/js/vite/auth/login.js`
+- Route: `/cases`
+- View: `resources/views/cases/casesMain.blade.php` → `layoutnextvite`
+- Entries: `resources/jscomposition/cases/casesMain/loaderCasesMain.js` → GlobalScripts + `$manager->getScripts()` → `casesMain.js`
+- App components/routes/store stay in the same `jscomposition/cases/casesMain/` folder
+- Boot: `window.temporal.user` / `packages`; loader copies onto `window.ProcessMaker` (variables read `window.ProcessMaker.user`)
+
+**Login / auth forms**
+
+- Login: `auth.newLogin` — `@vite` login entry + translations
+- Password reset / email: `auth.layouts.auth` — same Vite scripts pattern (not `auth-language-scripts` Mix bundle)
+
+**Still Mix**
+
+- Processes Catalogue mobile: `resources/views/processes-catalogue/mobile.blade.php`
