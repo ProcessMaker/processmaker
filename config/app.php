@@ -266,10 +266,6 @@ return [
 
     'force_https' => env('FORCE_HTTPS', true),
 
-    // Enable Octane compatibility listeners when running under `php artisan octane:start`.
-    'octane_enabled' => filter_var(env('OCTANE_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
-    'octane_max_requests' => (int) env('OCTANE_MAX_REQUESTS', 500),
-
     'nayra_docker_network' => env('NAYRA_DOCKER_NETWORK', 'host'),
     'nayra_port' => env('NAYRA_PORT', 8080),
 
