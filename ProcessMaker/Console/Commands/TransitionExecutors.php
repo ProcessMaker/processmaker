@@ -70,15 +70,15 @@ class TransitionExecutors extends Command
             return 0;
         }
 
+        $client = new Client($url);
+        $client->setTimeout($timeout);
+
         $index = 0;
         $total = $executors->count();
 
         if ($total > 0) {
             do {
                 $this->info("Transitioning executor {$executors[$index]->uuid} ({$executors[$index]->language}) to the microservice...");
-
-                $client = new Client($url);
-                $client->setTimeout($timeout);
 
                 try {
                     $response = $this->scriptMicroserviceService->updateCustomExecutor($executors[$index]);
@@ -94,7 +94,7 @@ class TransitionExecutors extends Command
                     ]));
 
                     $running = true;
-
+                    $error = false;
                     // Listen for messages
                     while ($running) {
                         $message = json_decode($client->receive(), true);
@@ -109,32 +109,32 @@ class TransitionExecutors extends Command
                                 break;
                             case 'build-error':
                                 $this->error("Error occurred while building image for executor {$executors[$index]->uuid} - {$data}");
+                                $error = true;
                                 $running = false;
                                 break;
                         }
                     }
 
-                    if (in_array($status, ['error', 'failed', 'failure'], true) && !isset($response['executor_id'])) {
-                        throw new \RuntimeException(json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) ?: 'Transition failed');
+                    if (!$error) {
+                        $this->info("Executor {$executors[$index]->uuid} transitioned successfully." . PHP_EOL);
                     }
+
                 } catch (RequestException $e) {
-                    $this->error("Transition failed for executor {$executors[$index]->uuid}" . PHP_EOL);
+                    $this->error("Request failed for executor {$executors[$index]->uuid}");
+                    $this->line(PHP_EOL);
                     $this->line($e->response?->body() ?: $e->getMessage());
-
-                    return 1;
                 } catch (\Throwable $e) {
-                    $this->error("Transition failed for executor {$executors[$index]->uuid}" . PHP_EOL);
+                    $this->error("Transition failed for executor {$executors[$index]->uuid}");
+                    $this->line(PHP_EOL);
                     $this->line($e->getMessage());
-
-                    return 1;
-                } finally {
-                    $client->close();
                 }
 
-                $this->info("Executor {$executors[$index]->uuid} transitioned successfully." . PHP_EOL);
+                $client->close();
                 $index++;
+
             } while ($index < $total);
         }
+
 
         return 0;
     }
