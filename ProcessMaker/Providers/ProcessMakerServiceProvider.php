@@ -45,13 +45,13 @@ use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\Jobs\SmartInbox;
 use ProcessMaker\LicensedPackageManifest;
-use ProcessMaker\Listeners\HandleRedirectListener;
 use ProcessMaker\Managers;
 use ProcessMaker\Managers\MenuManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
 use ProcessMaker\Multitenancy\Tenant;
 use ProcessMaker\Observers;
+use ProcessMaker\Octane\ResetRequestState;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
@@ -533,15 +533,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
     }
 
     /**
-     * Reset the query time for Octane compatibility.
-     * This prevents timing metrics from leaking between requests.
-     */
-    public static function resetQueryTime(): void
-    {
-        self::$queryTime = 0;
-    }
-
-    /**
      * Set the boot time for service providers.
      *
      * @param string $package
@@ -602,10 +593,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return;
         }
 
-        Event::listen(RequestTerminated::class, function () {
-            self::resetQueryTime();
-            HandleRedirectListener::reset();
-        });
+        Event::listen(RequestTerminated::class, ResetRequestState::class);
     }
 
     /**
