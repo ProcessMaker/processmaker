@@ -25,12 +25,7 @@ class ResetRequestStateTest extends TestCase
         $this->assertGreaterThan(0, ProcessMakerServiceProvider::getQueryTime());
 
         $listener = new ResetRequestState();
-        $listener->handle(new RequestTerminated(
-            $this->app,
-            $this->app,
-            Request::create('/'),
-            new Response()
-        ));
+        $listener->handle();
 
         $this->assertSame(0.0, ProcessMakerServiceProvider::getQueryTime());
     }
@@ -43,12 +38,7 @@ class ResetRequestStateTest extends TestCase
         $redirectListener->queue(ProcessRequest::factory()->create());
 
         $listener = new ResetRequestState();
-        $listener->handle(new RequestTerminated(
-            $this->app,
-            $this->app,
-            Request::create('/'),
-            new Response()
-        ));
+        $listener->handle();
 
         HandleRedirectListener::sendRedirectToEvent();
 
@@ -75,7 +65,7 @@ class ResetRequestStateTest extends TestCase
     }
 }
 
-class RedirectStateProbe extends HandleRedirectListener
+final class RedirectStateProbe extends HandleRedirectListener
 {
     public function queue(ProcessRequest $processRequest): void
     {
