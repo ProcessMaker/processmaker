@@ -8,6 +8,32 @@ import yaml from '@rollup/plugin-yaml';
 const stylesPath = path.resolve(__dirname, 'resources/sass');
 
 /**
+ * @processmaker/modeler (Vue CLI lib) resolves SVG icons as:
+ *   __webpack_require__.p + "img/start-event....svg"
+ * Mix loads modeler-vendor from /js/, so setPublicPath sets p="/js/" and icons
+ * hit public/js/img (copied in webpack.mix.js). Vite ESM has no script URL, so p
+ * stays "" and relative img/... resolves against the page (/cases/img/...).
+ * Rewrite to absolute /js/img/ paths Mix already publishes.
+ */
+const modelerPublicPathPlugin = {
+  name: 'processmaker-modeler-public-path',
+  enforce: 'pre',
+  transform(code, id) {
+    const normalized = id.replace(/\\/g, '/');
+    if (!normalized.includes('/@processmaker/modeler/') || !normalized.includes('modeler.common')) {
+      return null;
+    }
+    if (!code.includes('__webpack_require__.p + "img/')) {
+      return null;
+    }
+    return {
+      code: code.replace(/__webpack_require__\.p \+ "img\//g, '"/js/img/'),
+      map: null,
+    };
+  },
+};
+
+/**
  * Resolve Webpack-style `~styles/...` imports used in Vue SFC <style lang="scss">.
  * Mirrors webpack.mix.js alias: styles -> resources/sass
  */
@@ -47,6 +73,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
+      modelerPublicPathPlugin,
       yaml(),
       laravel({
         // Keep Vite hot file away from public/hot so Laravel Mix's mix() helper
@@ -61,6 +88,9 @@ export default defineConfig(({ mode }) => {
           'resources/js/processes-catalogue/processesCatalogue.js',
           'resources/jscomposition/cases/casesMain/loaderCasesMain.js',
           'resources/jscomposition/cases/casesMain/casesMain.js',
+          'resources/jscomposition/cases/casesDetail/loaderCasesDetail.js',
+          'resources/jscomposition/cases/casesDetail/casesDetail.js',
+          'resources/js/initialLoad.js',
           // Same style entrypoints as webpack.mix.js
           'resources/sass/app.scss',
           'resources/sass/sidebar/sidebar.scss',
@@ -105,6 +135,10 @@ export default defineConfig(({ mode }) => {
           additionalData: fontAdditionalData,
         },
       },
+    },
+    // Let Vite transform modeler.common.js (plugin above) instead of esbuild prebundle.
+    optimizeDeps: {
+      exclude: ['@processmaker/modeler'],
     },
     build: {
       outDir: 'public/build',

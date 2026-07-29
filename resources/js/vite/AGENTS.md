@@ -49,6 +49,7 @@ resources/views/layouts/layoutnextvite.blade.php
 resources/views/tasks/index.blade.php                 ← Vite
 resources/views/processes-catalogue/index.blade.php   ← Vite (desktop)
 resources/views/cases/casesMain.blade.php             ← Vite
+resources/views/cases/edit.blade.php                  ← Vite (case detail)
 resources/views/auth/newLogin.blade.php               ← Vite
 resources/views/auth/layouts/auth.blade.php           ← Vite scripts (reset/email)
 resources/js/vite/tasks/                              ← Tasks entries
@@ -57,6 +58,8 @@ resources/js/processes-catalogue/loaderProcessesCatalogue.js
 resources/js/processes-catalogue/processesCatalogue.js
 resources/jscomposition/cases/casesMain/loaderCasesMain.js
 resources/jscomposition/cases/casesMain/casesMain.js
+resources/jscomposition/cases/casesDetail/loaderCasesDetail.js
+resources/jscomposition/cases/casesDetail/casesDetail.js
 resources/js/translations/index.js                    ← shared i18n Vite entry
 resources/sass/*.scss|css                             ← also compiled by Vite for layoutnextvite
 vite.config.js
@@ -69,6 +72,7 @@ vite.config.js
 | Tasks inbox | **Vite** | `tasks.index` + `layoutnextvite` | `vite/tasks/loaderTasks.js` → ScreenBuilder scripts → `vite/tasks/tasks.js` |
 | Processes Catalogue (desktop) | **Vite** | `process.browser.index` (`/process-browser`) + `layoutnextvite` | `processes-catalogue/loaderProcessesCatalogue.js` → ScreenBuilder scripts → `processesCatalogue.js` |
 | Cases | **Vite** | `cases.casesMain` (`/cases`) + `layoutnextvite` | `jscomposition/.../loaderCasesMain.js` → GlobalScripts / ScreenBuilder → `casesMain.js` |
+| Case Detail | **Vite** | `cases.edit` + `layoutnextvite` | `jscomposition/.../loaderCasesDetail.js` → `initialLoad` (Vite) + GlobalScripts / modeler scripts → `casesDetail.js` |
 | Login | **Vite** | `LOGIN_VIEW` / `auth.newLogin` | Head: `app.scss` + `vite/auth/login.js`; footer: GlobalScripts (skip dynamic-ui) + `translations/index.js` |
 | Auth layout (reset / email) | **Vite scripts** | `auth.layouts.auth` | `vite/auth/login.js` → GlobalScripts (skip dynamic-ui) → packages boot → `translations/index.js` |
 | Processes Catalogue (mobile) | Mix | `processes-catalogue/mobile.blade.php` | Mix catalogue / mobile bundle |
@@ -84,6 +88,8 @@ resources/js/processes-catalogue/loaderProcessesCatalogue.js
 resources/js/processes-catalogue/processesCatalogue.js
 resources/jscomposition/cases/casesMain/loaderCasesMain.js
 resources/jscomposition/cases/casesMain/casesMain.js
+resources/jscomposition/cases/casesDetail/loaderCasesDetail.js
+resources/jscomposition/cases/casesDetail/casesDetail.js
 resources/sass/app.scss
 resources/sass/sidebar/sidebar.scss
 resources/sass/collapseDetails.scss
@@ -182,6 +188,14 @@ Dev tips:
 - Entries: `resources/jscomposition/cases/casesMain/loaderCasesMain.js` → GlobalScripts + `$manager->getScripts()` → `casesMain.js`
 - App components/routes/store stay in the same `jscomposition/cases/casesMain/` folder
 - Boot: `window.temporal.user` / `packages`; loader copies onto `window.ProcessMaker` (variables read `window.ProcessMaker.user`)
+
+**Case Detail**
+
+- View: `resources/views/cases/edit.blade.php` → `layoutnextvite`
+- Entries: `resources/jscomposition/cases/casesDetail/loaderCasesDetail.js` → `@vite` `resources/js/initialLoad.js` + GlobalScripts + modeler package scripts (+ optional package-files) → `casesDetail.js`
+- Boot: `window.temporal` holds request/modeler payload; loader applies `ProcessMaker.modeler` / EventBus / `PMBlockList`
+- Variables read from `window.temporal` (ESM-safe)
+- Modeler SVG icons: Vite plugin rewrites `@processmaker/modeler` asset URLs to `/js/img/` (same files Mix copies from `node_modules/@processmaker/modeler/dist/img`)
 
 **Login / auth forms**
 

@@ -146,7 +146,6 @@ mix
   .js("resources/js/requests/mobile.js", "public/js/requests/mobile.js")
   .js("resources/js/requests/show.js", "public/js/requests")
   .js("resources/js/requests/preview.js", "public/js/requests")
-  .js("resources/jscomposition/cases/casesDetail/edit.js", "public/js/composition/cases/casesDetail/edit.js")
   .js("resources/js/processes/translations/import.js", "public/js/processes/translations")
 
   .js("resources/js/tasks/mobile.js", "public/js/tasks/mobile.js")
@@ -160,7 +159,6 @@ mix
 
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
-  .js("resources/jscomposition/cases/casesDetail/loader.js", "public/js/composition/cases/casesDetail")
   .js("resources/js/initialLoad.js", "public/js")
 
   .js("resources/js/tasks/loaderMain.js", "public/js/tasks")
