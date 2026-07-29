@@ -87,17 +87,18 @@ class ScriptsInScreen
      *
      * @param array $array
      * @param callable $callback
+     * @param array $path
      *
      * @return void
      */
-    private function findInArray(array $array, callable $callback)
+    private function findInArray(array $array, callable $callback, array $path = [])
     {
-        call_user_func($callback, $array);
-        foreach ($array as $item) {
+        call_user_func($callback, $array, implode('.', $path));
+        foreach ($array as $key => $item) {
             if (is_array($item)) {
-                $this->findInArray($item, $callback);
+                $this->findInArray($item, $callback, array_merge($path, [$key]));
             } else {
-                call_user_func($callback, $item);
+                call_user_func($callback, $item, implode('.', array_merge($path, [$key])));
             }
         }
     }

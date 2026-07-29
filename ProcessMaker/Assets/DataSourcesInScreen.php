@@ -93,12 +93,12 @@ class DataSourcesInScreen
 
         $config = $screen->config;
         if (is_array($config)) {
-            $this->findInArray($config, function ($item, $key) use ($references, &$config) {
+            $this->findInArray($config, function ($item, $keyDotNotation) use ($references, &$config) {
                 if (is_array($item) && isset($item['component']) && $item['component'] === 'FormSelectList' && !empty($item['config']['options']['selectedDataSource'])) {
                     $oldRef = $item['config']['options']['selectedDataSource'];
                     if (isset($references[$this->type][$oldRef])) {
                         $newRef = $references[$this->type][$oldRef]->getKey();
-                        Arr::set($config, "$key.config.options.selectedDataSource", $newRef);
+                        Arr::set($config, "$keyDotNotation.config.options.selectedDataSource", $newRef);
                     }
                 }
             });
@@ -113,17 +113,18 @@ class DataSourcesInScreen
      *
      * @param array $array
      * @param callable $callback
+     * @param array $path
      *
      * @return void
      */
-    private function findInArray(array $array, callable $callback)
+    private function findInArray(array $array, callable $callback, array $path = [])
     {
-        call_user_func($callback, $array);
-        foreach ($array as $item) {
+        call_user_func($callback, $array, implode('.', $path));
+        foreach ($array as $key => $item) {
             if (is_array($item)) {
-                $this->findInArray($item, $callback);
+                $this->findInArray($item, $callback, array_merge($path, [$key]));
             } else {
-                call_user_func($callback, $item);
+                call_user_func($callback, $item, implode('.', array_merge($path, [$key])));
             }
         }
     }
