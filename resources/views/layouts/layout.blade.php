@@ -146,7 +146,7 @@
   </div>
 </div>
 @php
-$isInboxPage = request()->is('inbox', 'inbox/*');
+    $layoutAssets = layoutAssets();
 @endphp
 <!-- Scripts -->
 @if(config('broadcasting.default') == 'redis')
@@ -155,14 +155,11 @@ $isInboxPage = request()->is('inbox', 'inbox/*');
 <script src="{{ mix('js/manifest.js') }}"></script>
 <script src="{{ mix('js/vue-vendor.js') }}"></script>
 <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
-@if($isInboxPage)
-<script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
-<script src="{{ mix('js/app-core.js') }}"></script>
-@else
+@if($layoutAssets['modeler_vendor'])
 <script src="{{ mix('js/modeler-vendor.js') }}"></script>
-<script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
-<script src="{{ mix('js/app.js') }}"></script>
 @endif
+<script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
+<script src="{{ mix($layoutAssets['app']) }}"></script>
 <script>
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   window.ProcessMaker.ai = {
@@ -171,12 +168,8 @@ $isInboxPage = request()->is('inbox', 'inbox/*');
     microserviceHost: @json(config('app.ai_microservice_host'))
   };
 </script>
-@if($isInboxPage)
-<script src="{{ mix('js/app-layout-core.js') }}"></script>
-@else
-<script src="{{ mix('js/app-layout.js') }}"></script>
-@endif
-@if(!$isInboxPage)
+<script src="{{ mix($layoutAssets['app_layout']) }}"></script>
+@if($layoutAssets['monaco'])
 @include('shared.monaco')
 @endif
 @foreach(GlobalScripts::getScripts() as $script)
