@@ -43,6 +43,7 @@ use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\Jobs\SmartInbox;
 use ProcessMaker\LicensedPackageManifest;
+use ProcessMaker\Listeners\HandleRedirectListener;
 use ProcessMaker\Managers;
 use ProcessMaker\Managers\MenuManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
@@ -106,6 +107,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Route::pushMiddlewareToGroup('api', HandleEtag::class);
 
         $this->checkConfigCache();
+
+        // Register Octane listeners if Octane is enabled
+        $this->registerOctaneListeners();
 
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
@@ -530,6 +534,15 @@ class ProcessMakerServiceProvider extends ServiceProvider
     }
 
     /**
+     * Reset the query time for Octane compatibility.
+     * This prevents timing metrics from leaking between requests.
+     */
+    public static function resetQueryTime(): void
+    {
+        self::$queryTime = 0;
+    }
+
+    /**
      * Set the boot time for service providers.
      *
      * @param string $package
@@ -574,6 +587,41 @@ class ProcessMakerServiceProvider extends ServiceProvider
     public static function getPackageBootTiming(): array
     {
         return self::$packageBootTiming;
+    }
+
+    /**
+     * Register Octane-specific listeners for request lifecycle management.
+     *
+     * When OCTANE_ENABLED is true, this method registers:
+     * - A 'requestHandled' listener to reset per-request static state
+     * - A flush list for stateful singletons
+     * - A tick listener for memory monitoring
+     */
+    private function registerOctaneListeners(): void
+    {
+        if (!config('app.octane_enabled', false) || !class_exists('\Laravel\Octane\Octane')) {
+            return;
+        }
+
+        $octane = \Laravel\Octane\Octane::class;
+
+        // Reset per-request static state after each request
+        $octane::on('requestHandled', function ($request, $result) {
+            self::resetQueryTime();
+            HandleRedirectListener::reset();
+        });
+
+        // Flush stateful singletons per request
+        $octane::flush(config('octane.flush', []));
+
+        // Monitor memory usage every 30 seconds
+        $octane::tick('octane-memory-monitor', function () {
+            $memory = memory_get_usage(true);
+            $threshold = 128 * 1024 * 1024; // 128MB
+            if ($memory > $threshold) {
+                Log::warning('Octane worker memory high: ' . round($memory / 1024 / 1024, 2) . 'MB');
+            }
+        })->seconds(30);
     }
 
     /**
