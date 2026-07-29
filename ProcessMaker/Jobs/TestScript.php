@@ -68,8 +68,7 @@ class TestScript implements ShouldQueue
             $response = $this->script->runScript($this->data, $this->configuration, '', null, 0, $metadata);
             \Log::debug('Response from runScript: ' . print_r($response, true));
 
-            if (!config('script-runner-microservice.enabled') ||
-                $this->script->scriptExecutor && $this->script->scriptExecutor->type === ScriptExecutorType::Custom) {
+            if (!config('script-runner-microservice.enabled')) {
                 $this->sendResponse(200, $response);
             }
         } catch (Throwable $exception) {

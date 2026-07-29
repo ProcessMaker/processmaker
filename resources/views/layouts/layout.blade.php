@@ -77,6 +77,24 @@
           window.Processmaker.broadcasting.wssPort = "{{config('broadcasting.connections.pusher.options.port')}}";
         @endif
       @endif
+      @if(config('script-runner-microservice.enabled'))
+        window.Processmaker.script_microservice = {
+          enabled : {{ config('script-runner-microservice.enabled', false) }},
+          broadcasting : {
+                broadcaster: "pusher",
+                key: "{{config('script-runner-microservice.broadcasting.app_key')}}",
+                cluster: "{{config('script-runner-microservice.broadcasting.cluster')}}",
+                forceTLS: {{config('script-runner-microservice.broadcasting.scheme') === 'https' ? 'true' : 'false'}},
+                enabledTransports: ['ws', 'wss'],
+                disableStats: true,
+          }
+        };
+        @if(config('script-runner-microservice.broadcasting.host'))
+          window.Processmaker.script_microservice.broadcasting.wsHost = "{{config('script-runner-microservice.broadcasting.host')}}";
+          window.Processmaker.script_microservice.broadcasting.wsPort = "{{config('script-runner-microservice.broadcasting.port')}}";
+          window.Processmaker.script_microservice.broadcasting.wssPort = "{{config('script-runner-microservice.broadcasting.port')}}";
+        @endif
+      @endif
     @endif
   </script>
     @isset($addons)

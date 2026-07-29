@@ -22,13 +22,14 @@ const bundleModal = ref(null);
 const updateBundle = ref(null);
 const deleteWarningTitle = ref(vue.$t("Delete Confirmation"));
 const updatesAvailable = reactive({});
+const remoteAvailability = reactive({});
 const refreshKey = ref(0);
 
 const actions = [
   { value: "open-item", content: "Open" },
   { value: "increase-item", content: "Publish New Version", conditional: "if(not(dev_link_id), true, false)" },
   { value: "update-item", content: "Update Bundle", conditional: "if(update_available, true, false)" },
-  { value: "reinstall-item", content: "Reinstall Bundle", conditional: "if(dev_link_id, true, false)" },
+  { value: "reinstall-item", content: "Reinstall Bundle", conditional: "if(dev_link_id, remote_available, false)" },
   { value: "edit-item", content: "Edit", conditional: "if(not(dev_link_id) , true, false)" },
   { value: "delete-item", content: "Delete" },
 ]
@@ -42,6 +43,10 @@ const customButton = {
 
 const setUpdateAvailable = (bundle, updateAvailable) => {
   set(updatesAvailable, bundle.id, updateAvailable);
+};
+
+const setRemoteAvailability = (bundle, available) => {
+  set(remoteAvailability, bundle.id, available);
 };
 
 onMounted(() => {
@@ -280,9 +285,10 @@ const handleInstallationComplete = () => {
           <Origin :dev-link="data.item.dev_link"></Origin>
         </template>
         <template #cell(version)="data">
-          {{ data.item.version }} <VersionCheck 
-            :key="`version-check-${data.item.id}-${refreshKey}`" 
-            @updateAvailable="setUpdateAvailable(data.item, $event)" 
+          {{ data.item.version }} <VersionCheck
+            :key="`version-check-${data.item.id}-${refreshKey}`"
+            @updateAvailable="setUpdateAvailable(data.item, $event)"
+            @availabilityChanged="setRemoteAvailability(data.item, $event)"
             :dev-link="data.item">
           </VersionCheck>
         </template>
@@ -290,7 +296,11 @@ const handleInstallationComplete = () => {
           <EllipsisMenu
             class="ellipsis-devlink"
             :actions="actions"
-            :data="{ ...data.item, update_available: updatesAvailable[data.item.id] ?? false }"
+            :data="{
+              ...data.item,
+              update_available: updatesAvailable[data.item.id] ?? false,
+              remote_available: remoteAvailability[data.item.id] ?? false,
+            }"
             :custom-button="customButton"
             @navigate="onNavigate"
           />
