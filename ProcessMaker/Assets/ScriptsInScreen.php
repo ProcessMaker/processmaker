@@ -26,7 +26,11 @@ class ScriptsInScreen
         if (is_array($config)) {
             $this->findInArray($config, function ($item) use (&$scripts) {
                 if (is_array($item) && !empty($item['script_id'])) {
-                    $scripts[] = [Script::class, $item['script_id']];
+                    $scriptId = (string) $item['script_id'];
+                    $id = (string) ($item['script']['id'] ?? '');
+                    if (!str_starts_with($scriptId, 'data_source-') && !str_starts_with($id, 'data_source-')) {
+                        $scripts[] = [Script::class, $item['script_id']];
+                    }
                 }
             });
         }
@@ -47,11 +51,12 @@ class ScriptsInScreen
         $watches = $screen->watchers;
         if (is_array($watches)) {
             foreach ($watches as &$watcher) {
-                $refParts = explode('-', $watcher['script_id']);
-                if ($refParts[0] === 'data_source') {
+                $scriptId = (string) ($watcher['script_id'] ?? '');
+                $id = (string) ($watcher['script']['id'] ?? '');
+                if (str_starts_with($scriptId, 'data_source-') || str_starts_with($id, 'data_source-')) {
                     continue;
                 }
-                $oldRef = $refParts[1];
+                $oldRef = $scriptId;
                 if (isset($references[Script::class][$oldRef])) {
                     $newRef = $references[Script::class][$oldRef]->getKey();
                 } else {
