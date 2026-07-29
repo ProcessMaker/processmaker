@@ -45,6 +45,7 @@ use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\Jobs\SmartInbox;
 use ProcessMaker\LicensedPackageManifest;
+use ProcessMaker\Listeners\ScheduledTaskMetricsSubscriber;
 use ProcessMaker\Managers;
 use ProcessMaker\Managers\MenuManager;
 use ProcessMaker\Managers\ScreenCompiledManager;
@@ -138,6 +139,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton(Managers\LoginManager::class, function () {
             return new Managers\LoginManager();
         });
+
+        $this->app->singleton(ScheduledTaskMetricsSubscriber::class);
 
         /*
          * Maps our Index Manager as a singleton. The Index Manager is used

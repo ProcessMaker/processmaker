@@ -5,6 +5,7 @@ namespace ProcessMaker\Console\Scheduling;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\EventMutex;
 use Illuminate\Support\Facades\Artisan;
+use Symfony\Component\Console\Input\StringInput;
 
 class FastCommandEvent extends Event
 {
@@ -35,6 +36,11 @@ class FastCommandEvent extends Event
 
         $this->artisanCommand = $artisanCommand;
         $this->artisanParameters = $artisanParameters;
+    }
+
+    public function artisanCommandName(): string
+    {
+        return (new StringInput($this->artisanCommand))->getFirstArgument() ?? $this->artisanCommand;
     }
 
     /**

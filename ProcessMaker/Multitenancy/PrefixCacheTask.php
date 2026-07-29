@@ -2,11 +2,14 @@
 
 namespace ProcessMaker\Multitenancy;
 
+use Prometheus\Storage\Redis as PrometheusRedis;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\PrefixCacheTask as SpatiePrefixCacheTask;
 
 class PrefixCacheTask extends SpatiePrefixCacheTask
 {
+    private const LANDLORD_PROMETHEUS_PREFIX = 'PROMETHEUS_';
+
     private $originalSettingsPrefix;
 
     public function makeCurrent(IsTenant $tenant): void
@@ -19,6 +22,8 @@ class PrefixCacheTask extends SpatiePrefixCacheTask
         config()->set('cache.stores.cache_settings.prefix', $tenantSettingsPrefix);
         $this->storeName = 'cache_settings';
         $this->setCachePrefix($cachePrefix);
+
+        PrometheusRedis::setPrefix($cachePrefix . self::LANDLORD_PROMETHEUS_PREFIX);
     }
 
     public function forgetCurrent(): void
@@ -28,5 +33,7 @@ class PrefixCacheTask extends SpatiePrefixCacheTask
         config()->set('cache.stores.cache_settings.prefix', $this->originalSettingsPrefix);
         $this->storeName = 'cache_settings';
         $this->setCachePrefix($this->originalPrefix);
+
+        PrometheusRedis::setPrefix(self::LANDLORD_PROMETHEUS_PREFIX);
     }
 }

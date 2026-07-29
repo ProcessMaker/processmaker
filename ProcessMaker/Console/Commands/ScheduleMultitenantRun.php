@@ -63,13 +63,6 @@ class ScheduleMultitenantRun extends Command
 
             throw $e;
         } finally {
-            // Metrics::histogramObserve(
-            //     self::DURATION_METRIC,
-            //     'Duration of schedule:multitenant-run in seconds',
-            //     [],
-            //     self::DURATION_BUCKETS,
-            //     microtime(true) - $startedAt,
-            // );
             $lock->release();
         }
     }

@@ -140,7 +140,7 @@ class SwitchTenant implements SwitchTenantTask
         // url() helper
         app(UrlGenerator::class)->useOrigin($tenant->config['app.url']);
 
-        // NOTE: Cache prefix and cache settings prefix are handled in PrefixCacheTask
+        // NOTE: Cache, cache settings, and Prometheus prefixes are handled in PrefixCacheTask
 
         if (!isset($tenant->config['app.docker_host_url'])) {
             // There is no specific override in the tenant's config so set it to the app url
