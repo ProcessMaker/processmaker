@@ -4,6 +4,7 @@ namespace ProcessMaker\Assets;
 
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Screen;
+use Illuminate\Support\Arr;
 
 class DataSourcesInScreen
 {
