@@ -76,6 +76,7 @@
         "symfony/dependency-injection": "^8.1",
         "symfony/expression-language": "^7.2",
         "symfony/filesystem": "^7.1",
+        "textalk/websocket": "^1.5",
         "twilio/sdk": "^8.3",
         "typo3/class-alias-loader": "^1.2",
         "whichbrowser/parser": "^2.1"
