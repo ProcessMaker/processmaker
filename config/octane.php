@@ -8,7 +8,7 @@ return [
     |
     | 'flush' — Services with mutable state that must be recreated per request.
     |           These singletons will be flushed (re-bound) on each request
-    |           when OCTANE_ENABLED=true.
+    |           automatically while the application runs under Octane.
     |
     | 'warm'  — Services to pre-resolve once when an Octane worker starts,
     |           avoiding lazy-resolution overhead on the first request.
@@ -24,6 +24,8 @@ return [
     ],
 
     'warm' => [
+        ...Laravel\Octane\Octane::defaultServicesToWarm(),
+
         // Services to pre-resolve on worker start
         ProcessMaker\Managers\PackageManager::class,
         ProcessMaker\Managers\LoginManager::class,
