@@ -6,6 +6,7 @@ import { pathToFileURL } from 'url';
 import yaml from '@rollup/plugin-yaml';
 
 const stylesPath = path.resolve(__dirname, 'resources/sass');
+const nm = (...segments) => path.resolve(__dirname, 'node_modules', ...segments);
 
 /**
  * Resolve Webpack-style `~styles/...` imports used in Vue SFC <style lang="scss">.
@@ -83,7 +84,15 @@ export default defineConfig(({ mode }) => {
     resolve: {
       extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
       alias: {
-        vue: path.resolve(__dirname, 'node_modules/vue/dist/vue.esm.js'),
+        vue: nm('vue/dist/vue.esm.js'),
+        // Bare peers imported by CI-linked screen-builder ESM
+        // (/opt/packages/screen-builder/dist/vue-form-builder.es.js)
+        '@processmaker/vue-form-elements': nm('@processmaker/vue-form-elements'),
+        lodash: nm('lodash'),
+        vuex: nm('vuex'),
+        moment: nm('moment'),
+        'moment-timezone': nm('moment-timezone'),
+        'vue-monaco': nm('vue-monaco'),
         styles: stylesPath,
         '~styles': stylesPath,
       },
