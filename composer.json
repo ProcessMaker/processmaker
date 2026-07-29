@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "2026.12.3-RC1",
+    "version": "2026.12.3",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -76,6 +76,7 @@
         "symfony/dependency-injection": "^8.1",
         "symfony/expression-language": "^7.2",
         "symfony/filesystem": "^7.1",
+        "textalk/websocket": "^1.5",
         "twilio/sdk": "^8.3",
         "typo3/class-alias-loader": "^1.2",
         "whichbrowser/parser": "^2.1"
@@ -115,7 +116,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "269ad398",
+            "build": "449111cb",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.10",
@@ -162,10 +163,10 @@
                 "package-ai": "1.16.24",
                 "package-analytics-reporting": "1.11.5",
                 "package-auth": "1.24.19",
-                "package-collections": "2.27.8",
+                "package-collections": "2.27.9",
                 "package-comments": "1.16.4",
                 "package-conversational-forms": "1.15.2",
-                "package-data-sources": "1.34.11",
+                "package-data-sources": "1.34.12",
                 "package-decision-engine": "1.16.3",
                 "package-dynamic-ui": "1.28.5",
                 "package-email-start-event": "1.0.13",
