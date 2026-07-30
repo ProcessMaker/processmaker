@@ -59,11 +59,18 @@ class ScriptMicroserviceServiceTest extends TestCase
         $request = new Request();
         $request->merge([
             'status' => 'error',
-            'message' => 'Test error message',
             'metadata' => [
                 'nonce' => 'test-nonce',
                 'current_user' => $this->user->id,
             ],
+            'exception' => 'TestException',
+            'error_message' => 'Test error message',
+            'error' => [
+                'code' => 'Test error code',
+                'file' => 'Test error file',
+                'line' => 'Test line number',
+                'trace' => 'Test trace',
+            ]
         ]);
 
         $this->service->handle($request);
@@ -71,7 +78,13 @@ class ScriptMicroserviceServiceTest extends TestCase
         Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
             return $event->userId === $this->user->id
                 && $event->status === 500
-                && $event->response['exception'] === 'Test error message'
+                && $event->response['exception'] === 'TestException'
+                && $event->response['message'] === [
+                    'code' => 'Test error code',
+                    'file' => 'Test error file',
+                    'line' => 'Test line number',
+                    'trace' => 'Test trace',
+                ]
                 && $event->nonce === 'test-nonce';
         });
     }

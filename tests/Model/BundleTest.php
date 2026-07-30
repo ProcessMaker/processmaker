@@ -2,10 +2,14 @@
 
 namespace Tests\Model;
 
+use Illuminate\Support\Facades\Storage;
+use ProcessMaker\ImportExport\Exporters\ScreenExporter;
+use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\BundleAsset;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
@@ -76,6 +80,11 @@ class BundleTest extends TestCase
         $bundle = Bundle::factory()->create();
         $bundle->install($payloads, 'update');
         $bundle->savePayloadsToFile($payloads, [0 => []], null);
+        $media = $bundle->newestVersionFile();
+        $media->forgetCustomProperty('settings_payloads_complete');
+        $media->save();
+
+        $this->assertNull($media->refresh()->getCustomProperty('settings_payloads_complete'));
 
         $screen = Screen::where('uuid', $screenUuid)->firstOrFail();
         $screen->title = 'New Screen Name';
@@ -84,5 +93,282 @@ class BundleTest extends TestCase
         $this->assertEquals('New Screen Name', $screen->refresh()->title);
         $bundle->reinstall('update');
         $this->assertEquals('Original Screen Name', $screen->refresh()->title);
+    }
+
+    public function testReinstallUsesNewestSnapshotWhenVersionsMatch()
+    {
+        Storage::fake(config('media-library.disk_name'));
+
+        $screen = Screen::factory()->create(['title' => 'First Snapshot']);
+        $screenUuid = $screen->uuid;
+        $remoteBundle = Bundle::factory()->create(['version' => 1]);
+        $remoteBundle->syncAssets([$screen]);
+        $firstPayloads = $remoteBundle->export();
+
+        $screen->title = 'Second Snapshot';
+        $screen->save();
+        $remoteBundle = $remoteBundle->fresh();
+        $secondPayloads = $remoteBundle->export();
+
+        $remoteBundle->delete();
+        $screen->delete();
+
+        $localBundle = Bundle::factory()->create(['version' => 1]);
+        $localBundle->install($firstPayloads, 'update');
+        $localBundle->savePayloadsToFile($firstPayloads, []);
+
+        $localBundle = $localBundle->fresh();
+        $localBundle->savePayloadsToFile($secondPayloads, []);
+
+        $screen = Screen::where('uuid', $screenUuid)->firstOrFail();
+        $screen->title = 'Local Change';
+        $screen->save();
+
+        $localBundle->reinstall('update');
+
+        $this->assertSame('Second Snapshot', $screen->refresh()->title);
+    }
+
+    public function testReinstallPassesImportingUserIdToExporter()
+    {
+        $screen = Screen::factory()->create();
+        $screenUuid = $screen->uuid;
+        $remoteBundle = Bundle::factory()->create();
+        $remoteBundle->syncAssets([$screen]);
+        $payloads = $remoteBundle->export();
+        $payloads[0]['export'][$screenUuid]['exporter'] = ReinstallContextScreenExporter::class;
+
+        $remoteBundle->delete();
+        $screen->delete();
+
+        $localBundle = Bundle::factory()->create();
+        $localBundle->install($payloads, 'update');
+        $localBundle->savePayloadsToFile($payloads, [0 => []], null);
+
+        $importingUser = User::factory()->create();
+        ReinstallContextScreenExporter::$receivedImportingUserId = null;
+
+        $localBundle->reinstall('update', new Logger($importingUser->id));
+
+        $this->assertSame(
+            $importingUser->id,
+            ReinstallContextScreenExporter::$receivedImportingUserId
+        );
+    }
+
+    public function testSettingPreviewUsesInstalledPayloadMetadata()
+    {
+        Storage::fake(config('media-library.disk_name'));
+
+        $bundle = Bundle::factory()->create(['version' => 1]);
+        $bundle->addSettings('ui_dashboards', json_encode(['id' => [9001, 9002]]));
+        $bundle->addSettings('ui_menus', null);
+        $bundle->savePayloadsToFile([], [[
+            self::settingPayload('dashboard_package', 'dashboard-zulu', 'Zulu Dashboard'),
+            self::settingPayload('menu_package', 'menu-bravo', 'Bravo Menu'),
+            self::settingPayload('dashboard_package', 'dashboard-alpha', 'Alpha Dashboard'),
+            self::settingPayload('menu_package', 'menu-alpha', 'Alpha Menu'),
+        ]]);
+
+        $this->assertTrue($bundle->newestVersionFile()->getCustomProperty('settings_payloads_complete'));
+
+        $this->assertSame([
+            'setting' => 'ui_dashboards',
+            'selection' => 'partial',
+            'available' => true,
+            'items' => [
+                ['key' => 'dashboard-alpha', 'name' => 'Alpha Dashboard'],
+                ['key' => 'dashboard-zulu', 'name' => 'Zulu Dashboard'],
+            ],
+        ], $bundle->settingPreview('ui_dashboards'));
+
+        $this->assertSame([
+            'setting' => 'ui_menus',
+            'selection' => 'all',
+            'available' => true,
+            'items' => [
+                ['key' => 'menu-alpha', 'name' => 'Alpha Menu'],
+                ['key' => 'menu-bravo', 'name' => 'Bravo Menu'],
+            ],
+        ], $bundle->settingPreview('ui_menus'));
+    }
+
+    public function testSettingPreviewReturnsNoneWhenSettingIsNotShared()
+    {
+        $bundle = Bundle::factory()->create();
+
+        $this->assertSame([
+            'setting' => 'ui_dashboards',
+            'selection' => 'none',
+            'available' => true,
+            'items' => [],
+        ], $bundle->settingPreview('ui_dashboards'));
+    }
+
+    public function testSettingPreviewIsUnavailableForUnmarkedLegacySnapshot()
+    {
+        Storage::fake(config('media-library.disk_name'));
+
+        $bundle = Bundle::factory()->create(['version' => 1]);
+        $bundle->addSettings('ui_dashboards', null);
+        $bundle->addSettings('ui_menus', json_encode(['id' => [9001]]));
+        $bundle->addMediaFromString(gzencode(json_encode([
+            self::settingPayload('dashboard_package', 'dashboard-alpha', 'Alpha Dashboard'),
+            self::settingPayload('menu_package', 'menu-alpha', 'Alpha Menu'),
+        ])))
+            ->usingFileName('payloads.json.gz')
+            ->withCustomProperties(['version' => $bundle->version])
+            ->toMediaCollection();
+
+        $this->assertSame([
+            'setting' => 'ui_dashboards',
+            'selection' => 'all',
+            'available' => false,
+            'items' => [],
+        ], $bundle->settingPreview('ui_dashboards'));
+
+        $this->assertSame([
+            'setting' => 'ui_menus',
+            'selection' => 'partial',
+            'available' => false,
+            'items' => [],
+        ], $bundle->settingPreview('ui_menus'));
+    }
+
+    public function testSettingPreviewUsesNewestCompleteSnapshotForSameVersion()
+    {
+        Storage::fake(config('media-library.disk_name'));
+
+        $bundle = Bundle::factory()->create(['version' => 1]);
+        $bundle->addSettings('ui_dashboards', null);
+        $legacyMedia = $bundle->addMediaFromString(gzencode(json_encode([
+            self::settingPayload('dashboard_package', 'dashboard-legacy', 'Legacy Dashboard'),
+        ])))
+            ->usingFileName('payloads.json.gz')
+            ->withCustomProperties(['version' => $bundle->version])
+            ->toMediaCollection();
+
+        $bundle->savePayloadsToFile([
+            self::settingPayload('dashboard_package', 'dashboard-current', 'Current Dashboard'),
+        ], []);
+
+        $completeMedia = $bundle->fresh()->getMedia()->sortByDesc('id')->first();
+
+        $this->assertGreaterThan($legacyMedia->id, $completeMedia->id);
+        $this->assertSame($completeMedia->id, $bundle->fresh()->newestVersionFile()->id);
+        $this->assertSame([
+            'setting' => 'ui_dashboards',
+            'selection' => 'all',
+            'available' => true,
+            'items' => [
+                ['key' => 'dashboard-current', 'name' => 'Current Dashboard'],
+            ],
+        ], $bundle->fresh()->settingPreview('ui_dashboards'));
+    }
+
+    public function testSavingPayloadsKeepsNewestThreeSnapshotsForSameVersion()
+    {
+        Storage::fake(config('media-library.disk_name'));
+
+        $bundle = Bundle::factory()->create(['version' => 1]);
+        $createdMediaIds = [];
+
+        for ($snapshot = 1; $snapshot <= 5; $snapshot++) {
+            $bundle = $bundle->fresh();
+            $bundle->savePayloadsToFile([
+                self::settingPayload(
+                    'dashboard_package',
+                    "dashboard-$snapshot",
+                    "Dashboard $snapshot"
+                ),
+            ], []);
+            $createdMediaIds[] = $bundle->fresh()->getMedia()->max('id');
+        }
+
+        $bundle = $bundle->fresh();
+        $expectedMediaIds = array_reverse(array_slice($createdMediaIds, -3));
+
+        $this->assertCount(3, $bundle->getMedia());
+        $this->assertSame($expectedMediaIds, $bundle->filesSortedByVersion()->pluck('id')->all());
+        $this->assertSame($expectedMediaIds[0], $bundle->newestVersionFile()->id);
+    }
+
+    public function testSettingPreviewReturnsAvailableEmptyListForCompleteSnapshot()
+    {
+        Storage::fake(config('media-library.disk_name'));
+
+        $bundle = Bundle::factory()->create(['version' => 1]);
+        $bundle->addSettings('ui_dashboards', null);
+        $bundle->addSettings('ui_menus', null);
+        $bundle->savePayloadsToFile([], []);
+
+        $this->assertSame([
+            'setting' => 'ui_dashboards',
+            'selection' => 'all',
+            'available' => true,
+            'items' => [],
+        ], $bundle->settingPreview('ui_dashboards'));
+
+        $this->assertSame([
+            'setting' => 'ui_menus',
+            'selection' => 'all',
+            'available' => true,
+            'items' => [],
+        ], $bundle->settingPreview('ui_menus'));
+    }
+
+    public function testSettingPreviewIsUnavailableWithoutAValidSnapshot()
+    {
+        Storage::fake(config('media-library.disk_name'));
+
+        $bundleWithoutSnapshot = Bundle::factory()->create();
+        $bundleWithoutSnapshot->addSettings('ui_dashboards', null);
+
+        $this->assertSame([
+            'setting' => 'ui_dashboards',
+            'selection' => 'all',
+            'available' => false,
+            'items' => [],
+        ], $bundleWithoutSnapshot->settingPreview('ui_dashboards'));
+
+        $bundleWithInvalidSnapshot = Bundle::factory()->create(['version' => 1]);
+        $bundleWithInvalidSnapshot->addSettings('ui_menus', json_encode(['id' => [9001]]));
+        $bundleWithInvalidSnapshot->addMediaFromString(gzencode('{invalid json'))
+            ->usingFileName('payloads.json.gz')
+            ->withCustomProperties([
+                'version' => $bundleWithInvalidSnapshot->version,
+                'settings_payloads_complete' => true,
+            ])
+            ->toMediaCollection();
+
+        $this->assertSame([
+            'setting' => 'ui_menus',
+            'selection' => 'partial',
+            'available' => false,
+            'items' => [],
+        ], $bundleWithInvalidSnapshot->settingPreview('ui_menus'));
+    }
+
+    private static function settingPayload(string $type, string $key, string $name): array
+    {
+        return [
+            'type' => $type,
+            'version' => '2',
+            'root' => $key,
+            'name' => $name,
+            'export' => [],
+        ];
+    }
+}
+
+class ReinstallContextScreenExporter extends ScreenExporter
+{
+    public static ?int $receivedImportingUserId = null;
+
+    public function import(): bool
+    {
+        self::$receivedImportingUserId = $this->options->importingUserId;
+
+        return parent::import();
     }
 }
