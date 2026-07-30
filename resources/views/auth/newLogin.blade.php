@@ -10,7 +10,10 @@
   <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
   <title>{{ __('Login') }} - {{ __('ProcessMaker') }}</title>
   <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-  <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
+  @include('auth.partials.login-critical-styles')
+  @include('auth.partials.auth-styles')
+  @include('auth.partials.login-extra-styles')
+  <link rel="icon" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
   @if (hasPackage('package-accessibility'))
     @include('package-accessibility::userway')
   @endif
@@ -18,41 +21,15 @@
 </head>
 <body>
   <div class="background-cover">
-    <img class="background-wave-left" src="/img/gradient-wave-left.svg">
-    <img class="background-wave-right" src="/img/gradient-wave-right.svg">
   </div>
+  @include('auth.partials.language-selector')
   <div class="content" id="app">
     <div class="d-flex flex-column" style="min-height: 100vh">
       <div class="flex-fill small-screen">
-        <div id="language-selector"
-          class="d-flex justify-content-end position-absolute language-button-container">
-          <language-selector-button
-            id="language-login"
-            :type="'login'"
-            :show-language-code="true">
-          </language-selector-button>
-        </div>
-        <div class="d-flex justify-content-center align-items-center h-100-vh" align-v="center">
-          <div class="col-md-6 col-lg-6 col-xl-7 d-none d-lg-block">
-          @php
-            $isMobile = (
-              isset($_SERVER['HTTP_USER_AGENT'])
-              && \ProcessMaker\Helpers\MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])
-            ) ? true : false;
-          @endphp
-          @if (!$isMobile)
-            <div class="slogan">
-              <h2 class="title">{{ __("Business process automation") }}</h2>
-              <h1 class="title">{{ __("made") }} <span class="emphasis">{{ __("efficient") }}</span></h1>
-              <div class="subhead">
-                {{ __("All the tools to empower anyone to quickly automate processes, from custom forms to unique enterprise workflows and complex business rules.") }}
-              </div>
-            </div>
-          @endif
-          </div>
-          <div class="col-md-6 col-lg-6 col-xl-4 col-xxl-3">
-            <div class="card card-body p-2 small-screen login-container">
-              <div align="center" class="p-3 pb-4">
+        <div class="login-layout h-100-vh">
+          <div class="login-panel small-screen">
+            <div class="card card-body login-container">
+              <div class="login-logo">
                 @component('components.logo')
                 @endcomponent
               </div>
@@ -79,7 +56,13 @@
                   </div>
                 </div>
                 <div class="form-group mb-3">
-                  <label for="password">{{ __('Password') }}</label>
+                  <div class="password-field-header">
+                    <label for="password">{{ __('Password') }}</label>
+                    <span id="capsLockWarning" class="caps-lock-warning" hidden aria-live="polite">
+                      <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                      {{ __('Caps lock is on') }}
+                    </span>
+                  </div>
                   <div class="password-container">
                     <input id="password" type="password" class="form-control form-control-login {{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('Enter your password')}}" required>
                     <i class="fa fa-eye" id="togglePassword"></i>
@@ -90,31 +73,62 @@
                     @endif
                   </div>
                 </div>
-                <div class="row justify-content-between mb-3">
-                  <div class="form-check mb-0">
-                    <label class="form-check-label">
-                    <input id="remember" class="form-check-input" type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }} aria-label="{{__('Remember me')}}">
-                    {{ __('Remember me') }}</label>
-                  </div>
-                  <div class="form-group mb-0">
-                    <a href="{{ route('password.request') }}">
-                      {{ __('Forgot Password?') }}
-                    </a>
-                  </div>
+                <div class="login-options mb-3">
+                  <label class="login-remember" for="remember">
+                    <span class="login-toggle">
+                      <input
+                        id="remember"
+                        class="login-remember-input"
+                        type="checkbox"
+                        name="remember"
+                        {{ old('remember') ? 'checked' : '' }}>
+                      <span class="login-toggle-track" aria-hidden="true">
+                        <span class="login-toggle-knob"></span>
+                      </span>
+                    </span>
+                    <span class="login-remember-text">{{ __('Remember me') }}</span>
+                  </label>
+                  <a class="forgot-password-link" href="{{ route('password.request') }}">
+                    {{ __('Forgot Password?') }}
+                  </a>
                 </div>
                 <div class="form-group mb-0">
-                  <button type="submit" name="login" class="btn btn-primary btn-block button-login form-control-login" dusk="login">{{ __('Sign In') }}</button>
+                  <button type="submit" name="login" class="btn btn-primary btn-block button-login button-login-uppercase" dusk="login">{{ __('Login') }}</button>
                 </div>
               </form>
               @endif
-              @foreach ($addons as $addon)
-                @include($addon->view, $addon->data)
-              @endforeach
+              @if (count($addons))
+              <div class="login-addons">
+                @foreach ($addons as $addon)
+                  @include($addon->view, $addon->data)
+                @endforeach
+              </div>
+              @endif
               @if(isset($footer))
                 {!! $footer !!}
               @endif
             </div>
           </div>
+          @php
+            $isMobile = (
+              isset($_SERVER['HTTP_USER_AGENT'])
+              && \ProcessMaker\Helpers\MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])
+            ) ? true : false;
+          @endphp
+          @if (!$isMobile)
+          <div class="slogan-panel d-none d-lg-flex">
+            <div class="slogan">
+              <div class="head-text">{{ __("INTELLIGENT BUSINESS ORCHESTRATION") }}</div>
+              <div class="display">
+                <span class="display-line">{{ __("Built to Master") }}</span>
+                <span class="display-line display-complexity">{{ __("Complexity") }}</span>
+              </div>
+              <div class="subtext">
+                {{ __("Orchestrate workflows, systems, and AI at a moment’s notice. Turn constant change into your greatest competitive advantage by giving your team the freedom to build, test, and iterate in real time.") }}
+              </div>
+            </div>
+          </div>
+          @endif
         </div>
       </div>
       @php
@@ -136,182 +150,29 @@
 
   const togglePassword = document.querySelector('#togglePassword');
   const password = document.querySelector('#password');
+  const capsLockWarning = document.querySelector('#capsLockWarning');
 
   togglePassword.addEventListener('click', function (e) {
     const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
     password.setAttribute('type', type);
     this.classList.toggle('fa-eye-slash');
-});
-</script>
-<script src="{{ mix('builds/login/js/manifest.js') }}"></script>
-<script src="{{ mix('builds/login/js/vendor.js') }}"></script>
-<script src="{{ mix('builds/login/js/app-login.js') }}"></script>
-@foreach(GlobalScripts::getScripts() as $script)
-  @if (strpos($script, '/vendor/processmaker/packages/package-dynamic-ui/js/global.js') !== 0)
-    <script src="{{$script}}"></script>
-  @endif
-@endforeach
-<script>
-  window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
-</script>
-<script src="{{ mix('js/translations/index.js') }}"></script>
-<style>
-  .row {
-    display: flex;
-    flex-wrap: wrap;
-    margin-right: 0;
-    margin-left: 0;
-  }
-  .card {
-    /* top: 50%;
-    position: relative; */
-    border-radius: 16px;
-  }
-  .login-logo-custom,
-  .login-logo-default {
-    width: 60%;
-  }
-  .form {
-    padding: 0 17px 17px 17px;
-  }
-  .formContainer {
-    width: 504px;
-  }
-  .formContainer .form {
-    margin-top: 85px;
-    text-align: left
-  }
-  .background-cover {
-    background-color: black;
-    background-repeat: no-repeat;
-    background-size: cover;
-    position: fixed;
-    height: 100%;
-    top: 0;
-    z-index: -1;
-    left: 0;
-    width: 100%;
-  }
+  });
 
-  .form-control-login {
-    height: 45px;
-    padding-bottom: 0;
-    padding-top: 0;
-  }
-
-  .background-wave-left {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-  }
-
-  .background-wave-right {
-      position: fixed;
-      top: 0;
-      right: 0;
-      height: 50%;
-  }
-
-  body {
-    background: transparent;
-  }
-  .slogan {
-    max-width: 600px;
-    margin-left: 10%;
-    font-family: 'Poppins', sans-serif;
-    display: inline-flex;
-    flex-direction: column;
-    align-items: flex-start;
-    text-transform: uppercase;
-    text-shadow: 0 0 20px rgba(0, 0, 0, 0.95);
-  }
-
-  .slogan .title {
-    font-weight: 900;
-    color: #ffffff;
-  }
-
-  .slogan h2.title {
-      font-size: 1.4rem;
-  }
-
-  .slogan h1.title {
-      font-size: 3.4rem;
-  }
-
-  .slogan .emphasis{
-    color: #3982ff;
-  }
-  .slogan .subhead {
-    color: #ffffff;
-    font-size: 1.23rem;
-    font-weight: 100;
-  }
-  .footer {
-    margin-left: 10%;
-  }
-  #togglePassword{
-    position: absolute;
-    top: 32%;
-    right: 4%;
-    cursor: pointer;
-    color: #51585E;
-  }
-  .password-container {
-    position: relative;
-  }
-  .head-text {
-    color: #FFF;
-    font-size: 46.067px;
-    font-weight: 600;
-    font-family: 'Poppins', sans-serif;
-  }
-  .display {
-    color: #FFC107;
-    font-size: 61.987px;
-    font-weight: 600;
-  }
-  .superscript {
-    color: #FFF;
-    position: relative;
-    top: -1.5em;
-    font-weight: 600;
-    font-family: 'Poppins', sans-serif;
-  }
-  .subtext {
-    width: 60%;
-    color: #FFF;
-    font-size: 24.017px;
-    font-family: 'Poppins', sans-serif;
-  }
-
-  .button-login {
-      text-transform: none;
-  }
-
-  .login-container {
-    max-width: 500px;
-  }
-  @media (max-width: 767px) {
-    .small-screen {
-      border: 0;
-      background: white;
+  function updateCapsLockWarning(event) {
+    if (!password || !capsLockWarning || !event.getModifierState) {
+      return;
     }
-    .small-screen.login-container {
-      max-width: 100%;
-    }
-}
 
-body {
-  height: unset;
-}
-.h-100-vh {
-  height: 100vh;
-}
-.language-button-container {
-  right: 2.4rem;
-  top: 2.4rem;
-  z-index: 1041;
-}
-</style>
+    capsLockWarning.hidden = !event.getModifierState('CapsLock');
+  }
+
+  if (password && capsLockWarning) {
+    password.addEventListener('keydown', updateCapsLockWarning);
+    password.addEventListener('keyup', updateCapsLockWarning);
+    password.addEventListener('blur', function () {
+      capsLockWarning.hidden = true;
+    });
+  }
+</script>
+@include('auth.partials.auth-language-scripts')
 </html>

@@ -1,37 +1,15 @@
-@extends('layouts.minimal')
+@extends('auth.layouts.auth')
+
+@section('title')
+{{ __('Success!') }}
+@endsection
 
 @section('content')
-<div align="center">
-  <div class="formContainer">
-    @component('components.logo')
-    @endcomponent
-    <div class="form" align="center">
-      <div class="form-group">
-        <small>
-          <strong>{{__('Success!')}}</strong> {{__('Your password has been updated.')}}
-        </small>
-      </div>
-      <div class="form-group">
-        <a href="{{route('logout')}}" class="btn btn-success">{{__('Return to Login')}}</a>
-      </div>
-    </div>
-  </div>
+<div class="auth-success-message">
+  <strong>{{ __('Success!') }}</strong>
+  {{ __('Your password has been updated.') }}
 </div>
-
-@endsection
-@section('css')
-<style media="screen">
-  .formContainer {
-    width: 400px;
-  }
-
-  .formContainer .form {
-    margin-top: 114px;
-    text-align: center
-  }
-
-  .formContainer a {
-    margin-top: 14px;
-  }
-</style>
+<div class="form-group mb-0">
+  <a href="{{ route('logout') }}" class="btn btn-primary btn-block button-login">{{ __('Return to Login') }}</a>
+</div>
 @endsection

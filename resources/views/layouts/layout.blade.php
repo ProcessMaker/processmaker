@@ -39,7 +39,7 @@
     @endif
     @include('layouts.common-meta')
     <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
+    <link rel="icon" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
     <link href="{{ mix('css/tailwind.css') }}" rel="stylesheet">
@@ -75,6 +75,24 @@
           window.Processmaker.broadcasting.wsHost = "{{config('broadcasting.connections.pusher.options.host')}}";
           window.Processmaker.broadcasting.wsPort = "{{config('broadcasting.connections.pusher.options.port')}}";
           window.Processmaker.broadcasting.wssPort = "{{config('broadcasting.connections.pusher.options.port')}}";
+        @endif
+      @endif
+      @if(config('script-runner-microservice.enabled'))
+        window.Processmaker.script_microservice = {
+          enabled : {{ config('script-runner-microservice.enabled', false) }},
+          broadcasting : {
+                broadcaster: "pusher",
+                key: "{{config('script-runner-microservice.broadcasting.app_key')}}",
+                cluster: "{{config('script-runner-microservice.broadcasting.cluster')}}",
+                forceTLS: {{config('script-runner-microservice.broadcasting.scheme') === 'https' ? 'true' : 'false'}},
+                enabledTransports: ['ws', 'wss'],
+                disableStats: true,
+          }
+        };
+        @if(config('script-runner-microservice.broadcasting.host'))
+          window.Processmaker.script_microservice.broadcasting.wsHost = "{{config('script-runner-microservice.broadcasting.host')}}";
+          window.Processmaker.script_microservice.broadcasting.wsPort = "{{config('script-runner-microservice.broadcasting.port')}}";
+          window.Processmaker.script_microservice.broadcasting.wssPort = "{{config('script-runner-microservice.broadcasting.port')}}";
         @endif
       @endif
     @endif
