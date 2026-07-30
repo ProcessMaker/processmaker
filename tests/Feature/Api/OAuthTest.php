@@ -10,28 +10,31 @@ class OAuthTest extends TestCase
 {
     use RequestHelper;
 
+    private const OAUTH_CLIENTS_URL = '/oauth/clients';
+    private const OAUTH_CLIENT_URL = '/oauth/clients/';
+
     public $json = null;
 
     public function withUserSetup()
     {
         $response = $this->actingAs($this->user)
-                         ->json('POST', '/oauth/clients', []);
+                         ->json('POST', self::OAUTH_CLIENTS_URL, []);
 
         $this->assertEquals('The Name field is required.', $response->json()['errors']['name'][0]);
         $this->assertEquals('The Types field is required.', $response->json()['errors']['types'][0]);
 
         $response = $this->actingAs($this->user)
-                         ->json('POST', '/oauth/clients', ['name' => 'foo', 'types' => []]);
+                         ->json('POST', self::OAUTH_CLIENTS_URL, ['name' => 'foo', 'types' => []]);
 
         $this->assertEquals('The Auth-Client must have at least 1 item chosen.', $response->json()['errors']['types'][0]);
 
         $response = $this->actingAs($this->user)
-                         ->json('POST', '/oauth/clients', ['name' => 'foo', 'types' => ['authorization_code_grant']]);
+                         ->json('POST', self::OAUTH_CLIENTS_URL, ['name' => 'foo', 'types' => ['authorization_code_grant']]);
 
         $this->assertEquals('The Redirect field is required.', $response->json()['errors']['redirect'][0]);
 
         $response = $this->actingAs($this->user)
-                         ->json('POST', '/oauth/clients', ['name' => 'test', 'redirect' => 'http://test.com', 'types' => ['authorization_code_grant']]);
+                         ->json('POST', self::OAUTH_CLIENTS_URL, ['name' => 'test', 'redirect' => 'http://test.com', 'types' => ['authorization_code_grant']]);
 
         $response->assertStatus(201);
         $this->json = $response->json();
@@ -45,7 +48,7 @@ class OAuthTest extends TestCase
     public function testCreateAndList()
     {
         $response = $this->actingAs($this->user)
-                         ->json('GET', '/oauth/clients');
+                         ->json('GET', self::OAUTH_CLIENTS_URL);
 
         $response->assertStatus(200);
         $json = $response->json()['data'];
@@ -66,7 +69,7 @@ class OAuthTest extends TestCase
         $response = $this->actingAs($this->user)
                     ->json(
                         'PUT',
-                        '/oauth/clients/' . $this->json['id'],
+                        self::OAUTH_CLIENT_URL . $this->json['id'],
                         [
                             'name' => 'test123',
                             'redirect' => 'http://test.com/foo',
@@ -76,7 +79,7 @@ class OAuthTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->actingAs($this->user)
-                         ->json('GET', '/oauth/clients');
+                         ->json('GET', self::OAUTH_CLIENTS_URL);
 
         $json = $response->json()['data'];
         $this->assertEquals($this->json['id'], $json[0]['id']);
@@ -95,30 +98,56 @@ class OAuthTest extends TestCase
     public function testDelete()
     {
         $this->actingAs($this->user)
-             ->json('POST', '/oauth/clients', [
+             ->json('POST', self::OAUTH_CLIENTS_URL, [
                  'name' => 'other',
                  'redirect' => 'http://other.net',
                  'types' => ['authorization_code_grant'],
              ]);
 
         $response = $this->actingAs($this->user)
-                         ->json('GET', '/oauth/clients');
+                         ->json('GET', self::OAUTH_CLIENTS_URL);
 
         $this->assertCount(2, $response->json()['data']);
 
         $response = $this->actingAs($this->user)
                     ->json(
                         'DELETE',
-                        '/oauth/clients/' . $this->json['id']
+                        self::OAUTH_CLIENT_URL . $this->json['id']
                     );
         $response->assertStatus(Response::HTTP_NO_CONTENT);
 
         $response = $this->actingAs($this->user)
-                        ->json('GET', '/oauth/clients');
+                        ->json('GET', self::OAUTH_CLIENTS_URL);
 
         $json = $response->json()['data'];
         $this->assertCount(1, $json);
         $this->assertEquals('other', $json[0]['name']);
         $this->assertEquals('http://other.net', $json[0]['redirect']);
+    }
+
+    public function testEditAndDeleteGlobalClient()
+    {
+        $response = $this->actingAs($this->user)
+            ->json('POST', self::OAUTH_CLIENTS_URL, [
+                'name' => 'global password client',
+                'types' => ['password_client'],
+            ]);
+
+        $response->assertStatus(Response::HTTP_CREATED);
+        $clientId = $response->json('id');
+
+        $response = $this->actingAs($this->user)
+            ->json('PUT', self::OAUTH_CLIENT_URL . $clientId, [
+                'name' => 'updated global password client',
+                'types' => ['password_client'],
+            ]);
+
+        $response->assertStatus(Response::HTTP_OK);
+        $this->assertEquals('updated global password client', $response->json('name'));
+
+        $response = $this->actingAs($this->user)
+            ->json('DELETE', self::OAUTH_CLIENT_URL . $clientId);
+
+        $response->assertStatus(Response::HTTP_NO_CONTENT);
     }
 }

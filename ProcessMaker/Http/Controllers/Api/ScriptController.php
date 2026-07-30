@@ -159,13 +159,11 @@ class ScriptController extends Controller
      *           @OA\JsonContent(
      *             @OA\Property(
      *                 property="data",
-     *                 type="array",
-     *                 @OA\Items (type="object"),
+     *                 type="object",
      *             ),
      *             @OA\Property(
      *                 property="config",
-     *                 type="array",
-     *                 @OA\Items (type="object"),
+     *                 type="object",
      *             ),
      *             @OA\Property(
      *                 property="code",
@@ -187,8 +185,8 @@ class ScriptController extends Controller
      */
     public function preview(Request $request, Script $script)
     {
-        $data = json_decode($request->get('data'), true) ?: [];
-        $config = json_decode($request->get('config'), true) ?: [];
+        $data = $this->getRequestArray($request->get('data'));
+        $config = $this->getRequestArray($request->get('config'));
         $code = $request->get('code');
         $nonce = $request->get('nonce');
 
@@ -215,13 +213,11 @@ class ScriptController extends Controller
      *           @OA\JsonContent(
      *             @OA\Property(
      *                 property="data",
-     *                 type="array",
-     *                 @OA\Items (type="object"),
+     *                 type="object",
      *             ),
      *             @OA\Property(
      *                 property="config",
-     *                 type="array",
-     *                 @OA\Items (type="object"),
+     *                 type="object",
      *             ),
      *             @OA\Property(
      *                 property="sync",
@@ -245,8 +241,8 @@ class ScriptController extends Controller
             $processRequest = ProcessRequestToken::findOrFail($request->task_id)->processRequest;
             $script = $script->versionFor($processRequest);
         }
-        $data = json_decode($request->get('data'), true) ?: [];
-        $config = json_decode($request->get('config'), true) ?: [];
+        $data = $this->getRequestArray($request->get('data'));
+        $config = $this->getRequestArray($request->get('config'));
         $watcher = $request->get('watcher', uniqid('scr', true));
         $code = $script->code;
 
@@ -560,5 +556,30 @@ class ScriptController extends Controller
         $script->deleteDraft();
 
         return response([], 204);
+    }
+
+    /**
+     * Normalize script input before executing the script.
+     * Script data and config must be an object (associative array), the script
+     * microservice rejects list payloads like [{}] with a 422.
+     */
+    private function getRequestArray($value): array
+    {
+        if (is_string($value)) {
+            $value = json_decode($value, true);
+        }
+
+        $result = [];
+
+        if (is_array($value)) {
+            if (!array_is_list($value)) {
+                $result = $value;
+            } elseif (count($value) === 1 && is_array($value[0])) {
+                // Unwrap [{}] or [{"key": "value"}] to object form; ignore other lists.
+                $result = $value[0];
+            }
+        }
+
+        return $result;
     }
 }
