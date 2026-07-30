@@ -89,7 +89,7 @@ class SwitchTenant implements SwitchTenantTask
     {
         $this->setEnvironmentVariable('APP_URL', $tenant->config['app.url']);
 
-        $this->setConfig('app.instance', $this->landlordConfig('app.instance') . '_' . $tenant->id);
+        $this->setConfig('app.instance', $tenant->database);
         $this->setConfig('app.url', $tenant->config['app.url']);
 
         // Microservice callback url
