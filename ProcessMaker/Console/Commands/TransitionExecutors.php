@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Services\ScriptMicroserviceService;
+use WebSocket\Client;
 
 class TransitionExecutors extends Command
 {
@@ -17,8 +18,9 @@ class TransitionExecutors extends Command
      *
      * @var string
      */
-    protected $signature = 'processmaker:transition-executors
-                            {uuid : The script executor UUID, or "all"}';
+    protected $signature = 'processmaker:transition-executors 
+                            {--uuid=* : The script executor UUID}
+                            {--T|timeout= : The timeout for the broadcasting wait}';
 
     /**
      * The console command description.
@@ -39,11 +41,28 @@ class TransitionExecutors extends Command
      */
     public function handle(): int
     {
-        $executors = $this->resolveExecutors($this->argument('uuid'));
+        $key = config('script-runner-microservice.broadcasting.app_key');
+        $host = config('script-runner-microservice.broadcasting.host');
 
-        if ($executors === null) {
+        $url = sprintf(
+            'wss://%s/app/%s?protocol=7&client=php&version=1.0',
+            $host,
+            $key
+        );
+
+        // Get the optional timeout
+        $timeout = $this->option('timeout') ?? 300;
+
+        if ((int) $timeout <= 60) {
+            $this->error('Timeout must be a greater or equal to 60');
+
             return 1;
         }
+
+        // Get the optional uuid
+        $uuid = $this->option('uuid');
+
+        $executors = $this->getExecutors($uuid);
 
         if ($executors->isEmpty()) {
             $this->warn('No script executors found to transition.');
@@ -51,122 +70,107 @@ class TransitionExecutors extends Command
             return 0;
         }
 
-        $isAll = $this->argument('uuid') === 'all';
-        $remaining = $executors->count();
-        $processed = 0;
+        $client = new Client($url);
+        $client->setTimeout($timeout);
 
-        foreach ($executors as $executor) {
-            $remaining--;
-            $this->info("Transitioning executor {$executor->uuid} ({$executor->language}) to the microservice...");
+        $index = 0;
+        $total = $executors->count();
 
-            try {
-                $response = $this->scriptMicroserviceService->updateCustomExecutor($executor);
-                Log::debug('Response', ['response' => $response]);
-                $status = strtolower((string) ($response['status'] ?? ''));
+        if ($total > 0) {
+            do {
+                $this->info("Transitioning executor {$executors[$index]->uuid} ({$executors[$index]->language}) to the microservice...");
 
-                if (in_array($status, ['error', 'failed', 'failure'], true) && !isset($response['executor_id'])) {
-                    throw new \RuntimeException(json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) ?: 'Transition failed');
+                try {
+                    $response = $this->scriptMicroserviceService->updateCustomExecutor($executors[$index]);
+                    Log::debug('Response', ['response' => $response]);
+                    $status = strtolower((string) ($response['status'] ?? ''));
+
+                    // Send subscription message (Pusher protocol example)
+                    $client->send(json_encode([
+                        'event' => 'pusher:subscribe',
+                        'data' => [
+                            'channel' => 'build-image-' . $executors[$index]->uuid,
+                        ],
+                    ]));
+
+                    $running = true;
+                    $error = false;
+                    // Listen for messages
+                    while ($running) {
+                        $message = json_decode($client->receive(), true);
+                        $data = $message['data'] ?? '';
+                        switch ($message['event']) {
+                            case 'build-image':
+                                $this->line($data);
+                                break;
+                            case 'build-finished':
+                                $this->info("Build finished for executor {$executors[$index]->uuid} - {$data}");
+                                $running = false;
+                                break;
+                            case 'build-error':
+                                $this->error("Error occurred while building image for executor {$executors[$index]->uuid} - {$data}");
+                                $error = true;
+                                $running = false;
+                                break;
+                        }
+                    }
+
+                    if (!$error) {
+                        $this->info("Executor {$executors[$index]->uuid} transitioned successfully." . PHP_EOL);
+                    }
+                } catch (RequestException $e) {
+                    $this->error("Request failed for executor {$executors[$index]->uuid}");
+                    $this->line(PHP_EOL);
+                    $this->line($e->response?->body() ?: $e->getMessage());
+                } catch (\Throwable $e) {
+                    $this->error("Transition failed for executor {$executors[$index]->uuid}");
+                    $this->line(PHP_EOL);
+                    $this->line($e->getMessage());
                 }
-            } catch (RequestException $e) {
-                $this->error("Transition failed for executor {$executor->uuid}");
-                $this->line($e->response?->body() ?: $e->getMessage());
-                if ($isAll && $remaining > 0) {
-                    $this->warn("Stopping: {$remaining} remaining executor(s) were not processed.");
-                }
 
-                return 1;
-            } catch (\Throwable $e) {
-                $this->error("Transition failed for executor {$executor->uuid}");
-                $this->line($e->getMessage());
-                if ($isAll && $remaining > 0) {
-                    $this->warn("Stopping: {$remaining} remaining executor(s) were not processed.");
-                }
-
-                return 1;
-            }
-
-            $this->info("Executor {$executor->uuid} transitioned successfully.");
-            $processed++;
-        }
-
-        if ($isAll) {
-            $this->info("All script executors transitioned successfully. ({$processed} processed)");
+                $client->close();
+                $index++;
+            } while ($index < $total);
         }
 
         return 0;
     }
 
-    /**
-     * Resolve executors that should be transitioned.
-     *
-     * Includes:
-     * - type = custom
-     * - type null (or unset) that are NOT the default/first executor for their language
-     *
-     * Excludes:
-     * - default package executors (first row per language)
-     *
-     * @return Collection<int, ScriptExecutor>|null Null when the request is invalid.
-     */
-    private function resolveExecutors(string $uuid): ?Collection
+    private function getExecutors($uuid): Collection
     {
-        if ($uuid === 'all') {
-            return ScriptExecutor::query()
-                ->orderBy('id')
-                ->get()
-                ->filter(fn (ScriptExecutor $executor) => $this->shouldTransition($executor))
-                ->values();
+        $query = ScriptExecutor::query()
+            ->where('is_system', 0)
+            ->where(function ($query) {
+                $query
+                    ->whereNotIn('title', [
+                        'PHP Executor',
+                        'Node Executor',
+                        'Python Executor',
+                        'C# Executor',
+                        'Java Executor',
+                    ])
+                    ->orWhereNotIn('description', [
+                        'Default PHP Executor',
+                        'Default Javascript/Node Executor',
+                        'Default Python Executor',
+                        'Default C# Executor',
+                        'Default Java Executor',
+                    ]);
+            })
+            ->whereNotIn('language', ['php-nayra', 'lua', 'javascript-ssr', 'sql'])
+            ->whereNotNull('config')
+            ->where(function ($query) {
+                $query
+                    ->where('type', ScriptExecutorType::Custom)
+                    ->orWhereNull('type');
+            });
+
+        if (is_array($uuid) && !empty($uuid)) {
+            $query->whereIn('uuid', $uuid);
+        } elseif (is_string($uuid)) {
+            $query->where('uuid', $uuid);
         }
 
-        if (!$this->isValidUuid($uuid)) {
-            $this->error('Invalid uuid. Provide a script executor UUID or "all".');
-
-            return null;
-        }
-
-        $executor = ScriptExecutor::where('uuid', $uuid)->first();
-
-        if (!$executor) {
-            $this->error("Script executor [{$uuid}] not found.");
-
-            return null;
-        }
-
-        if (!$this->shouldTransition($executor)) {
-            $this->error("Script executor [{$uuid}] is a default/system executor and cannot be transitioned.");
-
-            return null;
-        }
-
-        return new Collection([$executor]);
-    }
-
-    /**
-     * Whether this executor should be migrated to the microservice.
-     *
-     * Custom executors always qualify. Others qualify only when they are not
-     * the default (first installed) executor for their language.
-     */
-    private function shouldTransition(ScriptExecutor $executor): bool
-    {
-        if ($executor->type === ScriptExecutorType::Custom) {
-            return true;
-        }
-
-        $initial = ScriptExecutor::query()
-            ->where('language', $executor->language)
-            ->orderBy('created_at')
-            ->orderBy('id')
-            ->first();
-
-        return !$initial || (int) $initial->id !== (int) $executor->id;
-    }
-
-    private function isValidUuid(string $uuid): bool
-    {
-        return (bool) preg_match(
-            '/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
-            $uuid
-        );
+        return $query->get();
     }
 }
