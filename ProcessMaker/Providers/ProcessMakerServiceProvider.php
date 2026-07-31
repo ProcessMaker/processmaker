@@ -75,9 +75,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
     // Track the query time for each request
     private static $queryTime = 0;
 
-    // Track the landlord values for multitenancy
-    private static $landlordValues = null;
-
     public function boot(): void
     {
         // Track the start time for service providers boot
