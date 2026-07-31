@@ -2,13 +2,17 @@
 
 namespace Tests\Feature\Console;
 
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
+use Mockery;
+use ProcessMaker\Console\Commands\TransitionExecutors;
 use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\ScriptExecutorVersion;
 use ProcessMaker\Services\ScriptMicroserviceService;
 use Tests\TestCase;
+use WebSocket\Client;
 
 class TransitionExecutorsTest extends TestCase
 {
@@ -20,272 +24,345 @@ class TransitionExecutorsTest extends TestCase
         ScriptExecutor::where('id', '>', 0)->delete();
 
         // Command must work even when the microservice feature flag is off.
-        config(['script-runner-microservice.enabled' => false]);
+        config([
+            'script-runner-microservice.enabled' => false,
+            'script-runner-microservice.broadcasting.app_key' => 'test-app-key',
+            'script-runner-microservice.broadcasting.host' => 'broadcast.test',
+        ]);
     }
 
-    public function testInvalidUuidFails(): void
+    public function testTimeoutMustBeGreaterThanSixty(): void
     {
         $this->mock(ScriptMicroserviceService::class, function ($mock) {
             $mock->shouldNotReceive('updateCustomExecutor');
         });
 
-        $this->artisan('processmaker:transition-executors', ['uuid' => 'not-a-uuid'])
-            ->expectsOutput('Invalid uuid. Provide a script executor UUID or "all".')
+        $this->artisan('processmaker:transition-executors', ['--timeout' => 60])
+            ->expectsOutput('Timeout must be a greater or equal to 60')
             ->assertFailed();
     }
 
-    public function testNumericIdIsRejected(): void
+    public function testWarnsWhenNoExecutorsFound(): void
     {
         $this->mock(ScriptMicroserviceService::class, function ($mock) {
             $mock->shouldNotReceive('updateCustomExecutor');
         });
 
-        $this->artisan('processmaker:transition-executors', ['uuid' => '5'])
-            ->expectsOutput('Invalid uuid. Provide a script executor UUID or "all".')
-            ->assertFailed();
+        $this->artisan('processmaker:transition-executors')
+            ->expectsOutput('No script executors found to transition.')
+            ->assertSuccessful();
     }
 
-    public function testMissingExecutorFails(): void
+    public function testSkipsDefaultSystemAndUnsupportedExecutors(): void
     {
-        $this->mock(ScriptMicroserviceService::class, function ($mock) {
-            $mock->shouldNotReceive('updateCustomExecutor');
-        });
-
-        $missingUuid = '00000000-0000-4000-8000-000000000099';
-
-        $this->artisan('processmaker:transition-executors', ['uuid' => $missingUuid])
-            ->expectsOutput("Script executor [{$missingUuid}] not found.")
-            ->assertFailed();
-    }
-
-    public function testDefaultExecutorFails(): void
-    {
-        $default = ScriptExecutor::factory()->create([
-            'language' => 'php',
+        ScriptExecutor::factory()->create([
             'title' => 'PHP Executor',
-            'type' => null,
-        ]);
-
-        $this->mock(ScriptMicroserviceService::class, function ($mock) {
-            $mock->shouldNotReceive('updateCustomExecutor');
-        });
-
-        $this->artisan('processmaker:transition-executors', ['uuid' => $default->uuid])
-            ->expectsOutput("Script executor [{$default->uuid}] is a default/system executor and cannot be transitioned.")
-            ->assertFailed();
-    }
-
-    public function testAllSkipsDefaultsAndIncludesCustomAndNonDefaultNullType(): void
-    {
-        $defaultPhp = ScriptExecutor::factory()->create([
+            'description' => 'Default PHP Executor',
             'language' => 'php',
-            'title' => 'Default PHP',
+            'config' => 'RUN echo default',
             'type' => null,
-            'created_at' => now()->subDay(),
-        ]);
-        $defaultJs = ScriptExecutor::factory()->create([
-            'language' => 'javascript',
-            'title' => 'Default JS',
-            'type' => null,
-            'created_at' => now()->subDay(),
-        ]);
-        $custom = ScriptExecutor::factory()->create([
-            'language' => 'php',
-            'title' => 'Custom PHP',
-            'type' => ScriptExecutorType::Custom,
-            'created_at' => now(),
-        ]);
-        $extraNullPhp = ScriptExecutor::factory()->create([
-            'language' => 'php',
-            'title' => 'Extra null PHP',
-            'type' => null,
-            'created_at' => now()->addMinute(),
         ]);
         ScriptExecutor::factory()->create([
-            'language' => 'python',
-            'title' => 'System Python',
+            'title' => 'System PHP',
+            'description' => 'System executor',
+            'language' => 'php',
+            'config' => 'RUN echo system',
+            'is_system' => true,
             'type' => ScriptExecutorType::System,
         ]);
+        ScriptExecutor::factory()->create([
+            'title' => 'Nayra',
+            'description' => 'Nayra executor',
+            'language' => 'php-nayra',
+            'config' => 'RUN echo nayra',
+            'type' => ScriptExecutorType::Custom,
+        ]);
+        ScriptExecutor::factory()->create([
+            'title' => 'Null config',
+            'description' => 'Missing config',
+            'language' => 'php',
+            'config' => null,
+            'type' => ScriptExecutorType::Custom,
+        ]);
 
-        $this->mock(ScriptMicroserviceService::class, function ($mock) use ($custom, $extraNullPhp, $defaultPhp, $defaultJs) {
-            $mock->shouldReceive('updateCustomExecutor')
-                ->twice()
-                ->andReturnUsing(function (ScriptExecutor $executor) use ($custom, $extraNullPhp, $defaultPhp, $defaultJs) {
-                    if (in_array($executor->uuid, [$defaultPhp->uuid, $defaultJs->uuid], true)) {
-                        $this->fail('Default executors should not be transitioned');
-                    }
-
-                    if (!in_array($executor->uuid, [$custom->uuid, $extraNullPhp->uuid], true)) {
-                        $this->fail('Unexpected executor uuid: ' . $executor->uuid);
-                    }
-
-                    return ['status' => 'success'];
-                });
+        $this->mock(ScriptMicroserviceService::class, function ($mock) {
+            $mock->shouldNotReceive('updateCustomExecutor');
         });
 
-        $this->artisan('processmaker:transition-executors', ['uuid' => 'all'])
-            ->expectsOutput("Executor {$custom->uuid} transitioned successfully.")
-            ->expectsOutput("Executor {$extraNullPhp->uuid} transitioned successfully.")
-            ->expectsOutput('All script executors transitioned successfully. (2 processed)')
+        $this->artisan('processmaker:transition-executors')
+            ->expectsOutput('No script executors found to transition.')
             ->assertSuccessful();
     }
 
-    public function testSingleCustomExecutorSuccessByUuid(): void
+    public function testTransitionsCustomExecutorSuccessfully(): void
     {
-        // Seed a default first so custom is not treated as the language default.
-        ScriptExecutor::factory()->create([
+        $executor = $this->createTransitionableExecutor([
+            'title' => 'Custom PHP',
+            'description' => 'A custom PHP executor',
             'language' => 'php',
-            'type' => null,
-            'created_at' => now()->subDay(),
-        ]);
-
-        $executor = ScriptExecutor::factory()->create([
-            'language' => 'php',
-            'title' => 'PHP Executor',
-            'config' => 'RUN echo custom',
             'type' => ScriptExecutorType::Custom,
-            'created_at' => now(),
         ]);
 
-        $this->mock(ScriptMicroserviceService::class, function ($mock) use ($executor) {
-            $mock->shouldReceive('updateCustomExecutor')
-                ->once()
-                ->withArgs(fn (ScriptExecutor $passed) => $passed->uuid === $executor->uuid)
-                ->andReturn(['status' => 'success']);
-        });
+        $this->registerCommandWithMocks(
+            function ($service) use ($executor) {
+                $service->shouldReceive('updateCustomExecutor')
+                    ->once()
+                    ->withArgs(fn (ScriptExecutor $passed) => $passed->uuid === $executor->uuid)
+                    ->andReturn(['status' => 'success']);
+            },
+            [
+                ['event' => 'build-image', 'data' => 'Building...'],
+                ['event' => 'build-finished', 'data' => 'done'],
+            ]
+        );
 
-        $this->artisan('processmaker:transition-executors', ['uuid' => $executor->uuid])
+        $this->artisan('processmaker:transition-executors', [
+            '--uuid' => [$executor->uuid],
+            '--timeout' => 120,
+        ])
             ->expectsOutput("Transitioning executor {$executor->uuid} (php) to the microservice...")
-            ->expectsOutput("Executor {$executor->uuid} transitioned successfully.")
+            ->expectsOutput('Building...')
+            ->expectsOutput("Build finished for executor {$executor->uuid} - done")
+            ->expectsOutput("Executor {$executor->uuid} transitioned successfully." . PHP_EOL)
             ->assertSuccessful();
     }
 
-    public function testSingleNonDefaultNullTypeSucceeds(): void
+    public function testTransitionsNonDefaultNullTypeExecutor(): void
     {
-        ScriptExecutor::factory()->create([
-            'language' => 'php',
-            'type' => null,
-            'created_at' => now()->subDay(),
-        ]);
-
-        $executor = ScriptExecutor::factory()->create([
-            'language' => 'php',
+        $executor = $this->createTransitionableExecutor([
             'title' => 'Extra PHP',
+            'description' => 'Extra null type PHP',
+            'language' => 'php',
             'type' => null,
-            'created_at' => now(),
         ]);
 
-        $this->mock(ScriptMicroserviceService::class, function ($mock) use ($executor) {
-            $mock->shouldReceive('updateCustomExecutor')
-                ->once()
-                ->withArgs(fn (ScriptExecutor $passed) => $passed->uuid === $executor->uuid)
-                ->andReturn(['status' => 'success']);
-        });
+        $this->registerCommandWithMocks(
+            function ($service) use ($executor) {
+                $service->shouldReceive('updateCustomExecutor')
+                    ->once()
+                    ->withArgs(fn (ScriptExecutor $passed) => $passed->uuid === $executor->uuid)
+                    ->andReturn(['status' => 'updated']);
+            },
+            [
+                ['event' => 'build-finished', 'data' => 'ok'],
+            ]
+        );
 
-        $this->artisan('processmaker:transition-executors', ['uuid' => $executor->uuid])
-            ->expectsOutput("Executor {$executor->uuid} transitioned successfully.")
+        $this->artisan('processmaker:transition-executors', ['--uuid' => [$executor->uuid]])
+            ->expectsOutput("Executor {$executor->uuid} transitioned successfully." . PHP_EOL)
             ->assertSuccessful();
     }
 
-    public function testAllStopsOnStatusError(): void
+    public function testFiltersByUuidOption(): void
     {
-        $first = ScriptExecutor::factory()->create([
+        $included = $this->createTransitionableExecutor([
+            'title' => 'Included',
+            'description' => 'Included executor',
             'language' => 'php',
-            'title' => 'First',
-            'config' => '',
             'type' => ScriptExecutorType::Custom,
         ]);
-        $second = ScriptExecutor::factory()->create([
+        $excluded = $this->createTransitionableExecutor([
+            'title' => 'Excluded',
+            'description' => 'Excluded executor',
             'language' => 'php',
-            'title' => 'Second',
-            'config' => '',
-            'type' => ScriptExecutorType::Custom,
-        ]);
-        $third = ScriptExecutor::factory()->create([
-            'language' => 'php',
-            'title' => 'Third',
-            'config' => '',
             'type' => ScriptExecutorType::Custom,
         ]);
 
-        $this->mock(ScriptMicroserviceService::class, function ($mock) use ($first, $second, $third) {
-            $mock->shouldReceive('updateCustomExecutor')
-                ->times(2)
-                ->andReturnUsing(function (ScriptExecutor $executor) use ($first, $second, $third) {
-                    if ($executor->uuid === $third->uuid) {
-                        $this->fail('Third executor should not be transitioned after a failure');
-                    }
+        $this->registerCommandWithMocks(
+            function ($service) use ($included, $excluded) {
+                $service->shouldReceive('updateCustomExecutor')
+                    ->once()
+                    ->withArgs(function (ScriptExecutor $passed) use ($included, $excluded) {
+                        $this->assertSame($included->uuid, $passed->uuid);
+                        $this->assertNotSame($excluded->uuid, $passed->uuid);
 
-                    if ($executor->uuid === $first->uuid) {
-                        return ['status' => 'success'];
-                    }
+                        return true;
+                    })
+                    ->andReturn(['status' => 'success']);
+            },
+            [
+                ['event' => 'build-finished', 'data' => 'ok'],
+            ]
+        );
 
-                    if ($executor->uuid === $second->uuid) {
-                        return [
-                            'status' => 'error',
-                            'sdk_output' => 'SDK generation failed: boom',
-                            'docker_output' => 'Docker build failed: boom',
-                        ];
-                    }
-
-                    $this->fail('Unexpected executor uuid: ' . $executor->uuid);
-                });
-        });
-
-        $this->artisan('processmaker:transition-executors', ['uuid' => 'all'])
-            ->expectsOutput("Executor {$first->uuid} transitioned successfully.")
-            ->expectsOutput("Transition failed for executor {$second->uuid}")
-            ->expectsOutput('Stopping: 1 remaining executor(s) were not processed.')
-            ->assertFailed();
+        $this->artisan('processmaker:transition-executors', ['--uuid' => [$included->uuid]])
+            ->expectsOutput("Executor {$included->uuid} transitioned successfully." . PHP_EOL)
+            ->assertSuccessful();
     }
 
-    public function testAllStopsOnRequestException(): void
+    public function testBuildErrorDoesNotReportSuccess(): void
     {
-        $first = ScriptExecutor::factory()->create([
+        $executor = $this->createTransitionableExecutor([
+            'title' => 'Broken build',
+            'description' => 'Broken build executor',
             'language' => 'php',
-            'config' => '',
-            'type' => ScriptExecutorType::Custom,
-        ]);
-        $second = ScriptExecutor::factory()->create([
-            'language' => 'php',
-            'config' => '',
-            'type' => ScriptExecutorType::Custom,
-        ]);
-        $third = ScriptExecutor::factory()->create([
-            'language' => 'php',
-            'config' => '',
             'type' => ScriptExecutorType::Custom,
         ]);
 
-        $this->mock(ScriptMicroserviceService::class, function ($mock) use ($first, $second, $third) {
-            $mock->shouldReceive('updateCustomExecutor')
-                ->times(2)
-                ->andReturnUsing(function (ScriptExecutor $executor) use ($first, $second, $third) {
-                    if ($executor->uuid === $third->uuid) {
-                        $this->fail('Third executor should not be transitioned after a failure');
-                    }
+        $this->registerCommandWithMocks(
+            function ($service) use ($executor) {
+                $service->shouldReceive('updateCustomExecutor')
+                    ->once()
+                    ->withArgs(fn (ScriptExecutor $passed) => $passed->uuid === $executor->uuid)
+                    ->andReturn(['status' => 'success']);
+            },
+            [
+                ['event' => 'build-error', 'data' => 'docker failed'],
+            ]
+        );
 
-                    if ($executor->uuid === $first->uuid) {
-                        return ['status' => 'success'];
-                    }
+        $this->artisan('processmaker:transition-executors', ['--uuid' => [$executor->uuid]])
+            ->expectsOutput("Error occurred while building image for executor {$executor->uuid} - docker failed")
+            ->doesntExpectOutput("Executor {$executor->uuid} transitioned successfully." . PHP_EOL)
+            ->assertSuccessful();
+    }
 
-                    if ($executor->uuid === $second->uuid) {
+    public function testRequestExceptionIsReportedAndCommandContinues(): void
+    {
+        $executor = $this->createTransitionableExecutor([
+            'title' => 'Request fails',
+            'description' => 'Request fails executor',
+            'language' => 'php',
+            'type' => ScriptExecutorType::Custom,
+        ]);
+
+        $this->registerCommandWithMocks(
+            function ($service) use ($executor) {
+                $service->shouldReceive('updateCustomExecutor')
+                    ->once()
+                    ->withArgs(fn (ScriptExecutor $passed) => $passed->uuid === $executor->uuid)
+                    ->andReturnUsing(function () {
                         $response = new Response(
                             new \GuzzleHttp\Psr7\Response(500, [], 'SDK build failed hard')
                         );
 
                         throw new RequestException($response);
-                    }
+                    });
+            },
+            []
+        );
 
-                    $this->fail('Unexpected executor uuid: ' . $executor->uuid);
-                });
-        });
-
-        $this->artisan('processmaker:transition-executors', ['uuid' => 'all'])
-            ->expectsOutput("Executor {$first->uuid} transitioned successfully.")
-            ->expectsOutput("Transition failed for executor {$second->uuid}")
+        $this->artisan('processmaker:transition-executors', ['--uuid' => [$executor->uuid]])
+            ->expectsOutput("Request failed for executor {$executor->uuid}")
             ->expectsOutput('SDK build failed hard')
-            ->expectsOutput('Stopping: 1 remaining executor(s) were not processed.')
-            ->assertFailed();
+            ->assertSuccessful();
+    }
+
+    public function testGenericThrowableIsReportedAndCommandContinues(): void
+    {
+        $executor = $this->createTransitionableExecutor([
+            'title' => 'Throwable fails',
+            'description' => 'Throwable fails executor',
+            'language' => 'php',
+            'type' => ScriptExecutorType::Custom,
+        ]);
+
+        $this->registerCommandWithMocks(
+            function ($service) use ($executor) {
+                $service->shouldReceive('updateCustomExecutor')
+                    ->once()
+                    ->withArgs(fn (ScriptExecutor $passed) => $passed->uuid === $executor->uuid)
+                    ->andThrow(new \RuntimeException('websocket boom'));
+            },
+            []
+        );
+
+        $this->artisan('processmaker:transition-executors', ['--uuid' => [$executor->uuid]])
+            ->expectsOutput("Transition failed for executor {$executor->uuid}")
+            ->expectsOutput('websocket boom')
+            ->assertSuccessful();
+    }
+
+    public function testTransitionsMultipleExecutors(): void
+    {
+        $first = $this->createTransitionableExecutor([
+            'title' => 'First custom',
+            'description' => 'First custom executor',
+            'language' => 'php',
+            'type' => ScriptExecutorType::Custom,
+        ]);
+        $second = $this->createTransitionableExecutor([
+            'title' => 'Second custom',
+            'description' => 'Second custom executor',
+            'language' => 'javascript',
+            'type' => ScriptExecutorType::Custom,
+        ]);
+
+        $this->registerCommandWithMocks(
+            function ($service) use ($first, $second) {
+                $service->shouldReceive('updateCustomExecutor')
+                    ->twice()
+                    ->andReturnUsing(function (ScriptExecutor $executor) use ($first, $second) {
+                        if (!in_array($executor->uuid, [$first->uuid, $second->uuid], true)) {
+                            $this->fail('Unexpected executor uuid: ' . $executor->uuid);
+                        }
+
+                        return ['status' => 'success'];
+                    });
+            },
+            [
+                ['event' => 'build-finished', 'data' => 'first done'],
+                ['event' => 'build-finished', 'data' => 'second done'],
+            ]
+        );
+
+        $this->artisan('processmaker:transition-executors')
+            ->expectsOutput("Executor {$first->uuid} transitioned successfully." . PHP_EOL)
+            ->expectsOutput("Executor {$second->uuid} transitioned successfully." . PHP_EOL)
+            ->assertSuccessful();
+    }
+
+    private function createTransitionableExecutor(array $attributes = []): ScriptExecutor
+    {
+        return ScriptExecutor::factory()->create(array_merge([
+            'config' => 'RUN echo custom',
+            'is_system' => false,
+        ], $attributes));
+    }
+
+    /**
+     * Bind a command instance that uses mocked microservice + websocket collaborators.
+     */
+    private function registerCommandWithMocks(callable $configureService, array $messages): void
+    {
+        $service = Mockery::mock(ScriptMicroserviceService::class);
+        $configureService($service);
+        $this->app->instance(ScriptMicroserviceService::class, $service);
+
+        $client = Mockery::mock(Client::class);
+        $client->shouldReceive('setTimeout')->andReturnNull();
+        $client->shouldReceive('send')->andReturnNull();
+        $client->shouldReceive('close')->andReturnNull();
+
+        if ($messages === []) {
+            $client->shouldReceive('receive')->never();
+        } else {
+            $client->shouldReceive('receive')
+                ->times(count($messages))
+                ->andReturnValues(array_map(
+                    fn ($message) => json_encode($message),
+                    $messages
+                ));
+        }
+
+        $command = new class($service, $client) extends TransitionExecutors {
+            public function __construct(
+                ScriptMicroserviceService $scriptMicroserviceService,
+                private Client $broadcastClient
+            ) {
+                parent::__construct($scriptMicroserviceService);
+            }
+
+            protected function createBroadcastClient(string $url, int $timeout): Client
+            {
+                $this->broadcastClient->setTimeout($timeout);
+
+                return $this->broadcastClient;
+            }
+        };
+
+        $command->setLaravel($this->app);
+        $this->app->instance(TransitionExecutors::class, $command);
+        $this->app->make(Kernel::class)->registerCommand($command);
     }
 }
