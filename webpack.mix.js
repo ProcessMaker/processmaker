@@ -160,6 +160,8 @@ mix
   .js("resources/jscomposition/cases/casesMain/loader.js", "public/js/composition/cases/casesMain")
   .js("resources/jscomposition/cases/casesDetail/loader.js", "public/js/composition/cases/casesDetail")
   .js("resources/js/initialLoad.js", "public/js")
+  .js("resources/js/app-core.js", "public/js")
+  .js("resources/js/app-layout-core.js", "public/js")
 
   .js("resources/js/tasks/loaderMain.js", "public/js/tasks")
   .js("resources/js/tasks/loaderPreview.js", "public/js/tasks")

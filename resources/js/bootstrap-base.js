@@ -1,0 +1,441 @@
+import "bootstrap-vue/dist/bootstrap-vue.css";
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
+import * as bootstrap from "bootstrap";
+import TenantAwareEcho from "./common/TenantAwareEcho";
+import { initSessionSync } from "./common/sessionSync";
+import {
+  applyCsrfToken,
+  attachCsrfRequestInterceptor,
+  attachSessionRenewalInterceptor,
+  getCsrfToken,
+} from "./common/csrfToken";
+import Echo from "laravel-echo";
+import Pusher from "pusher-js";
+import Router from "vue-router";
+import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
+import * as VueDeepSet from "vue-deepset";
+/**
+ * Setup Translations
+ */
+import i18next from "i18next";
+import Backend from "i18next-chained-backend";
+import LocalStorageBackend from "i18next-localstorage-backend";
+import XHR from "i18next-xhr-backend";
+import VueI18Next from "@panter/vue-i18next";
+import { install as VuetableInstall } from "vuetable-2";
+import Vue from "vue";
+import * as vue from "vue";
+import VueCookies from "vue-cookies";
+import GlobalStore from "./globalStore";
+import Pagination from "./components/common/Pagination";
+import translator from "./modules/lang.js";
+import datetime_format from "./data/datetime_formats.json";
+import RequestChannel from "./tasks/components/ProcessRequestChannel";
+import Modal from "./components/shared/Modal";
+import AccessibilityMixin from "./components/common/mixins/accessibility";
+import PmqlInput from "./components/shared/PmqlInput.vue";
+import DataTreeToggle from "./components/common/data-tree-toggle.vue";
+import TreeView from "./components/TreeView.vue";
+import FilterTable from "./components/shared/FilterTable.vue";
+import PaginationTable from "./components/shared/PaginationTable.vue";
+import PMDropdownSuggest from "./components/PMDropdownSuggest";
+import "@processmaker/screen-builder/dist/vue-form-builder.css";
+
+window.__ = translator;
+window._ = require("lodash");
+window.Popper = require("popper.js").default;
+
+/**
+ * Give node plugins access to our custom screen builder components
+ */
+window.ProcessmakerComponents = require("./processes/screen-builder/components");
+
+/**
+ * Give node plugins access to additional components
+ */
+window.SharedComponents = require("./components/shared");
+
+window.ProcessesComponents = require("./processes/components");
+window.ScreensComponents = require("./processes/screens/components");
+window.ScriptsComponents = require("./processes/scripts/components");
+window.ProcessesCatalogueComponents = require("./processes-catalogue/components/utils");
+window.Utils = require("./utils");
+
+window.PMDropdownSuggest = PMDropdownSuggest;
+
+window.Vue = Vue;
+window.vue = vue;
+window.bootstrap = bootstrap;
+window.Vue.use(BootstrapVue);
+window.Vue.use(BootstrapVueIcons);
+window.Vue.use(ScreenBuilder);
+window.Vue.use(GlobalStore);
+window.Vue.use(VueDeepSet);
+window.Vue.use(VueCookies);
+if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
+  window.Vue.use(Router);
+}
+
+window.ScreenBuilder = require("@processmaker/screen-builder");
+window.VueFormElements = require("@processmaker/vue-form-elements");
+
+window.VueRouter = Router;
+
+/**
+ * We'll load jQuery and the Bootstrap jQuery plugin which provides support
+ * for JavaScript based Bootstrap features such as modals and tabs. This
+ * code may be modified to fit the specific needs of your application.
+ */
+window.$ = window.jQuery = require("jquery");
+
+window.Vue.use(VueI18Next);
+VuetableInstall(window.Vue);
+window.Vue.component("pagination", Pagination);
+window.Vue.component("pm-modal", Modal);
+window.Vue.component("pmql-input", PmqlInput);
+window.Vue.component("data-tree-toggle", DataTreeToggle);
+window.Vue.component("tree-view", TreeView);
+window.Vue.component("filter-table", FilterTable);
+window.Vue.component("pagination-table", PaginationTable);
+
+let translationsLoaded = false;
+const mdates = JSON.parse(
+  document.head.querySelector("meta[name=\"i18n-mdate\"]")?.content,
+);
+
+// Make $t available to all vue instances
+Vue.mixin({ i18n: new VueI18Next(i18next) });
+Vue.mixin(AccessibilityMixin);
+
+window.ProcessMaker = {
+  i18n: i18next,
+
+  /**
+     * A general use global event bus that can be used
+     */
+  EventBus: new Vue(),
+  /**
+     * A general use global router that can be used
+     */
+  Router: new Router({
+    mode: "history",
+  }),
+  /**
+     * ProcessMaker Notifications
+     */
+  notifications: [],
+  /**
+     * Push a notification.
+     *
+     * @param {object} notification
+     *
+     * @returns {void}
+     */
+  pushNotification(notification) {
+    if (!notification || window.ProcessMaker.notifications.some((x) => x.id === notification.id)) {
+      return;
+    }
+    window.ProcessMaker.notifications.push(notification);
+  },
+
+  /**
+     * Removes notifications by message ids or urls
+     *
+     * @returns {void}
+     * @param messageIds
+     *
+     * @param urls
+     */
+  removeNotifications(messageIds = [], urls = []) {
+    return window.ProcessMaker.apiClient.put("/read_notifications", { message_ids: messageIds, routes: urls }).then(() => {
+      messageIds.forEach((messageId) => {
+        ProcessMaker.notifications.splice(ProcessMaker.notifications.findIndex((x) => x.id === messageId), 1);
+      });
+
+      urls.forEach((url) => {
+        const messageIndex = ProcessMaker.notifications.findIndex((x) => x.url === url);
+        if (messageIndex >= 0) {
+          ProcessMaker.removeNotification(ProcessMaker.notifications[messageIndex].id);
+        }
+      });
+    });
+  },
+  /**
+     * Mark as unread a list of notifications
+     *
+     * @returns {void}
+     * @param messageIds
+     *
+     * @param urls
+     */
+  unreadNotifications(messageIds = [], urls = []) {
+    return window.ProcessMaker.apiClient.put("/unread_notifications", { message_ids: messageIds, routes: urls });
+  },
+
+  missingTranslations: new Set(),
+  missingTranslation(value) {
+    if (this.missingTranslations.has(value)) { return; }
+    this.missingTranslations.add(value);
+    if (!isProd) {
+      console.warn("Missing Translation:", value);
+    }
+  },
+
+  RequestChannel,
+
+  $notifications: {
+    icons: {},
+  },
+};
+
+window.ProcessMaker.setValidatorLanguage = (validator, lang) => {
+  const availableLanguages = ["ar", "az", "be", "bg", "bs", "ca", "cs", "cy", "da", "de", "el", "en", "es", "et", "eu", "fa", "fi",
+    "fr", "hr", "hu", "id", "it", "ja", "ka", "km", "ko", "lt", "lv", "mk", "mn", "ms", "nb_NO", "nl", "pl", "pt", "pt_BR", "ro", "ru",
+    "se", "sl", "sq", "sr", "sv", "tr", "ua", "uk", "uz", "vi", "zh", "zh_TW"];
+  const selectedLang = availableLanguages.includes(lang) ? lang : "en";
+  if (validator) {
+    validator.useLang(selectedLang);
+  }
+};
+
+window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
+  lng: document.documentElement.lang,
+  fallbackLng: "en", // default language when no translations
+  returnEmptyString: false, // When a translation is an empty string, return the default language, not empty
+  nsSeparator: false,
+  keySeparator: false,
+  parseMissingKeyHandler(value) {
+    if (!translationsLoaded) { return value; }
+    // Report that a translation is missing
+    window.ProcessMaker.missingTranslation(value);
+    // Fallback to showing the english version
+    return value;
+  },
+  backend: {
+    backends: [
+      LocalStorageBackend, // Try cache first
+      XHR,
+    ],
+    backendOptions: [
+      { versions: mdates },
+      { loadPath: "/i18next/fetch/{{lng}}/_default" },
+    ],
+  },
+});
+
+window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
+
+/**
+ * Create a axios instance which any vue component can bring in to call
+ * REST api endpoints through oauth authentication
+ *
+ */
+window.ProcessMaker.apiClient = require("axios");
+
+window.ProcessMaker.apiClient.defaults.withCredentials = true;
+
+window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+
+const token = document.head.querySelector("meta[name=\"csrf-token\"]");
+const isProd = document.head.querySelector("meta[name=\"is-prod\"]")?.content === "true";
+
+window.ProcessMaker.applyCsrfToken = applyCsrfToken;
+window.ProcessMaker.getCsrfToken = getCsrfToken;
+// Attach CSRF interceptor before other interceptors so it runs last in the axios chain.
+attachCsrfRequestInterceptor(window.ProcessMaker.apiClient);
+
+/**
+ * Next we will register the CSRF Token as a common header with Axios so that
+ * all outgoing HTTP requests automatically have it attached. This is just
+ * a simple convenience so we don't have to attach every token manually.
+ */
+
+if (token) {
+  applyCsrfToken(token.content, "page-load");
+} else {
+  console.error("CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token");
+}
+
+// Setup api versions
+const apiVersionConfig = [
+  { version: "1.0", baseURL: "/api/1.0/" },
+  { version: "1.1", baseURL: "/api/1.1/" },
+];
+
+window.ProcessMaker.apiClient.defaults.baseURL = apiVersionConfig[0].baseURL;
+window.ProcessMaker.apiClient.interceptors.request.use((config) => {
+  if (typeof config.url !== "string" || !config.url) {
+    throw new Error("Invalid URL in the request configuration");
+  }
+
+  apiVersionConfig.forEach(({ version, baseURL }) => {
+    const versionPrefix = `/api/${version}/`;
+    if (config.url.startsWith(versionPrefix)) {
+      // eslint-disable-next-line no-param-reassign
+      config.baseURL = baseURL;
+      // eslint-disable-next-line no-param-reassign
+      config.url = config.url.replace(versionPrefix, "");
+    }
+  });
+
+  return config;
+});
+
+attachSessionRenewalInterceptor(window.ProcessMaker.apiClient);
+
+// Set the default API timeout
+let apiTimeout = 5000;
+if (window.Processmaker && window.Processmaker.apiTimeout !== undefined) {
+  apiTimeout = window.Processmaker.apiTimeout;
+}
+window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
+
+// Default alert functionality
+window.ProcessMaker.alert = function (text, variant) {
+  if (typeof text === "string") {
+    window.alert(text);
+  }
+};
+
+const openAiEnabled = document.head.querySelector("meta[name=\"open-ai-nlq-to-pmql\"]");
+
+if (openAiEnabled) {
+  window.ProcessMaker.openAi = {
+    enabled: openAiEnabled.content,
+  };
+} else {
+  window.ProcessMaker.openAi = {
+    enabled: false,
+  };
+}
+
+const userID = document.head.querySelector("meta[name=\"user-id\"]");
+const userFullName = document.head.querySelector("meta[name=\"user-full-name\"]");
+const userAvatar = document.head.querySelector("meta[name=\"user-avatar\"]");
+const formatDate = document.head.querySelector("meta[name=\"datetime-format\"]");
+const timezone = document.head.querySelector("meta[name=\"timezone\"]");
+const appUrl = document.head.querySelector("meta[name=\"app-url\"]");
+
+if (appUrl) {
+  window.ProcessMaker.app = {
+    url: appUrl.content,
+  };
+}
+
+if (userID) {
+  window.ProcessMaker.user = {
+    id: userID.content,
+    datetime_format: formatDate?.content,
+    calendar_format: formatDate?.content,
+    timezone: timezone?.content,
+    fullName: userFullName?.content,
+    avatar: userAvatar?.content,
+  };
+  datetime_format.forEach((value) => {
+    if (formatDate.content === value.format) {
+      window.ProcessMaker.user.datetime_format = value.momentFormat;
+      window.ProcessMaker.user.calendar_format = value.calendarFormat;
+    }
+  });
+}
+
+if (window.Processmaker && window.Processmaker.broadcasting) {
+  const config = window.Processmaker.broadcasting;
+
+  if (config.broadcaster == "pusher") {
+    window.Pusher = require("pusher-js");
+    window.Pusher.logToConsole = config.debug;
+  }
+
+  window.Echo = new TenantAwareEcho(config);
+}
+
+if (window.Processmaker && window.Processmaker.script_microservice && window.Processmaker.script_microservice.enabled) {
+  const config = window.Processmaker.script_microservice.broadcasting;
+
+  window.ScriptMicroserviceEcho = new Echo({
+    ...config,
+    client: new Pusher(config.key, config),
+  });
+}
+
+if (userID) {
+  const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]")?.content;
+  const timeoutEnabledMeta = document.head.querySelector("meta[name=\"timeout-enabled\"]")?.content;
+  const accountTimeoutLength = Number(document.head.querySelector("meta[name=\"timeout-length\"]")?.content);
+  const warnSeconds = Number(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
+  const accountTimeoutWarnSeconds = Number.isNaN(warnSeconds) ? 0 : warnSeconds;
+  const accountTimeoutEnabled = timeoutEnabledMeta ? Number(timeoutEnabledMeta) : 1;
+
+  const sessionSyncState = initSessionSync({
+    userId: userID.content,
+    isProd,
+    timeoutScript,
+    accountTimeoutLength,
+    accountTimeoutWarnSeconds,
+    accountTimeoutEnabled,
+    Vue,
+    Echo: window.Echo,
+    pushNotification: window.ProcessMaker.pushNotification,
+    alert: window.ProcessMaker.alert,
+    getSessionModal: () => window.ProcessMaker.sessionModal,
+    getCloseSessionModal: () => window.ProcessMaker.closeSessionModal,
+    getNavbar: () => window.ProcessMaker.navbar,
+  });
+
+  if (sessionSyncState) {
+    window.ProcessMaker.AccountTimeoutLength = sessionSyncState.AccountTimeoutLength;
+    window.ProcessMaker.AccountTimeoutWarnSeconds = sessionSyncState.AccountTimeoutWarnSeconds;
+    window.ProcessMaker.AccountTimeoutWarnMinutes = sessionSyncState.AccountTimeoutWarnMinutes;
+    window.ProcessMaker.AccountTimeoutEnabled = sessionSyncState.AccountTimeoutEnabled;
+    window.ProcessMaker.AccountTimeoutWorker = sessionSyncState.AccountTimeoutWorker;
+    window.ProcessMaker.sessionSync = sessionSyncState.sessionSync;
+  }
+}
+
+// Configuration Global object used by ScreenBuilder
+// @link https://processmaker.atlassian.net/browse/FOUR-6833 Cache configuration
+const screenCacheEnabled = document.head.querySelector("meta[name=\"screen-cache-enabled\"]")?.content ?? "false";
+const screenCacheTimeout = document.head.querySelector("meta[name=\"screen-cache-timeout\"]")?.content ?? "5000";
+const screenSecureHandlerToggleVisible = document.head.querySelector("meta[name='screen-secure-handler-toggle-visible']");
+window.ProcessMaker.screen = {
+  cacheEnabled: screenCacheEnabled === "true",
+  cacheTimeout: Number(screenCacheTimeout),
+  secureHandlerToggleVisible: !!Number(screenSecureHandlerToggleVisible?.content),
+};
+// Initialize screen-builder cache
+initializeScreenCache(window.ProcessMaker.apiClient, window.ProcessMaker.screen);
+
+const clickTab = () => {
+  const { hash } = window.location;
+  if (!hash) {
+    return;
+  }
+  const tab = $(`[role="tab"][href="${hash}"]`);
+  if (tab.length) {
+    tab.tab("show");
+  }
+};
+window.addEventListener("hashchange", clickTab);
+
+// click an active tab after all components have mounted
+Vue.use({
+  install(vue) {
+    vue.mixin({
+      mounted() {
+        if (this.$parent) {
+          // only run on root
+          return;
+        }
+
+        // Run after component mounted
+        this.$nextTick(() => {
+          clickTab();
+        });
+      },
+    });
+  },
+});
+
+// Send an event when the global Vue and ProcessMaker instance is available
+window.dispatchEvent(new Event("app-bootstrapped"));

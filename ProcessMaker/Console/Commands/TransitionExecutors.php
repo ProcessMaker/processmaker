@@ -53,7 +53,7 @@ class TransitionExecutors extends Command
         // Get the optional timeout
         $timeout = $this->option('timeout') ?? 300;
 
-        if ((int)$timeout <= 60) {
+        if ((int) $timeout <= 60) {
             $this->error('Timeout must be a greater or equal to 60');
 
             return 1;
@@ -82,14 +82,14 @@ class TransitionExecutors extends Command
                 try {
                     $response = $this->scriptMicroserviceService->updateCustomExecutor($executors[$index]);
                     Log::debug('Response', ['response' => $response]);
-                    $status = strtolower((string)($response['status'] ?? ''));
+                    $status = strtolower((string) ($response['status'] ?? ''));
 
                     // Send subscription message (Pusher protocol example)
                     $client->send(json_encode([
                         'event' => 'pusher:subscribe',
                         'data' => [
-                            'channel' => "build-image-" . $executors[$index]->uuid
-                        ]
+                            'channel' => 'build-image-' . $executors[$index]->uuid,
+                        ],
                     ]));
 
                     $running = true;
@@ -117,7 +117,6 @@ class TransitionExecutors extends Command
                     if (!$error) {
                         $this->info("Executor {$executors[$index]->uuid} transitioned successfully." . PHP_EOL);
                     }
-
                 } catch (RequestException $e) {
                     $this->error("Request failed for executor {$executors[$index]->uuid}");
                     $this->line(PHP_EOL);
@@ -130,10 +129,8 @@ class TransitionExecutors extends Command
 
                 $client->close();
                 $index++;
-
             } while ($index < $total);
         }
-
 
         return 0;
     }
@@ -141,36 +138,36 @@ class TransitionExecutors extends Command
     private function getExecutors($uuid): Collection
     {
         $query = ScriptExecutor::query()
-            ->where("is_system", 0)
+            ->where('is_system', 0)
             ->where(function ($query) {
                 $query
-                    ->whereNotIn("title", [
-                        "PHP Executor",
-                        "Node Executor",
-                        "Python Executor",
-                        "C# Executor",
-                        "Java Executor"
+                    ->whereNotIn('title', [
+                        'PHP Executor',
+                        'Node Executor',
+                        'Python Executor',
+                        'C# Executor',
+                        'Java Executor',
                     ])
-                    ->orWhereNotIn("description", [
-                        "Default PHP Executor",
-                        "Default Javascript/Node Executor",
-                        "Default Python Executor",
-                        "Default C# Executor",
-                        "Default Java Executor"
+                    ->orWhereNotIn('description', [
+                        'Default PHP Executor',
+                        'Default Javascript/Node Executor',
+                        'Default Python Executor',
+                        'Default C# Executor',
+                        'Default Java Executor',
                     ]);
             })
-            ->whereNotIn("language", ["php-nayra", "lua", "javascript-ssr", "sql"])
-            ->whereNotNull("config")
+            ->whereNotIn('language', ['php-nayra', 'lua', 'javascript-ssr', 'sql'])
+            ->whereNotNull('config')
             ->where(function ($query) {
                 $query
-                    ->where("type", ScriptExecutorType::Custom)
-                    ->orWhereNull("type");
+                    ->where('type', ScriptExecutorType::Custom)
+                    ->orWhereNull('type');
             });
 
         if (is_array($uuid) && !empty($uuid)) {
-            $query->whereIn("uuid", $uuid);
-        } else if (is_string($uuid)) {
-            $query->where("uuid", $uuid);
+            $query->whereIn('uuid', $uuid);
+        } elseif (is_string($uuid)) {
+            $query->where('uuid', $uuid);
         }
 
         return $query->get();
