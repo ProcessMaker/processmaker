@@ -11,7 +11,7 @@ use ProcessMaker\Nayra\Repositories\ProcessRequestTokenRepository;
 
 abstract class EntityRepository
 {
-    private static $uid2id = ['requests' =>[], 'tokens' =>[]];
+    private $uid2id = ['requests' =>[], 'tokens' =>[]];
 
     abstract public function create(array $transaction): ? Model;
 
@@ -41,16 +41,16 @@ abstract class EntityRepository
         }
 
         // Get record if is not stored previously
-        if (!isset(self::$uid2id[$type][$uid])) {
+        if (!isset($this->uid2id[$type][$uid])) {
             $record = $instance->select('id')->where('uuid', $uid)->first();
             if ($record) {
-                self::$uid2id[$type][$uid] = $record->getKey();
+                $this->uid2id[$type][$uid] = $record->getKey();
             } else {
                 throw new Exception("The uid {$uid} does not exist in the database");
             }
         }
 
-        return self::$uid2id[$type][$uid] ?? 0;
+        return $this->uid2id[$type][$uid] ?? 0;
     }
 
     /**
@@ -71,6 +71,6 @@ abstract class EntityRepository
                 break;
         }
 
-        self::$uid2id[$type][$uid] = $id;
+        $this->uid2id[$type][$uid] = $id;
     }
 }
