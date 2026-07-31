@@ -70,8 +70,7 @@ class TransitionExecutors extends Command
             return 0;
         }
 
-        $client = new Client($url);
-        $client->setTimeout($timeout);
+        $client = $this->createBroadcastClient($url, (int) $timeout);
 
         $index = 0;
         $total = $executors->count();
@@ -175,5 +174,16 @@ class TransitionExecutors extends Command
         }
 
         return $query->get();
+    }
+
+    /**
+     * Create the websocket client used to listen for build events.
+     */
+    protected function createBroadcastClient(string $url, int $timeout): Client
+    {
+        $client = new Client($url);
+        $client->setTimeout($timeout);
+
+        return $client;
     }
 }
