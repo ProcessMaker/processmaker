@@ -165,7 +165,6 @@
     temporal.bpmn = @json($bpmn);
     temporal.requestFiles = @json($request->requestFiles());
     temporal.pmBlockList = @json($pmBlockList);
-    console.log(temporal);
     window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   </script>
   @vite(['resources/jscomposition/cases/casesDetail/loaderCasesDetail.js'])
