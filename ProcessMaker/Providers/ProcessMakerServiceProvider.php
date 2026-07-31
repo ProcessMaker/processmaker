@@ -188,9 +188,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new Managers\GlobalScriptsManager();
         });
 
-        $this->app->singleton(Models\AnonymousUser::class, function ($app) {
-            return Models\AnonymousUser::where('username', '=', Models\AnonymousUser::ANONYMOUS_USERNAME)
-                                       ->firstOrFail();
+        $this->app->scoped(Models\AnonymousUser::class, function ($app) {
+            return Models\AnonymousUser::resolve();
         });
 
         $this->app->singleton(PolicyExtension::class, function ($app) {
