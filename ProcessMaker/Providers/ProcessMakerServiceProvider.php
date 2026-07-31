@@ -17,12 +17,14 @@ use Illuminate\Support\Facades;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Laravel\Horizon\Horizon;
 use Laravel\Horizon\SystemProcessCounter;
 use Laravel\Horizon\WorkerCommandString;
+use Laravel\Octane\Events\RequestTerminated;
 use Laravel\Passport\Client as PassportClient;
 use Lavary\Menu\Menu;
 use OpenApi\Analysers\AttributeAnnotationFactory;
@@ -49,6 +51,7 @@ use ProcessMaker\Managers\ScreenCompiledManager;
 use ProcessMaker\Models;
 use ProcessMaker\Multitenancy\Tenant;
 use ProcessMaker\Observers;
+use ProcessMaker\Octane\ResetRequestState;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
@@ -105,6 +108,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Route::pushMiddlewareToGroup('api', HandleEtag::class);
 
         $this->checkConfigCache();
+
+        // Register Octane listeners if Octane is enabled
+        $this->registerOctaneListeners();
 
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
@@ -257,7 +263,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
     {
         // Listen to the events for our core screen
         // types and add our javascript
-        Facades\Event::listen(ScreenBuilderStarting::class, function ($event) {
+        Event::listen(ScreenBuilderStarting::class, function ($event) {
             // Add any extensions to form builder
             // and renderer from packages
             $event->manager->addPackageScripts($event->type);
@@ -276,7 +282,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         // Log Notifications
-        Facades\Event::listen(NotificationSent::class, function ($event) {
+        Event::listen(NotificationSent::class, function ($event) {
             $id = $event->notifiable->id;
             $notifiable = get_class($event->notifiable);
             $notification = get_class($event->notification);
@@ -285,24 +291,24 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         // Log Broadcasts (messages sent to laravel-echo-server and redis)
-        Facades\Event::listen(BroadcastNotificationCreated::class, function ($event) {
+        Event::listen(BroadcastNotificationCreated::class, function ($event) {
             $channels = implode(', ', $event->broadcastOn());
 
             Log::debug('Broadcasting Notification ' . $event->broadcastType() . 'on channel(s) ' . $channels);
         });
 
         // Fire job when task is assigned to a user
-        Facades\Event::listen(ActivityAssigned::class, function ($event) {
+        Event::listen(ActivityAssigned::class, function ($event) {
             $task_id = $event->getProcessRequestToken()->id;
             // Dispatch the SmartInbox job with the processRequestToken as parameter
             SmartInbox::dispatch($task_id);
         });
 
-        Facades\Event::listen(MadeTenantCurrentEvent::class, function ($event) {
+        Event::listen(MadeTenantCurrentEvent::class, function ($event) {
             event(new TenantResolved($event->tenant));
         });
 
-        Facades\Event::listen(TenantNotFoundForRequestEvent::class, function ($event) {
+        Event::listen(TenantNotFoundForRequestEvent::class, function ($event) {
             if (config('app.multitenancy') === false || self::actuallyRunningInConsole()) {
                 // This is expected if multitenancy is disabled.
                 // We also need to check if we are running in a console command because
@@ -327,7 +333,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
             }
         });
 
-        Facades\Event::listen(function (CommandStarting $event) {
+        Event::listen(function (CommandStarting $event) {
             if ($event->command === 'l5-swagger:generate') {
                 // Set the analyser to use the legacy DocBlockAnnotationFactory. This must
                 // be set here because this config value is not serializable and cannot be cached.
@@ -571,6 +577,23 @@ class ProcessMakerServiceProvider extends ServiceProvider
     public static function getPackageBootTiming(): array
     {
         return self::$packageBootTiming;
+    }
+
+    /**
+     * Reset per-request static state between Octane requests.
+     *
+     * Octane workers stay alive across requests, so static properties must be
+     * cleared to avoid leaking data from one request into the next. Singletons
+     * holding mutable state are handled by the 'flush' list in config/octane.php,
+     * which Octane applies on its own.
+     */
+    private function registerOctaneListeners(): void
+    {
+        if (!class_exists(RequestTerminated::class)) {
+            return;
+        }
+
+        Event::listen(RequestTerminated::class, ResetRequestState::class);
     }
 
     /**
