@@ -44,9 +44,7 @@ class HandleRedirectListener
             event($event);
 
             // Clean params to prevent sending the same redirect multiple times
-            self::$redirectionParams = [];
-            self::$redirectionMethod = '';
-            self::$processRequest = null;
+            self::reset();
         }
     }
 }
