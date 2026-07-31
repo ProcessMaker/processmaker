@@ -13,6 +13,7 @@ use ProcessMaker\Listeners\HandleRedirectListener;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Octane\ResetRequestState;
 use ProcessMaker\Providers\ProcessMakerServiceProvider;
+use ProcessMaker\Services\RedirectToEventService;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
@@ -24,7 +25,7 @@ class ResetRequestStateTest extends TestCase
 
         $this->assertGreaterThan(0, ProcessMakerServiceProvider::getQueryTime());
 
-        $listener = new ResetRequestState();
+        $listener = app(ResetRequestState::class);
         $listener->handle();
 
         $this->assertSame(0.0, ProcessMakerServiceProvider::getQueryTime());
@@ -37,10 +38,10 @@ class ResetRequestStateTest extends TestCase
         $redirectListener = new RedirectStateProbe();
         $redirectListener->queue(ProcessRequest::factory()->create());
 
-        $listener = new ResetRequestState();
+        $listener = app(ResetRequestState::class);
         $listener->handle();
 
-        HandleRedirectListener::sendRedirectToEvent();
+        app(RedirectToEventService::class)->sendRedirectToEvent();
 
         Event::assertNotDispatched(RedirectToEvent::class);
     }
@@ -59,7 +60,7 @@ class ResetRequestStateTest extends TestCase
             new Response()
         ));
 
-        HandleRedirectListener::sendRedirectToEvent();
+        app(RedirectToEventService::class)->sendRedirectToEvent();
 
         Event::assertNotDispatched(RedirectToEvent::class);
     }
