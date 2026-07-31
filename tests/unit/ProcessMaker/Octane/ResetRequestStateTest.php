@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\ProcessMaker\Octane;
 
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -18,6 +19,20 @@ use Tests\TestCase;
 
 class ResetRequestStateTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        ProcessMakerServiceProvider::beginRequestTiming();
+
+        parent::tearDown();
+    }
+
+    private function recordQueryDuration(float $milliseconds): void
+    {
+        $connection = DB::connection();
+
+        event(new QueryExecuted('SELECT 1', [], $milliseconds, $connection));
+    }
+
     public function test_it_clears_request_timing_before_the_next_request(): void
     {
         DB::select('SELECT 1');
@@ -49,6 +64,13 @@ class ResetRequestStateTest extends TestCase
     {
         Event::fake([RedirectToEvent::class]);
 
+        ProcessMakerServiceProvider::beginRequestTiming();
+        $this->recordQueryDuration(5000);
+
+        $firstRequestQueryTime = ProcessMakerServiceProvider::getQueryTime();
+
+        $this->assertSame(5000.0, $firstRequestQueryTime);
+
         $redirectListener = new RedirectStateProbe();
         $redirectListener->queue(ProcessRequest::factory()->create());
 
@@ -59,9 +81,33 @@ class ResetRequestStateTest extends TestCase
             new Response()
         ));
 
+        $this->assertSame(0.0, ProcessMakerServiceProvider::getQueryTime());
+
         HandleRedirectListener::sendRedirectToEvent();
 
         Event::assertNotDispatched(RedirectToEvent::class);
+
+        $this->recordQueryDuration(10);
+
+        $nextRequestQueryTime = ProcessMakerServiceProvider::getQueryTime();
+
+        $this->assertSame(10.0, $nextRequestQueryTime);
+    }
+
+    public function test_octane_request_termination_resets_timing_after_an_error_response(): void
+    {
+        DB::select('SELECT 1');
+
+        $this->assertGreaterThan(0, ProcessMakerServiceProvider::getQueryTime());
+
+        event(new RequestTerminated(
+            $this->app,
+            $this->app,
+            Request::create('/failed-request'),
+            new Response(status: 500)
+        ));
+
+        $this->assertSame(0.0, ProcessMakerServiceProvider::getQueryTime());
     }
 }
 
