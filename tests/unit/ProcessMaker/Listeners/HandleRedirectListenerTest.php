@@ -4,21 +4,28 @@ declare(strict_types=1);
 
 namespace Tests\Unit\ProcessMaker\Listeners;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
+use Laravel\Octane\Events\RequestTerminated;
+use Mockery;
 use ProcessMaker\Events\RedirectToEvent;
 use ProcessMaker\Listeners\HandleRedirectListener;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Octane\ResetRequestState;
-use ReflectionProperty;
+use ProcessMaker\Services\RedirectToEventService;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class HandleRedirectListenerTest extends TestCase
 {
     /**
-     * Create a test subclass that exposes the protected setRedirectTo method.
+     * Create a test listener that exposes the protected setRedirectTo method.
      */
-    private function createProbe(): HandleRedirectListener
+    private function createProbe(?RedirectToEventService $service = null): HandleRedirectListener
     {
-        return new class extends HandleRedirectListener {
+        $service ??= app(RedirectToEventService::class);
+
+        return new class ($service) extends HandleRedirectListener {
             public function queue(ProcessRequest $processRequest, string $method, ...$params): void
             {
                 $this->setRedirectTo($processRequest, $method, ...$params);
@@ -26,210 +33,180 @@ class HandleRedirectListenerTest extends TestCase
         };
     }
 
-    /**
-     * Read a private static property from HandleRedirectListener.
-     */
-    private function readStaticProperty(string $property): mixed
-    {
-        $reflection = new ReflectionProperty(HandleRedirectListener::class, $property);
-        $reflection->setAccessible(true);
-
-        return $reflection->getValue();
-    }
-
-    /**
-     * Assert that all 3 static properties are in their default/clean state.
-     */
-    private function assertStateIsClean(): void
-    {
-        $this->assertNull($this->readStaticProperty('processRequest'));
-        $this->assertSame('', $this->readStaticProperty('redirectionMethod'));
-        $this->assertSame([], $this->readStaticProperty('redirectionParams'));
-    }
-
-    /**
-     * Test that reset() clears the static $processRequest property.
-     */
     public function test_reset_clears_process_request(): void
     {
-        $probe = $this->createProbe();
-        $request = ProcessRequest::factory()->create();
-        $probe->queue($request, 'processUpdated');
+        Event::fake([RedirectToEvent::class]);
 
-        HandleRedirectListener::reset();
+        $service = app(RedirectToEventService::class);
+        $probe = $this->createProbe($service);
+        $staleRequest = ProcessRequest::factory()->create();
+        $currentRequest = ProcessRequest::factory()->create();
 
-        $this->assertNull($this->readStaticProperty('processRequest'));
+        $probe->queue($staleRequest, 'staleRedirect');
+        $service->reset();
+        $probe->queue($currentRequest, 'currentRedirect');
+        $service->sendRedirectToEvent();
+
+        Event::assertDispatched(RedirectToEvent::class, function (RedirectToEvent $event) use ($currentRequest) {
+            return $event->broadcastOn()[0]->name ===
+                'private-ProcessMaker.Models.ProcessRequest.' . $currentRequest->id;
+        });
+        Event::assertDispatched(RedirectToEvent::class, 1);
     }
 
-    /**
-     * Test that reset() clears the static $redirectionMethod property.
-     */
     public function test_reset_clears_redirection_method(): void
     {
-        $probe = $this->createProbe();
+        Event::fake([RedirectToEvent::class]);
+
+        $service = app(RedirectToEventService::class);
+        $probe = $this->createProbe($service);
         $request = ProcessRequest::factory()->create();
-        $probe->queue($request, 'processCompletedRedirect');
 
-        HandleRedirectListener::reset();
+        $probe->queue($request, 'staleRedirect');
+        $service->reset();
+        $probe->queue($request, 'currentRedirect');
+        $service->sendRedirectToEvent();
 
-        $this->assertSame('', $this->readStaticProperty('redirectionMethod'));
+        Event::assertDispatched(
+            RedirectToEvent::class,
+            fn (RedirectToEvent $event) => $event->method === 'currentRedirect'
+        );
     }
 
-    /**
-     * Test that reset() clears the static $redirectionParams property.
-     */
     public function test_reset_clears_redirection_params(): void
     {
-        $probe = $this->createProbe();
+        Event::fake([RedirectToEvent::class]);
+
+        $service = app(RedirectToEventService::class);
+        $probe = $this->createProbe($service);
         $request = ProcessRequest::factory()->create();
-        $probe->queue($request, 'processUpdated', ['key' => 'value']);
 
-        HandleRedirectListener::reset();
+        $probe->queue($request, 'processUpdated', ['secret' => 'stale']);
+        $service->reset();
+        $probe->queue($request, 'processUpdated', ['tokenId' => 222]);
+        $service->sendRedirectToEvent();
 
-        $this->assertSame([], $this->readStaticProperty('redirectionParams'));
+        Event::assertDispatched(RedirectToEvent::class, function (RedirectToEvent $event) {
+            return $event->params[0] === ['tokenId' => 222]
+                && !array_key_exists('secret', $event->params[0]);
+        });
     }
 
-    /**
-     * Critical test for Octane: verify that reset() prevents data leaks.
-     * After reset(), the stored redirect data should be gone.
-     */
     public function test_reset_prevents_stale_redirect_from_leaking(): void
     {
-        $probe = $this->createProbe();
-        $request = ProcessRequest::factory()->create();
-        $probe->queue($request, 'processUpdated', ['tokenId' => 123]);
+        Event::fake([RedirectToEvent::class]);
 
-        // Simulate Octane reset between requests
-        HandleRedirectListener::reset();
+        $service = app(RedirectToEventService::class);
+        $this->createProbe($service)->queue(
+            ProcessRequest::factory()->create(),
+            'processUpdated',
+            ['tokenId' => 123]
+        );
 
-        // sendRedirectToEvent should NOT dispatch RedirectToEvent after reset
-        $this->expectNotToPerformAssertions();
-        HandleRedirectListener::sendRedirectToEvent();
+        $service->reset();
+        $service->sendRedirectToEvent();
+
+        Event::assertNotDispatched(RedirectToEvent::class);
     }
 
-    /**
-     * Test that reset() can be called multiple times safely.
-     */
     public function test_reset_can_be_called_multiple_times(): void
     {
-        HandleRedirectListener::reset();
-        HandleRedirectListener::reset();
-        HandleRedirectListener::reset();
+        Event::fake([RedirectToEvent::class]);
 
-        // Should not throw any errors
-        $this->assertStateIsClean();
+        $service = app(RedirectToEventService::class);
+        $this->createProbe($service)->queue(ProcessRequest::factory()->create(), 'processUpdated');
+
+        $service->reset();
+        $service->reset();
+        $service->reset();
+        $service->sendRedirectToEvent();
+
+        Event::assertNotDispatched(RedirectToEvent::class);
     }
 
-    /**
-     * Test that sendRedirectToEvent dispatches the event and clears state.
-     */
     public function test_send_redirect_to_event_dispatches_and_clears_state(): void
     {
-        \Illuminate\Support\Facades\Event::fake([RedirectToEvent::class]);
+        Event::fake([RedirectToEvent::class]);
 
-        $probe = $this->createProbe();
-        $request = ProcessRequest::factory()->create();
-        $probe->queue($request, 'processUpdated');
+        $service = app(RedirectToEventService::class);
+        $this->createProbe($service)->queue(ProcessRequest::factory()->create(), 'processUpdated');
 
-        HandleRedirectListener::sendRedirectToEvent();
+        $service->sendRedirectToEvent();
+        $service->sendRedirectToEvent();
 
-        // Assert the event was dispatched
-        \Illuminate\Support\Facades\Event::assertDispatched(RedirectToEvent::class);
-
-        // After dispatch, the state should be cleared
-        $this->assertNull($this->readStaticProperty('processRequest'));
+        Event::assertDispatched(
+            RedirectToEvent::class,
+            fn (RedirectToEvent $event) => $event->method === 'processUpdated'
+        );
+        Event::assertDispatched(RedirectToEvent::class, 1);
     }
 
-    /**
-     * CRITICAL: Simulate the full Octane request cycle to guarantee no data leak.
-     *
-     * Flow:
-     *   1. Request A stores data with different values
-     *   2. Reset (simulating Octane's RequestTerminated event)
-     *   3. Verify ALL 3 properties are clean
-     *   4. Request B stores NEW data with different values
-     *   5. Verify Request B's data is correct (not contaminated by Request A)
-     *   6. Reset again
-     *   7. Verify clean again
-     */
     public function test_full_octane_cycle_guarantees_no_data_leak(): void
     {
-        // === Request A ===
+        Event::fake([RedirectToEvent::class]);
+
         $requestA = ProcessRequest::factory()->create();
-        $probeA = $this->createProbe();
-        $probeA->queue($requestA, 'processCompletedRedirect', ['tokenA' => 111]);
+        $scopeA = app(RedirectToEventService::class);
+        $this->createProbe($scopeA)->queue(
+            $requestA,
+            'processCompletedRedirect',
+            ['tokenA' => 111]
+        );
 
-        // Verify Request A data is stored (setRedirectTo uses ...$params, so it's nested)
-        $this->assertSame($requestA->getKey(), $this->readStaticProperty('processRequest')->getKey());
-        $this->assertSame('processCompletedRedirect', $this->readStaticProperty('redirectionMethod'));
-        $this->assertSame([['tokenA' => 111]], $this->readStaticProperty('redirectionParams'));
+        app(ResetRequestState::class)->handle();
+        $scopeA->sendRedirectToEvent();
+        Event::assertNotDispatched(RedirectToEvent::class);
 
-        // === Octane reset after Request A ===
-        HandleRedirectListener::reset();
+        app()->forgetScopedInstances();
 
-        // === Verify ALL properties are clean after reset ===
-        $this->assertStateIsClean();
+        $scopeB = app(RedirectToEventService::class);
+        $this->assertNotSame($scopeA, $scopeB);
 
-        // === Request B (simulating a DIFFERENT user/request) ===
         $requestB = ProcessRequest::factory()->create();
-        $probeB = $this->createProbe();
-        $probeB->queue($requestB, 'processUpdated', ['tokenB' => 222, 'userId' => 999]);
+        $this->createProbe($scopeB)->queue(
+            $requestB,
+            'processUpdated',
+            ['tokenB' => 222, 'userId' => 999]
+        );
+        $scopeB->sendRedirectToEvent();
 
-        // Verify Request B's data is correct (NOT contaminated by Request A)
-        $this->assertSame($requestB->getKey(), $this->readStaticProperty('processRequest')->getKey());
-        $this->assertSame('processUpdated', $this->readStaticProperty('redirectionMethod'));
-        $this->assertSame([['tokenB' => 222, 'userId' => 999]], $this->readStaticProperty('redirectionParams'));
-
-        // Verify Request A's data is GONE (no leak)
-        $this->assertNotSame($requestA->getKey(), $this->readStaticProperty('processRequest')?->getKey());
-
-        // === Octane reset after Request B ===
-        HandleRedirectListener::reset();
-
-        // === Verify clean again ===
-        $this->assertStateIsClean();
+        Event::assertDispatched(RedirectToEvent::class, function (RedirectToEvent $event) use ($requestB) {
+            return $event->method === 'processUpdated'
+                && $event->params[0] === ['tokenB' => 222, 'userId' => 999]
+                && $event->broadcastOn()[0]->name ===
+                    'private-ProcessMaker.Models.ProcessRequest.' . $requestB->id;
+        });
+        Event::assertDispatched(RedirectToEvent::class, 1);
     }
 
-    /**
-     * CRITICAL: Verify that ResetRequestState orchestrator triggers the reset correctly.
-     */
-    public function test_reset_request_state_triggers_handle_redirect_reset(): void
+    public function test_reset_request_state_triggers_redirect_service_reset(): void
     {
-        $probe = $this->createProbe();
-        $request = ProcessRequest::factory()->create();
-        $probe->queue($request, 'processUpdated', ['tokenId' => 456]);
+        $service = Mockery::mock(RedirectToEventService::class);
+        $service->shouldReceive('reset')->once();
 
-        // Verify state is dirty before reset
-        $this->assertNotNull($this->readStaticProperty('processRequest'));
-
-        // Execute the orchestrator (same as Octane's RequestTerminated listener)
-        $resetState = new ResetRequestState();
-        $resetState->handle();
-
-        // Verify orchestrator cleaned everything
-        $this->assertStateIsClean();
+        (new ResetRequestState($service))->handle();
     }
 
-    /**
-     * CRITICAL: Simulate the scenario where sendRedirectToEvent() fails,
-     * but reset() still cleans up (edge case in Octane).
-     */
-    public function test_reset_cleans_up_even_when_send_redirect_fails(): void
+    public function test_octane_termination_cleans_up_when_redirect_is_never_sent(): void
     {
-        $probe = $this->createProbe();
-        $request = ProcessRequest::factory()->create();
-        $probe->queue($request, 'processUpdated', ['data' => 'sensitive']);
+        Event::fake([RedirectToEvent::class]);
 
-        // Simulate that sendRedirectToEvent is NEVER called (e.g., error in BPMN flow)
-        // But Octane's RequestTerminated event still fires and calls reset()
+        $service = app(RedirectToEventService::class);
+        $this->createProbe($service)->queue(
+            ProcessRequest::factory()->create(),
+            'processUpdated',
+            ['data' => 'sensitive']
+        );
 
-        // This should NOT be called in this scenario:
-        // HandleRedirectListener::sendRedirectToEvent();
+        event(new RequestTerminated(
+            $this->app,
+            $this->app,
+            Request::create('/first-request'),
+            new Response()
+        ));
 
-        // Octane reset still happens
-        HandleRedirectListener::reset();
+        app(RedirectToEventService::class)->sendRedirectToEvent();
 
-        // Verify no sensitive data leaked
-        $this->assertStateIsClean();
+        Event::assertNotDispatched(RedirectToEvent::class);
     }
 }
