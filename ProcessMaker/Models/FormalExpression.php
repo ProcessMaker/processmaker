@@ -56,6 +56,16 @@ class FormalExpression implements FormalExpressionInterface
     public function registerPMFunction($name, callable $callable)
     {
         static::$pmFunctions[$name] = $callable;
+
+        // Also register into the current ExpressionLanguage instance if initialized
+        if ($this->feelExpression instanceof ExpressionLanguage) {
+            $this->feelExpression->register(
+                $name,
+                function () {
+                },
+                $callable
+            );
+        }
     }
 
     /**
