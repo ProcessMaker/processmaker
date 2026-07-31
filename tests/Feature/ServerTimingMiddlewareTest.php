@@ -2,8 +2,11 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Laravel\Octane\ApplicationGateway;
 use ProcessMaker\Http\Middleware\ServerTimingMiddleware;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\ProcessMakerServiceProvider;
@@ -15,11 +18,36 @@ class ServerTimingMiddlewareTest extends TestCase
 {
     use RequestHelper;
 
+    protected function tearDown(): void
+    {
+        ProcessMakerServiceProvider::beginRequestTiming();
+
+        parent::tearDown();
+    }
+
     private function getHeader($response, $header)
     {
         $headers = $response->headers->all();
 
         return $headers[$header];
+    }
+
+    private function getMetricDuration($response, string $metric): float
+    {
+        $serverTiming = implode(',', $this->getHeader($response, 'server-timing'));
+
+        preg_match('/(?:^|,)\\s*' . preg_quote($metric, '/') . ';dur=([\\d.]+)/', $serverTiming, $matches);
+
+        $this->assertArrayHasKey(1, $matches, "The {$metric} metric was not present in the Server-Timing header.");
+
+        return (float) $matches[1];
+    }
+
+    private function recordQueryDuration(float $milliseconds): void
+    {
+        $connection = DB::connection();
+
+        event(new QueryExecuted('SELECT 1', [], $milliseconds, $connection));
     }
 
     public function testServerTimingHeaderIncludesAllMetrics()
@@ -83,6 +111,45 @@ class ServerTimingMiddlewareTest extends TestCase
         $dbTime = $matches[1] ?? 0;
 
         $this->assertGreaterThanOrEqual(200, (float) $dbTime);
+    }
+
+    public function testOctaneGatewayIsolatesQueryTimingAcrossConsecutiveRequests()
+    {
+        Route::middleware(ServerTimingMiddleware::class)->get('/octane-query/slow', function () {
+            $this->recordQueryDuration(5000);
+
+            return response()->json(['request' => 'slow']);
+        });
+
+        Route::middleware(ServerTimingMiddleware::class)->get('/octane-query/fast', function () {
+            $this->recordQueryDuration(10);
+
+            return response()->json(['request' => 'fast']);
+        });
+
+        $gateway = new ApplicationGateway($this->app, $this->app);
+
+        $firstRequest = Request::create('/octane-query/slow');
+        $firstResponse = $gateway->handle($firstRequest);
+        $firstRequestQueryTime = $this->getMetricDuration($firstResponse, 'db');
+
+        $this->assertGreaterThanOrEqual(5000, $firstRequestQueryTime);
+
+        $gateway->terminate($firstRequest, $firstResponse);
+
+        $this->assertSame(0.0, ProcessMakerServiceProvider::getQueryTime());
+
+        $secondRequest = Request::create('/octane-query/fast');
+        $secondResponse = $gateway->handle($secondRequest);
+        $secondRequestQueryTime = $this->getMetricDuration($secondResponse, 'db');
+
+        $this->assertGreaterThanOrEqual(10, $secondRequestQueryTime);
+        $this->assertLessThan(5000, $secondRequestQueryTime);
+        $this->assertLessThan($firstRequestQueryTime, $secondRequestQueryTime);
+
+        $gateway->terminate($secondRequest, $secondResponse);
+
+        $this->assertSame(0.0, ProcessMakerServiceProvider::getQueryTime());
     }
 
     public function testServiceProviderTimeIsMeasured()
