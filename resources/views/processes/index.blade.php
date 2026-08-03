@@ -24,7 +24,7 @@
     ]])
 @endsection
 @section('content')
-@vite(['resources/js/vite/processes/loaderProcesses.js'])
+@vite(['resources/js/processes/loaderProcesses.js'])
     @component('components.categorized_resource', [
             'tabs' => [
             __('Processes'),

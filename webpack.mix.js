@@ -116,13 +116,10 @@ mix
   .js("resources/js/admin/cases-retention/index.js", "public/js/admin/cases-retention/index.js")
 
   .js("resources/js/processes/edit.js", "public/js/processes")
-  .js("resources/js/processes/archived.js", "public/js/processes")
   .js("resources/js/processes/newDesigner.js", "public/js/processes")
-  .js("resources/js/templates/index.js", "public/js/templates")
   .js("resources/js/templates/import/index.js", "public/js/templates/import")
   .js("resources/js/templates/configure.js", "public/js/templates")
   .js("resources/js/templates/assets.js", "public/js/templates")
-  .js("resources/js/processes/categories/index.js", "public/js/processes/categories")
   .js("resources/js/processes/scripts/index.js", "public/js/processes/scripts")
   .js("resources/js/processes/scripts/edit.js", "public/js/processes/scripts")
   .js("resources/js/processes/scripts/editConfig.js", "public/js/processes/scripts")

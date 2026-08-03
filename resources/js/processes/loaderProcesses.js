@@ -1,4 +1,4 @@
-import { setupMain } from "../../next/setupMain";
+import { setupMain } from "../next/setupMain";
 
 setupMain();
 

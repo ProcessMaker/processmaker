@@ -67,5 +67,5 @@
 </div>
 
 @section('js')
-   @vite(['resources/js/vite/processes/processes.js'])
+   @vite(['resources/js/processes/processes.js'])
 @append

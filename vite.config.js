@@ -85,9 +85,12 @@ export default defineConfig(({ mode }) => {
           'resources/js/translations/index.js',
           'resources/js/vite/tasks/loaderTasks.js',
           'resources/js/vite/tasks/tasks.js',
-          'resources/js/vite/processes/loaderProcesses.js',
-          'resources/js/vite/processes/processes.js',
-
+          'resources/js/processes/loaderProcesses.js',
+          'resources/js/processes/processes.js',
+          'resources/js/templates/index.js',
+          'resources/js/processes/categories/index.js',
+          'resources/js/processes/archived.js',
+          
           'resources/js/processes-catalogue/loaderProcessesCatalogue.js',
           'resources/js/processes-catalogue/processesCatalogue.js',
           'resources/jscomposition/cases/casesMain/loaderCasesMain.js',
