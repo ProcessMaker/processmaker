@@ -137,6 +137,11 @@ class SwitchTenant implements SwitchTenantTask
         $app->make('log')->reset();
         $app->forgetInstance('log');
 
+        // Used for setting the tenantId context when streaming logs to Loki
+        $app->afterResolving('log', function ($log) use ($tenant) {
+            $log->shareContext(['tenantId' => $tenant->id, 'appUrl' => $tenant->config['app.url']]);
+        });
+
         // url() helper
         app(UrlGenerator::class)->useOrigin($tenant->config['app.url']);
 
