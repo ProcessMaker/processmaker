@@ -21,6 +21,12 @@ class Manifest
 
     private static $logger = null;
 
+    public static function resetRequestState(): void
+    {
+        self::$parents = null;
+        self::$logger = null;
+    }
+
     public function has(string $uuid)
     {
         return array_key_exists($uuid, $this->manifest);
