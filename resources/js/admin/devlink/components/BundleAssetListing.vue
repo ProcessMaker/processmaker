@@ -18,15 +18,21 @@ const loadAssets = async () => {
   loading.value = true;
   const response = await window.ProcessMaker.apiClient.get(`/api/1.0/devlink/local-bundles/${bundleId}`);
   bundle.value = response.data;
-  items.value = response.data.assets.filter(asset => asset.type.toUpperCase() === route.params.type.toUpperCase());
+  items.value = response.data.assets.filter(
+    (asset) => asset.type && asset.type.toUpperCase() === route.params.type.toUpperCase(),
+  );
   loading.value = false;
 };
 
 const remove = async (asset) => {
-  const confirm = await vue.$bvModal.msgBoxConfirm(vue.$t('Are you sure you want to remote this asset from the bundle?'), {
-    okTitle: vue.$t('Ok'),
-    cancelTitle: vue.$t('Cancel'),
-  });
+  const confirm = await vue.$bvModal.msgBoxConfirm(
+    vue.$t('Remove this association from the bundle? The underlying asset will not be deleted.'),
+    {
+      okTitle: vue.$t('Remove from bundle'),
+      okVariant: 'danger',
+      cancelTitle: vue.$t('Cancel'),
+    },
+  );
   if (!confirm) {
     return;
   }
@@ -108,12 +114,23 @@ const fields = [
             class="asset-listing-table"
           >
             <template #cell(name)="data">
-              <a :href="data.item.url">{{ data.item.name }}</a>
+              <a
+                v-if="data.item.integrity_status === 'valid'"
+                :href="data.item.url"
+              >
+                {{ data.item.name }}
+              </a>
+              <span v-else>
+                {{ data.item.name }}
+                <b-badge variant="warning">
+                  {{ $t('Unavailable') }}
+                </b-badge>
+              </span>
             </template>
             <template #cell(menu)="data">
               <div class="btn-menu-container">
                 <button
-                  v-if="bundle.remote_id === null"
+                  v-if="bundle.remote_id === null || data.item.integrity_status !== 'valid'"
                   class="btn install-asset-btn"
                   @click.prevent="remove(data.item)"
                 >

@@ -441,6 +441,15 @@ class DevLinkController extends Controller
 
     public function deleteBundleAsset(BundleAsset $bundleAsset)
     {
+        if (
+            !$bundleAsset->bundle->editable()
+            && $bundleAsset->integrity_status === BundleAsset::INTEGRITY_VALID
+        ) {
+            throw ValidationException::withMessages([
+                '*' => __('Only unavailable assets can be removed from an installed bundle.'),
+            ]);
+        }
+
         $bundleAsset->delete();
 
         return response()->json(['message' => 'Bundle asset association deleted.'], 200);

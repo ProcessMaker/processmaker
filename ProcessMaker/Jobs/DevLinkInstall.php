@@ -9,6 +9,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use ProcessMaker\Exception\DevLinkRemoteBundleException;
 use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\Jobs\ImportV2;
 use ProcessMaker\Models\Bundle;
@@ -59,7 +61,7 @@ class DevLinkInstall implements ShouldQueue
     public function handle(): void
     {
         //log
-        \Log::info('DevLinkInstall job started: ' . $this->devLinkId);
+        Log::info('DevLinkInstall job started: ' . $this->devLinkId);
         $devLink = DevLink::findOrFail($this->devLinkId);
         $logger = new Logger($this->userId, $this->operationId);
 
@@ -92,7 +94,13 @@ class DevLinkInstall implements ShouldQueue
 
     public function failed(Throwable $exception): void
     {
-        (new Logger($this->userId, $this->operationId))->exception($exception);
+        $logger = new Logger($this->userId, $this->operationId);
+        if ($exception instanceof DevLinkRemoteBundleException) {
+            Log::error($exception->getMessage(), ['exception' => $exception]);
+            $logger->error($exception->getMessage());
+        } else {
+            $logger->exception($exception);
+        }
 
         // Unlock the job
         // We can't use $this->lock->release() here because this is run in a new instance
