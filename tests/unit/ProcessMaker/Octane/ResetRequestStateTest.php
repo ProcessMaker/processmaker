@@ -15,6 +15,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Octane\ResetRequestState;
 use ProcessMaker\Providers\ProcessMakerServiceProvider;
 use ProcessMaker\Services\RedirectToEventService;
+use ProcessMaker\Services\WorkerBootTimingService;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
@@ -109,6 +110,26 @@ class ResetRequestStateTest extends TestCase
         ));
 
         $this->assertSame(0.0, ProcessMakerServiceProvider::getQueryTime());
+    }
+
+    public function test_octane_request_termination_preserves_worker_boot_timing(): void
+    {
+        $workerTiming = app(WorkerBootTimingService::class);
+        $workerTiming->setProviderBootTime(12.5);
+        $workerTiming->setPackageBootStart('ExamplePackage', 10.0);
+        $workerTiming->setPackageBootedTime('ExamplePackage', 10.25);
+        $expectedPackageTiming = $workerTiming->getPackageBootTiming();
+
+        event(new RequestTerminated(
+            $this->app,
+            $this->app,
+            Request::create('/first-request'),
+            new Response()
+        ));
+
+        $this->assertSame($workerTiming, app(WorkerBootTimingService::class));
+        $this->assertSame(12.5, $workerTiming->getProviderBootTime());
+        $this->assertSame($expectedPackageTiming, $workerTiming->getPackageBootTiming());
     }
 }
 

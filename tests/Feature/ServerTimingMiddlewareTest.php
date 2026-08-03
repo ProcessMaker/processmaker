@@ -10,6 +10,7 @@ use Laravel\Octane\ApplicationGateway;
 use ProcessMaker\Http\Middleware\ServerTimingMiddleware;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\ProcessMakerServiceProvider;
+use ProcessMaker\Services\WorkerBootTimingService;
 use ReflectionClass;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -177,6 +178,49 @@ class ServerTimingMiddlewareTest extends TestCase
         $this->assertGreaterThanOrEqual(0, (float) $providersTime);
     }
 
+    public function testOctaneGatewayPreservesWorkerBootTimingAcrossConsecutiveRequests()
+    {
+        config(['app.server_timing.min_package_time' => 0]);
+
+        $workerTiming = app(WorkerBootTimingService::class);
+        $workerTiming->setProviderBootTime(12.5);
+        $workerTiming->setPackageBootStart('four32501-worker-package', 10.0);
+        $workerTiming->setPackageBootedTime('four32501-worker-package', 10.025);
+        $expectedPackageTiming = $workerTiming->getPackageBootTiming();
+
+        Route::middleware(ServerTimingMiddleware::class)->get('/octane-worker-timing', function () {
+            return response()->json(['message' => 'Octane worker timing test']);
+        });
+
+        $firstRequest = Request::create('/octane-worker-timing');
+        $firstGateway = new ApplicationGateway($this->app, clone $this->app);
+        $firstResponse = $firstGateway->handle($firstRequest);
+
+        $this->assertSame(12.5, $this->getMetricDuration($firstResponse, 'provider'));
+        $this->assertEqualsWithDelta(
+            25.0,
+            $this->getMetricDuration($firstResponse, 'four32501-worker-package'),
+            0.001
+        );
+
+        $firstGateway->terminate($firstRequest, $firstResponse);
+
+        $secondRequest = Request::create('/octane-worker-timing');
+        $secondGateway = new ApplicationGateway($this->app, clone $this->app);
+        $secondResponse = $secondGateway->handle($secondRequest);
+
+        $this->assertSame(12.5, $this->getMetricDuration($secondResponse, 'provider'));
+        $this->assertEqualsWithDelta(
+            25.0,
+            $this->getMetricDuration($secondResponse, 'four32501-worker-package'),
+            0.001
+        );
+
+        $secondGateway->terminate($secondRequest, $secondResponse);
+
+        $this->assertSame($expectedPackageTiming, $workerTiming->getPackageBootTiming());
+    }
+
     public function testControllerTimingIsMeasuredCorrectly()
     {
         // Mock a route
@@ -241,11 +285,12 @@ class ServerTimingMiddlewareTest extends TestCase
             'app.server_timing.min_package_time' => 5,
         ]);
 
-        ProcessMakerServiceProvider::setPackageBootStart('foour32507-fast-package', 0.0);
-        ProcessMakerServiceProvider::setPackageBootedTime('foour32507-fast-package', 0.002);
+        $workerTiming = app(WorkerBootTimingService::class);
+        $workerTiming->setPackageBootStart('foour32507-fast-package', 0.0);
+        $workerTiming->setPackageBootedTime('foour32507-fast-package', 0.002);
 
-        ProcessMakerServiceProvider::setPackageBootStart('foour32507-slow-package', 0.0);
-        ProcessMakerServiceProvider::setPackageBootedTime('foour32507-slow-package', 0.010);
+        $workerTiming->setPackageBootStart('foour32507-slow-package', 0.0);
+        $workerTiming->setPackageBootedTime('foour32507-slow-package', 0.010);
 
         Route::middleware(ServerTimingMiddleware::class)->get('/package-threshold-test', function () {
             return response()->json(['message' => 'Package threshold test']);
@@ -264,8 +309,9 @@ class ServerTimingMiddlewareTest extends TestCase
     {
         config(['app.server_timing.enabled' => true]);
 
-        ProcessMakerServiceProvider::setPackageBootStart('foour32507-octane-package', 0.0);
-        ProcessMakerServiceProvider::setPackageBootedTime('foour32507-octane-package', 0.008);
+        $workerTiming = app(WorkerBootTimingService::class);
+        $workerTiming->setPackageBootStart('foour32507-octane-package', 0.0);
+        $workerTiming->setPackageBootedTime('foour32507-octane-package', 0.008);
 
         Route::middleware(ServerTimingMiddleware::class)->get('/octane-min-package-test', function () {
             return response()->json(['message' => 'Octane min package test']);
