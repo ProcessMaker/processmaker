@@ -9,18 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ServerTimingMiddleware
 {
-    // Minimum time in ms to include a package in the Server-Timing header
-    private static $minPackageTime;
-
-    public function __construct()
-    {
-        self::$minPackageTime = config('app.server_timing.min_package_time');
-    }
-
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -56,12 +48,13 @@ class ServerTimingMiddleware
         }
 
         $packageTimes = ProcessMakerServiceProvider::getPackageBootTiming();
+        $minPackageTime = config('app.server_timing.min_package_time');
 
         foreach ($packageTimes as $package => $timing) {
             $time = ($timing['end'] - $timing['start']) * 1000;
 
             // Only include packages that took more than MIN_PACKAGE_TIME ms
-            if ($time > self::$minPackageTime) {
+            if ($time > $minPackageTime) {
                 $serverTiming[] = "{$package};dur={$time}";
             }
         }
