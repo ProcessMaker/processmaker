@@ -433,6 +433,93 @@ class DevLinkTest extends TestCase
         $this->assertEquals('Asset already exists in bundle', $response->json()['error']['message']);
     }
 
+    public function testPingReturnsOkWhenRemotePongSucceeds()
+    {
+        $devLink = DevLink::factory()->create([
+            'url' => 'https://remote-instance.test',
+            'access_token' => 'token',
+        ]);
+
+        Http::fake([
+            'remote-instance.test/*' => Http::response(['status' => 'ok'], 200),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.ping', ['devLink' => $devLink->id]));
+
+        $response->assertStatus(200);
+        $response->assertJson(['status' => 'ok']);
+    }
+
+    public function testPingReturnsAuthorizationRequiredWhenRemotePongReturnsUnauthorized()
+    {
+        $devLink = DevLink::factory()->create([
+            'url' => 'https://remote-instance.test',
+            'access_token' => 'token',
+        ]);
+
+        Http::fake([
+            'remote-instance.test/*' => Http::response(['message' => 'Unauthorized'], 401),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.ping', ['devLink' => $devLink->id]));
+
+        $response->assertStatus(200);
+        $response->assertJson(['status' => 'authorization_required']);
+    }
+
+    public function testPingReturnsAuthorizationRequiredWhenRemotePongReturnsForbidden()
+    {
+        $devLink = DevLink::factory()->create([
+            'url' => 'https://remote-instance.test',
+            'access_token' => 'token',
+        ]);
+
+        Http::fake([
+            'remote-instance.test/*' => Http::response(['message' => 'Forbidden'], 403),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.ping', ['devLink' => $devLink->id]));
+
+        $response->assertStatus(200);
+        $response->assertJson(['status' => 'authorization_required']);
+    }
+
+    public function testPingReturnsErrorWhenRemotePongFails()
+    {
+        $devLink = DevLink::factory()->create([
+            'url' => 'https://remote-instance.test',
+            'access_token' => 'token',
+        ]);
+
+        Http::fake([
+            'remote-instance.test/*' => Http::response(['message' => 'Server error'], 500),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.ping', ['devLink' => $devLink->id]));
+
+        $response->assertStatus(200);
+        $response->assertJson(['status' => 'error']);
+    }
+
+    public function testPingReturnsErrorWhenRemotePongCannotConnect()
+    {
+        $devLink = DevLink::factory()->create([
+            'url' => 'https://remote-instance.test',
+            'access_token' => 'token',
+        ]);
+
+        Http::fake([
+            'remote-instance.test/*' => function () {
+                throw new ConnectionException('Connection failed');
+            },
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.ping', ['devLink' => $devLink->id]));
+
+        $response->assertStatus(200);
+        $response->assertJson(['status' => 'error']);
+    }
+
     public function testInstallRemoteAsset()
     {
         $screen = Screen::factory()->create();
