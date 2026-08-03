@@ -32,6 +32,11 @@ class ServerTimingMiddlewareTest extends TestCase
         return $headers[$header];
     }
 
+    private function getServerTimingHeaderValue($response): string
+    {
+        return implode(',', $this->getHeader($response, 'server-timing'));
+    }
+
     private function getMetricDuration($response, string $metric): float
     {
         $serverTiming = implode(',', $this->getHeader($response, 'server-timing'));
@@ -227,6 +232,54 @@ class ServerTimingMiddlewareTest extends TestCase
         $this->assertStringContainsString('provider;dur=', $serverTiming[0]);
         $this->assertStringContainsString('controller;dur=', $serverTiming[1]);
         $this->assertStringContainsString('db;dur=', $serverTiming[2]);
+    }
+
+    public function testPackageTimingRespectsMinPackageTimeThreshold()
+    {
+        config([
+            'app.server_timing.enabled' => true,
+            'app.server_timing.min_package_time' => 5,
+        ]);
+
+        ProcessMakerServiceProvider::setPackageBootStart('foour32507-fast-package', 0.0);
+        ProcessMakerServiceProvider::setPackageBootedTime('foour32507-fast-package', 0.002);
+
+        ProcessMakerServiceProvider::setPackageBootStart('foour32507-slow-package', 0.0);
+        ProcessMakerServiceProvider::setPackageBootedTime('foour32507-slow-package', 0.010);
+
+        Route::middleware(ServerTimingMiddleware::class)->get('/package-threshold-test', function () {
+            return response()->json(['message' => 'Package threshold test']);
+        });
+
+        $response = $this->get('/package-threshold-test');
+        $response->assertHeader('Server-Timing');
+
+        $serverTiming = $this->getServerTimingHeaderValue($response);
+
+        $this->assertStringNotContainsString('foour32507-fast-package;dur=', $serverTiming);
+        $this->assertStringContainsString('foour32507-slow-package;dur=', $serverTiming);
+    }
+
+    public function testMinPackageTimeReadsConfigPerRequest()
+    {
+        config(['app.server_timing.enabled' => true]);
+
+        ProcessMakerServiceProvider::setPackageBootStart('foour32507-octane-package', 0.0);
+        ProcessMakerServiceProvider::setPackageBootedTime('foour32507-octane-package', 0.008);
+
+        Route::middleware(ServerTimingMiddleware::class)->get('/octane-min-package-test', function () {
+            return response()->json(['message' => 'Octane min package test']);
+        });
+
+        config(['app.server_timing.min_package_time' => 10]);
+        $responseAboveThreshold = $this->get('/octane-min-package-test');
+        $serverTimingAboveThreshold = $this->getServerTimingHeaderValue($responseAboveThreshold);
+        $this->assertStringNotContainsString('foour32507-octane-package;dur=', $serverTimingAboveThreshold);
+
+        config(['app.server_timing.min_package_time' => 5]);
+        $responseBelowThreshold = $this->get('/octane-min-package-test');
+        $serverTimingBelowThreshold = $this->getServerTimingHeaderValue($responseBelowThreshold);
+        $this->assertStringContainsString('foour32507-octane-package;dur=', $serverTimingBelowThreshold);
     }
 
     public function testServerTimingIfIsDisabled()
