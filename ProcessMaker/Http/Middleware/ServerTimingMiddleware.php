@@ -5,10 +5,15 @@ namespace ProcessMaker\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use ProcessMaker\Providers\ProcessMakerServiceProvider;
+use ProcessMaker\Services\WorkerBootTimingService;
 use Symfony\Component\HttpFoundation\Response;
 
 class ServerTimingMiddleware
 {
+    public function __construct(private WorkerBootTimingService $workerBootTimingService)
+    {
+    }
+
     /**
      * Handle an incoming request.
      *
@@ -31,7 +36,7 @@ class ServerTimingMiddleware
         // Calculate execution times
         $controllerTime = (microtime(true) - $startController) * 1000; // Convert to ms
         // Fetch service provider boot time
-        $serviceProviderTime = ProcessMakerServiceProvider::getBootTime() ?? 0;
+        $serviceProviderTime = $this->workerBootTimingService->getProviderBootTime() ?? 0;
         // Fetch query time
         $queryTime = ProcessMakerServiceProvider::getQueryTime() ?? 0;
 
@@ -47,7 +52,7 @@ class ServerTimingMiddleware
             array_unshift($serverTiming, "boot;dur={$bootTiming}");
         }
 
-        $packageTimes = ProcessMakerServiceProvider::getPackageBootTiming();
+        $packageTimes = $this->workerBootTimingService->getPackageBootTiming();
         $minPackageTime = config('app.server_timing.min_package_time');
 
         foreach ($packageTimes as $package => $timing) {
