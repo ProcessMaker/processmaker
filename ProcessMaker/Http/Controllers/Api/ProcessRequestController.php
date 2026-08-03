@@ -304,7 +304,7 @@ class ProcessRequestController extends Controller
             $retryRequest->retry();
 
             return response()->json([
-                'message' => $retryRequest::$output,
+                'message' => $retryRequest->getOutput(),
                 'success' => true,
             ]);
         } catch (Throwable $throwable) {

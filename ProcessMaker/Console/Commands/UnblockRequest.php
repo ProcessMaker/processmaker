@@ -64,7 +64,7 @@ class UnblockRequest extends Command
 
         $retryRequest->retry();
 
-        foreach ($retryRequest::$output as $line) {
+        foreach ($retryRequest->getOutput() as $line) {
             $this->info($line);
         }
 
