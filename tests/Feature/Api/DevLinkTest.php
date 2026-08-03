@@ -2,17 +2,251 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ProcessMaker\Http\Controllers\Api\DevLinkController;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Package\PackageDynamicUI\Models\Dashboard;
+use ProcessMaker\Package\PackageDynamicUI\Models\Menu;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class DevLinkTest extends TestCase
 {
     use RequestHelper;
+
+    private const REMOTE_QA_NAME = 'Remote QA';
+
+    private const REMOTE_INSTANCE_URL = 'https://remote-instance.test';
+
+    private const EXISTING_LINK_NAME = 'Existing Link';
+
+    private const FIRST_LINK_NAME = 'First Link';
+
+    private const SECOND_LINK_NAME = 'Second Link';
+
+    private const FIRST_INSTANCE_URL = 'https://first-instance.test';
+
+    private const SECOND_INSTANCE_URL = 'https://second-instance.test';
+
+    public function testStoreCreatesADevLinkWithANormalizedUrl()
+    {
+        $response = $this->apiCall('POST', route('api.devlink.store'), [
+            'name' => self::REMOTE_QA_NAME,
+            'url' => ' https://REMOTE-INSTANCE.test:443/ ',
+        ]);
+
+        $response->assertCreated()->assertJson([
+            'name' => self::REMOTE_QA_NAME,
+            'url' => self::REMOTE_INSTANCE_URL,
+        ]);
+        $this->assertDatabaseHas('dev_links', [
+            'name' => self::REMOTE_QA_NAME,
+            'url' => self::REMOTE_INSTANCE_URL,
+        ]);
+    }
+
+    #[DataProvider('duplicateUrlProvider')]
+    public function testStoreRejectsNormalizedDuplicateUrls(string $storedUrl, string $duplicateUrl)
+    {
+        DevLink::factory()->create([
+            'name' => self::EXISTING_LINK_NAME,
+            'url' => $storedUrl,
+        ]);
+
+        $response = $this->apiCall('POST', route('api.devlink.store'), [
+            'name' => 'Duplicate Link',
+            'url' => $duplicateUrl,
+        ]);
+
+        $response->assertUnprocessable()->assertJsonPath(
+            'errors.url.0',
+            'This instance is already linked as Existing Link. Open or reconnect the existing connection.'
+        );
+        $this->assertDatabaseCount('dev_links', 1);
+    }
+
+    public static function duplicateUrlProvider(): array
+    {
+        return [
+            'host case and trailing slash' => [
+                self::REMOTE_INSTANCE_URL,
+                'https://REMOTE-INSTANCE.test/',
+            ],
+            'default HTTPS port' => [
+                self::REMOTE_INSTANCE_URL,
+                'https://remote-instance.test:443',
+            ],
+            'default HTTP port' => [
+                'http://remote-instance.test',
+                'http://remote-instance.test:80/',
+            ],
+        ];
+    }
+
+    #[DataProvider('nonOriginUrlProvider')]
+    public function testStoreRejectsUrlsThatAreNotHttpOrigins(string $url)
+    {
+        $response = $this->apiCall('POST', route('api.devlink.store'), [
+            'name' => self::REMOTE_QA_NAME,
+            'url' => $url,
+        ]);
+
+        $response->assertUnprocessable()->assertJsonValidationErrors('url');
+        $this->assertDatabaseCount('dev_links', 0);
+    }
+
+    public static function nonOriginUrlProvider(): array
+    {
+        return [
+            'path' => [self::REMOTE_INSTANCE_URL . '/api'],
+            'query' => [self::REMOTE_INSTANCE_URL . '?x=1'],
+            'fragment' => [self::REMOTE_INSTANCE_URL . '#section'],
+            'username' => ['https://user@remote-instance.test'],
+            'username and password' => ['https://user:password@remote-instance.test'],
+        ];
+    }
+
+    public function testStoreRejectsAnExistingNameWithoutUpdatingItsUrl()
+    {
+        $devLink = DevLink::factory()->create([
+            'name' => self::EXISTING_LINK_NAME,
+            'url' => self::FIRST_INSTANCE_URL,
+        ]);
+
+        $response = $this->apiCall('POST', route('api.devlink.store'), [
+            'name' => self::EXISTING_LINK_NAME,
+            'url' => self::SECOND_INSTANCE_URL,
+        ]);
+
+        $response->assertUnprocessable()->assertJsonValidationErrors('name');
+        $this->assertSame(self::FIRST_INSTANCE_URL, $devLink->fresh()->url);
+        $this->assertDatabaseMissing('dev_links', ['url' => self::SECOND_INSTANCE_URL]);
+    }
+
+    public function testStoreAllowsDifferentNormalizedUrls()
+    {
+        DevLink::factory()->create([
+            'name' => self::FIRST_LINK_NAME,
+            'url' => self::FIRST_INSTANCE_URL,
+        ]);
+
+        $response = $this->apiCall('POST', route('api.devlink.store'), [
+            'name' => self::SECOND_LINK_NAME,
+            'url' => self::SECOND_INSTANCE_URL,
+        ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseCount('dev_links', 2);
+    }
+
+    public function testUpdateRejectsANameUsedByAnotherDevLink()
+    {
+        DevLink::factory()->create([
+            'name' => self::FIRST_LINK_NAME,
+            'url' => self::FIRST_INSTANCE_URL,
+        ]);
+        $secondDevLink = DevLink::factory()->create([
+            'name' => self::SECOND_LINK_NAME,
+            'url' => self::SECOND_INSTANCE_URL,
+        ]);
+
+        $response = $this->apiCall('PUT', route('api.devlink.update', [
+            'devLink' => $secondDevLink->id,
+        ]), [
+            'name' => self::FIRST_LINK_NAME,
+        ]);
+
+        $response->assertUnprocessable()->assertJsonValidationErrors('name');
+        $this->assertSame(self::SECOND_LINK_NAME, $secondDevLink->fresh()->name);
+    }
+
+    public function testRemoteBundleVersionReportsAnAvailableRemoteBundle()
+    {
+        Http::preventStrayRequests();
+        $devLink = DevLink::factory()->create([
+            'url' => self::REMOTE_INSTANCE_URL,
+            'access_token' => 'valid-token',
+        ]);
+        Http::fake([
+            'https://remote-instance.test/api/1.0/devlink/local-bundles/123' => Http::response([
+                'id' => 123,
+                'name' => 'Remote Bundle',
+                'version' => '4',
+            ]),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.remote-version', [
+            'devLink' => $devLink->id,
+            'bundle' => 123,
+        ]));
+
+        $response->assertOk()->assertJson([
+            'id' => 123,
+            'name' => 'Remote Bundle',
+            'version' => '4',
+            'available' => true,
+        ]);
+    }
+
+    #[DataProvider('unavailableRemoteStatusProvider')]
+    public function testRemoteBundleVersionHandlesRemoteHttpErrors(int $status)
+    {
+        Http::preventStrayRequests();
+        $devLink = DevLink::factory()->create([
+            'url' => self::REMOTE_INSTANCE_URL,
+            'access_token' => 'revoked-token',
+        ]);
+        Http::fake([
+            'https://remote-instance.test/api/1.0/devlink/local-bundles/123' => Http::response([], $status),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.remote-version', [
+            'devLink' => $devLink->id,
+            'bundle' => 123,
+        ]));
+
+        $response->assertOk()->assertExactJson([
+            'available' => false,
+            'version' => null,
+        ]);
+    }
+
+    public static function unavailableRemoteStatusProvider(): array
+    {
+        return [
+            'unauthorized' => [401],
+            'forbidden' => [403],
+            'missing bundle' => [404],
+            'remote server error' => [500],
+        ];
+    }
+
+    public function testRemoteBundleVersionHandlesConnectionErrors()
+    {
+        Http::preventStrayRequests();
+        $devLink = DevLink::factory()->create([
+            'url' => self::REMOTE_INSTANCE_URL,
+            'access_token' => 'unreachable-token',
+        ]);
+        Http::fake(function () {
+            throw new ConnectionException('Unable to connect to remote instance.');
+        });
+
+        $response = $this->apiCall('GET', route('api.devlink.remote-version', [
+            'devLink' => $devLink->id,
+            'bundle' => 123,
+        ]));
+
+        $response->assertOk()->assertExactJson([
+            'available' => false,
+            'version' => null,
+        ]);
+    }
 
     public function testShowBundle()
     {
@@ -21,6 +255,162 @@ class DevLinkTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertEquals($bundle->id, $response->json()['id']);
+    }
+
+    public function testGetBundleAllSettingsReturnsDashboardAndMenuOptions()
+    {
+        if (!hasPackage('package-dynamic-ui')) {
+            $this->markTestSkipped('package-dynamic-ui is not installed');
+        }
+
+        $dashboardZeta = Dashboard::factory()->create(['title' => 'ZZ DevLink Dashboard']);
+        $dashboardAlpha = Dashboard::factory()->create(['title' => 'AA DevLink Dashboard']);
+        $menuZeta = Menu::factory()->create(['name' => 'ZZ DevLink Menu']);
+        $menuAlpha = Menu::factory()->create(['name' => 'AA DevLink Menu']);
+
+        $dashboardResponse = $this->apiCall(
+            'GET',
+            route('api.devlink.local-bundle-all-settings', ['settingKey' => 'ui_dashboards'])
+        );
+        $dashboardResponse->assertOk();
+
+        $dashboardOptions = collect($dashboardResponse->json())
+            ->whereIn('key', [$dashboardAlpha->id, $dashboardZeta->id])
+            ->values()
+            ->all();
+        $this->assertSame([
+            ['key' => $dashboardAlpha->id, 'name' => $dashboardAlpha->title],
+            ['key' => $dashboardZeta->id, 'name' => $dashboardZeta->title],
+        ], $dashboardOptions);
+
+        $menuResponse = $this->apiCall(
+            'GET',
+            route('api.devlink.local-bundle-all-settings', ['settingKey' => 'ui_menus'])
+        );
+        $menuResponse->assertOk();
+
+        $menuOptions = collect($menuResponse->json())
+            ->whereIn('key', [$menuAlpha->id, $menuZeta->id])
+            ->values()
+            ->all();
+        $this->assertSame([
+            ['key' => $menuAlpha->id, 'name' => $menuAlpha->name],
+            ['key' => $menuZeta->id, 'name' => $menuZeta->name],
+        ], $menuOptions);
+    }
+
+    public function testGetBundleSettingPreviewReturnsInstalledSourceMetadata()
+    {
+        Storage::fake(config('media-library.disk_name'));
+
+        $bundle = Bundle::factory()->create(['version' => 1]);
+        $bundle->addSettings('ui_dashboards', json_encode(['id' => [9001, 9002]]));
+        $bundle->savePayloadsToFile([], [[
+            [
+                'type' => 'dashboard_package',
+                'version' => '2',
+                'root' => 'dashboard-zulu',
+                'name' => 'Zulu Dashboard',
+                'export' => [],
+            ],
+            [
+                'type' => 'dashboard_package',
+                'version' => '2',
+                'root' => 'dashboard-alpha',
+                'name' => 'Alpha Dashboard',
+                'export' => [],
+            ],
+        ]]);
+
+        $response = $this->apiCall(
+            'GET',
+            route('api.devlink.local-bundle-setting-preview', [
+                'bundle' => $bundle->id,
+                'settingKey' => 'ui_dashboards',
+            ])
+        );
+
+        $response->assertOk()->assertExactJson([
+            'setting' => 'ui_dashboards',
+            'selection' => 'partial',
+            'available' => true,
+            'items' => [
+                ['key' => 'dashboard-alpha', 'name' => 'Alpha Dashboard'],
+                ['key' => 'dashboard-zulu', 'name' => 'Zulu Dashboard'],
+            ],
+        ]);
+
+        $bundleWithoutSnapshot = Bundle::factory()->create();
+        $bundleWithoutSnapshot->addSettings('ui_menus', null);
+        $unavailableResponse = $this->apiCall(
+            'GET',
+            route('api.devlink.local-bundle-setting-preview', [
+                'bundle' => $bundleWithoutSnapshot->id,
+                'settingKey' => 'ui_menus',
+            ])
+        );
+        $unavailableResponse->assertOk()->assertJson([
+            'selection' => 'all',
+            'available' => false,
+            'items' => [],
+        ]);
+
+        $unsupportedResponse = $this->apiCall(
+            'GET',
+            route('api.devlink.local-bundle-setting-preview', [
+                'bundle' => $bundle->id,
+                'settingKey' => 'users',
+            ])
+        );
+        $unsupportedResponse->assertNotFound();
+    }
+
+    #[DataProvider('selectableUiSettingsProvider')]
+    public function testAddSettingsPersistsPartialAllAndEmptySelections(string $settingKey)
+    {
+        $bundle = Bundle::factory()->create();
+        $url = route('api.devlink.add-settings', ['bundle' => $bundle->id]);
+
+        $partialSelection = [41, 42];
+        $response = $this->apiCall('POST', $url, [
+            'setting' => $settingKey,
+            'config' => json_encode(['id' => $partialSelection]),
+            'type' => null,
+            'replaceIds' => true,
+        ]);
+        $response->assertOk();
+
+        $bundleSetting = $bundle->settings()->where('setting', $settingKey)->firstOrFail();
+        $this->assertSame($partialSelection, json_decode($bundleSetting->config, true)['id']);
+
+        $response = $this->apiCall('POST', $url, [
+            'setting' => $settingKey,
+            'config' => null,
+            'type' => null,
+            'replaceIds' => true,
+        ]);
+        $response->assertOk();
+        $this->assertNull($bundleSetting->refresh()->config);
+
+        $response = $this->apiCall('POST', $url, [
+            'setting' => $settingKey,
+            'config' => json_encode(['id' => []]),
+            'type' => null,
+            'replaceIds' => true,
+        ]);
+        $response->assertOk();
+        $this->assertDatabaseMissing('bundle_settings', [
+            'bundle_id' => $bundle->id,
+            'setting' => $settingKey,
+        ]);
+    }
+
+    public static function selectableUiSettingsProvider(): array
+    {
+        return [
+            'Dashboards' => ['ui_dashboards'],
+            'Menus' => ['ui_menus'],
+        ];
     }
 
     public function testAddAssets()
@@ -47,7 +437,7 @@ class DevLinkTest extends TestCase
     {
         $screen = Screen::factory()->create();
         $devLink = DevLink::factory()->create([
-            'url' => 'https://remote-instance.test',
+            'url' => self::REMOTE_INSTANCE_URL,
         ]);
 
         Http::fake([
