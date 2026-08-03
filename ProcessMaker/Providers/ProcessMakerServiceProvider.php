@@ -56,6 +56,7 @@ use ProcessMaker\PolicyExtension;
 use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
 use ProcessMaker\Services\ConditionalRedirectService;
+use ProcessMaker\Services\RedirectToEventService;
 use RuntimeException;
 use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
 use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
@@ -77,9 +78,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
     // Track the query time for each request
     private static $queryTime = 0;
-
-    // Track the landlord values for multitenancy
-    private static $landlordValues = null;
 
     public function boot(): void
     {
@@ -134,6 +132,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->app->singleton(Managers\LoginManager::class, function () {
             return new Managers\LoginManager();
+        });
+
+        $this->app->singleton(Managers\ControllerAddonsRegistry::class, function () {
+            return new Managers\ControllerAddonsRegistry();
         });
 
         /*
@@ -194,9 +196,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new Managers\GlobalScriptsManager();
         });
 
-        $this->app->singleton(Models\AnonymousUser::class, function ($app) {
-            return Models\AnonymousUser::where('username', '=', Models\AnonymousUser::ANONYMOUS_USERNAME)
-                                       ->firstOrFail();
+        $this->app->scoped(Models\AnonymousUser::class, function ($app) {
+            return Models\AnonymousUser::resolve();
         });
 
         $this->app->singleton(PolicyExtension::class, function ($app) {
@@ -248,6 +249,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         $this->app->instance('tenant-resolved', false);
+
+        $this->app->scoped(RedirectToEventService::class);
 
         /**
          * Conditional Redirect Service
