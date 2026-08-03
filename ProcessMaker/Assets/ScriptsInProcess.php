@@ -30,7 +30,10 @@ class ScriptsInProcess
         // Used in scriptRef
         $nodes = $xpath->query("//*[@pm:scriptRef!='']");
         foreach ($nodes as $node) {
-            $scripts[] = [Script::class, $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef')];
+            $scriptId = $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef');
+            if (!str_starts_with((string) $scriptId, 'data_source-')) {
+                $scripts[] = [Script::class, $scriptId];
+            }
         }
 
         return $scripts;
@@ -54,6 +57,9 @@ class ScriptsInProcess
         $nodes = $xpath->query("//*[@pm:scriptRef!='']");
         foreach ($nodes as $node) {
             $oldRef = $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef');
+            if (str_starts_with((string) $oldRef, 'data_source-')) {
+                continue;
+            }
             $newRef = $references[Script::class][$oldRef]->getKey();
             $node->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef', $newRef);
         }
