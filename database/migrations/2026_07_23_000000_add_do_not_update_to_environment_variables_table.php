@@ -4,14 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table('wizard_templates', function (Blueprint $table) {
-            $table->string('unique_template_id')->unique()->after('uuid');
+        Schema::table('environment_variables', function (Blueprint $table) {
+            $table->boolean('do_not_update')->default(false)->after('asset_type');
         });
     }
 
@@ -20,8 +21,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('wizard_templates', function (Blueprint $table) {
-            $table->dropColumn('unique_template_id');
+        Schema::table('environment_variables', function (Blueprint $table) {
+            $table->dropColumn('do_not_update');
         });
     }
 };

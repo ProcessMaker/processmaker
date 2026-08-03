@@ -3,10 +3,13 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\DataProvider;
 use ProcessMaker\Http\Controllers\Api\DevLinkController;
+use ProcessMaker\Jobs\DevLinkInstall;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\BundleAsset;
 use ProcessMaker\Models\DevLink;
@@ -335,6 +338,78 @@ class DevLinkTest extends TestCase
         $this->assertDatabaseMissing('bundle_assets', ['id' => $invalidBundleAsset->id]);
     }
 
+    public function testLocalBundlesCanOrderNewestBundlesFirst()
+    {
+        $oldBundle = Bundle::factory()->create([
+            'created_at' => now()->subDays(2),
+        ]);
+        $newBundle = Bundle::factory()->create([
+            'created_at' => now(),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.local-bundles', [
+            'order_by' => 'created_at',
+            'order_direction' => 'desc',
+        ]));
+
+        $response->assertStatus(200);
+        $this->assertEquals($newBundle->id, $response->json('data.0.id'));
+        $this->assertNotEquals($oldBundle->id, $response->json('data.0.id'));
+    }
+
+    public function testLocalBundlesCanReturnOneHundredRecords()
+    {
+        Bundle::factory()->count(101)->create();
+
+        $response = $this->apiCall('GET', route('api.devlink.local-bundles', [
+            'per_page' => 100,
+        ]));
+
+        $response->assertStatus(200);
+        $this->assertCount(100, $response->json('data'));
+        $this->assertEquals(100, $response->json('meta.per_page'));
+    }
+
+    public function testLocalBundlesFilterFindsBundleOutsideFirstPage()
+    {
+        $targetBundle = Bundle::factory()->create([
+            'name' => 'FOUR-31727 Search Target',
+            'created_at' => now()->subDays(2),
+        ]);
+        Bundle::factory()->count(15)->create([
+            'created_at' => now(),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.local-bundles', [
+            'filter' => 'FOUR-31727 Search Target',
+        ]));
+
+        $response->assertStatus(200);
+        $this->assertEquals($targetBundle->id, $response->json('data.0.id'));
+        $this->assertCount(1, $response->json('data'));
+    }
+
+    public function testLocalBundlesEditableFilterExcludesRemoteBundles()
+    {
+        $devLink = DevLink::factory()->create();
+        $localBundle = Bundle::factory()->create([
+            'dev_link_id' => null,
+        ]);
+        $remoteBundle = Bundle::factory()->create([
+            'dev_link_id' => $devLink->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.local-bundles', [
+            'editable' => true,
+            'per_page' => 100,
+        ]));
+
+        $response->assertStatus(200);
+        $bundleIds = collect($response->json('data'))->pluck('id');
+        $this->assertTrue($bundleIds->contains($localBundle->id));
+        $this->assertFalse($bundleIds->contains($remoteBundle->id));
+    }
+
     public function testGetBundleAllSettingsReturnsDashboardAndMenuOptions()
     {
         if (!hasPackage('package-dynamic-ui')) {
@@ -511,6 +586,93 @@ class DevLinkTest extends TestCase
         $this->assertEquals('Asset already exists in bundle', $response->json()['error']['message']);
     }
 
+    public function testPingReturnsOkWhenRemotePongSucceeds()
+    {
+        $devLink = DevLink::factory()->create([
+            'url' => 'https://remote-instance.test',
+            'access_token' => 'token',
+        ]);
+
+        Http::fake([
+            'remote-instance.test/*' => Http::response(['status' => 'ok'], 200),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.ping', ['devLink' => $devLink->id]));
+
+        $response->assertStatus(200);
+        $response->assertJson(['status' => 'ok']);
+    }
+
+    public function testPingReturnsAuthorizationRequiredWhenRemotePongReturnsUnauthorized()
+    {
+        $devLink = DevLink::factory()->create([
+            'url' => 'https://remote-instance.test',
+            'access_token' => 'token',
+        ]);
+
+        Http::fake([
+            'remote-instance.test/*' => Http::response(['message' => 'Unauthorized'], 401),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.ping', ['devLink' => $devLink->id]));
+
+        $response->assertStatus(200);
+        $response->assertJson(['status' => 'authorization_required']);
+    }
+
+    public function testPingReturnsAuthorizationRequiredWhenRemotePongReturnsForbidden()
+    {
+        $devLink = DevLink::factory()->create([
+            'url' => 'https://remote-instance.test',
+            'access_token' => 'token',
+        ]);
+
+        Http::fake([
+            'remote-instance.test/*' => Http::response(['message' => 'Forbidden'], 403),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.ping', ['devLink' => $devLink->id]));
+
+        $response->assertStatus(200);
+        $response->assertJson(['status' => 'authorization_required']);
+    }
+
+    public function testPingReturnsErrorWhenRemotePongFails()
+    {
+        $devLink = DevLink::factory()->create([
+            'url' => 'https://remote-instance.test',
+            'access_token' => 'token',
+        ]);
+
+        Http::fake([
+            'remote-instance.test/*' => Http::response(['message' => 'Server error'], 500),
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.ping', ['devLink' => $devLink->id]));
+
+        $response->assertStatus(200);
+        $response->assertJson(['status' => 'error']);
+    }
+
+    public function testPingReturnsErrorWhenRemotePongCannotConnect()
+    {
+        $devLink = DevLink::factory()->create([
+            'url' => 'https://remote-instance.test',
+            'access_token' => 'token',
+        ]);
+
+        Http::fake([
+            'remote-instance.test/*' => function () {
+                throw new ConnectionException('Connection failed');
+            },
+        ]);
+
+        $response = $this->apiCall('GET', route('api.devlink.ping', ['devLink' => $devLink->id]));
+
+        $response->assertStatus(200);
+        $response->assertJson(['status' => 'error']);
+    }
+
     public function testInstallRemoteAsset()
     {
         $screen = Screen::factory()->create();
@@ -545,5 +707,76 @@ class DevLinkTest extends TestCase
 
         $screen->refresh();
         $this->assertEquals('Modified title', $screen->title);
+    }
+
+    public function testInstallEndpointsPassOperationIdToQueuedJobs()
+    {
+        Bus::fake();
+
+        $operationId = (string) Str::uuid();
+        $devLink = DevLink::factory()->create();
+        $bundle = Bundle::factory()->create([
+            'dev_link_id' => $devLink->id,
+        ]);
+
+        $installResponse = $this->apiCall(
+            'POST',
+            route('api.devlink.install-remote-bundle', [
+                'devLink' => $devLink->id,
+                'remoteBundleId' => 123,
+            ]),
+            ['operation_id' => $operationId]
+        );
+        $reinstallResponse = $this->apiCall(
+            'POST',
+            route('api.devlink.reinstall-bundle', ['bundle' => $bundle->id]),
+            ['operation_id' => $operationId]
+        );
+        $assetResponse = $this->apiCall(
+            'POST',
+            route('api.devlink.install-remote-asset', ['devLink' => $devLink->id]),
+            [
+                'id' => 456,
+                'class' => Screen::class,
+                'operation_id' => $operationId,
+            ]
+        );
+
+        $installResponse->assertOk()->assertExactJson(['status' => 'queued']);
+        $reinstallResponse->assertOk()->assertExactJson(['status' => 'queued']);
+        $assetResponse->assertOk()->assertExactJson(['status' => 'queued']);
+
+        Bus::assertDispatched(DevLinkInstall::class, function (DevLinkInstall $job) use ($operationId) {
+            return $job->type === DevLinkInstall::TYPE_INSTALL_BUNDLE
+                && $job->operationId === $operationId;
+        });
+        Bus::assertDispatched(DevLinkInstall::class, function (DevLinkInstall $job) use ($operationId) {
+            return $job->type === DevLinkInstall::TYPE_REINSTALL_BUNDLE
+                && $job->operationId === $operationId;
+        });
+        Bus::assertDispatched(DevLinkInstall::class, function (DevLinkInstall $job) use ($operationId) {
+            return $job->type === DevLinkInstall::TYPE_IMPORT_ASSET
+                && $job->operationId === $operationId;
+        });
+    }
+
+    public function testInstallEndpointGeneratesOperationIdWhenMissing()
+    {
+        Bus::fake();
+
+        $devLink = DevLink::factory()->create();
+        $response = $this->apiCall(
+            'POST',
+            route('api.devlink.install-remote-asset', ['devLink' => $devLink->id]),
+            [
+                'id' => 456,
+                'class' => Screen::class,
+            ]
+        );
+
+        $response->assertOk()->assertExactJson(['status' => 'queued']);
+        Bus::assertDispatched(DevLinkInstall::class, function (DevLinkInstall $job) {
+            return Str::isUuid($job->operationId);
+        });
     }
 }
