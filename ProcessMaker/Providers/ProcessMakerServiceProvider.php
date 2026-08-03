@@ -56,6 +56,7 @@ use ProcessMaker\PolicyExtension;
 use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
 use ProcessMaker\Services\ConditionalRedirectService;
+use ProcessMaker\Services\RedirectToEventService;
 use RuntimeException;
 use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
 use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
@@ -248,6 +249,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         $this->app->instance('tenant-resolved', false);
+
+        $this->app->scoped(RedirectToEventService::class);
 
         /**
          * Conditional Redirect Service
