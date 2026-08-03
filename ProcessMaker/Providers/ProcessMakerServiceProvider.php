@@ -200,6 +200,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return Models\AnonymousUser::resolve();
         });
 
+        $this->app->scoped(Observers\SettingObserver::class);
+
         $this->app->singleton(PolicyExtension::class, function ($app) {
             return new PolicyExtension();
         });
