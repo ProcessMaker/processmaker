@@ -9,6 +9,7 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Exception\SyntaxErrorException;
 use ProcessMaker\Nayra\Bpmn\BaseTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
+use ProcessMaker\Support\PmFunctionRegistry;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 use Throwable;
@@ -30,8 +31,6 @@ class FormalExpression implements FormalExpressionInterface
     const languages = [
         'FEEL' => ['feelExpression', 'feelEncode'],
     ];
-
-    private static $pmFunctions = [];
 
     /**
      * FEEL expression object to be used to evaluate
@@ -55,7 +54,7 @@ class FormalExpression implements FormalExpressionInterface
      */
     public function registerPMFunction($name, callable $callable)
     {
-        static::$pmFunctions[$name] = $callable;
+        PmFunctionRegistry::register($name, $callable);
 
         // Also register into the current ExpressionLanguage instance if initialized
         if ($this->feelExpression instanceof ExpressionLanguage) {
@@ -66,6 +65,18 @@ class FormalExpression implements FormalExpressionInterface
                 $callable
             );
         }
+    }
+
+    /**
+     * Reset runtime-registered PM functions.
+     *
+     * Called by Octane's RequestTerminated listener to clear request-scoped
+     * functions and prevent accumulation across requests. Boot-time functions
+     * are preserved in the registry and re-registered on the next request.
+     */
+    public static function resetPmFunctions(): void
+    {
+        PmFunctionRegistry::reset();
     }
 
     /**
@@ -284,7 +295,7 @@ class FormalExpression implements FormalExpressionInterface
         );
 
         // Register global PM functions from packages
-        foreach (static::$pmFunctions as $name => $callable) {
+        foreach (PmFunctionRegistry::all() as $name => $callable) {
             $this->feelExpression->register(
                 $name,
                 function () {
