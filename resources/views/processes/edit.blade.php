@@ -1,4 +1,4 @@
-@extends('layouts.layout', ['title' => __('Processes Management')])
+@extends('layouts.layoutnextvite', ['title' => __('Processes Management')])
 
 @section('title')
     {{__('Configure Process')}}
@@ -240,7 +240,7 @@
                                                         label="title"
                                                     >
                                                         <span slot="noResult">
-                                                            @{{ __(noElementsFoundMsg) }}
+                                                            @{{ noElementsFoundMsg }}
                                                         </span>
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
@@ -269,9 +269,7 @@
                                                         label="title"
                                                     >
                                                         <span slot="noResult">
-                                                            @{{
-                                                                __(noElementsFoundMsg)
-                                                            }}
+                                                            @{{ noElementsFoundMsg }}
                                                         </span>
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
@@ -301,9 +299,7 @@
                                                         group-label="label"
                                                     >
                                                         <span slot="noResult">
-                                                            @{{
-                                                                noElementsFoundMsg
-                                                            }}
+                                                            @{{ noElementsFoundMsg }}
                                                         </span>
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
@@ -325,9 +321,7 @@
                                                         group-label="label"
                                                     >
                                                         <span slot="noResult">
-                                                            @{{
-                                                                __(noElementsFoundMsg)
-                                                            }}
+                                                            @{{ noElementsFoundMsg }}
                                                         </span>
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
@@ -625,7 +619,7 @@
                         @isset($addons)
                             @foreach ($addons as $addon)
                                 <div class="tab-pane show" id="{{$addon['id']}}" role="tabpanel"
-                                     aria-labelledby="nav-notifications-tab">
+                                     aria-labelledby="{{$addon['id']}}-tab">
                                     {!! $addon['content'] !!}
                                 </div>
                             @endforeach
@@ -640,12 +634,18 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/edit.js')}}"></script>
     <script>
+      window.temporal = window.temporal || {};
+      window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+      window.packages = window.temporal.packages;
+    </script>
+    @vite(['resources/js/processes/loaderProcesses.js'])
+    @vite(['resources/js/processes/edit.js'])
+    <script defer>
         window.addEventListener("load", function() {
             test = new Vue({
                 el: '#editProcess',
-                mixins: addons,
+                mixins: typeof addons !== 'undefined' ? addons : [],
                 data() {
                 return {
                     formData: @json($process),
@@ -671,7 +671,7 @@
                     manager: @json($process->getManagers()),
                     owner: @json($process->user),
                     activeTab: "",
-                    noElementsFoundMsg: 'Oops! No elements found. Consider changing the search query.',
+                    noElementsFoundMsg: {{ Js::from(__('Oops! No elements found. Consider changing the search query.')) }},
                     reassignmentPermissions: {
                         users: [],
                         groups: []
@@ -711,11 +711,12 @@
 
                     this.selectedProjects = this.assignedProjects.length > 0 ? this.assignedProjects.map(project => project.id) : null;
 
-                    let path = new URL(location.href).href;
-                    let target = path.split('#');
-
-                    if (target[1] !== undefined) {
-                        this.activeTab = target[1];
+                    const hash = window.location.hash.replace(/^#/, '');
+                    if (hash) {
+                        this.activeTab = hash;
+                        this.$nextTick(() => {
+                            this.showTab(hash);
+                        });
                     }
 
                     if (this.caseRetentionPolicyEnabled) {
@@ -762,7 +763,29 @@
                 },
                 methods: {
                 activateTab(event) {
-                    window.location.href = event.target.href;
+                    const href = event.currentTarget.getAttribute('href') || '';
+                    const hash = href.replace(/^#/, '');
+                    if (hash) {
+                        this.activeTab = hash;
+                        window.history.replaceState(null, '', `#${hash}`);
+                    }
+                },
+                showTab(hash) {
+                    const link = document.querySelector(`#nav-tab a[href="#${hash}"]`);
+                    if (!link) {
+                        return;
+                    }
+                    if (window.$ && typeof window.$(link).tab === 'function') {
+                        window.$(link).tab('show');
+                        return;
+                    }
+                    // Fallback if Bootstrap jQuery tabs are unavailable
+                    document.querySelectorAll('#nav-tab .nav-link').forEach((el) => {
+                        el.classList.toggle('active', el === link);
+                    });
+                    document.querySelectorAll('#nav-tabContent > .tab-pane').forEach((pane) => {
+                        pane.classList.toggle('active', pane.id === hash);
+                    });
                 },
                 loadScreens(filter) {
                     ProcessMaker.apiClient

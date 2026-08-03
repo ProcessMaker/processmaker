@@ -144,7 +144,7 @@
 @isset($addons)
   @foreach ($addons as $addon)
     @if (!empty($addon['script_mix']))
-      <script type="text/javascript" src="{{ mix($addon['script_mix'][0], $addon['script_mix'][1]) }}"></script>
+      <script defer type="text/javascript" src="{{ mix($addon['script_mix'][0], $addon['script_mix'][1]) }}"></script>
     @endif
     @if (!empty($addon['script_mix_module']))
       <script type="module" src="{{ mix($addon['script_mix_module'][0], $addon['script_mix_module'][1]) }}"></script>

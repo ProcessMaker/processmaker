@@ -115,7 +115,6 @@ mix
   .js("resources/js/admin/logs/index.js", "public/js/admin/logs/index.js")
   .js("resources/js/admin/cases-retention/index.js", "public/js/admin/cases-retention/index.js")
 
-  .js("resources/js/processes/edit.js", "public/js/processes")
   .js("resources/js/processes/newDesigner.js", "public/js/processes")
   .js("resources/js/templates/import/index.js", "public/js/templates/import")
   .js("resources/js/templates/configure.js", "public/js/templates")
