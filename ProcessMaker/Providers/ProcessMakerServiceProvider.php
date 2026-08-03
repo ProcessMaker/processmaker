@@ -134,6 +134,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new Managers\LoginManager();
         });
 
+        $this->app->singleton(Managers\ControllerAddonsRegistry::class, function () {
+            return new Managers\ControllerAddonsRegistry();
+        });
+
         /*
          * Maps our Index Manager as a singleton. The Index Manager is used
          * to manage customizations to the search indexer.
