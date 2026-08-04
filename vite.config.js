@@ -110,7 +110,9 @@ export default defineConfig(({ mode }) => {
           'resources/js/admin/devlink/index.js',
           'resources/js/admin/cases-retention/index.js',
           'resources/js/admin/logs/index.js',
-          
+          'resources/js/processes/environment-variables/loaderEnvironment.js',
+          'resources/js/processes/environment-variables/index.js',
+
           'resources/js/processes-catalogue/loaderProcessesCatalogue.js',
           'resources/js/processes-catalogue/processesCatalogue.js',
           'resources/jscomposition/cases/casesMain/loaderCasesMain.js',
