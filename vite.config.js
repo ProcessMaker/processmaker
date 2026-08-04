@@ -101,6 +101,8 @@ export default defineConfig(({ mode }) => {
           'resources/js/admin/auth-clients/index.js',
           'resources/js/admin/settings/loaderSettings.js',
           'resources/js/admin/settings/index.js',
+          'resources/js/admin/settings/ldaplogs.js',
+
           
           'resources/js/processes-catalogue/loaderProcessesCatalogue.js',
           'resources/js/processes-catalogue/processesCatalogue.js',

@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Ldap Logs')}}
@@ -16,6 +16,7 @@
     ]])
 @endsection
 @section('content')
+    @vite(['resources/js/admin/users/loaderUsers.js'])
     <div class="px-3" id="ldap-logs">
         <div id="search-bar" class="search mb-3" vcloak>
             <div class="d-flex flex-column flex-md-row">
@@ -42,5 +43,5 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/settings/ldaplogs.js')}}"></script>
+    @vite(['resources/js/admin/settings/ldaplogs.js'])
 @endsection
