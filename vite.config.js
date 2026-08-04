@@ -91,6 +91,7 @@ export default defineConfig(({ mode }) => {
           'resources/js/templates/index.js',
           'resources/js/processes/categories/index.js',
           'resources/js/processes/archived.js',
+          'resources/js/admin/loaderAdmin.js',
           'resources/js/admin/users/loaderUsers.js',
           'resources/js/admin/users/index.js',
           'resources/js/admin/users/edit.js',
@@ -104,7 +105,7 @@ export default defineConfig(({ mode }) => {
           'resources/js/admin/settings/ldaplogs.js',
           'resources/js/admin/cssOverride/loaderCssOverride.js',
           'resources/js/admin/cssOverride/edit.js',
-
+          'resources/js/admin/script-executors/index.js',
           
           'resources/js/processes-catalogue/loaderProcessesCatalogue.js',
           'resources/js/processes-catalogue/processesCatalogue.js',
