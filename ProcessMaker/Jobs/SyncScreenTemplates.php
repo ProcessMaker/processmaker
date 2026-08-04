@@ -50,7 +50,7 @@ class SyncScreenTemplates implements ShouldQueue
             if (!$config) {
                 return;
             }
-            // Build the URL to fetch the guided templates list from GitHub
+            // Build the URL to fetch the screen templates list from GitHub
             $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/index.json';
 
             // If there are multiple categories of templates defined in the .env, separate them into an array

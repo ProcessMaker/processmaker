@@ -14,6 +14,7 @@ use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use Tests\Feature\Shared\RequestHelper;
@@ -1131,6 +1132,70 @@ class ProcessRequestsTest extends TestCase
         // Assert empty because tokens does not have screens.
         $data = $response->json()['data'];
         $this->assertEmpty($data);
+    }
+
+    public function testScreenRequestedReturnsMultiInstanceTokenPropertiesData()
+    {
+        $screen = Screen::factory()->create([
+            'config' => [[
+                'component' => 'FormTextArea',
+                'config' => [
+                    'label' => 'New Textarea',
+                    'name' => 'form_text_area_1',
+                ],
+            ]],
+        ]);
+        $bpmn = file_get_contents(base_path('tests/Feature/Api/processes/Timer_BoundaryEvent_MultiInstance.bpmn'));
+        $bpmn = str_replace('pm:screenRef="19"', 'pm:screenRef="' . $screen->id . '"', $bpmn);
+        $process = Process::factory()->create([
+            'bpmn' => $bpmn,
+            'user_id' => $this->user->id,
+        ]);
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'process_version_id' => $process->getLatestVersion()->id,
+            'callable_id' => 'ProcessId',
+            'data' => [
+                'array' => [
+                    ['form_input_1' => 'lulu1'],
+                ],
+            ],
+        ]);
+
+        ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'node_2',
+            'element_type' => 'task',
+            'status' => 'CLOSED',
+            'data' => [
+                'loopCounter' => 1,
+                'form_input_1' => 'lulu1',
+                'form_text_area_1' => 'lorem ipsum',
+            ],
+            'token_properties' => [
+                'data' => [
+                    'loopCounter' => 1,
+                    'form_input_1' => 'lulu1',
+                    'form_text_area_1' => 'lorem ipsum',
+                ],
+            ],
+        ]);
+
+        $route = route('api.requests.detail.screen', ['request' => $request->id]);
+        $response = $this->apiCall('GET', $route, [
+            'page' => 1,
+            'per_page' => 10,
+            'order_by' => 'completed_at',
+            'order_direction' => 'asc',
+            'filter' => '',
+        ]);
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(1, $data);
+        $this->assertSame('lorem ipsum', $data[0]['data']['form_text_area_1']);
+        $this->assertSame('lorem ipsum', $data[0]['data']['_parent']['form_text_area_1']);
     }
 
     /**
