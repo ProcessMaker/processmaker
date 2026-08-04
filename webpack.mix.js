@@ -1,6 +1,5 @@
-const mix = require("laravel-mix");
+const mix = require("@rikcon/laravel-rix");
 const path = require("path");
-require("laravel-mix-polyfill");
 // const packageJson = require("./package.json");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 

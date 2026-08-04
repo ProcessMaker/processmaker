@@ -1,11 +1,9 @@
-const mix = require("laravel-mix");
+const mix = require("@rikcon/laravel-rix");
 const path = require("path");
 const fs = require("fs");
 
 const manifestPath = path.resolve(__dirname, "public/mix-manifest.json");
 let existingContent = {};
-
-require("laravel-mix-polyfill");
 
 /*
  |--------------------------------------------------------------------------
