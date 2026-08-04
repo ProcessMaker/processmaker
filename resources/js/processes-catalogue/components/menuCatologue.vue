@@ -64,7 +64,7 @@
         </div>
         <i
           class="fas fa-sort-down"
-          :class="{'fa-sort-up': showGuidedTemplates, 'fa-sort-down': !showGuidedTemplates,}"
+          :class="{'fa-sort-up': showTemplates, 'fa-sort-down': !showTemplates,}"
         />
       </div>
     </div>
@@ -123,7 +123,7 @@ export default {
       modalProcess: true,
       countCategories: 0,
       showCatalogue: false,
-      showGuidedTemplates: false,
+      showTemplates: false,
       selectedProcessItem: null,
       selectedTemplateItem: null,
       templateOptions: [
@@ -131,11 +131,6 @@ export default {
           label: this.$t("All Templates"),
           selected: false,
           id: "all_templates",
-        },
-        {
-          label: this.$t("Guided Templates"),
-          selected: false,
-          id: "guided_templates",
         },
       ],
       comeFromProcess: false,
@@ -146,7 +141,7 @@ export default {
       this.openTemplate(obj);
     });
 
-    window.ProcessMaker.EventBus.$on("wizard-templates-selected", (obj) => {
+    window.ProcessMaker.EventBus.$on("all-templates-selected", (obj) => {
       this.selectTemplateItem(obj);
     });
   },
@@ -234,7 +229,7 @@ export default {
     selectTemplateItem(item = null) {
       if (item === null) {
         item = this.templateOptions.find((obj) => {
-          return obj.id === "guided_templates";
+          return obj.id === "all_templates";
         });
       }
       this.selectedTemplateItem = item;
@@ -268,7 +263,7 @@ export default {
       this.showCatalogue = !this.showCatalogue;
     },
     onToggleTemplates() {
-      this.showGuidedTemplates = !this.showGuidedTemplates;
+      this.showTemplates = !this.showTemplates;
     },
     /**
      * Filter categories

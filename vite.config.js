@@ -121,9 +121,7 @@ export default defineConfig(({ mode }) => {
           'resources/sass/tailwind.css',
         ],
         refresh: [
-          'resources/views/vite/**',
-          'resources/js/**/*.js',
-          'resources/js/**/*.vue',
+          'resources/views/**',
           'resources/sass/**',
         ],
       }),

@@ -54,6 +54,7 @@ use ProcessMaker\PolicyExtension;
 use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
 use ProcessMaker\Services\ConditionalRedirectService;
+use ProcessMaker\Services\SmartExtractConfiguration;
 use RuntimeException;
 use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
 use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
@@ -126,6 +127,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // Register our permission services
         $this->app->register(PermissionServiceProvider::class);
+
+        $this->app->scoped(SmartExtractConfiguration::class);
 
         $this->app->singleton(Managers\PackageManager::class, function () {
             return new Managers\PackageManager();
