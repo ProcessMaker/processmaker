@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use ProcessMaker\Exception\BundleIntegrityException;
 use ProcessMaker\Exception\ExporterNotSupported;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\ImportExport\Importer;
@@ -79,6 +80,8 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     public function export()
     {
+        $this->assertIntegrity();
+
         $exports = [];
 
         foreach ($this->assets as $bundleAsset) {
@@ -92,6 +95,21 @@ class Bundle extends ProcessMakerModel implements HasMedia
         }
 
         return $exports;
+    }
+
+    public function invalidAssets()
+    {
+        return $this->assets->filter(
+            fn (BundleAsset $asset) => $asset->integrity_status !== BundleAsset::INTEGRITY_VALID
+        );
+    }
+
+    public function assertIntegrity(): void
+    {
+        $invalidAssets = $this->invalidAssets();
+        if ($invalidAssets->isNotEmpty()) {
+            throw new BundleIntegrityException($this, $invalidAssets);
+        }
     }
 
     public function exportSettings()

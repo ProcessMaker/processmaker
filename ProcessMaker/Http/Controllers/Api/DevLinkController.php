@@ -8,6 +8,7 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Exception\ValidationException;
@@ -107,10 +108,20 @@ class DevLinkController extends Controller
     public function ping(DevLink $devLink)
     {
         try {
-            return $devLink->client()->get(route('api.devlink.pong', [], false));
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'DevLink connection error'], $e->getCode());
+            $response = $devLink->client()->get(route('api.devlink.pong', [], false));
+        } catch (RequestException $e) {
+            $status = $e->response->status();
+
+            return response()->json([
+                'status' => in_array($status, [401, 403], true) ? 'authorization_required' : 'error',
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json(['status' => 'error']);
         }
+
+        return response()->json([
+            'status' => $response->json('status') === 'ok' ? 'ok' : 'error',
+        ]);
     }
 
     public function pong()
@@ -259,6 +270,7 @@ class DevLinkController extends Controller
     public function installRemoteBundle(Request $request, DevLink $devLink, int $remoteBundleId)
     {
         $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
+        $operationId = $this->operationId($request);
         DevLinkInstall::dispatch(
             $request->user()->id,
             $devLink->id,
@@ -266,6 +278,7 @@ class DevLinkController extends Controller
             $remoteBundleId,
             $updateType,
             DevLinkInstall::TYPE_INSTALL_BUNDLE,
+            $operationId,
         );
 
         return [
@@ -276,6 +289,7 @@ class DevLinkController extends Controller
     public function reinstallBundle(Request $request, Bundle $bundle)
     {
         $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
+        $operationId = $this->operationId($request);
         DevLinkInstall::dispatch(
             $request->user()->id,
             $bundle->dev_link_id,
@@ -283,6 +297,7 @@ class DevLinkController extends Controller
             $bundle->id,
             $updateType,
             DevLinkInstall::TYPE_REINSTALL_BUNDLE,
+            $operationId,
         );
 
         return [
@@ -404,6 +419,7 @@ class DevLinkController extends Controller
     public function installRemoteAsset(Request $request, DevLink $devLink)
     {
         $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
+        $operationId = $this->operationId($request);
 
         DevLinkInstall::dispatch(
             $request->user()->id,
@@ -411,7 +427,8 @@ class DevLinkController extends Controller
             $request->input('class'),
             $request->input('id'),
             $updateType,
-            DevLinkInstall::TYPE_IMPORT_ASSET
+            DevLinkInstall::TYPE_IMPORT_ASSET,
+            $operationId,
         );
 
         return [
@@ -459,7 +476,17 @@ class DevLinkController extends Controller
     public function deleteBundleAsset(BundleAsset $bundleAsset)
     {
         DB::transaction(function () use ($bundleAsset) {
-            Bundle::whereKey($bundleAsset->bundle_id)->lockForUpdate()->firstOrFail();
+            $bundle = Bundle::whereKey($bundleAsset->bundle_id)->lockForUpdate()->firstOrFail();
+
+            if (
+                !$bundle->editable()
+                && $bundleAsset->integrity_status === BundleAsset::INTEGRITY_VALID
+            ) {
+                throw ValidationException::withMessages([
+                    '*' => __('Only unavailable assets can be removed from an installed bundle.'),
+                ]);
+            }
+
             $bundleAsset->delete();
         });
 
@@ -541,5 +568,14 @@ class DevLinkController extends Controller
     {
         CompileUI::dispatch($request->user()?->id);
         CustomizeUiUpdated::dispatch([], [], false);
+    }
+
+    private function operationId(Request $request): string
+    {
+        $validated = $request->validate([
+            'operation_id' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        return $validated['operation_id'] ?? (string) Str::uuid();
     }
 }

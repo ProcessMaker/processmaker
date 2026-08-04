@@ -3,15 +3,22 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 use ProcessMaker\Enums\ExporterMap;
 
 class BundleAsset extends ProcessMakerModel
 {
     use HasFactory;
 
+    public const INTEGRITY_VALID = 'valid';
+
+    public const INTEGRITY_MISSING = 'missing';
+
+    public const INTEGRITY_TYPE_UNAVAILABLE = 'type_unavailable';
+
     protected $guarded = ['id'];
 
-    protected $appends = ['name', 'url', 'type', 'owner_name', 'categories'];
+    protected $appends = ['name', 'url', 'type', 'owner_name', 'categories', 'integrity_status'];
 
     const DATA_SOURCE_CLASS = 'ProcessMaker\Packages\Connectors\DataSources\Models\DataSource';
 
@@ -23,9 +30,11 @@ class BundleAsset extends ProcessMakerModel
 
     const PM_BLOCK_CLASS = 'ProcessMaker\Package\PackagePmBlocks\Models\PmBlock';
 
-    public static function canExport(ProcessMakerModel $asset)
+    public static function canExport(?ProcessMakerModel $asset)
     {
-        return method_exists($asset, 'export') && ExporterMap::getExporterClassForModel($asset);
+        return $asset !== null
+            && method_exists($asset, 'export')
+            && ExporterMap::getExporterClassForModel($asset);
     }
 
     public function bundle()
@@ -50,18 +59,30 @@ class BundleAsset extends ProcessMakerModel
 
     public function getNameAttribute()
     {
+        $asset = $this->resolvedAsset();
+        if ($asset === null) {
+            return __('Missing :type #:id', [
+                'type' => $this->typeLabel(),
+                'id' => $this->asset_id,
+            ]);
+        }
+
         if (
             $this->asset_type === Screen::class ||
             $this->asset_type === Script::class
         ) {
-            return $this->asset->title;
+            return $asset->title;
         }
 
-        return $this->asset->name;
+        return $asset->name;
     }
 
     public function getUrlAttribute()
     {
+        if ($this->integrity_status !== self::INTEGRITY_VALID) {
+            return null;
+        }
+
         switch($this->asset_type) {
             case Screen::class:
                 return "/designer/screen-builder/{$this->asset_id}/edit";
@@ -110,8 +131,9 @@ class BundleAsset extends ProcessMakerModel
 
     public function getOwnerNameAttribute()
     {
-        if ($this->asset && method_exists($this->asset, 'user') && $this->asset->user) {
-            return $this->asset->user->firstname . ' ' . $this->asset->user->lastname;
+        $asset = $this->resolvedAsset();
+        if ($asset && method_exists($asset, 'user') && $asset->user) {
+            return $asset->user->firstname . ' ' . $asset->user->lastname;
         }
 
         return null;
@@ -123,10 +145,48 @@ class BundleAsset extends ProcessMakerModel
             return [];
         }
 
-        if ($this->asset && method_exists($this->asset, 'categories')) {
-            return $this->asset->categories->pluck('name')->toArray();
+        $asset = $this->resolvedAsset();
+        if ($asset && method_exists($asset, 'categories')) {
+            return $asset->categories->pluck('name')->toArray();
         }
 
         return [];
+    }
+
+    public function getIntegrityStatusAttribute(): string
+    {
+        if (!class_exists($this->asset_type)) {
+            return self::INTEGRITY_TYPE_UNAVAILABLE;
+        }
+
+        return $this->resolvedAsset() === null
+            ? self::INTEGRITY_MISSING
+            : self::INTEGRITY_VALID;
+    }
+
+    public function integrityDetails(): array
+    {
+        return [
+            'bundle_asset_id' => $this->id,
+            'asset_type' => $this->asset_type,
+            'asset_id' => $this->asset_id,
+            'integrity_status' => $this->integrity_status,
+        ];
+    }
+
+    private function resolvedAsset(): ?ProcessMakerModel
+    {
+        if (!class_exists($this->asset_type)) {
+            return null;
+        }
+
+        return $this->asset;
+    }
+
+    private function typeLabel(): string
+    {
+        $type = $this->type ?? class_basename($this->asset_type);
+
+        return Str::headline($type);
     }
 }

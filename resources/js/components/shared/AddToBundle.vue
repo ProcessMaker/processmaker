@@ -102,8 +102,8 @@ const save = (event) => {
 
 <template>
   <b-modal ref="modal" @ok="save"
-           :ok-title="vue.$t('Save')" 
-           cancel-variant="light" 
+           :ok-title="vue.$t('Save')"
+           cancel-variant="light"
            modal-class="add-to-bundle-modal">
     <template #modal-title>
       <b>{{ vue.$t('Add asset to bundle') }}</b>
@@ -119,7 +119,14 @@ const save = (event) => {
       </p>
       <b>{{ vue.$t('Bundles') }}</b>
       <BackendSelect
-        url="devlink/local-bundles?editable=true"
+        url="devlink/local-bundles"
+        :query-params="{
+          editable: true,
+          per_page: 100,
+          order_by: 'created_at',
+          order_direction: 'desc'
+        }"
+        :remote-search="true"
         value-field="id"
         text-field="name"
         v-model="selected"
