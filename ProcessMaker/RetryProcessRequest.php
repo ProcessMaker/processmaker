@@ -21,9 +21,9 @@ use ProcessMaker\Repositories\BpmnDocument;
 
 class RetryProcessRequest
 {
-    public static array $output = [];
+    private array $output = [];
 
-    private static array $taskTypes = [];
+    private array $taskTypes = [];
 
     private ProcessRequest $processRequest;
 
@@ -60,7 +60,7 @@ class RetryProcessRequest
 
     public function hasNonRetriableTasks(): bool
     {
-        $currentTaskTypes = static::$taskTypes;
+        $currentTaskTypes = $this->taskTypes;
 
         $this->determineTaskTypes(true);
 
@@ -102,7 +102,7 @@ class RetryProcessRequest
                 WorkflowManager::runServiceTask($task, $token);
             }
 
-            static::$output[] = $this->formatOutput($task, $element, $token);
+            $this->output[] = $this->formatOutput($task, $element, $token);
         });
 
         $this->createRequestComment();
@@ -166,12 +166,17 @@ class RetryProcessRequest
         $comment->save();
     }
 
+    public function getOutput(): array
+    {
+        return $this->output;
+    }
+
     private function determineTaskTypes(bool $all = false): void
     {
         if ($all || app()->runningInConsole()) {
-            static::$taskTypes = ['scriptTask', 'serviceTask', 'task'];
+            $this->taskTypes = ['scriptTask', 'serviceTask', 'task'];
         } else {
-            static::$taskTypes = ['scriptTask'];
+            $this->taskTypes = ['scriptTask'];
         }
     }
 
@@ -181,7 +186,7 @@ class RetryProcessRequest
 
         $tokensQuery->whereIn('status', ['FAILING', 'ACTIVE', 'ERROR']);
 
-        $tokensQuery->whereIn('element_type', static::$taskTypes);
+        $tokensQuery->whereIn('element_type', $this->taskTypes);
 
         return $tokensQuery;
     }
