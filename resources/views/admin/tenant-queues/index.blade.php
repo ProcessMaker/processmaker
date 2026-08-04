@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Jobs Dashboard')}}
@@ -16,11 +16,12 @@
 @endsection
 
 @section('content')
+    @vite(['resources/js/admin/loaderAdmin.js'])
     <div id="tenant-queues-dashboard">
         <router-view></router-view>
     </div>
 @endsection
 
 @section('js')
-    <script src="{{ mix('js/admin/tenant-queues/index.js') }}"></script>
+    @vite(['resources/js/admin/tenant-queues/index.js'])
 @endsection

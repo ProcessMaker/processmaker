@@ -20,10 +20,12 @@ Vite runs **alongside** Laravel Mix. Do not replace Mix globally. Migrate routes
 | Layout | CSS / JS | Use when |
 |--------|----------|----------|
 | `layouts.layout` / `layouts.layoutnext` | Mix CSS/JS chrome | Legacy Mix pages (e.g. catalogue mobile) |
-| `layouts.layoutnextvite` | `@vite` of `app.scss`, `sidebar`, `collapseDetails`, `tailwind.css` | Authenticated Vite pages (Tasks, Processes Designer, Processes Catalogue desktop, Cases) |
+| `layouts.layoutnextvite` | `@vite` of `app.scss`, `sidebar`, `collapseDetails`, `tailwind.css` | Authenticated Vite pages (Tasks, Processes Designer, Processes Catalogue desktop, Cases, Admin…) |
 | Standalone / `auth.layouts.auth` | Page-level `@vite` | Login and password-reset style pages |
 
 File: `resources/views/layouts/layoutnextvite.blade.php` (must be `.blade.php`).
+
+**Script order in `layoutnextvite`:** `@yield('js')` runs **before** package addon scripts (`$addons` / `GlobalScripts`). Package code that mutates `window.ProcessMaker.*` after yield may not be ready in a page module’s first tick. Prefer `window.addEventListener('load', …)` when merging package tabs/addons (see Customize UI). Classic `layout` loads addons **before** `@yield('js')`.
 
 ## How routes switch to Vite (current pattern)
 
@@ -36,11 +38,13 @@ There is **no** `VITE_VIEW` env map. Migration is done **in place** on the exist
 
 Entries may live under:
 
-- `resources/js/vite/<area>/` (Tasks, auth, Processes Designer)
-- Feature folder next to the UI (e.g. `resources/js/processes-catalogue/`)
+- `resources/js/vite/<area>/` (Tasks, auth)
+- Feature folder next to the UI (e.g. `resources/js/admin/`, `resources/js/processes-catalogue/`)
 - Composition tree (e.g. `resources/jscomposition/cases/casesMain/`)
 
 Prefer co-locating the Vite entry with the feature source when that tree already owns the page.
+
+Shared admin chrome: `resources/js/admin/loaderAdmin.js` (`setupMain` + packages) is used by Script Executors and Tenant Queues.
 
 ## Folder layout
 
@@ -55,15 +59,15 @@ resources/views/cases/casesMain.blade.php             ← Vite
 resources/views/cases/edit.blade.php                  ← Vite (case detail)
 resources/views/auth/newLogin.blade.php               ← Vite
 resources/views/auth/layouts/auth.blade.php           ← Vite scripts (reset/email)
+resources/views/admin/script-executors/index.blade.php ← Vite
+resources/views/admin/tenant-queues/index.blade.php   ← Vite
+resources/views/admin/queues/index.blade.php          ← Vite layout (Horizon iframe; no page app)
+resources/views/admin/settings/ldap-logs.blade.php    ← Vite
 resources/js/vite/tasks/                              ← Tasks entries
-resources/js/vite/processes/                          ← Processes Designer entries
 resources/js/vite/auth/login.js                       ← Login / auth layout entry
+resources/js/admin/loaderAdmin.js                     ← shared admin setupMain loader
 resources/js/processes-catalogue/loaderProcessesCatalogue.js
-resources/js/processes-catalogue/processesCatalogue.js
 resources/jscomposition/cases/casesMain/loaderCasesMain.js
-resources/jscomposition/cases/casesMain/casesMain.js
-resources/jscomposition/cases/casesDetail/loaderCasesDetail.js
-resources/jscomposition/cases/casesDetail/casesDetail.js
 resources/js/translations/index.js                    ← shared i18n Vite entry
 resources/sass/*.scss|css                             ← also compiled by Vite for layoutnextvite
 vite.config.js
@@ -79,6 +83,12 @@ vite.config.js
 | Admin Users | **Vite** | `admin.users.index` + `edit` + `layoutnextvite` | `admin/users/loaderUsers.js` → `index.js` / `edit.js` + inline Vue boot |
 | Admin Groups | **Vite** | `admin.groups.index` + `edit` + `layoutnextvite` | `admin/groups/loaderGroups.js` → `index.js` / `edit.js` + inline Vue boot |
 | Admin Auth Clients | **Vite** | `auth-clients.index` + `layoutnextvite` | `admin/auth-clients/loaderAuthClients.js` → `index.js` |
+| Admin Settings | **Vite** | `settings.index` + `layoutnextvite` | `admin/settings/loaderSettings.js` → `index.js` (+ optional package email-listener Mix) |
+| Admin LDAP Logs | **Vite** | `admin.settings.ldap-logs` + `layoutnextvite` | `admin/users/loaderUsers.js` → `admin/settings/ldaplogs.js` |
+| Admin Customize UI | **Vite** | `customize-ui.edit` + `layoutnextvite` | `admin/cssOverride/loaderCssOverride.js` → `edit.js` (Tinymce) + inline Vue on `load` |
+| Admin Script Executors | **Vite** | `script-executors.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/script-executors/index.js` |
+| Admin Tenant Queues | **Vite** | `tenant-queue.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/tenant-queues/index.js` (Vue Router) |
+| Admin Queues (Horizon) | **Vite layout** | `admin.queues.index` + `layoutnextvite` | `admin/users/loaderUsers.js` only; page is an iframe to `/admin/horizon` |
 | Processes Catalogue (desktop) | **Vite** | `process.browser.index` (`/process-browser`) + `layoutnextvite` | `processes-catalogue/loaderProcessesCatalogue.js` → ScreenBuilder scripts → `processesCatalogue.js` |
 | Cases | **Vite** | `cases.casesMain` (`/cases`) + `layoutnextvite` | `jscomposition/.../loaderCasesMain.js` → GlobalScripts / ScreenBuilder → `casesMain.js` |
 | Case Detail | **Vite** | `cases.edit` + `layoutnextvite` | `jscomposition/.../loaderCasesDetail.js` → `initialLoad` (Vite) + GlobalScripts / modeler scripts → `casesDetail.js` |
@@ -99,6 +109,7 @@ resources/js/processes/edit.js
 resources/js/templates/index.js
 resources/js/processes/categories/index.js
 resources/js/processes/archived.js
+resources/js/admin/loaderAdmin.js
 resources/js/admin/users/loaderUsers.js
 resources/js/admin/users/index.js
 resources/js/admin/users/edit.js
@@ -107,6 +118,13 @@ resources/js/admin/groups/index.js
 resources/js/admin/groups/edit.js
 resources/js/admin/auth-clients/loaderAuthClients.js
 resources/js/admin/auth-clients/index.js
+resources/js/admin/settings/loaderSettings.js
+resources/js/admin/settings/index.js
+resources/js/admin/settings/ldaplogs.js
+resources/js/admin/cssOverride/loaderCssOverride.js
+resources/js/admin/cssOverride/edit.js
+resources/js/admin/script-executors/index.js
+resources/js/admin/tenant-queues/index.js
 resources/js/processes-catalogue/loaderProcessesCatalogue.js
 resources/js/processes-catalogue/processesCatalogue.js
 resources/jscomposition/cases/casesMain/loaderCasesMain.js
@@ -155,7 +173,7 @@ Dev tips:
    - **Script order:**
      1. Inline boot (`window.temporal = {...}`; set `window.packages` if `setupMain` needs it)
      2. `@vite` loader (`setupMain` + ScreenBuilder as needed)
-     3. Package scripts (`defer`)
+     3. Package scripts (`defer` — after yield in `layoutnextvite`)
      4. `@vite` page app (often via `@section('js')` / `@append` from a child Blade)
 
 2. **Blade ↔ Vue bindings (common failure mode)**
@@ -166,6 +184,7 @@ Dev tips:
      - Good: `:is-ab-testing-installed="@json(...)"` → Vue gets `true`/`false`
      - Bad: `is-ab-testing-installed="{{ ... }}"` → PHP `true` becomes string `"1"` → Vue prop type warning
    - Do **not** use `@{{ __('...') }}` for server translations (`@{{` is for Vue interpolations in the template).
+   - Root Vue on a Blade `el` (e.g. `#editCss`): directives in that Blade (`v-if="showTabs"`) bind to the Vue instance mounted on that `el`. Blade does not “pass” the variable; Vue owns the DOM after mount.
 
 3. **JS entry**
    - Vue 2 Options API; `import Vue from 'vue'` / `import VueRouter from 'vue-router'` in ESM.
@@ -176,9 +195,10 @@ Dev tips:
    - Avoid circular ESM: do not import feature `EventBus` from a Mix page entry that also imports the feature graph.
    - Multi-tab pages (e.g. Designer Processes): one Vite page entry may mount **all** tab roots (`#processIndex`, `#templatesIndex`, `#categories-listing`, `#archivedProcess`) instead of one Mix file per tab.
    - Register globals the child Blades expect (`Required`, listing components) in that same entry when Mix chrome no longer does it.
+   - Do **not** double-mount the same `el` from two entries (first mount strips Vue directives; second remount leaves dead UI).
 
 4. **Mix cleanup**
-   - Remove the migrated Mix input from `webpack.mix.js` when no Blade still calls `mix('js/...')` for it (e.g. drop `resources/js/processes/index.js`).
+   - Remove the migrated Mix input from `webpack.mix.js` when no Blade still calls `mix('js/...')` for it.
    - Leave Mix entries that other routes / shared child Blades still load (screens, scripts, categories on non-Vite pages, etc.).
 
 5. **Controller**
@@ -197,6 +217,7 @@ Dev tips:
    - Point Vite `hotFile` at `public/hot`.
    - Include `auth.partials.auth-language-scripts` on Vite auth pages (still references dead Mix `builds/login/js/...` → `MixFileNotFoundException`).
    - Leave debug `console.log` in boot Blades (e.g. `cases/edit` `temporal` dumps).
+   - Put `resources/js/**/*.{js,vue}` in Laravel Vite `refresh` if you want component HMR (that forces full page reload).
 
 ## Known Vite config notes (`vite.config.js`)
 
@@ -204,9 +225,11 @@ Dev tips:
 - **Styles alias**: `styles` / `~styles` → `resources/sass`; Sass importer mirrors Webpack `~styles/...`.
 - **Tailwind**: entry `resources/sass/tailwind.css` + root `postcss.config.js`.
 - **Fonts**: Sass `$FontPathOpenSans` / `$fa-font-path` are root-relative (`/css/precompiled/...`). During `vite:dev`, `server.proxy['/css']` forwards to `APP_URL` (avoids CORS).
-- **Vue2 plugin**: `includeAbsolute: false` so `/img/...` stays Laravel public URLs.
-- **`refresh`**: `resources/views/vite/**` (optional), `resources/js/**/*.{js,vue}`, `resources/sass/**`.
+- **Vue2 plugin**: `includeAbsolute: false` so `/img/...` stays Laravel public URLs. Enables **component HMR** for `.vue` SFCs.
+- **`refresh`**: `resources/views/**`, `resources/sass/**` → **full page reload** when those change. Do not list page JS/Vue here if you want HMR.
+- **`server.hmr`**: WebSocket host/protocol only; does not choose full vs component reload.
 - **YAML plugin**: `@rollup/plugin-yaml`.
+- **Modeler**: `modelerPublicPathPlugin` rewrites `@processmaker/modeler` Webpack-style `img/` URLs to `/js/img/`; `optimizeDeps.exclude: ['@processmaker/modeler']` so that transform runs.
 
 ## Quick reference
 
@@ -249,6 +272,48 @@ Dev tips:
 - Entries: `loaderAuthClients.js` → `index.js` (registers `AuthClientsListing` + mounts `#authClients`)
 - Mix: no longer builds `admin/auth-clients/index.js`
 
+**Admin Settings** — `/admin/settings`
+
+- View: `resources/views/admin/settings/index.blade.php` → `layoutnextvite`
+- Boot: `window.temporal.packages` / `window.packages` before loader
+- Entries: `loaderSettings.js` → optional Mix `email-listener.js` (package-email-start-event) → `index.js` (mounts `#settings` / `SettingsMain`)
+- Plugin addon HTML still rendered in content; addon scripts via `layoutnextvite`
+- Mix: no longer builds `admin/settings/index.js`
+
+**Admin LDAP Logs** — settings LDAP logs
+
+- View: `resources/views/admin/settings/ldap-logs.blade.php` → `layoutnextvite`
+- Entries: `admin/users/loaderUsers.js` → `admin/settings/ldaplogs.js`
+- Mix: no longer builds `admin/settings/ldaplogs.js`
+
+**Admin Customize UI** — `/admin/customize-ui/{tab?}`
+
+- View: `resources/views/admin/cssOverride/edit.blade.php` → `layoutnextvite`
+- Boot: packages + `window.config` / `loginFooterSetting` / `altTextSetting` before loader (ESM-safe for `SiteDesign.vue`)
+- Entries: `loaderCssOverride.js` → `edit.js` (registers Tinymce + `SiteDesign` / `ColorPicker`) + **inline Vue on `load`** (`#editCss`, `showTabs` / package `cssOverrideTabs`)
+- TinyMCE under Vite: import core + theme + `icons/default` + plugins; with `skin: false` also import `tinymce/skins/ui/oxide/skin.min.css`. Content iframe CSS: inject oxide/default content CSS via `content_style` (`?raw`) plus `content_css: '/css/app.css'` — parent-page CSS imports do not apply inside the editor iframe.
+- Package tabs: `showTabs` is `tabs.length > 1`. `cssOverrideTabs` may arrive after page modules because addon scripts load after `@yield('js')`; merge on `window` `load` when needed.
+- Mix: no longer builds `admin/cssOverride/edit.js`
+
+**Admin Script Executors** — `/admin/script-executors`
+
+- View: `resources/views/admin/script-executors/index.blade.php` → `layoutnextvite`
+- Entries: `admin/loaderAdmin.js` (in content) → `admin/script-executors/index.js` (mounts `#script-executors`)
+- Mix: no longer builds this page entry
+
+**Admin Tenant Queues** — `/admin/tenant-queues`
+
+- View: `resources/views/admin/tenant-queues/index.blade.php` → `layoutnextvite`
+- Entries: `admin/loaderAdmin.js` → `admin/tenant-queues/index.js` (Vue Router + `#tenant-queues-dashboard`)
+- Access: not a `can:*` ability — `TenantQueueController::checkPermissions()` requires `is_administrator`, `config('app.multitenancy')`, and `!config('queue.disable_tenant_tracking')`
+- Mix: no longer builds this page entry
+
+**Admin Queues (Horizon)** — queue management iframe
+
+- View: `resources/views/admin/queues/index.blade.php` → `layoutnextvite`
+- Only loads `admin/users/loaderUsers.js` for chrome; body is `<iframe src="/admin/horizon">`
+- May redirect to tenant-queues when tenant tracking is restricted
+
 **Tasks**
 
 - View: `resources/views/tasks/index.blade.php` → `layoutnextvite`
@@ -287,3 +352,4 @@ Dev tips:
 
 - Processes Catalogue mobile: `resources/views/processes-catalogue/mobile.blade.php`
 - Shared Designer child lists / other Designer routes still Mix (`templates/list`, `categories/list`, `archivedList`, screens, scripts, modeler, …) even when embedded under Vite `/processes`
+- Admin profile, cases-retention, logs, password change, and most other non-listed admin/designer pages
