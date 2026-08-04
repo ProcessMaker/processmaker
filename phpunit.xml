@@ -7,7 +7,10 @@
          extensionsDirectory="tests/Extensions"
          displayDetailsOnAllIssues="true"
 >
-  <testsuites>
+    <extensions>
+        <bootstrap class="Tests\Extensions\RealTimeOutputExtension" />
+    </extensions>
+    <testsuites>
       <testsuite name="Features">
         <directory>tests/Feature</directory>
         <directory>tests/Managers</directory>
