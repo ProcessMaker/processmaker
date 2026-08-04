@@ -102,7 +102,6 @@ mix
   .js("resources/js/admin/auth/passwords/change.js", "public/js/admin/auth/passwords/change.js")
   // .js("resources/js/admin/queues/index.js", "public/js/admin/queues")
   .js("resources/js/admin/profile/edit.js", "public/js/admin/profile/edit.js")
-  .js("resources/js/admin/logs/index.js", "public/js/admin/logs/index.js")
 
   .js("resources/js/processes/newDesigner.js", "public/js/processes")
   .js("resources/js/templates/import/index.js", "public/js/templates/import")

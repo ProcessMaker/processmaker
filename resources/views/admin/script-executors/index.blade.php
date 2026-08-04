@@ -26,6 +26,11 @@
 @endsection
 
 @section('js')
+    <script>
+        window.temporal = window.temporal || {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+    </script>
     @vite(['resources/js/admin/script-executors/index.js'])
 @endsection
 
