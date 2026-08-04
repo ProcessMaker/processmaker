@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Cases Retention')}}
@@ -15,6 +15,7 @@
     ]])
 @endsection
 @section('content')
+    @vite(['resources/js/admin/loaderAdmin.js'])
     <div class="px-3" id="cases-retention">
         
     </div>
@@ -61,7 +62,7 @@
 
 
 @section('js')
-    <script src="{{mix('js/admin/cases-retention/index.js')}}"></script>
+    @vite(['resources/js/admin/cases-retention/index.js'])
 @endsection
 
 @section('css')

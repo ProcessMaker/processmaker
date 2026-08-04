@@ -44,7 +44,7 @@ Entries may live under:
 
 Prefer co-locating the Vite entry with the feature source when that tree already owns the page.
 
-Shared admin chrome: `resources/js/admin/loaderAdmin.js` (`setupMain` + packages) is used by Script Executors, Tenant Queues, and DevLink.
+Shared admin chrome: `resources/js/admin/loaderAdmin.js` (`setupMain` + packages) is used by Script Executors, Tenant Queues, DevLink, and Cases Retention.
 
 ## Folder layout
 
@@ -64,6 +64,7 @@ resources/views/admin/tenant-queues/index.blade.php   ← Vite
 resources/views/admin/queues/index.blade.php          ← Vite layout (Horizon iframe; no page app)
 resources/views/admin/settings/ldap-logs.blade.php    ← Vite
 resources/views/admin/devlink/index.blade.php         ← Vite
+resources/views/admin/cases-retention/index.blade.php ← Vite
 resources/js/vite/tasks/                              ← Tasks entries
 resources/js/vite/auth/login.js                       ← Login / auth layout entry
 resources/js/admin/loaderAdmin.js                     ← shared admin setupMain loader
@@ -91,6 +92,7 @@ vite.config.js
 | Admin Tenant Queues | **Vite** | `tenant-queue.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/tenant-queues/index.js` (Vue Router) |
 | Admin Queues (Horizon) | **Vite layout** | `admin.queues.index` + `layoutnextvite` | `admin/users/loaderUsers.js` only; page is an iframe to `/admin/horizon` |
 | Admin DevLink | **Vite** | `devlink.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/devlink/index.js` (Vue Router) |
+| Admin Cases Retention | **Vite** | `cases-retention.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/cases-retention/index.js` |
 | Processes Catalogue (desktop) | **Vite** | `process.browser.index` (`/process-browser`) + `layoutnextvite` | `processes-catalogue/loaderProcessesCatalogue.js` → ScreenBuilder scripts → `processesCatalogue.js` |
 | Cases | **Vite** | `cases.casesMain` (`/cases`) + `layoutnextvite` | `jscomposition/.../loaderCasesMain.js` → GlobalScripts / ScreenBuilder → `casesMain.js` |
 | Case Detail | **Vite** | `cases.edit` + `layoutnextvite` | `jscomposition/.../loaderCasesDetail.js` → `initialLoad` (Vite) + GlobalScripts / modeler scripts → `casesDetail.js` |
@@ -128,6 +130,7 @@ resources/js/admin/cssOverride/edit.js
 resources/js/admin/script-executors/index.js
 resources/js/admin/tenant-queues/index.js
 resources/js/admin/devlink/index.js
+resources/js/admin/cases-retention/index.js
 resources/js/processes-catalogue/loaderProcessesCatalogue.js
 resources/js/processes-catalogue/processesCatalogue.js
 resources/jscomposition/cases/casesMain/loaderCasesMain.js
@@ -324,6 +327,12 @@ Dev tips:
 - Web routes (middleware `admin`): `devlink.index` → `DevLinkController@index` (returns the Blade, or OAuth redirects); `devlink.oauth-client` → `getOauthClient` (**no Blade** — creates Passport client and redirects with query params)
 - Mix: no longer builds `admin/devlink/index.js`
 
+**Admin Cases Retention** — `/admin/cases-retention`
+
+- View: `resources/views/admin/cases-retention/index.blade.php` → `layoutnextvite`
+- Entries: `admin/loaderAdmin.js` → `admin/cases-retention/index.js` (mounts `#casesRetentionIndex` with `CasesRetentionLogs`; uses `window.Vue`)
+- Mix: no longer builds `admin/cases-retention/index.js`
+
 **Tasks**
 
 - View: `resources/views/tasks/index.blade.php` → `layoutnextvite`
@@ -362,4 +371,4 @@ Dev tips:
 
 - Processes Catalogue mobile: `resources/views/processes-catalogue/mobile.blade.php`
 - Shared Designer child lists / other Designer routes still Mix (`templates/list`, `categories/list`, `archivedList`, screens, scripts, modeler, …) even when embedded under Vite `/processes`
-- Admin profile, cases-retention, logs, password change, and most other non-listed admin/designer pages
+- Admin profile, logs, password change, and most other non-listed admin/designer pages

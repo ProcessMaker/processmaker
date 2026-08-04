@@ -108,7 +108,7 @@ export default defineConfig(({ mode }) => {
           'resources/js/admin/script-executors/index.js',
           'resources/js/admin/tenant-queues/index.js',
           'resources/js/admin/devlink/index.js',
-
+          'resources/js/admin/cases-retention/index.js',
           
           'resources/js/processes-catalogue/loaderProcessesCatalogue.js',
           'resources/js/processes-catalogue/processesCatalogue.js',
