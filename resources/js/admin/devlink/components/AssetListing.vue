@@ -7,6 +7,7 @@ import types from './assetTypes';
 import moment from 'moment';
 import Header from './Header.vue';
 import InstallProgress from './InstallProgress.vue';
+import createOperationId from '../createOperationId';
 
 const route = useRoute();
 const vue = getCurrentInstance().proxy;
@@ -20,6 +21,7 @@ const showInstallModal = ref(false);
 const showConfirmModal = ref(false);
 const selectedAsset = ref(null);
 const installMode = ref('update');
+const operationId = ref('');
 const page = ref(1);
 const perPage = ref(15);
 
@@ -89,12 +91,14 @@ const install = (asset) => {
 
 const confirmInstall = () => {
   if (selectedAsset.value) {
+    operationId.value = createOperationId();
     showConfirmModal.value = false;
     showInstallModal.value = true;
     const params = {
       class: typeConfig.class,
       id: selectedAsset.value.id,
-      updateType: installMode.value
+      updateType: installMode.value,
+      operation_id: operationId.value,
     };
     ProcessMaker.apiClient
       .post(`/devlink/${route.params.id}/install-remote-asset`, params)
@@ -210,7 +214,11 @@ const handleFilterChange = () => {
 
     <!-- Progress Modal -->
     <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
-      <install-progress />
+      <install-progress
+        v-if="operationId"
+        :key="operationId"
+        :operation-id="operationId"
+      />
     </b-modal>
   </div>
 </template>

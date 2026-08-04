@@ -12,7 +12,6 @@ const app = new Vue({
       responseId: "",
       request: {},
       redirectTo: "",
-      wizardTemplateUuid: null,
     };
   },
   mounted() {
@@ -23,7 +22,6 @@ const app = new Vue({
       this.responseId = stateData.responseId;
       this.request = JSON.parse(stateData.request);
       this.redirectTo = stateData.redirectTo;
-      this.wizardTemplateUuid = stateData.wizardTemplateUuid;
     }
 
     window.addEventListener("popstate", () => {
