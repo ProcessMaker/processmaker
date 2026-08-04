@@ -20,7 +20,7 @@ Vite runs **alongside** Laravel Mix. Do not replace Mix globally. Migrate routes
 | Layout | CSS / JS | Use when |
 |--------|----------|----------|
 | `layouts.layout` / `layouts.layoutnext` | Mix CSS/JS chrome | Legacy Mix pages (e.g. catalogue mobile) |
-| `layouts.layoutnextvite` | `@vite` of `app.scss`, `sidebar`, `collapseDetails`, `tailwind.css` | Authenticated Vite pages (Tasks, Processes Catalogue desktop, Cases) |
+| `layouts.layoutnextvite` | `@vite` of `app.scss`, `sidebar`, `collapseDetails`, `tailwind.css` | Authenticated Vite pages (Tasks, Processes Designer, Processes Catalogue desktop, Cases) |
 | Standalone / `auth.layouts.auth` | Page-level `@vite` | Login and password-reset style pages |
 
 File: `resources/views/layouts/layoutnextvite.blade.php` (must be `.blade.php`).
@@ -36,7 +36,7 @@ There is **no** `VITE_VIEW` env map. Migration is done **in place** on the exist
 
 Entries may live under:
 
-- `resources/js/vite/<area>/` (Tasks, auth)
+- `resources/js/vite/<area>/` (Tasks, auth, Processes Designer)
 - Feature folder next to the UI (e.g. `resources/js/processes-catalogue/`)
 - Composition tree (e.g. `resources/jscomposition/cases/casesMain/`)
 
@@ -47,12 +47,16 @@ Prefer co-locating the Vite entry with the feature source when that tree already
 ```
 resources/views/layouts/layoutnextvite.blade.php
 resources/views/tasks/index.blade.php                 ← Vite
+resources/views/processes/index.blade.php             ← Vite (Designer /processes)
+resources/views/processes/edit.blade.php              ← Vite (Configure Process)
+resources/views/processes/list.blade.php              ← mounts @vite processes.js (@append)
 resources/views/processes-catalogue/index.blade.php   ← Vite (desktop)
 resources/views/cases/casesMain.blade.php             ← Vite
 resources/views/cases/edit.blade.php                  ← Vite (case detail)
 resources/views/auth/newLogin.blade.php               ← Vite
 resources/views/auth/layouts/auth.blade.php           ← Vite scripts (reset/email)
 resources/js/vite/tasks/                              ← Tasks entries
+resources/js/vite/processes/                          ← Processes Designer entries
 resources/js/vite/auth/login.js                       ← Login / auth layout entry
 resources/js/processes-catalogue/loaderProcessesCatalogue.js
 resources/js/processes-catalogue/processesCatalogue.js
@@ -70,6 +74,11 @@ vite.config.js
 | Route area | Status | View | JS entry(ies) |
 |------------|--------|------|----------------|
 | Tasks inbox | **Vite** | `tasks.index` + `layoutnextvite` | `vite/tasks/loaderTasks.js` → ScreenBuilder scripts → `vite/tasks/tasks.js` |
+| Processes (Designer) | **Vite** | `processes.index` + `layoutnextvite`; apps via child `@append` | `processes/loaderProcesses.js` → `processes.js` / `templates` / `categories` / `archived` |
+| Process Configure | **Vite** | `processes.edit` + `layoutnextvite` | `processes/loaderProcesses.js` → `processes/edit.js` + inline Vue boot |
+| Admin Users | **Vite** | `admin.users.index` + `edit` + `layoutnextvite` | `admin/users/loaderUsers.js` → `index.js` / `edit.js` + inline Vue boot |
+| Admin Groups | **Vite** | `admin.groups.index` + `edit` + `layoutnextvite` | `admin/groups/loaderGroups.js` → `index.js` / `edit.js` + inline Vue boot |
+| Admin Auth Clients | **Vite** | `auth-clients.index` + `layoutnextvite` | `admin/auth-clients/loaderAuthClients.js` → `index.js` |
 | Processes Catalogue (desktop) | **Vite** | `process.browser.index` (`/process-browser`) + `layoutnextvite` | `processes-catalogue/loaderProcessesCatalogue.js` → ScreenBuilder scripts → `processesCatalogue.js` |
 | Cases | **Vite** | `cases.casesMain` (`/cases`) + `layoutnextvite` | `jscomposition/.../loaderCasesMain.js` → GlobalScripts / ScreenBuilder → `casesMain.js` |
 | Case Detail | **Vite** | `cases.edit` + `layoutnextvite` | `jscomposition/.../loaderCasesDetail.js` → `initialLoad` (Vite) + GlobalScripts / modeler scripts → `casesDetail.js` |
@@ -84,12 +93,27 @@ resources/js/vite/auth/login.js
 resources/js/translations/index.js
 resources/js/vite/tasks/loaderTasks.js
 resources/js/vite/tasks/tasks.js
+resources/js/processes/loaderProcesses.js
+resources/js/processes/processes.js
+resources/js/processes/edit.js
+resources/js/templates/index.js
+resources/js/processes/categories/index.js
+resources/js/processes/archived.js
+resources/js/admin/users/loaderUsers.js
+resources/js/admin/users/index.js
+resources/js/admin/users/edit.js
+resources/js/admin/groups/loaderGroups.js
+resources/js/admin/groups/index.js
+resources/js/admin/groups/edit.js
+resources/js/admin/auth-clients/loaderAuthClients.js
+resources/js/admin/auth-clients/index.js
 resources/js/processes-catalogue/loaderProcessesCatalogue.js
 resources/js/processes-catalogue/processesCatalogue.js
 resources/jscomposition/cases/casesMain/loaderCasesMain.js
 resources/jscomposition/cases/casesMain/casesMain.js
 resources/jscomposition/cases/casesDetail/loaderCasesDetail.js
 resources/jscomposition/cases/casesDetail/casesDetail.js
+resources/js/initialLoad.js
 resources/sass/app.scss
 resources/sass/sidebar/sidebar.scss
 resources/sass/collapseDetails.scss
@@ -127,34 +151,52 @@ Dev tips:
    - Prefer `@extends('layouts.layoutnextvite')` for in-app pages.
    - Load page JS with `@vite([...])`.
    - Keep Mix package scripts as classic tags / `$manager->getScripts()` / `GlobalScripts` when required.
+   - Prefer a **small surface**: swap layout + replace the primary Mix page script. Avoid inventing `$vite` flags on every shared child partial unless those children must stay Mix-only on other routes.
    - **Script order:**
      1. Inline boot (`window.temporal = {...}`; set `window.packages` if `setupMain` needs it)
      2. `@vite` loader (`setupMain` + ScreenBuilder as needed)
      3. Package scripts (`defer`)
-     4. `@vite` page app
+     4. `@vite` page app (often via `@section('js')` / `@append` from a child Blade)
 
-2. **JS entry**
+2. **Blade ↔ Vue bindings (common failure mode)**
+   - `__()` is PHP. Vue never runs it. In a Vue attribute it must be executed by Blade.
+   - Strings for `:prop` → `:type="{{ Js::from(__('Process')) }}"` (JSON-quoted string Vue can evaluate).
+   - Plain text props → `type="{{ __('Process') }}"` (no `:`).
+   - Booleans / numbers / arrays → always bind with `:` and `@json(...)` (or `Js::from`):
+     - Good: `:is-ab-testing-installed="@json(...)"` → Vue gets `true`/`false`
+     - Bad: `is-ab-testing-installed="{{ ... }}"` → PHP `true` becomes string `"1"` → Vue prop type warning
+   - Do **not** use `@{{ __('...') }}` for server translations (`@{{` is for Vue interpolations in the template).
+
+3. **JS entry**
    - Vue 2 Options API; `import Vue from 'vue'` / `import VueRouter from 'vue-router'` in ESM.
    - Register in `vite.config.js` → `laravel({ input: [...] })`.
-   - `.vue` extension optional (`resolve.extensions` includes `.vue`).
+   - `.vue` extension optional (`resolve.extensions` includes `.vue`); prefer explicit `.vue` imports.
    - Mirror `window.ProcessMaker` **and** `window.Processmaker` when legacy mixins expect the lowercase `m`.
    - Prefer reading Blade boot data from `window.temporal` / `window.ProcessMaker` (ESM cannot see Blade `const` / `let`).
    - Avoid circular ESM: do not import feature `EventBus` from a Mix page entry that also imports the feature graph.
+   - Multi-tab pages (e.g. Designer Processes): one Vite page entry may mount **all** tab roots (`#processIndex`, `#templatesIndex`, `#categories-listing`, `#archivedProcess`) instead of one Mix file per tab.
+   - Register globals the child Blades expect (`Required`, listing components) in that same entry when Mix chrome no longer does it.
 
-3. **Controller**
+4. **Mix cleanup**
+   - Remove the migrated Mix input from `webpack.mix.js` when no Blade still calls `mix('js/...')` for it (e.g. drop `resources/js/processes/index.js`).
+   - Leave Mix entries that other routes / shared child Blades still load (screens, scripts, categories on non-Vite pages, etc.).
+
+5. **Controller**
    - Usually no change if the Blade name stays the same.
    - Pass the same view data the page already expected.
 
-4. **Verify**
+6. **Verify**
    - With `vite:dev`: Network shows `127.0.0.1:5173` for `@vite` assets; Mix URLs stay on the app host.
    - Without Vite running: need a prior `vite:build` (manifest).
    - `mix('...')` must not point at `:5173` (delete stale `public/hot` if it does).
+   - Check Vue console for prop type warnings (`Expected Boolean, got String "1"`) after migrating Blade attrs.
    - **PHPUnit:** `Tests\TestCase` calls `withoutVite()` so `@vite` Blades do not need `public/build/manifest.json`. Feature tests only see server HTML (JS-mounted DOM is not executed). Mix helpers still need `mix-manifest.json` if the Blade still calls `mix()`.
 
-5. **Do not**
+7. **Do not**
    - Alias `@vite` in `vite.config.js` (shadows `@vite/client` / `@vite/env`).
    - Point Vite `hotFile` at `public/hot`.
    - Include `auth.partials.auth-language-scripts` on Vite auth pages (still references dead Mix `builds/login/js/...` → `MixFileNotFoundException`).
+   - Leave debug `console.log` in boot Blades (e.g. `cases/edit` `temporal` dumps).
 
 ## Known Vite config notes (`vite.config.js`)
 
@@ -167,6 +209,45 @@ Dev tips:
 - **YAML plugin**: `@rollup/plugin-yaml`.
 
 ## Quick reference
+
+**Processes (Designer)** — `/processes`
+
+- View: `resources/views/processes/index.blade.php` → `layoutnextvite`
+- Loader: `@vite(['resources/js/processes/loaderProcesses.js'])`
+- Page apps via child `@append`: `processes.js`, `templates/index.js`, `categories/index.js`, `archived.js` (one mount each — avoid double-mounting the same `el`)
+- `loaderProcesses.js`: `setupMain()` + copy `window.temporal?.packages` onto `ProcessMaker.packages` / `window.packages`
+- Mix: `webpack.mix.js` no longer builds `resources/js/processes/index.js` / `edit.js`. Other Designer Mix bundles (screens, scripts, modeler, …) remain.
+
+**Process Configure** — `/processes/{process}/edit`
+
+- View: `resources/views/processes/edit.blade.php` → `layoutnextvite`
+- Boot: set `window.temporal.packages` / `window.packages` before loader
+- Entries: `loaderProcesses.js` → `edit.js` (registers `CategorySelect`, `ProcessesPermissions`)
+- Vue root stays **inline** in the Blade (`window.addEventListener('load', …)`) so Blade `@json(...)` boot data and plugin `mixins: addons` keep working without a full ESM rewrite
+- Plugin addons still come from `layoutnextvite` (`var addons = []` + `script` / `script_mix`)
+
+**Admin Users** — `/admin/users`, `/admin/users/{user}/edit`
+
+- Views: `admin/users/index.blade.php`, `admin/users/edit.blade.php` → `layoutnextvite`
+- Boot: `window.temporal.packages` / `window.packages` before loader
+- Index: `loaderUsers.js` → `index.js` (mounts listings; `window.loadUsers` / `loadDeletedUsers`)
+- Edit: `loaderUsers.js` → `edit.js` (registers password/listing components) + inline Vue on `load` (`modalVueInstance` + `formVueInstance`, `mixins: addons`)
+- Mix: no longer builds `admin/users/index.js` or `edit.js`
+
+**Admin Groups** — `/admin/groups`, `/admin/groups/{group}/edit`
+
+- Views: `admin/groups/index.blade.php`, `admin/groups/edit.blade.php` → `layoutnextvite`
+- Boot: `window.temporal.packages` / `window.packages` before loader
+- Index: `loaderGroups.js` → `index.js` (registers `GroupsListing` + mounts `#listGroups`)
+- Edit: `loaderGroups.js` → `edit.js` (registers listing/select components) + inline Vue on `load` (`mixins: addons`, Blade `@json`)
+- Mix: no longer builds `admin/groups/index.js` or `edit.js`
+
+**Admin Auth Clients** — `/admin/auth-clients`
+
+- View: `resources/views/admin/auth-clients/index.blade.php` → `layoutnextvite`
+- Boot: `window.temporal.packages` / `window.packages` before loader
+- Entries: `loaderAuthClients.js` → `index.js` (registers `AuthClientsListing` + mounts `#authClients`)
+- Mix: no longer builds `admin/auth-clients/index.js`
 
 **Tasks**
 
@@ -205,3 +286,4 @@ Dev tips:
 **Still Mix**
 
 - Processes Catalogue mobile: `resources/views/processes-catalogue/mobile.blade.php`
+- Shared Designer child lists / other Designer routes still Mix (`templates/list`, `categories/list`, `archivedList`, screens, scripts, modeler, …) even when embedded under Vite `/processes`

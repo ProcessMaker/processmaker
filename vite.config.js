@@ -97,6 +97,8 @@ export default defineConfig(({ mode }) => {
           'resources/js/admin/groups/loaderGroups.js',
           'resources/js/admin/groups/index.js',
           'resources/js/admin/groups/edit.js',
+          'resources/js/admin/auth-clients/loaderAuthClients.js',
+          'resources/js/admin/auth-clients/index.js',
           
           'resources/js/processes-catalogue/loaderProcessesCatalogue.js',
           'resources/js/processes-catalogue/processesCatalogue.js',

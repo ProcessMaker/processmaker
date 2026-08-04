@@ -102,7 +102,6 @@ mix
   .js("resources/js/admin/auth/passwords/change.js", "public/js/admin/auth/passwords/change.js")
   .js("resources/js/admin/settings/index.js", "public/js/admin/settings")
   .js("resources/js/admin/settings/ldaplogs.js", "public/js/admin/settings")
-  .js("resources/js/admin/auth-clients/index.js", "public/js/admin/auth-clients/index.js")
   // .js("resources/js/admin/queues/index.js", "public/js/admin/queues")
   .js("resources/js/admin/profile/edit.js", "public/js/admin/profile/edit.js")
   .js("resources/js/admin/cssOverride/edit.js", "public/js/admin/cssOverride/edit.js")
