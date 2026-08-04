@@ -113,7 +113,6 @@ mix
   .js("resources/js/processes/scripts/preview.js", "public/js/processes/scripts")
   .js("resources/js/processes/export/index.js", "public/js/processes/export")
   
-  .js("resources/js/processes/environment-variables/edit.js", "public/js/processes/environment-variables")
   .js("resources/js/processes/import/index.js", "public/js/processes/import")
   .js("resources/js/processes/screens/index.js", "public/js/processes/screens")
   .js("resources/js/processes/screens/edit.js", "public/js/processes/screens")

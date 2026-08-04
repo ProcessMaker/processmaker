@@ -44,7 +44,7 @@ Entries may live under:
 
 Prefer co-locating the Vite entry with the feature source when that tree already owns the page.
 
-Shared admin chrome: `resources/js/admin/loaderAdmin.js` (`setupMain` + packages) is used by Script Executors, Tenant Queues, DevLink, and Cases Retention.
+Shared admin chrome: `resources/js/admin/loaderAdmin.js` (`setupMain` + packages) is used by Script Executors, Tenant Queues, DevLink, Cases Retention, and Logs.
 
 ## Folder layout
 
@@ -65,9 +65,13 @@ resources/views/admin/queues/index.blade.php          ← Vite layout (Horizon i
 resources/views/admin/settings/ldap-logs.blade.php    ← Vite
 resources/views/admin/devlink/index.blade.php         ← Vite
 resources/views/admin/cases-retention/index.blade.php ← Vite
+resources/views/admin/logs/index.blade.php            ← Vite
+resources/views/processes/environment-variables/index.blade.php ← Vite
+resources/views/processes/environment-variables/edit.blade.php  ← Vite
 resources/js/vite/tasks/                              ← Tasks entries
 resources/js/vite/auth/login.js                       ← Login / auth layout entry
 resources/js/admin/loaderAdmin.js                     ← shared admin setupMain loader
+resources/js/processes/environment-variables/loaderEnvironment.js ← env vars setupMain loader
 resources/js/processes-catalogue/loaderProcessesCatalogue.js
 resources/jscomposition/cases/casesMain/loaderCasesMain.js
 resources/js/translations/index.js                    ← shared i18n Vite entry
@@ -93,6 +97,8 @@ vite.config.js
 | Admin Queues (Horizon) | **Vite layout** | `admin.queues.index` + `layoutnextvite` | `admin/users/loaderUsers.js` only; page is an iframe to `/admin/horizon` |
 | Admin DevLink | **Vite** | `devlink.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/devlink/index.js` (Vue Router) |
 | Admin Cases Retention | **Vite** | `cases-retention.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/cases-retention/index.js` |
+| Admin Logs | **Vite** | `admin.logs` + `layoutnextvite` | packages boot → `admin/loaderAdmin.js` → `admin/logs/index.js` (Vue Router) |
+| Environment Variables | **Vite** | `environment-variables.index` + `edit` + `layoutnextvite` | `processes/environment-variables/loaderEnvironment.js` → `index.js` / `edit.js` |
 | Processes Catalogue (desktop) | **Vite** | `process.browser.index` (`/process-browser`) + `layoutnextvite` | `processes-catalogue/loaderProcessesCatalogue.js` → ScreenBuilder scripts → `processesCatalogue.js` |
 | Cases | **Vite** | `cases.casesMain` (`/cases`) + `layoutnextvite` | `jscomposition/.../loaderCasesMain.js` → GlobalScripts / ScreenBuilder → `casesMain.js` |
 | Case Detail | **Vite** | `cases.edit` + `layoutnextvite` | `jscomposition/.../loaderCasesDetail.js` → `initialLoad` (Vite) + GlobalScripts / modeler scripts → `casesDetail.js` |
@@ -131,6 +137,10 @@ resources/js/admin/script-executors/index.js
 resources/js/admin/tenant-queues/index.js
 resources/js/admin/devlink/index.js
 resources/js/admin/cases-retention/index.js
+resources/js/admin/logs/index.js
+resources/js/processes/environment-variables/loaderEnvironment.js
+resources/js/processes/environment-variables/index.js
+resources/js/processes/environment-variables/edit.js
 resources/js/processes-catalogue/loaderProcessesCatalogue.js
 resources/js/processes-catalogue/processesCatalogue.js
 resources/jscomposition/cases/casesMain/loaderCasesMain.js
@@ -333,6 +343,21 @@ Dev tips:
 - Entries: `admin/loaderAdmin.js` → `admin/cases-retention/index.js` (mounts `#casesRetentionIndex` with `CasesRetentionLogs`; uses `window.Vue`)
 - Mix: no longer builds `admin/cases-retention/index.js`
 
+**Admin Logs** — `/admin/logs/{any?}`
+
+- View: `resources/views/admin/logs/index.blade.php` → `layoutnextvite`
+- Boot **before** loader: `window.temporal.packages` / `window.packages` (router guards call `hasEmailPackage()` / `hasAiPackage()` via `ProcessMaker.packages`)
+- Entries: `admin/loaderAdmin.js` → `admin/logs/index.js` (Vue Router base `/admin/logs`, mounts `#admin-logs-main`)
+- **Pitfall:** empty `packages` makes `/` redirect to `/email/errors` and email guard bounce back to `/` → `RangeError: Maximum call stack size exceeded`. Always boot packages before the page entry; guards must not fall back to `/` when no package is present.
+- Mix: no longer builds `admin/logs/index.js`
+
+**Environment Variables** — `/designer/environment-variables`, edit
+
+- Views: `processes/environment-variables/index.blade.php`, `edit.blade.php` → `layoutnextvite`
+- Boot: `window.temporal.packages` / `window.packages`; edit also sets `window.temporal.EnvironmentVariableEdit` (ESM-safe form data)
+- Entries: `loaderEnvironment.js` → `index.js` / `edit.js`
+- Mix: no longer builds `processes/environment-variables/index.js` or `edit.js`
+
 **Tasks**
 
 - View: `resources/views/tasks/index.blade.php` → `layoutnextvite`
@@ -371,4 +396,4 @@ Dev tips:
 
 - Processes Catalogue mobile: `resources/views/processes-catalogue/mobile.blade.php`
 - Shared Designer child lists / other Designer routes still Mix (`templates/list`, `categories/list`, `archivedList`, screens, scripts, modeler, …) even when embedded under Vite `/processes`
-- Admin profile, logs, password change, and most other non-listed admin/designer pages
+- Admin profile, password change, and most other non-listed admin/designer pages

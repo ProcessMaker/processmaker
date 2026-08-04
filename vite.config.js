@@ -112,6 +112,8 @@ export default defineConfig(({ mode }) => {
           'resources/js/admin/logs/index.js',
           'resources/js/processes/environment-variables/loaderEnvironment.js',
           'resources/js/processes/environment-variables/index.js',
+          'resources/js/processes/environment-variables/edit.js',
+
 
           'resources/js/processes-catalogue/loaderProcessesCatalogue.js',
           'resources/js/processes-catalogue/processesCatalogue.js',
