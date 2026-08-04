@@ -10,8 +10,8 @@
 
   import {Sketch} from 'vue-color';
   import { createUniqIdsMixin } from "vue-uniq-ids";
+  import tinycolor from 'tinycolor2';
   const uniqIdsMixin = createUniqIdsMixin();
-  const tinycolor = require("tinycolor2");
 
   export default {
     components: {

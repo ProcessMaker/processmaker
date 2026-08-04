@@ -102,6 +102,8 @@ export default defineConfig(({ mode }) => {
           'resources/js/admin/settings/loaderSettings.js',
           'resources/js/admin/settings/index.js',
           'resources/js/admin/settings/ldaplogs.js',
+          'resources/js/admin/cssOverride/loaderCssOverride.js',
+          'resources/js/admin/cssOverride/edit.js',
 
           
           'resources/js/processes-catalogue/loaderProcessesCatalogue.js',
