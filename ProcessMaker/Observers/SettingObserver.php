@@ -10,7 +10,7 @@ use ProcessMaker\Models\Setting;
 
 class SettingObserver
 {
-    private static $added_refresh_artisan_caches = false;
+    private bool $addedRefreshArtisanCaches = false;
 
     /**
      * Handle the setting "created" event.
@@ -95,7 +95,7 @@ class SettingObserver
 
         // Check to see if we already added the refresh to the app's terminating queue.
         // This is important for install commands when multiple settings are being created/updated.
-        if (self::$added_refresh_artisan_caches) {
+        if ($this->addedRefreshArtisanCaches) {
             return;
         }
 
@@ -106,6 +106,6 @@ class SettingObserver
             RefreshArtisanCaches::dispatchSync();
         });
 
-        self::$added_refresh_artisan_caches = true;
+        $this->addedRefreshArtisanCaches = true;
     }
 }
