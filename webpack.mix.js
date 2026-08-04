@@ -100,7 +100,6 @@ mix
   .js("resources/js/processes/modeler/process-map.js", "public/js/processes/modeler")
   .js("resources/js/processes/modeler/initialLoad.js", "public/js/processes/modeler")
   .js("resources/js/admin/auth/passwords/change.js", "public/js/admin/auth/passwords/change.js")
-  .js("resources/js/admin/settings/index.js", "public/js/admin/settings")
   .js("resources/js/admin/settings/ldaplogs.js", "public/js/admin/settings")
   // .js("resources/js/admin/queues/index.js", "public/js/admin/queues")
   .js("resources/js/admin/profile/edit.js", "public/js/admin/profile/edit.js")
