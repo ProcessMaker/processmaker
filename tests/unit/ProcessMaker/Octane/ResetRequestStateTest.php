@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Laravel\Octane\Events\RequestTerminated;
 use ProcessMaker\Events\RedirectToEvent;
+use ProcessMaker\ImportExport\Manifest;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Listeners\HandleRedirectListener;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Octane\ResetRequestState;
@@ -23,6 +25,7 @@ class ResetRequestStateTest extends TestCase
     protected function tearDown(): void
     {
         ProcessMakerServiceProvider::beginRequestTiming();
+        Manifest::resetRequestState();
 
         parent::tearDown();
     }
@@ -32,6 +35,30 @@ class ResetRequestStateTest extends TestCase
         $connection = DB::connection();
 
         event(new QueryExecuted('SELECT 1', [], $milliseconds, $connection));
+    }
+
+    public function test_octane_request_termination_resets_manifest_request_state(): void
+    {
+        Manifest::buildParentModeMap([
+            'parent-uuid' => [
+                'dependents' => [
+                    ['uuid' => 'child-uuid'],
+                ],
+            ],
+        ], new Options([
+            'parent-uuid' => ['mode' => 'update'],
+        ]));
+
+        $this->assertNotNull(Manifest::$parents);
+
+        event(new RequestTerminated(
+            $this->app,
+            $this->app,
+            Request::create('/import-request'),
+            new Response()
+        ));
+
+        $this->assertNull(Manifest::$parents);
     }
 
     public function test_it_clears_request_timing_before_the_next_request(): void
