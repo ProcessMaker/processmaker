@@ -139,7 +139,12 @@ class SwitchTenant implements SwitchTenantTask
 
         // Used for setting the tenantId context when streaming logs to Loki
         $app->afterResolving('log', function ($log) use ($tenant) {
-            $log->shareContext(['tenantId' => $tenant->id, 'appUrl' => $tenant->config['app.url']]);
+            $log->shareContext([
+                'tenantId' => $tenant->id,
+                'appUrl' => $tenant->config['app.url'],
+                'pod' => config('app.pod'),
+                'pod_name' => config('app.pod_name'),
+            ]);
         });
 
         // url() helper
