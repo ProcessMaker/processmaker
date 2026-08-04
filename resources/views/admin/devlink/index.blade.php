@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('DevLink')}}
@@ -15,6 +15,7 @@
     ]])
 @endsection
 @section('content')
+    @vite(['resources/js/admin/loaderAdmin.js'])
     <div class="px-3" id="devlink">
         <dev-link></dev-link>
     </div>
@@ -22,5 +23,5 @@
 
 
 @section('js')
-    <script src="{{mix('js/admin/devlink/index.js')}}"></script>
+    @vite(['resources/js/admin/devlink/index.js'])
 @endsection

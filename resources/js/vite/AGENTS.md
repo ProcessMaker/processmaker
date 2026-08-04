@@ -44,7 +44,7 @@ Entries may live under:
 
 Prefer co-locating the Vite entry with the feature source when that tree already owns the page.
 
-Shared admin chrome: `resources/js/admin/loaderAdmin.js` (`setupMain` + packages) is used by Script Executors and Tenant Queues.
+Shared admin chrome: `resources/js/admin/loaderAdmin.js` (`setupMain` + packages) is used by Script Executors, Tenant Queues, and DevLink.
 
 ## Folder layout
 
@@ -63,6 +63,7 @@ resources/views/admin/script-executors/index.blade.php ← Vite
 resources/views/admin/tenant-queues/index.blade.php   ← Vite
 resources/views/admin/queues/index.blade.php          ← Vite layout (Horizon iframe; no page app)
 resources/views/admin/settings/ldap-logs.blade.php    ← Vite
+resources/views/admin/devlink/index.blade.php         ← Vite
 resources/js/vite/tasks/                              ← Tasks entries
 resources/js/vite/auth/login.js                       ← Login / auth layout entry
 resources/js/admin/loaderAdmin.js                     ← shared admin setupMain loader
@@ -89,6 +90,7 @@ vite.config.js
 | Admin Script Executors | **Vite** | `script-executors.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/script-executors/index.js` |
 | Admin Tenant Queues | **Vite** | `tenant-queue.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/tenant-queues/index.js` (Vue Router) |
 | Admin Queues (Horizon) | **Vite layout** | `admin.queues.index` + `layoutnextvite` | `admin/users/loaderUsers.js` only; page is an iframe to `/admin/horizon` |
+| Admin DevLink | **Vite** | `devlink.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/devlink/index.js` (Vue Router) |
 | Processes Catalogue (desktop) | **Vite** | `process.browser.index` (`/process-browser`) + `layoutnextvite` | `processes-catalogue/loaderProcessesCatalogue.js` → ScreenBuilder scripts → `processesCatalogue.js` |
 | Cases | **Vite** | `cases.casesMain` (`/cases`) + `layoutnextvite` | `jscomposition/.../loaderCasesMain.js` → GlobalScripts / ScreenBuilder → `casesMain.js` |
 | Case Detail | **Vite** | `cases.edit` + `layoutnextvite` | `jscomposition/.../loaderCasesDetail.js` → `initialLoad` (Vite) + GlobalScripts / modeler scripts → `casesDetail.js` |
@@ -125,6 +127,7 @@ resources/js/admin/cssOverride/loaderCssOverride.js
 resources/js/admin/cssOverride/edit.js
 resources/js/admin/script-executors/index.js
 resources/js/admin/tenant-queues/index.js
+resources/js/admin/devlink/index.js
 resources/js/processes-catalogue/loaderProcessesCatalogue.js
 resources/js/processes-catalogue/processesCatalogue.js
 resources/jscomposition/cases/casesMain/loaderCasesMain.js
@@ -313,6 +316,13 @@ Dev tips:
 - View: `resources/views/admin/queues/index.blade.php` → `layoutnextvite`
 - Only loads `admin/users/loaderUsers.js` for chrome; body is `<iframe src="/admin/horizon">`
 - May redirect to tenant-queues when tenant tracking is restricted
+
+**Admin DevLink** — `/admin/devlink/{router?}`
+
+- View: `resources/views/admin/devlink/index.blade.php` → `layoutnextvite`
+- Entries: `admin/loaderAdmin.js` → `admin/devlink/index.js` (Vue Router base `/admin/devlink`, mounts `#devlink` / `<dev-link>`)
+- Web routes (middleware `admin`): `devlink.index` → `DevLinkController@index` (returns the Blade, or OAuth redirects); `devlink.oauth-client` → `getOauthClient` (**no Blade** — creates Passport client and redirects with query params)
+- Mix: no longer builds `admin/devlink/index.js`
 
 **Tasks**
 
