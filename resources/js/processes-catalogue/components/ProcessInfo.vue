@@ -25,8 +25,6 @@
       :title="title"
       :process="process"
       :full-carousel="fullCarousel"
-      :is-wizard-template="createdFromWizardTemplate"
-      @getHelperProcess="getHelperProcess"
       @closeCarousel="closeFullCarousel"
       @close="closeProcessInfo"
     >
@@ -44,13 +42,6 @@
         </div>
       </div>
     </slide-process-info>
-    <wizard-helper-process-modal
-      v-if="createdFromWizardTemplate"
-      id="wizardHelperProcessModal"
-      ref="wizardHelperProcessModal"
-      :process-launchpad-id="process.id"
-      :wizard-template-uuid="wizardTemplateUuid"
-    />
   </div>
 </template>
 
@@ -60,7 +51,6 @@ import ProcessTab from "./ProcessTab.vue";
 import CarouselSlide from "./CarouselSlide.vue";
 import SlideProcessInfo from "./slideProcessInfo/SlideProcessInfo.vue";
 import ProcessOptions from "./ProcessOptions.vue";
-import WizardHelperProcessModal from "../../components/templates/WizardHelperProcessModal.vue";
 
 export default {
   components: {
@@ -69,7 +59,6 @@ export default {
     SlideProcessInfo,
     ProcessOptions,
     CarouselSlide,
-    WizardHelperProcessModal,
   },
   props: ["process", "currentUserId", "currentUser", "ellipsisPermission"],
   data() {
@@ -93,12 +82,6 @@ export default {
       return this.fullCarousel
         ? this.process.name
         : this.$t("Process Information");
-    },
-    createdFromWizardTemplate() {
-      return !!this.process?.properties?.wizardTemplateUuid;
-    },
-    wizardTemplateUuid() {
-      return this.process?.properties?.wizardTemplateUuid;
     },
   },
   mounted() {
@@ -145,9 +128,6 @@ export default {
     },
     showFullCarousel() {
       this.fullCarousel = true;
-    },
-    getHelperProcess() {
-      this.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
     },
   },
 };
