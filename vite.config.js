@@ -124,6 +124,7 @@ export default defineConfig(({ mode }) => {
 
           'resources/js/processes/signals/loaderSignals.js',
           'resources/js/processes/signals/index.js',
+          'resources/js/processes/signals/edit.js',
 
           'resources/js/processes-catalogue/loaderProcessesCatalogue.js',
           'resources/js/processes-catalogue/processesCatalogue.js',

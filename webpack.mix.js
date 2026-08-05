@@ -113,7 +113,6 @@ mix
   
   .js("resources/js/processes/import/index.js", "public/js/processes/import")
   .js("resources/js/processes/screens/preview.js", "public/js/processes/screens")
-  .js("resources/js/processes/signals/edit.js", "public/js/processes/signals")
   .js("resources/js/processes/screen-builder/main.js", "public/js/processes/screen-builder")
   .js("resources/js/processes/screen-builder/typeForm.js", "public/js/processes/screen-builder")
   .js("resources/js/processes/screen-builder/typeDisplay.js", "public/js/processes/screen-builder")

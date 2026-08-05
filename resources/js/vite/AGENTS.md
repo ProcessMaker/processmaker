@@ -104,7 +104,7 @@ vite.config.js
 | Environment Variables | **Vite** | `environment-variables.index` + `edit` + `layoutnextvite` | `processes/environment-variables/loaderEnvironment.js` → `index.js` / `edit.js` |
 | Screens (Designer) | **Vite** | `screens.index` + `edit` + `layoutnextvite`; tab apps via child `@append` | `processes/screens/loaderScreens.js` → `screens/index.js` / `screen-templates/myTemplates.js` / `publicTemplates.js` / `categories/index.js`; edit → `screens/edit.js` |
 | Scripts (Designer) | **Vite** | `scripts.index` + `scripts.edit` (configure) + `layoutnextvite` | `processes/scripts/loaderScripts.js` → `index.js`; configure → `editConfig.js` + inline Vue on `load` |
-| Signals (Designer) | **Vite** | `signals.index` + `layoutnextvite` | `processes/signals/loaderSignals.js` → `index.js` (mounts `#listSignals`) |
+| Signals (Designer) | **Vite** | `signals.index` + `signals.edit` + `layoutnextvite` | `processes/signals/loaderSignals.js` → `index.js`; edit → `edit.js` + inline Vue on `load` |
 | Processes Catalogue (desktop) | **Vite** | `process.browser.index` (`/process-browser`) + `layoutnextvite` | `processes-catalogue/loaderProcessesCatalogue.js` → ScreenBuilder scripts → `processesCatalogue.js` |
 | Cases | **Vite** | `cases.casesMain` (`/cases`) + `layoutnextvite` | `jscomposition/.../loaderCasesMain.js` → GlobalScripts / ScreenBuilder → `casesMain.js` |
 | Case Detail | **Vite** | `cases.edit` + `layoutnextvite` | `jscomposition/.../loaderCasesDetail.js` → `initialLoad` (Vite) + GlobalScripts / modeler scripts → `casesDetail.js` |
@@ -157,6 +157,7 @@ resources/js/processes/scripts/index.js
 resources/js/processes/scripts/editConfig.js
 resources/js/processes/signals/loaderSignals.js
 resources/js/processes/signals/index.js
+resources/js/processes/signals/edit.js
 resources/js/processes-catalogue/loaderProcessesCatalogue.js
 resources/js/processes-catalogue/processesCatalogue.js
 resources/jscomposition/cases/casesMain/loaderCasesMain.js
@@ -289,12 +290,12 @@ Dev tips:
 - Configure: `loaderScripts.js` → `editConfig.js` (registers `CategorySelect`, `SliderWithInput`) + inline Vue on `load` (`mixins: addons`)
 - Mix still builds script **builder** (`edit.js`) and **preview** (`preview.js`)
 
-**Signals (Designer)** — `/designer/signals`
+**Signals (Designer)** — `/designer/signals`, `/designer/signals/{signalId}/edit`
 
-- View: `processes/signals/index.blade.php` → `layoutnextvite`
+- Views: `processes/signals/index.blade.php`, `processes/signals/edit.blade.php` → `layoutnextvite`
 - Boot: `window.temporal.packages` / `window.packages` before loader
-- Entries: `loaderSignals.js` → `index.js` (mounts `#listSignals` with create modal + listing)
-- Mix still builds `signals/edit.js` (signal edit page)
+- Index: `loaderSignals.js` → `index.js` (mounts `#listSignals` with create modal + listing)
+- Edit: `loaderSignals.js` → `edit.js` (registers `CatchListing`) + inline Vue on `load` (`mixins: addons`)
 
 **Admin Users** — `/admin/users`, `/admin/users/{user}/edit`
 
@@ -440,5 +441,5 @@ Dev tips:
 **Still Mix**
 
 - Processes Catalogue mobile: `resources/views/processes-catalogue/mobile.blade.php`
-- Shared Designer child lists / other Designer routes still Mix (`templates/list` on some paths, script **builder**/preview, signals **edit**, modeler, screens **preview**, …) even when listing tabs under Vite `/designer/screens`, `/designer/scripts`, or `/processes`
+- Shared Designer child lists / other Designer routes still Mix (`templates/list` on some paths, script **builder**/preview, modeler, screens **preview**, …) even when listing tabs under Vite `/designer/screens`, `/designer/scripts`, or `/processes`
 - Admin profile, password change, and most other non-listed admin/designer pages
