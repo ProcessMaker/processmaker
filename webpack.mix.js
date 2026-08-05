@@ -103,7 +103,6 @@ mix
   // .js("resources/js/admin/queues/index.js", "public/js/admin/queues")
   .js("resources/js/admin/profile/edit.js", "public/js/admin/profile/edit.js")
 
-  .js("resources/js/processes/newDesigner.js", "public/js/processes")
   .js("resources/js/templates/import/index.js", "public/js/templates/import")
   .js("resources/js/templates/configure.js", "public/js/templates")
   .js("resources/js/templates/assets.js", "public/js/templates")

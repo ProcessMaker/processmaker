@@ -88,6 +88,7 @@ vite.config.js
 |------------|--------|------|----------------|
 | Tasks inbox | **Vite** | `tasks.index` + `layoutnextvite` | `vite/tasks/loaderTasks.js` → ScreenBuilder scripts → `vite/tasks/tasks.js` |
 | Processes (Designer) | **Vite** | `processes.index` + `layoutnextvite`; apps via child `@append` | `processes/loaderProcesses.js` → `processes.js` / `templates` / `categories` / `archived` |
+| Designer home | **Vite** | `designer.index` + `layoutnextvite` | `processes/loaderProcesses.js` → `newDesigner.js` |
 | Process Configure | **Vite** | `processes.edit` + `layoutnextvite` | `processes/loaderProcesses.js` → `processes/edit.js` + inline Vue boot |
 | Admin Users | **Vite** | `admin.users.index` + `edit` + `layoutnextvite` | `admin/users/loaderUsers.js` → `index.js` / `edit.js` + inline Vue boot |
 | Admin Groups | **Vite** | `admin.groups.index` + `edit` + `layoutnextvite` | `admin/groups/loaderGroups.js` → `index.js` / `edit.js` + inline Vue boot |
@@ -122,6 +123,7 @@ resources/js/vite/tasks/tasks.js
 resources/js/processes/loaderProcesses.js
 resources/js/processes/processes.js
 resources/js/processes/edit.js
+resources/js/processes/newDesigner.js
 resources/js/templates/index.js
 resources/js/processes/categories/index.js
 resources/js/processes/archived.js
@@ -272,7 +274,14 @@ Dev tips:
 - Loader: `@vite(['resources/js/processes/loaderProcesses.js'])`
 - Page apps via child `@append`: `processes.js`, `templates/index.js`, `categories/index.js`, `archived.js` (one mount each — avoid double-mounting the same `el`)
 - `loaderProcesses.js`: `setupMain()` + copy `window.temporal?.packages` onto `ProcessMaker.packages` / `window.packages`
-- Mix: `webpack.mix.js` no longer builds `resources/js/processes/index.js` / `edit.js`. Other Designer Mix bundles (script builder/preview, modeler, …) remain.
+- Mix: `webpack.mix.js` no longer builds `resources/js/processes/index.js` / `edit.js` / `newDesigner.js`. Other Designer Mix bundles (script builder/preview, modeler, …) remain.
+
+**Designer home** — `/designer`
+
+- View: `resources/views/designer/index.blade.php` → `layoutnextvite`
+- Boot: `window.temporal.packages` / `window.packages` + `window.Processmaker.user` before loader
+- Entries: `loaderProcesses.js` → `newDesigner.js` (mounts `#new-designer`)
+- Boolean Blade props (`project`, `is-documenter-installed`) use `:prop="@json(...)"`
 
 **Process Configure** — `/processes/{process}/edit`
 

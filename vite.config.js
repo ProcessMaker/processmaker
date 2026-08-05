@@ -88,6 +88,7 @@ export default defineConfig(({ mode }) => {
           'resources/js/processes/loaderProcesses.js',
           'resources/js/processes/processes.js',
           'resources/js/processes/edit.js',
+          'resources/js/processes/newDesigner.js',
           'resources/js/templates/index.js',
           'resources/js/processes/categories/index.js',
           'resources/js/processes/archived.js',
