@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Configure Script')}}
@@ -141,84 +141,93 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/scripts/editConfig.js')}}"></script>
     <script>
-      window.DesignerScripts = new Vue({
-        el: '#editScript',
-        mixins: addons,
-        data() {
-          return {
-            formData: @json($script),
-            scriptExecutors: @json($scriptExecutors),
-            selectedUser: @json($selectedUser),
-            assignedProjects: @json($assignedProjects),
-            selectedProjects: '',
-            errors: {
-              'title': null,
-              'language': null,
-              'description': null,
-              'timeout': null,
-              'retry_attempts': null,
-              'retry_wait_time': null,
-              'status': null
-            },
-            editScriptHooks: [],
-          }
-        },
-        watch: {
-          selectedProjects: {
-            handler() {
-              this.formData.projects = this.selectedProjects;
+        window.temporal = window.temporal || {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.packages = window.temporal.packages;
+    </script>
+    @vite(['resources/js/processes/scripts/loaderScripts.js'])
+    @vite(['resources/js/processes/scripts/editConfig.js'])
+    <script>
+      // Mount after deferred package addon scripts (layoutnextvite yields page JS before addons).
+      window.addEventListener('load', function () {
+        window.DesignerScripts = new window.Vue({
+          el: '#editScript',
+          mixins: typeof addons !== 'undefined' ? addons : [],
+          data() {
+            return {
+              formData: @json($script),
+              scriptExecutors: @json($scriptExecutors),
+              selectedUser: @json($selectedUser),
+              assignedProjects: @json($assignedProjects),
+              selectedProjects: '',
+              errors: {
+                'title': null,
+                'language': null,
+                'description': null,
+                'timeout': null,
+                'retry_attempts': null,
+                'retry_wait_time': null,
+                'status': null
+              },
+              editScriptHooks: [],
             }
-          }
-        },
-        methods: {
-          resetErrors() {
-            this.errors = Object.assign({}, {
-              title: null,
-              language: null,
-              description: null,
-              status: null
-            });
           },
-          onClose() {
-            const queryParams = new URLSearchParams(window.location.search);
-            const projectId = queryParams.get("project_id");
-            window.location.href = projectId ? `/designer/projects/${projectId}`: '/designer/scripts';
+          watch: {
+            selectedProjects: {
+              handler() {
+                this.formData.projects = this.selectedProjects;
+              }
+            }
           },
-          onUpdate() {
-            this.resetErrors();
-            ProcessMaker.apiClient.put('scripts/' + this.formData.id, {
-              title: this.formData.title,
-              language: this.scriptExecutors[this.formData.script_executor_id].language,
-              script_category_id: this.formData.script_category_id,
-              description: this.formData.description,
-              run_as_user_id: this.selectedUser === null ? null : this.selectedUser.id,
-              projects: this.formData.projects,
-              timeout: this.formData.timeout,
-              retry_attempts: this.formData.retry_attempts,
-              retry_wait_time: this.formData.retry_wait_time,
-              script_executor_id: this.formData.script_executor_id,
-            })
-              .then(response => {
-                ProcessMaker.alert(this.$t('The script was saved.'), 'success');
-                (this.$refs.editScriptHooks || []).forEach(hook => {
-                  hook.onsave(this.formData);
-                });
-                this.onClose();
-              })
-              .catch(error => {
-                if (_.get(error, 'response.status') === 422) {
-                  this.errors = error.response.data.errors;
-                } else {
-                  throw error;
-                }
+          methods: {
+            resetErrors() {
+              this.errors = Object.assign({}, {
+                title: null,
+                language: null,
+                description: null,
+                status: null
               });
+            },
+            onClose() {
+              const queryParams = new URLSearchParams(window.location.search);
+              const projectId = queryParams.get("project_id");
+              window.location.href = projectId ? `/designer/projects/${projectId}`: '/designer/scripts';
+            },
+            onUpdate() {
+              this.resetErrors();
+              ProcessMaker.apiClient.put('scripts/' + this.formData.id, {
+                title: this.formData.title,
+                language: this.scriptExecutors[this.formData.script_executor_id].language,
+                script_category_id: this.formData.script_category_id,
+                description: this.formData.description,
+                run_as_user_id: this.selectedUser === null ? null : this.selectedUser.id,
+                projects: this.formData.projects,
+                timeout: this.formData.timeout,
+                retry_attempts: this.formData.retry_attempts,
+                retry_wait_time: this.formData.retry_wait_time,
+                script_executor_id: this.formData.script_executor_id,
+              })
+                .then(() => {
+                  ProcessMaker.alert(this.$t('The script was saved.'), 'success');
+                  (this.$refs.editScriptHooks || []).forEach(hook => {
+                    hook.onsave(this.formData);
+                  });
+                  this.onClose();
+                })
+                .catch(error => {
+                  if (_.get(error, 'response.status') === 422) {
+                    this.errors = error.response.data.errors;
+                  } else {
+                    throw error;
+                  }
+                });
+            }
+          },
+          mounted() {
+            this.selectedProjects = this.assignedProjects.length > 0 ? this.assignedProjects.map(project => project.id) : null;
           }
-        },
-        mounted() {
-          this.selectedProjects = this.assignedProjects.length > 0 ?this.assignedProjects.map(project => project.id) : null;
-        }
+        });
       });
     </script>
 @endsection

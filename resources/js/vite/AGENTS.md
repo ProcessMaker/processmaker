@@ -103,6 +103,7 @@ vite.config.js
 | Admin Logs | **Vite** | `admin.logs` + `layoutnextvite` | packages boot → `admin/loaderAdmin.js` → `admin/logs/index.js` (Vue Router) |
 | Environment Variables | **Vite** | `environment-variables.index` + `edit` + `layoutnextvite` | `processes/environment-variables/loaderEnvironment.js` → `index.js` / `edit.js` |
 | Screens (Designer) | **Vite** | `screens.index` + `edit` + `layoutnextvite`; tab apps via child `@append` | `processes/screens/loaderScreens.js` → `screens/index.js` / `screen-templates/myTemplates.js` / `publicTemplates.js` / `categories/index.js`; edit → `screens/edit.js` |
+| Scripts (Designer) | **Vite** | `scripts.index` + `scripts.edit` (configure) + `layoutnextvite` | `processes/scripts/loaderScripts.js` → `index.js`; configure → `editConfig.js` + inline Vue on `load` |
 | Processes Catalogue (desktop) | **Vite** | `process.browser.index` (`/process-browser`) + `layoutnextvite` | `processes-catalogue/loaderProcessesCatalogue.js` → ScreenBuilder scripts → `processesCatalogue.js` |
 | Cases | **Vite** | `cases.casesMain` (`/cases`) + `layoutnextvite` | `jscomposition/.../loaderCasesMain.js` → GlobalScripts / ScreenBuilder → `casesMain.js` |
 | Case Detail | **Vite** | `cases.edit` + `layoutnextvite` | `jscomposition/.../loaderCasesDetail.js` → `initialLoad` (Vite) + GlobalScripts / modeler scripts → `casesDetail.js` |
@@ -150,6 +151,9 @@ resources/js/processes/screens/index.js
 resources/js/processes/screen-templates/myTemplates.js
 resources/js/processes/screen-templates/publicTemplates.js
 resources/js/processes/screens/edit.js
+resources/js/processes/scripts/loaderScripts.js
+resources/js/processes/scripts/index.js
+resources/js/processes/scripts/editConfig.js
 resources/js/processes-catalogue/loaderProcessesCatalogue.js
 resources/js/processes-catalogue/processesCatalogue.js
 resources/jscomposition/cases/casesMain/loaderCasesMain.js
@@ -264,7 +268,7 @@ Dev tips:
 - Loader: `@vite(['resources/js/processes/loaderProcesses.js'])`
 - Page apps via child `@append`: `processes.js`, `templates/index.js`, `categories/index.js`, `archived.js` (one mount each — avoid double-mounting the same `el`)
 - `loaderProcesses.js`: `setupMain()` + copy `window.temporal?.packages` onto `ProcessMaker.packages` / `window.packages`
-- Mix: `webpack.mix.js` no longer builds `resources/js/processes/index.js` / `edit.js`. Other Designer Mix bundles (scripts, modeler, screens preview, …) remain.
+- Mix: `webpack.mix.js` no longer builds `resources/js/processes/index.js` / `edit.js`. Other Designer Mix bundles (script builder/preview, modeler, …) remain.
 
 **Process Configure** — `/processes/{process}/edit`
 
@@ -273,6 +277,14 @@ Dev tips:
 - Entries: `loaderProcesses.js` → `edit.js` (registers `CategorySelect`, `ProcessesPermissions`)
 - Vue root stays **inline** in the Blade (`window.addEventListener('load', …)`) so Blade `@json(...)` boot data and plugin `mixins: addons` keep working without a full ESM rewrite
 - Plugin addons still come from `layoutnextvite` (`var addons = []` + `script` / `script_mix`)
+
+**Scripts (Designer)** — `/designer/scripts`, `/designer/scripts/{script}/edit` (configure)
+
+- Views: `processes/scripts/index.blade.php`, `processes/scripts/edit.blade.php` → `layoutnextvite`
+- Boot: `window.temporal.packages` / `window.packages` before loader
+- Index: `loaderScripts.js` → `index.js` (via categorized resource / list)
+- Configure: `loaderScripts.js` → `editConfig.js` (registers `CategorySelect`, `SliderWithInput`) + inline Vue on `load` (`mixins: addons`)
+- Mix still builds script **builder** (`edit.js`) and **preview** (`preview.js`)
 
 **Admin Users** — `/admin/users`, `/admin/users/{user}/edit`
 
@@ -418,5 +430,5 @@ Dev tips:
 **Still Mix**
 
 - Processes Catalogue mobile: `resources/views/processes-catalogue/mobile.blade.php`
-- Shared Designer child lists / other Designer routes still Mix (`templates/list` on some paths, scripts, modeler, screens **preview**/import/export, …) even when listing tabs under Vite `/designer/screens` or `/processes`
+- Shared Designer child lists / other Designer routes still Mix (`templates/list` on some paths, script **builder**/preview, modeler, screens **preview**, …) even when listing tabs under Vite `/designer/screens`, `/designer/scripts`, or `/processes`
 - Admin profile, password change, and most other non-listed admin/designer pages
