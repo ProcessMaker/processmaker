@@ -89,6 +89,7 @@ vite.config.js
 | Tasks inbox | **Vite** | `tasks.index` + `layoutnextvite` | `vite/tasks/loaderTasks.js` → ScreenBuilder scripts → `vite/tasks/tasks.js` |
 | Processes (Designer) | **Vite** | `processes.index` + `layoutnextvite`; apps via child `@append` | `processes/loaderProcesses.js` → `processes.js` / `templates` / `categories` / `archived` |
 | Designer home | **Vite** | `designer.index` + `layoutnextvite` | `processes/loaderProcesses.js` → `newDesigner.js` |
+| Process Export | **Vite** | `processes.export` + `layoutnextvite` | `processes/loaderProcesses.js` → `export/index.js` (Vue Router) |
 | Process Configure | **Vite** | `processes.edit` + `layoutnextvite` | `processes/loaderProcesses.js` → `processes/edit.js` + inline Vue boot |
 | Admin Users | **Vite** | `admin.users.index` + `edit` + `layoutnextvite` | `admin/users/loaderUsers.js` → `index.js` / `edit.js` + inline Vue boot |
 | Admin Groups | **Vite** | `admin.groups.index` + `edit` + `layoutnextvite` | `admin/groups/loaderGroups.js` → `index.js` / `edit.js` + inline Vue boot |
@@ -124,6 +125,7 @@ resources/js/processes/loaderProcesses.js
 resources/js/processes/processes.js
 resources/js/processes/edit.js
 resources/js/processes/newDesigner.js
+resources/js/processes/export/index.js
 resources/js/templates/index.js
 resources/js/processes/categories/index.js
 resources/js/processes/archived.js
@@ -283,6 +285,13 @@ Dev tips:
 - Entries: `loaderProcesses.js` → `newDesigner.js` (mounts `#new-designer`)
 - Boolean Blade props (`project`, `is-documenter-installed`) use `:prop="@json(...)"`
 
+**Process Export** — `/processes/{process}/export`
+
+- View: `resources/views/processes/export.blade.php` → `layoutnextvite`
+- Boot: `window.temporal.packages` / `window.packages` before loader
+- Entries: `loaderProcesses.js` → `export/index.js` (uses `window.ProcessMaker.Router`, meta tags for process name / project id)
+- Process **import** remains Mix for now
+
 **Process Configure** — `/processes/{process}/edit`
 
 - View: `resources/views/processes/edit.blade.php` → `layoutnextvite`
@@ -410,7 +419,7 @@ Dev tips:
   - Categories tab reuses `categories/list` → `processes/categories/index.js`
 - Edit view: `processes/screens/edit.blade.php` → `layoutnextvite`
 - Edit boot: packages + `window.temporal.screen` / `assignedProjects` / `isDraft` → `loaderScreens.js` → `screens/edit.js`
-- Still Mix: `preview.js` (`screens/preview.blade.php`, `completedScreen.blade.php`); import/export blades if still on Mix layouts
+- Still Mix: `preview.js` (`screens/preview.blade.php`, `completedScreen.blade.php`); process **import** (and templates import) if still on Mix layouts
 - Mix: no longer builds `screens/index.js`, `edit.js`, or screen-templates `myTemplates` / `publicTemplates`
 
 **Tasks**

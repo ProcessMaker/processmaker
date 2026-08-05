@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
 {{__('Export Process')}}
@@ -7,8 +7,7 @@
 @section('meta')
     <meta name="export-process-name" content="{{ $process->name }}">
     <meta name="export-process-id" content="{{ $process->id }}">
-    <meta name="export-project-id" content="{{ $projectId }}"
-
+    <meta name="export-project-id" content="{{ $projectId }}">
 @endsection
 
 @section('sidebar')
@@ -31,5 +30,11 @@
 @endsection
 
 @section('js')
-    <script src="{{ mix('js/processes/export/index.js') }}"></script>
+    <script>
+        window.temporal = window.temporal || {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.packages = window.temporal.packages;
+    </script>
+    @vite(['resources/js/processes/loaderProcesses.js'])
+    @vite(['resources/js/processes/export/index.js'])
 @endsection
