@@ -110,6 +110,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->checkConfigCache();
 
+        $this->shareServiceLogContext();
+        
         // Register Octane listeners if Octane is enabled
         $this->registerOctaneListeners();
 
@@ -664,5 +666,26 @@ class ProcessMakerServiceProvider extends ServiceProvider
                 throw new \Exception('Cannot cache config for tenant instance. Must be run from landlord instance.');
             });
         }
+    }
+
+    /**
+     * Share non-tenant log context (service/replica from k8s hostname) for Loki.
+     */
+    private function shareServiceLogContext(): void
+    {
+        $this->app->afterResolving('log', function ($log) {
+            $pattern = '/^(?:.*-)?([^-]+)-[^-]+-([^-]+)$/';
+            $service = '';
+            $replica = '';
+            if (preg_match($pattern, config('app.hostname'), $matches)) {
+                $service = $matches[1];
+                $replica = $matches[2];
+            }
+
+            $log->shareContext([
+                'service' => $service,
+                'replica' => $replica,
+            ]);
+        });
     }
 }

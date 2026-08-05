@@ -335,6 +335,5 @@ return [
         'bpmn_timer_overlap_minutes' => env('SCHEDULER_BPMN_TIMER_OVERLAP_MINUTES', 5),
     ],
 
-    'pod' => env('POD', ''),
-    'pod_name' => env('POD_NAME', ''),
+    'hostname' => env('HOSTNAME', ''),
 ];

@@ -142,8 +142,6 @@ class SwitchTenant implements SwitchTenantTask
             $log->shareContext([
                 'tenantId' => $tenant->id,
                 'appUrl' => $tenant->config['app.url'],
-                'pod' => config('app.pod'),
-                'pod_name' => config('app.pod_name'),
             ]);
         });
 
