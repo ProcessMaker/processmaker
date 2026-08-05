@@ -90,6 +90,7 @@ export default defineConfig(({ mode }) => {
           'resources/js/processes/edit.js',
           'resources/js/processes/newDesigner.js',
           'resources/js/processes/export/index.js',
+          'resources/js/processes/import/index.js',
           'resources/js/templates/index.js',
           'resources/js/processes/categories/index.js',
           'resources/js/processes/archived.js',
