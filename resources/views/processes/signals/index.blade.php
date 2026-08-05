@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Signals')}}
@@ -68,74 +68,11 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/signals/index.js')}}"></script>
     <script>
-        new Vue({
-            el: '#listSignals',
-            data() {
-                return {
-                    filter: "",
-                    formData: {},
-                    errors: {
-                        'name': null,
-                        'id': null,
-                    },
-                    disabled: false
-                }
-            },
-            mounted() {
-                this.resetFormData();
-                this.resetErrors();
-            },
-            methods: {
-                onClose() {
-                    this.resetFormData();
-                    this.resetErrors();
-                },
-                resetFormData() {
-                    this.formData = Object.assign({}, {
-                        name: null,
-                        id: null,
-                    });
-                },
-                resetErrors() {
-                    this.errors = Object.assign({}, {
-                        name: null,
-                        id: null,
-                    });
-                },
-                reload () {
-                    this.$refs.signalList.dataManager([
-                        {
-                            field: "name",
-                            direction: "desc"
-                        }
-                    ]);
-                },
-                onSubmit() {
-                    this.resetErrors();
-                    //single click
-                    if (this.disabled) {
-                        return
-                    }
-                    this.disabled = true;
-                    ProcessMaker.apiClient.post('signals', this.formData)
-                        .then(response => {
-                            ProcessMaker.alert(this.$t('The signal was created.'), 'success');
-                            //redirect list signal
-                            window.location = '/designer/signals';
-                        })
-                        .catch(error => {
-                            this.disabled = false;
-                            //define how display errors
-                            if (error.response.status && error.response.status === 422) {
-                                // Validation error
-                                this.errors = error.response.data.errors;
-                                //ProcessMaker.alert(this.errors, 'warning');
-                            }
-                        });
-                }
-            }
-        });
+        window.temporal = window.temporal || {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.packages = window.temporal.packages;
     </script>
+    @vite(['resources/js/processes/signals/loaderSignals.js'])
+    @vite(['resources/js/processes/signals/index.js'])
 @endsection
