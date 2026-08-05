@@ -11,7 +11,7 @@ use ProcessMaker\Events\ScriptBuilderStarting;
 use ProcessMaker\Managers\IndexManager;
 use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Managers\PackageManager;
-use ProcessMaker\Providers\ProcessMakerServiceProvider;
+use ProcessMaker\Services\WorkerBootTimingService;
 
 /**
  * Add functionality to control a PM plug-in
@@ -21,10 +21,6 @@ trait PluginServiceProviderTrait
     private $modelerScripts = [];
 
     private $scriptBuilderScripts = [];
-
-    private static $bootStart = null;
-
-    private static $bootTime;
 
     public function __construct($app)
     {
@@ -48,15 +44,13 @@ trait PluginServiceProviderTrait
         $package = $this->getPackageName();
 
         $this->booting(function () use ($package) {
-            self::$bootStart = microtime(true);
-
-            ProcessMakerServiceProvider::setPackageBootStart($package, self::$bootStart);
+            $this->app->make(WorkerBootTimingService::class)
+                ->setPackageBootStart($package, microtime(true));
         });
 
         $this->booted(function () use ($package) {
-            self::$bootTime = microtime(true);
-
-            ProcessMakerServiceProvider::setPackageBootedTime($package, self::$bootTime);
+            $this->app->make(WorkerBootTimingService::class)
+                ->setPackageBootedTime($package, microtime(true));
         });
     }
 
