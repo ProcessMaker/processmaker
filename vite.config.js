@@ -113,7 +113,11 @@ export default defineConfig(({ mode }) => {
           'resources/js/processes/environment-variables/loaderEnvironment.js',
           'resources/js/processes/environment-variables/index.js',
           'resources/js/processes/environment-variables/edit.js',
-
+          'resources/js/processes/screens/loaderScreens.js',
+          'resources/js/processes/screens/index.js',
+          'resources/js/processes/screen-templates/myTemplates.js',
+          'resources/js/processes/screen-templates/publicTemplates.js',
+          'resources/js/processes/screens/edit.js',
 
           'resources/js/processes-catalogue/loaderProcessesCatalogue.js',
           'resources/js/processes-catalogue/processesCatalogue.js',

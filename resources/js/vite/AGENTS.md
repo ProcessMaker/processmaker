@@ -68,10 +68,13 @@ resources/views/admin/cases-retention/index.blade.php ← Vite
 resources/views/admin/logs/index.blade.php            ← Vite
 resources/views/processes/environment-variables/index.blade.php ← Vite
 resources/views/processes/environment-variables/edit.blade.php  ← Vite
+resources/views/processes/screens/index.blade.php       ← Vite (Screens listing tabs)
+resources/views/processes/screens/edit.blade.php        ← Vite (Configure Screen)
 resources/js/vite/tasks/                              ← Tasks entries
 resources/js/vite/auth/login.js                       ← Login / auth layout entry
 resources/js/admin/loaderAdmin.js                     ← shared admin setupMain loader
 resources/js/processes/environment-variables/loaderEnvironment.js ← env vars setupMain loader
+resources/js/processes/screens/loaderScreens.js       ← screens setupMain loader
 resources/js/processes-catalogue/loaderProcessesCatalogue.js
 resources/jscomposition/cases/casesMain/loaderCasesMain.js
 resources/js/translations/index.js                    ← shared i18n Vite entry
@@ -99,6 +102,7 @@ vite.config.js
 | Admin Cases Retention | **Vite** | `cases-retention.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/cases-retention/index.js` |
 | Admin Logs | **Vite** | `admin.logs` + `layoutnextvite` | packages boot → `admin/loaderAdmin.js` → `admin/logs/index.js` (Vue Router) |
 | Environment Variables | **Vite** | `environment-variables.index` + `edit` + `layoutnextvite` | `processes/environment-variables/loaderEnvironment.js` → `index.js` / `edit.js` |
+| Screens (Designer) | **Vite** | `screens.index` + `edit` + `layoutnextvite`; tab apps via child `@append` | `processes/screens/loaderScreens.js` → `screens/index.js` / `screen-templates/myTemplates.js` / `publicTemplates.js` / `categories/index.js`; edit → `screens/edit.js` |
 | Processes Catalogue (desktop) | **Vite** | `process.browser.index` (`/process-browser`) + `layoutnextvite` | `processes-catalogue/loaderProcessesCatalogue.js` → ScreenBuilder scripts → `processesCatalogue.js` |
 | Cases | **Vite** | `cases.casesMain` (`/cases`) + `layoutnextvite` | `jscomposition/.../loaderCasesMain.js` → GlobalScripts / ScreenBuilder → `casesMain.js` |
 | Case Detail | **Vite** | `cases.edit` + `layoutnextvite` | `jscomposition/.../loaderCasesDetail.js` → `initialLoad` (Vite) + GlobalScripts / modeler scripts → `casesDetail.js` |
@@ -141,6 +145,11 @@ resources/js/admin/logs/index.js
 resources/js/processes/environment-variables/loaderEnvironment.js
 resources/js/processes/environment-variables/index.js
 resources/js/processes/environment-variables/edit.js
+resources/js/processes/screens/loaderScreens.js
+resources/js/processes/screens/index.js
+resources/js/processes/screen-templates/myTemplates.js
+resources/js/processes/screen-templates/publicTemplates.js
+resources/js/processes/screens/edit.js
 resources/js/processes-catalogue/loaderProcessesCatalogue.js
 resources/js/processes-catalogue/processesCatalogue.js
 resources/jscomposition/cases/casesMain/loaderCasesMain.js
@@ -215,7 +224,7 @@ Dev tips:
 
 4. **Mix cleanup**
    - Remove the migrated Mix input from `webpack.mix.js` when no Blade still calls `mix('js/...')` for it.
-   - Leave Mix entries that other routes / shared child Blades still load (screens, scripts, categories on non-Vite pages, etc.).
+   - Leave Mix entries that other routes / shared child Blades still load (scripts, modeler, screens preview, etc.).
 
 5. **Controller**
    - Usually no change if the Blade name stays the same.
@@ -255,7 +264,7 @@ Dev tips:
 - Loader: `@vite(['resources/js/processes/loaderProcesses.js'])`
 - Page apps via child `@append`: `processes.js`, `templates/index.js`, `categories/index.js`, `archived.js` (one mount each — avoid double-mounting the same `el`)
 - `loaderProcesses.js`: `setupMain()` + copy `window.temporal?.packages` onto `ProcessMaker.packages` / `window.packages`
-- Mix: `webpack.mix.js` no longer builds `resources/js/processes/index.js` / `edit.js`. Other Designer Mix bundles (screens, scripts, modeler, …) remain.
+- Mix: `webpack.mix.js` no longer builds `resources/js/processes/index.js` / `edit.js`. Other Designer Mix bundles (scripts, modeler, screens preview, …) remain.
 
 **Process Configure** — `/processes/{process}/edit`
 
@@ -358,6 +367,20 @@ Dev tips:
 - Entries: `loaderEnvironment.js` → `index.js` / `edit.js`
 - Mix: no longer builds `processes/environment-variables/index.js` or `edit.js`
 
+**Screens (Designer)** — `/designer/screens`, configure screen
+
+- Index view: `resources/views/processes/screens/index.blade.php` → `layoutnextvite`
+- Boot: `window.temporal.packages` / `window.packages` before `loaderScreens.js`
+- Tab apps via child `@append` (same pattern as Processes Designer):
+  - `processes/screens/list.blade.php` → `screens/index.js`
+  - `processes/screens/myTemplates.blade.php` → `screen-templates/myTemplates.js`
+  - `processes/screens/publicTemplates.blade.php` → `screen-templates/publicTemplates.js`
+  - Categories tab reuses `categories/list` → `processes/categories/index.js`
+- Edit view: `processes/screens/edit.blade.php` → `layoutnextvite`
+- Edit boot: packages + `window.temporal.screen` / `assignedProjects` / `isDraft` → `loaderScreens.js` → `screens/edit.js`
+- Still Mix: `preview.js` (`screens/preview.blade.php`, `completedScreen.blade.php`); import/export blades if still on Mix layouts
+- Mix: no longer builds `screens/index.js`, `edit.js`, or screen-templates `myTemplates` / `publicTemplates`
+
 **Tasks**
 
 - View: `resources/views/tasks/index.blade.php` → `layoutnextvite`
@@ -395,5 +418,5 @@ Dev tips:
 **Still Mix**
 
 - Processes Catalogue mobile: `resources/views/processes-catalogue/mobile.blade.php`
-- Shared Designer child lists / other Designer routes still Mix (`templates/list`, `categories/list`, `archivedList`, screens, scripts, modeler, …) even when embedded under Vite `/processes`
+- Shared Designer child lists / other Designer routes still Mix (`templates/list` on some paths, scripts, modeler, screens **preview**/import/export, …) even when listing tabs under Vite `/designer/screens` or `/processes`
 - Admin profile, password change, and most other non-listed admin/designer pages
