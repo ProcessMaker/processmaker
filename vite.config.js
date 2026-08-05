@@ -118,6 +118,8 @@ export default defineConfig(({ mode }) => {
           'resources/js/processes/screen-templates/myTemplates.js',
           'resources/js/processes/screen-templates/publicTemplates.js',
           'resources/js/processes/screens/edit.js',
+          'resources/js/processes/scripts/loaderScripts.js',
+          'resources/js/processes/scripts/index.js',
 
           'resources/js/processes-catalogue/loaderProcessesCatalogue.js',
           'resources/js/processes-catalogue/processesCatalogue.js',
