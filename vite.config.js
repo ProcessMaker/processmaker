@@ -52,6 +52,30 @@ const stylesImporter = {
 };
 
 /**
+ * Tailwind's `content` globs make every SFC a PostCSS dependency of
+ * tailwind.css, so Vite registers an extra `type: 'asset'` node under each
+ * SFC's path. plugin-vue2 treats the first node without a `type=` query as the
+ * SFC's main module and picks that asset node, sending the hot update to
+ * tailwind.css instead of the component.
+ */
+const vue2HmrMainModuleFix = {
+  name: 'pm:vue2-hmr-main-module-fix',
+  enforce: 'post',
+  hotUpdate({ file, modules }) {
+    if (!file.endsWith('.vue') || !modules.some((mod) => mod.type === 'asset')) {
+      return;
+    }
+
+    const candidates = this.environment.moduleGraph.getModulesByFile(file) ?? [];
+    const mainModule = [...candidates].find(
+      (mod) => mod.type !== 'asset' && !/type=/.test(mod.url),
+    );
+
+    return mainModule ? [...modules, mainModule] : undefined;
+  },
+};
+
+/**
  * Vite runs in parallel with Laravel Mix.
  * Mix continues to own public/css/* for legacy layouts; Vite compiles the same
  * SCSS/CSS sources for Vite pages via @vite([...]).
@@ -156,6 +180,7 @@ export default defineConfig(({ mode }) => {
           },
         },
       }),
+      vue2HmrMainModuleFix,
     ],
     resolve: {
       extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
