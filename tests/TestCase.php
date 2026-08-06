@@ -77,7 +77,21 @@ abstract class TestCase extends BaseTestCase
 
         // Clear Redis cache before running tests
         foreach (['default', 'cache', 'cache_settings'] as $connection) {
+            if (env('TESTING_SETUP_TRACE')) {
+                fwrite(STDERR, sprintf(
+                    "\033[1;35m[SETUP]\033[0m [%s] Redis flushDb(%s) start\n",
+                    date('H:i:s'),
+                    $connection
+                ));
+            }
             Redis::connection($connection)->flushDb();
+            if (env('TESTING_SETUP_TRACE')) {
+                fwrite(STDERR, sprintf(
+                    "\033[1;35m[SETUP]\033[0m [%s] Redis flushDb(%s) done\n",
+                    date('H:i:s'),
+                    $connection
+                ));
+            }
         }
 
         if (!self::$cacheCleared) {
