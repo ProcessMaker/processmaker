@@ -35,7 +35,7 @@
         "laravel/ui": "^4.6",
         "lavary/laravel-menu": "^1.8",
         "lcobucci/jwt": "^5.6",
-        "league/commonmark": "^2.8.1",
+        "league/commonmark": "^2.9.0",
         "league/flysystem-aws-s3-v3": "^3.25.1",
         "mateusjunges/laravel-kafka": "^2.11",
         "mittwald/vault-php": "^2.1",
@@ -86,7 +86,7 @@
         "laravel/boost": "^2.4",
         "mockery/mockery": "^1.6",
         "phpunit/phpunit": "^12.5.8",
-        "squizlabs/php_codesniffer": "^3.11"
+        "squizlabs/php_codesniffer": "^3.13.6"
     },
     "autoload": {
         "files": [
