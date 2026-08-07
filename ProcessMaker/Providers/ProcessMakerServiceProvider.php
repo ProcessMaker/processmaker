@@ -669,7 +669,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
     }
 
     /**
-     * Share non-tenant log context (service/replica from k8s hostname) for Loki.
+     * Send service/replica from k8s hostname to Loki.
      */
     private function shareServiceLogContext(): void
     {
