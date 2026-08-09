@@ -200,6 +200,7 @@ mix
   .sass("resources/sass/sidebar/sidebar.scss", "public/css")
   .sass("resources/sass/collapseDetails.scss", "public/css")
   .sass("resources/sass/app.scss", "public/css")
+  .minify("public/css/app.css")
   .sass("resources/sass/admin/queues.scss", "public/css/admin")
   .postCss("resources/sass/tailwind.css", "public/css", [
     require("tailwindcss"),

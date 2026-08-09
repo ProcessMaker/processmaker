@@ -130,7 +130,7 @@
           </div>
           @endif
         </div>
-      </div>
+        </div>
       @php
         $loginFooterSetting = \ProcessMaker\Models\Setting::byKey('login-footer');
       @endphp
