@@ -42,6 +42,10 @@ import {
 } from "vue";
 
 const props = defineProps({
+  operationId: {
+    type: String,
+    required: true,
+  },
   requestError: {
     type: String,
     default: "",
@@ -82,6 +86,10 @@ onMounted(() => {
   window.Echo.private(`ProcessMaker.Models.User.${userId}`).listen(
     '.ImportLog',
     (response) => {
+      if (response.operationId !== props.operationId) {
+        return;
+      }
+
       showSpinner.value = false;
       if (response.type === 'progress') {
         progress.value = response.message;
