@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
 {{__($title)}}
@@ -122,14 +122,16 @@
 @endsection
 
 @section('js')
+
 <script>
     //Data needed for default search
-    window.Processmaker.user = @json($currentUser);
-    window.Processmaker.status = '{{ $type }}';
-    window.ProcessMaker.advanced_filter = @json($userFilter);
-    window.Processmaker.defaultColumns = @json($defaultColumns);
+    window.temporal.user = @json($currentUser);
+    window.temporal.status = '{{ $type }}';
+    window.temporal.advanced_filter = @json($userFilter);
+    window.temporal.defaultColumns = @json($defaultColumns);
 </script>
-<script src="{{mix('js/requests/index.js')}}"></script>
+@vite('resources/js/requests/loaderRequests.js')
+@vite('resources/js/requests/index.js')
 @endsection
 
 @section('css')
