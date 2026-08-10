@@ -46,10 +46,10 @@ class SwitchTenant implements SwitchTenantTask
             return new TenantAwareBroadcastManager($app, $tenant->id);
         });
 
-        // Setup tenant-specific route cache. This is needed for plugins.
-        if ($app->routesAreCached()) {
-            Env::getRepository()->set('APP_ROUTES_CACHE', storage_path('routes-v7.php'));
-        }
+        // Configure the tenant-specific route cache before Laravel checks whether it
+        // exists. This lets `TENANT=<id> php artisan route:cache` create the cache
+        // for a tenant that does not have one yet.
+        Env::getRepository()->set('APP_ROUTES_CACHE', storage_path('routes-v7.php'));
     }
 
     /**
@@ -61,6 +61,7 @@ class SwitchTenant implements SwitchTenantTask
     {
         $app = app();
         $app->useStoragePath(base_path('storage'));
+        Env::getRepository()->clear('APP_ROUTES_CACHE');
 
         $this->setConfig('logging.channels.daily.path', storage_path('logs/processmaker.log'));
         $app->make('log')->reset();
