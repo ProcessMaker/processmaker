@@ -109,6 +109,11 @@ export default defineConfig(({ mode }) => {
           'resources/js/translations/index.js',
           'resources/js/vite/tasks/loaderTasks.js',
           'resources/js/vite/tasks/tasks.js',
+
+          'resources/js/tasks/loaderEdit.js',
+          'resources/js/tasks/edit.js',
+
+          
           'resources/js/processes/loaderProcesses.js',
           'resources/js/processes/processes.js',
           'resources/js/processes/edit.js',
@@ -156,6 +161,7 @@ export default defineConfig(({ mode }) => {
           'resources/js/requests/loaderRequests.js',
           'resources/js/requests/index.js',
 
+
           'resources/js/processes/signals/loaderSignals.js',
           'resources/js/processes/signals/index.js',
           'resources/js/processes/signals/edit.js',
@@ -200,7 +206,7 @@ export default defineConfig(({ mode }) => {
         vuex: nm('vuex'),
         moment: nm('moment'),
         'moment-timezone': nm('moment-timezone'),
-        'vue-monaco': nm('vue-monaco'),
+        'vue-monaco': path.resolve(__dirname, 'resources/js/vue-monaco-amd.js'),
         styles: stylesPath,
         '~styles': stylesPath,
       },
