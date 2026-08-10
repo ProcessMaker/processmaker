@@ -137,6 +137,10 @@ export default defineConfig(({ mode }) => {
           'resources/js/admin/devlink/index.js',
           'resources/js/admin/cases-retention/index.js',
           'resources/js/admin/logs/index.js',
+
+          'resources/js/admin/profile/loaderProfile.js',
+          'resources/js/admin/profile/edit.js',
+          
           'resources/js/processes/environment-variables/loaderEnvironment.js',
           'resources/js/processes/environment-variables/index.js',
           'resources/js/processes/environment-variables/edit.js',

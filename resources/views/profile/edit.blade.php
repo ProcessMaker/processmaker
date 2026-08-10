@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Edit Profile')}}
@@ -111,662 +111,662 @@
 @endsection
 
 @section('js')
-	<script src="{{mix('js/admin/profile/edit.js')}}"></script>
+  @vite('resources/js/admin/profile/loaderProfile.js')
+	@vite('resources/js/admin/profile/edit.js')
 
 <script>
-        const DEFAULT_ACCOUNTS = {
-            connectorSlack: {
-                name: 'Slack',
-                description: 'Send ProcessMaker notifications to Slack',
-                icon: 'slack-color-logo',
-                enabled: false,
-                channel_id: null,
-                enabled_at: null,
-                ui_options: {
-                    show_toggle: true,
-                    show_edit_modal: false
-                }
+  window.addEventListener('load', () => {
+    const DEFAULT_ACCOUNTS = {
+        connectorSlack: {
+            name: 'Slack',
+            description: 'Send ProcessMaker notifications to Slack',
+            icon: 'slack-color-logo',
+            enabled: false,
+            channel_id: null,
+            enabled_at: null,
+            ui_options: {
+                show_toggle: true,
+                show_edit_modal: false
             }
-        };
-        let formVueInstance = new Vue({
-            el: '#editProfile',
-            mixins:addons,
-            data: {
-                meta: @json(config('users.properties')),
-                formData: @json($currentUser),
-                timezones: @json($timezones),
-                datetimeFormats: @json($datetimeFormats),
-                countries: @json($countries),
-                states: @json($states),
-                status: @json($status),
-                global2FAEnabled: @json($global2FAEnabled),
-                ssoUser:@json($ssoUser),
-                errors: {
+        }
+    };
+    let formVueInstance = new Vue({
+        el: '#editProfile',
+        mixins:addons,
+        data: {
+            meta: @json(config('users.properties')),
+            formData: @json($currentUser),
+            timezones: @json($timezones),
+            datetimeFormats: @json($datetimeFormats),
+            countries: @json($countries),
+            states: @json($states),
+            status: @json($status),
+            global2FAEnabled: @json($global2FAEnabled),
+            ssoUser:@json($ssoUser),
+            errors: {
+                username: null,
+                firstname: null,
+                lastname: null,
+                email: null,
+                password: null,
+                status: null
+            },
+            confPassword: '',
+            image: '',
+            originalEmail: '',
+            emailHasChanged: false,
+            options: [
+                {
+                    src: @json($currentUser['avatar']),
+                    title: @json($currentUser['fullname']),
+                    initials: "{{mb_substr($currentUser['firstname'],0,1, "utf-8")}}" + "{{mb_substr($currentUser['lastname'],0,1, "utf-8")}}"
+                }
+            ],
+            focusErrors: 'errors',
+            slackConfigurationError: false,
+        },
+        created() {
+          if (this.meta) {
+            let keys = Object.keys(this.meta);
+            if (!this.formData.meta) {
+                this.formData.meta = {};
+            }
+            keys.forEach(key => {
+                if (!this.formData.meta[key]) {
+                    this.formData.meta[key] = null;
+                }
+            });
+          }
+        },
+        mounted() {
+          this.originalEmail = this.formData.email;
+          const togglePassword = document.querySelector('#togglePassword');
+          const password = document.querySelector('#valpassword');
+
+          togglePassword.addEventListener('click', function (e) {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+          });
+        },
+        methods: {
+            openAvatarModal() {
+              modalVueInstance.$refs.updateAvatarModal.show();
+            },
+            profileUpdate() {
+              if(this.emailHasChanged) {
+                if (this.ssoUser) {
+                  let message = 'Email address for users created via SAML synchronization cannot be edited manually.';
+                  ProcessMaker.alert(this.$t(message), 'warning');
+                  return;
+                } else {
+                  $('#validateModal').modal('show');
+                }
+              } else {
+                this.saveProfileChanges();
+              }
+            },
+            deleteAvatar() {
+                let optionValues = formVueInstance.$data.options[0];
+                optionValues.src = null;
+                formVueInstance.$data.options.splice(0, 1, optionValues)
+                formVueInstance.$data.image = false;
+                formVueInstance.$data.formData.avatar = false;
+                window.ProcessMaker.events.$emit('update-profile-avatar');
+            },
+            resetErrors() {
+                this.errors = Object.assign({}, {
                     username: null,
                     firstname: null,
                     lastname: null,
                     email: null,
                     password: null,
                     status: null
-                },
-				        confPassword: '',
-                image: '',
-                originalEmail: '',
-                emailHasChanged: false,
-                options: [
-                    {
-                        src: @json($currentUser['avatar']),
-                        title: @json($currentUser['fullname']),
-                        initials: "{{mb_substr($currentUser['firstname'],0,1, "utf-8")}}" + "{{mb_substr($currentUser['lastname'],0,1, "utf-8")}}"
-                    }
-                ],
-                focusErrors: 'errors',
-                slackConfigurationError: false,
-            },
-            created() {
-              if (this.meta) {
-                let keys = Object.keys(this.meta);
-                if (!this.formData.meta) {
-                    this.formData.meta = {};
-                }
-                keys.forEach(key => {
-                   if (!this.formData.meta[key]) {
-                       this.formData.meta[key] = null;
-                   }
                 });
+            },
+            validatePassword() {
+                if (!this.formData.password && !this.formData.confPassword) {
+                    delete this.formData.password;
+                    return true;
+                }
+                if (this.formData.password.trim() === '' && this.formData.confPassword.trim() === '') {
+                    delete this.formData.password;
+                    return true
+                }
+                if (this.formData.password !== this.formData.confPassword) {
+                    this.errors.password = ['Passwords must match']
+                    this.password = ''
+                    this.submitted = false
+                    return false
+                }
+                return true
+            },
+            showAccountsModal() {
+              accountsModalInstance.$refs.editConnectionModal.show();
+            },
+            onClose() {
+              window.location.href = '/admin/users';
+            },
+            showModal() {
+              $('#validateModal').modal('show');
+            },
+            closeModal() {
+              $('#validateModal').modal('hide');
+            },
+            saveProfileChanges() {
+              this.resetErrors();
+                if (@json($enabled2FA) &&  this.global2FAEnabled.length === 0) {
+                  let message = 'The Two Step Authentication Method has not been set. ' +
+                  'Please contact your administrator.';
+                  // User has not enabled two-factor authentication correctly
+                  ProcessMaker.alert(this.$t($message), 'warning');
+                  return false;
+                }
+                if (!this.validatePassword()) return false;
+                if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
+                    this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1)
+                      return false;
+                if (this.image) {
+                    this.formData.avatar = this.image;
+                }
+                if (this.image === false) {
+                    this.formData.avatar = false;
+                }
+                ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
+                    .then((response) => {
+                        // reset the slack configuration error
+                        this.slackConfigurationError = false;
+                        
+                        ProcessMaker.alert(this.$t('Your profile was saved.'), 'success')
+                        window.ProcessMaker.events.$emit('update-profile-avatar');
+                        this.originalEmail = this.formData.email;
+                        this.emailHasChanged = false;
+                        this.formData.valpassword = "";
+                        // Update the data to reflect the updated connected accounts
+                        if (document.querySelector('#nav-accounts-tab').classList.contains('active')) {
+                          window.location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response?.data?.errors) {
+                            this.errors = error.response.data.errors;
+                        }
+                        
+                        // Handle Slack notification errors
+                        if (error.response?.data?.message?.includes('Slack')) {
+                            ProcessMaker.alert(this.$t(error.response.data.message), 'danger');
+                            // Mark the configuration error state
+                            this.slackConfigurationError = true;
+                            // Need to ensure the slack toggle is now disabled in the ui
+                            this.handleConnectedAccountToggle(DEFAULT_ACCOUNTS.connectorSlack, false, true);
+                        }
+                    });
+
+              this.closeModal();
+            },
+            checkEmailChange() {
+              this.emailHasChanged = this.formData.email !== this.originalEmail;
+            },
+            handleConnectedAccountToggle(account, $event, error) {
+              try {
+                // If this is a Slack account and we're trying to enable it, validate first
+                if (account.name === 'Slack' && $event === true) {
+                  this.validateSlackToken(account, $event);
+                  return;
+                }
+                
+                // If the Slack account is being manually disabled, reset the configuration error flag
+                if (account.name === 'Slack' && $event === false && this.slackConfigurationError) {
+                  this.slackConfigurationError = false;
+                  this.hideSlackMessages();
+                }
+                
+                let accounts = [];
+                if (this.formData.connected_accounts) {
+                  accounts = JSON.parse(this.formData.connected_accounts);
+                }
+                
+                const index = accounts.findIndex(acc => acc.name === account.name);
+                if (index !== -1) {
+                  // Update existing account
+                  accounts[index] = { 
+                    ...accounts[index], 
+                    enabled: $event,
+                    // Update enabled_at when re-enabling
+                    enabled_at: $event ? new Date().toISOString() : accounts[index].enabled_at
+                  };
+                } else {
+                  // Create new account
+                  const newAccount = {
+                    name: account.name,
+                    description: account.description,
+                    icon: account.icon,
+                    enabled: $event,
+                    enabled_at: new Date().toISOString(),
+                    channel_id: null,
+                    ui_options: {
+                      show_toggle: true,
+                      show_edit_modal: false
+                    }
+                  };
+                  accounts.push(newAccount);
+                }
+                
+                // Ensure the JSON is properly formatted
+                const jsonString = JSON.stringify(accounts, null, 2);
+            
+                // Verify the JSON is valid
+                JSON.parse(jsonString);
+                
+                this.formData.connected_accounts = jsonString;
+                if(!error) {
+                  this.saveProfileChanges();
+                }
+              } catch (error) {
+                console.error('Error handling connected account toggle:', error);
+                ProcessMaker.alert(this.$t('Error updating connected account'), 'danger');
               }
             },
-            mounted() {
-              this.originalEmail = this.formData.email;
-              const togglePassword = document.querySelector('#togglePassword');
-              const password = document.querySelector('#valpassword');
-
-              togglePassword.addEventListener('click', function (e) {
-                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-                password.setAttribute('type', type);
-                this.classList.toggle('fa-eye-slash');
-              });
-            },
-            methods: {
-                openAvatarModal() {
-                  modalVueInstance.$refs.updateAvatarModal.show();
-                },
-                profileUpdate() {
-                  if(this.emailHasChanged) {
-                    if (this.ssoUser) {
-                      let message = 'Email address for users created via SAML synchronization cannot be edited manually.';
-                      ProcessMaker.alert(this.$t(message), 'warning');
-                      return;
-                    } else {
-                      $('#validateModal').modal('show');
-                    }
+            validateSlackToken(account, $event) {
+              // Show loading state
+              this.showSlackLoadingMessage();
+              
+              // Call the validation endpoint
+              ProcessMaker.apiClient.post('/api/1.0/connector-slack/validate-token')
+                .then((response) => {
+                  if (response.data.success) {
+                    // Token is valid, proceed with enabling
+                    this.hideSlackMessages();
+                    
+                    this.enableSlackAccount(account, $event);
+                    ProcessMaker.alert(this.$t('Slack configuration validated successfully'), 'success');
                   } else {
-                    this.saveProfileChanges();
+                    // Token validation failed - check if user is admin based on response
+                    const isAdmin = response.data.isAdmin || false;
+                    this.showSlackErrorMessage(response.data.error || 'Slack configuration validation failed', isAdmin);
+                    // Ensure the toggle stays disabled
+                    account.enabled = false;
+                    this.$forceUpdate();
                   }
-                },
-                deleteAvatar() {
-                    let optionValues = formVueInstance.$data.options[0];
-                    optionValues.src = null;
-                    formVueInstance.$data.options.splice(0, 1, optionValues)
-                    formVueInstance.$data.image = false;
-                    formVueInstance.$data.formData.avatar = false;
-                    window.ProcessMaker.events.$emit('update-profile-avatar');
-                },
-                resetErrors() {
-                    this.errors = Object.assign({}, {
-                        username: null,
-                        firstname: null,
-                        lastname: null,
-                        email: null,
-                        password: null,
-                        status: null
-                    });
-                },
-                validatePassword() {
-                    if (!this.formData.password && !this.formData.confPassword) {
-                        delete this.formData.password;
-                        return true;
-                    }
-                    if (this.formData.password.trim() === '' && this.formData.confPassword.trim() === '') {
-                        delete this.formData.password;
-                        return true
-                    }
-                    if (this.formData.password !== this.formData.confPassword) {
-                        this.errors.password = ['Passwords must match']
-                        this.password = ''
-                        this.submitted = false
-                        return false
-                    }
-                    return true
-                },
-                showAccountsModal() {
-                  accountsModalInstance.$refs.editConnectionModal.show();
-                },
-                onClose() {
-                  window.location.href = '/admin/users';
-                },
-                showModal() {
-                  $('#validateModal').modal('show');
-                },
-                closeModal() {
-                  $('#validateModal').modal('hide');
-                },
-                saveProfileChanges() {
-                  this.resetErrors();
-                    if (@json($enabled2FA) &&  this.global2FAEnabled.length === 0) {
-                      let message = 'The Two Step Authentication Method has not been set. ' +
-                      'Please contact your administrator.';
-                      // User has not enabled two-factor authentication correctly
-                      ProcessMaker.alert(this.$t($message), 'warning');
-                      return false;
-                    }
-                    if (!this.validatePassword()) return false;
-                    if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
-                        this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1)
-                          return false;
-                    if (this.image) {
-                        this.formData.avatar = this.image;
-                    }
-                    if (this.image === false) {
-                        this.formData.avatar = false;
-                    }
-                    ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
-                        .then((response) => {
-                            // reset the slack configuration error
-                            this.slackConfigurationError = false;
-                            
-                            ProcessMaker.alert(this.$t('Your profile was saved.'), 'success')
-                            window.ProcessMaker.events.$emit('update-profile-avatar');
-                            this.originalEmail = this.formData.email;
-                            this.emailHasChanged = false;
-                            this.formData.valpassword = "";
-                            // Update the data to reflect the updated connected accounts
-                            if (document.querySelector('#nav-accounts-tab').classList.contains('active')) {
-                              window.location.reload();
-                            }
-                        })
-                        .catch(error => {
-                            if (error.response?.data?.errors) {
-                                this.errors = error.response.data.errors;
-                            }
-                            
-                            // Handle Slack notification errors
-                            if (error.response?.data?.message?.includes('Slack')) {
-                                ProcessMaker.alert(this.$t(error.response.data.message), 'danger');
-                                // Mark the configuration error state
-                                this.slackConfigurationError = true;
-                                // Need to ensure the slack toggle is now disabled in the ui
-                                this.handleConnectedAccountToggle(DEFAULT_ACCOUNTS.connectorSlack, false, true);
-                            }
-                        });
-
-                  this.closeModal();
-                },
-                checkEmailChange() {
-                  this.emailHasChanged = this.formData.email !== this.originalEmail;
-                },
-                handleConnectedAccountToggle(account, $event, error) {
-                  try {
-                    // If this is a Slack account and we're trying to enable it, validate first
-                    if (account.name === 'Slack' && $event === true) {
-                      this.validateSlackToken(account, $event);
-                      return;
-                    }
-                    
-                    // If the Slack account is being manually disabled, reset the configuration error flag
-                    if (account.name === 'Slack' && $event === false && this.slackConfigurationError) {
-                      this.slackConfigurationError = false;
-                      this.hideSlackMessages();
-                    }
-                    
-                    let accounts = [];
-                    if (this.formData.connected_accounts) {
-                      accounts = JSON.parse(this.formData.connected_accounts);
-                    }
-                    
-                    const index = accounts.findIndex(acc => acc.name === account.name);
-                    if (index !== -1) {
-                      // Update existing account
-                      accounts[index] = { 
-                        ...accounts[index], 
-                        enabled: $event,
-                        // Update enabled_at when re-enabling
-                        enabled_at: $event ? new Date().toISOString() : accounts[index].enabled_at
-                      };
-                    } else {
-                      // Create new account
-                      const newAccount = {
-                        name: account.name,
-                        description: account.description,
-                        icon: account.icon,
-                        enabled: $event,
-                        enabled_at: new Date().toISOString(),
-                        channel_id: null,
-                        ui_options: {
-                          show_toggle: true,
-                          show_edit_modal: false
-                        }
-                      };
-                      accounts.push(newAccount);
-                    }
-                    
-                    // Ensure the JSON is properly formatted
-                    const jsonString = JSON.stringify(accounts, null, 2);
-                
-                    // Verify the JSON is valid
-                    JSON.parse(jsonString);
-                    
-                    this.formData.connected_accounts = jsonString;
-                    if(!error) {
-                      this.saveProfileChanges();
-                    }
-                  } catch (error) {
-                    console.error('Error handling connected account toggle:', error);
-                    ProcessMaker.alert(this.$t('Error updating connected account'), 'danger');
+                })
+                .catch((error) => {
+                  console.error('Error validating Slack token:', error);
+                  let errorMessage = 'Error validating Slack configuration';
+                  let isAdmin = false;
+                  
+                  // Handle both HTTP errors and validation errors
+                  if (error.response?.data?.error) {
+                    errorMessage = error.response.data.error;
+                  } else if (error.response?.data?.message) {
+                    errorMessage = error.response.data.message;
                   }
-                },
-                validateSlackToken(account, $event) {
-                  // Show loading state
-                  this.showSlackLoadingMessage();
                   
-                  // Call the validation endpoint
-                  ProcessMaker.apiClient.post('/api/1.0/connector-slack/validate-token')
-                    .then((response) => {
-                      if (response.data.success) {
-                        // Token is valid, proceed with enabling
-                        this.hideSlackMessages();
-                        
-                        this.enableSlackAccount(account, $event);
-                        ProcessMaker.alert(this.$t('Slack configuration validated successfully'), 'success');
-                      } else {
-                        // Token validation failed - check if user is admin based on response
-                        const isAdmin = response.data.isAdmin || false;
-                        this.showSlackErrorMessage(response.data.error || 'Slack configuration validation failed', isAdmin);
-                        // Ensure the toggle stays disabled
-                        account.enabled = false;
-                        this.$forceUpdate();
-                      }
-                    })
-                    .catch((error) => {
-                      console.error('Error validating Slack token:', error);
-                      let errorMessage = 'Error validating Slack configuration';
-                      let isAdmin = false;
-                      
-                      // Handle both HTTP errors and validation errors
-                      if (error.response?.data?.error) {
-                        errorMessage = error.response.data.error;
-                      } else if (error.response?.data?.message) {
-                        errorMessage = error.response.data.message;
-                      }
-                      
-                      // Check if user is admin based on error response
-                      if (error.response?.data?.isAdmin !== undefined) {
-                        isAdmin = error.response.data.isAdmin;
-                      }
-                      
-                      this.showSlackErrorMessage(errorMessage, isAdmin);
-                      // Ensure the toggle stays disabled and is hidden
-                      account.enabled = false;
-                    });
-                },
-                enableSlackAccount(account, $event) {
-                  try {
-                    let accounts = [];
-                    if (this.formData.connected_accounts) {
-                      accounts = JSON.parse(this.formData.connected_accounts);
-                    }
-                    
-                    const index = accounts.findIndex(acc => acc.name === account.name);
-                    if (index !== -1) {
-                      // Update existing account
-                      accounts[index] = { 
-                        ...accounts[index], 
-                        enabled: $event,
-                        enabled_at: $event ? new Date().toISOString() : accounts[index].enabled_at
-                      };
-                    } else {
-                      // Create new account
-                      const newAccount = {
-                        name: account.name,
-                        description: account.description,
-                        icon: account.icon,
-                        enabled: $event,
-                        enabled_at: new Date().toISOString(),
-                        channel_id: null,
-                        ui_options: {
-                          show_toggle: true,
-                          show_edit_modal: false
-                        }
-                      };
-                      accounts.push(newAccount);
-                    }
-                    
-                    // Ensure the JSON is properly formatted
-                    const jsonString = JSON.stringify(accounts, null, 2);
-                
-                    // Verify the JSON is valid
-                    JSON.parse(jsonString);
-                    
-                    this.formData.connected_accounts = jsonString;
-                    this.saveProfileChanges();
-                  } catch (error) {
-                    console.error('Error enabling Slack account:', error);
-                    ProcessMaker.alert(this.$t('Error updating Slack account'), 'danger');
+                  // Check if user is admin based on error response
+                  if (error.response?.data?.isAdmin !== undefined) {
+                    isAdmin = error.response.data.isAdmin;
                   }
-                },
-                showSlackLoadingMessage() {
-                  this.hideSlackMessages();
                   
-                  const loadingCard = document.createElement('div');
-                  loadingCard.id = 'slack-loading-card';
-                  loadingCard.className = 'alert alert-info mt-3';
-                  loadingCard.innerHTML = `
-                    <div class="d-flex align-items-center">
-                      <i class="fas fa-spinner fa-spin mr-2"></i>
-                      <span>${this.$t('Validating Slack configuration...')}</span>
-                    </div>
-                  `;
-                  
-                  this.insertSlackMessage(loadingCard);
-                },
+                  this.showSlackErrorMessage(errorMessage, isAdmin);
+                  // Ensure the toggle stays disabled and is hidden
+                  account.enabled = false;
+                });
+            },
+            enableSlackAccount(account, $event) {
+              try {
+                let accounts = [];
+                if (this.formData.connected_accounts) {
+                  accounts = JSON.parse(this.formData.connected_accounts);
+                }
                 
-                showSlackErrorMessage(message, isAdmin = false) {
-                  this.hideSlackMessages();
-                  
-                  // Mark the configuration error state
-                  this.slackConfigurationError = true;
-                  
-                  const cardContent = isAdmin ? this.getAdminCardContent() : this.getUserCardContent();
-                  const errorCard = this.createErrorCard(cardContent);
-                  
-                  this.insertSlackMessage(errorCard);
-                },
-                
-                // Alternative method
-                showSlackErrorMessageSimple(message, isAdmin = false) {
-                  this.hideSlackMessages();
-                  
-                  const cardContent = isAdmin ? this.getAdminCardContent() : this.getUserCardContent();
-                  const errorCard = this.createErrorCard(cardContent);
-                  
-                  this.insertSlackMessage(errorCard);
-                },
-                
-                getAdminCardContent() {
-                  const envVariables = [
-                    'SLACK_BOT_OAUTH_ACCESS_TOKEN',
-                    'SLACK_OAUTH_ACCESS_TOKEN'
-                  ];
-                  
-                  const envVariablesHTML = envVariables.map(variable => `
-                    <div class="env-variable-box">
-                      <code class="env-variable-name">${variable}</code>
-                      <button class="copy-btn" onclick="this.copyToClipboard('${variable}')" title="${this.$t('Copy to clipboard')}">
-                        <i class="fas fa-copy"></i>
-                      </button>
-                    </div>
-                  `).join('');
-                  
-                  return `
-                    <p class="card-text mb-3">${this.$t('To enable notifications you need to add the appropriate API keys. Please follow these steps to configure it:')}</p>
-                    <ol class="steps-list mb-0">
-                      <li class="mb-2">${this.$t('Go to the')} <strong>${this.$t('Designer')}</strong> ${this.$t('tab and open the')} 
-                        <a href="/designer/environment-variables" target="_blank" class="env-link">
-                          ${this.$t('Environment Variables')} <i class="fas fa-external-link-alt"></i>
-                        </a> ${this.$t('section.')}
-                      </li>
-                      <li class="mb-2">${this.$t('Create the following environment variables with your Slack information:')}</li>
-                      <li class="mb-2">
-                        <div class="env-variables-container">
-                          ${envVariablesHTML}
-                        </div>
-                      </li>
-                      <li class="mb-0">${this.$t('After doing it once it will be available for all your users to enable.')}</li>
-                    </ol>
-                  `;
-                },
-                
-                getUserCardContent() {
-                  return `
-                    <p class="card-text mb-0">${this.$t('Once a PM Admin configures the integration, you will be able to enable this option to receive your PM notifications in Slack.')}</p>
-                  `;
-                },
-                
-                createErrorCard(content) {
-                  const errorCard = document.createElement('div');
-                  errorCard.id = 'slack-error-card';
-                  errorCard.className = 'slack-config-card mt-3';
-                  errorCard.innerHTML = `
-                    <div class="d-flex align-items-start">
-                      <div class="warning-icon mr-3">
-                        <span class="exclamation-mark">!</span>
-                      </div>
-                      <div class="flex-grow-1">
-                        <h6 class="card-title mb-2">${this.$t('Slack API Keys required')}</h6>
-                        ${content}
-                      </div>
-                    </div>
-                  `;
-                  
-                  // Add copy method to global context
-                  window.copyToClipboard = (text) => {
-                    navigator.clipboard.writeText(text).then(() => {
-                      // Feedback visual
-                      const btn = event.target.closest('.copy-btn');
-                      const icon = btn.querySelector('i');
-                      const originalClass = icon.className;
-                      
-                      icon.className = 'fas fa-check text-success';
-                      setTimeout(() => {
-                        icon.className = originalClass;
-                      }, 1000);
-                    });
+                const index = accounts.findIndex(acc => acc.name === account.name);
+                if (index !== -1) {
+                  // Update existing account
+                  accounts[index] = { 
+                    ...accounts[index], 
+                    enabled: $event,
+                    enabled_at: $event ? new Date().toISOString() : accounts[index].enabled_at
                   };
-                  
-                  return errorCard;
-                },
-                hideSlackMessages() {
-                  const existingLoading = document.getElementById('slack-loading-card');
-                  const existingError = document.getElementById('slack-error-card');
-                  
-                  if (existingLoading) {
-                    existingLoading.remove();
-                  }
-                  if (existingError) {
-                    existingError.remove();
-                  }
-                },
-                insertSlackMessage(messageElement) {
-                  // Find the Slack account item in the accounts list
-                  const accountsList = document.querySelector('.accounts-list');
-                  if (!accountsList) {
-                    // Fallback: append to the connected accounts container
-                    const container = document.querySelector('#nav-accounts');
-                    if (container) {
-                      container.appendChild(messageElement);
+                } else {
+                  // Create new account
+                  const newAccount = {
+                    name: account.name,
+                    description: account.description,
+                    icon: account.icon,
+                    enabled: $event,
+                    enabled_at: new Date().toISOString(),
+                    channel_id: null,
+                    ui_options: {
+                      show_toggle: true,
+                      show_edit_modal: false
                     }
-                    return;
-                  }
-                  
-                  // Find the Slack account item
-                  const slackItem = Array.from(accountsList.children).find(item => {
-                    const accountName = item.querySelector('.account-name');
-                    return accountName && accountName.textContent.trim() === 'Slack';
-                  });
-                  
-                  if (slackItem) {
-                    // Insert the message after the Slack item
-                    slackItem.parentNode.insertBefore(messageElement, slackItem.nextSibling);
-                  } else {
-                    // Fallback: append to the accounts list
-                    accountsList.appendChild(messageElement);
-                  }
-                },
-                formatIcon(icon) {
-                  return `/img/connected-account-images/${icon}.svg`;
+                  };
+                  accounts.push(newAccount);
                 }
+                
+                // Ensure the JSON is properly formatted
+                const jsonString = JSON.stringify(accounts, null, 2);
+            
+                // Verify the JSON is valid
+                JSON.parse(jsonString);
+                
+                this.formData.connected_accounts = jsonString;
+                this.saveProfileChanges();
+              } catch (error) {
+                console.error('Error enabling Slack account:', error);
+                ProcessMaker.alert(this.$t('Error updating Slack account'), 'danger');
+              }
             },
-            computed: {
-                state2FA() {
-                    return typeof this.formData.preferences_2fa != "undefined" &&
-                        this.formData.preferences_2fa != null && this.formData.preferences_2fa.length > 0;
-                },
-                disableRecommendations: {
-                  get() {
-                    return this.formData?.meta?.disableRecommendations ?? false;
-                  },
-                  set(value) {
-                    if (value === true) {
-                      if (!this.formData.meta) {
-                        this.$set(this.formData, 'meta', {});
-                      }
-                      this.$set(this.formData.meta, 'disableRecommendations', true);
-                    } else {
-                      this.$delete(this.formData.meta, 'disableRecommendations');
-                    }
-                  }
-                },
-                accounts() {
-                  let accounts = this.formData.connected_accounts
-                    ? JSON.parse(this.formData.connected_accounts) 
-                    : [];
-
-                  if (window.ProcessMaker.packages.includes('connector-slack')) {
-                    if (!accounts.some(account => account.name === 'Slack')) {
-                      accounts.push(DEFAULT_ACCOUNTS.connectorSlack);
-                    }
-                  }
-
-                  // Apply configuration error state from the reactive property
-                  if (this.slackConfigurationError) {
-                    const slackAccount = accounts.find(account => account.name === 'Slack');
-                    if (slackAccount) {
-                      slackAccount.hasConfigurationError = true;
-                    }
-                  }
-
-                  return accounts;
-                }
-            }
-        });
-    </script>
-
-    <script>
-        let modalVueInstance = new Vue({
-            el: '#updateAvatarModal',
-            data() {
-                return {
-                    avatar: formVueInstance.$data.formData.avatar,
-                    image: "",
-                    idxx: window.ProcessMaker.user.id
-                };
+            showSlackLoadingMessage() {
+              this.hideSlackMessages();
+              
+              const loadingCard = document.createElement('div');
+              loadingCard.id = 'slack-loading-card';
+              loadingCard.className = 'alert alert-info mt-3';
+              loadingCard.innerHTML = `
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-spinner fa-spin mr-2"></i>
+                  <span>${this.$t('Validating Slack configuration...')}</span>
+                </div>
+              `;
+              
+              this.insertSlackMessage(loadingCard);
             },
-            methods: {
-                // Called when the croppie instance is completed
-                cropResult() {
-                },
-                saveAvatar() {
-                    // We will close our modal, but we will ALSO emit a message stating the image has been updated
-                    // The parent component will listen for that message and update it's data to reflect the new image
-                    this.$refs.croppie.result({}, (selectedImage) => {
-                        // Update the profile's avatar image with the selected one
-                        let optionValues = formVueInstance.$data.options[0];
-                        optionValues.src = selectedImage;
-                        formVueInstance.$data.options.splice(0, 1, optionValues)
-                        formVueInstance.$data.formData.avatar = selectedImage;
-                        formVueInstance.$data.image = selectedImage;
-
-                        // And finally close the modal
-                        this.hideModal();
-                    })
-                },
-                browse() {
-                    this.$refs.customFile.click();
-                },
-                hideModal() {
-                    this.$refs.updateAvatarModal.hide();
-                },
-                hiddenModal() {
-                    this.image = '';
-                },
-                onFileChange(e) {
-                    let files = e.target.files || e.dataTransfer.files;
-                    if (!files.length) return;
-                    this.createImage(files[0]);
-                },
-                createImage(file) {
-                    let reader = new FileReader();
-
-                    // Assigning the load listener to store the contents of the file to our image property
-                    reader.onload = e => {
-                        // Show we now have an image in our modal to use
-                        this.image = true;
-                        this.$refs.croppie.bind({
-                            url: e.target.result
-                        });
-                    };
-                    // Now actually read it, calling the onload after it's read
-                    reader.readAsDataURL(file);
+            
+            showSlackErrorMessage(message, isAdmin = false) {
+              this.hideSlackMessages();
+              
+              // Mark the configuration error state
+              this.slackConfigurationError = true;
+              
+              const cardContent = isAdmin ? this.getAdminCardContent() : this.getUserCardContent();
+              const errorCard = this.createErrorCard(cardContent);
+              
+              this.insertSlackMessage(errorCard);
+            },
+            
+            // Alternative method
+            showSlackErrorMessageSimple(message, isAdmin = false) {
+              this.hideSlackMessages();
+              
+              const cardContent = isAdmin ? this.getAdminCardContent() : this.getUserCardContent();
+              const errorCard = this.createErrorCard(cardContent);
+              
+              this.insertSlackMessage(errorCard);
+            },
+            
+            getAdminCardContent() {
+              const envVariables = [
+                'SLACK_BOT_OAUTH_ACCESS_TOKEN',
+                'SLACK_OAUTH_ACCESS_TOKEN'
+              ];
+              
+              const envVariablesHTML = envVariables.map(variable => `
+                <div class="env-variable-box">
+                  <code class="env-variable-name">${variable}</code>
+                  <button class="copy-btn" onclick="this.copyToClipboard('${variable}')" title="${this.$t('Copy to clipboard')}">
+                    <i class="fas fa-copy"></i>
+                  </button>
+                </div>
+              `).join('');
+              
+              return `
+                <p class="card-text mb-3">${this.$t('To enable notifications you need to add the appropriate API keys. Please follow these steps to configure it:')}</p>
+                <ol class="steps-list mb-0">
+                  <li class="mb-2">${this.$t('Go to the')} <strong>${this.$t('Designer')}</strong> ${this.$t('tab and open the')} 
+                    <a href="/designer/environment-variables" target="_blank" class="env-link">
+                      ${this.$t('Environment Variables')} <i class="fas fa-external-link-alt"></i>
+                    </a> ${this.$t('section.')}
+                  </li>
+                  <li class="mb-2">${this.$t('Create the following environment variables with your Slack information:')}</li>
+                  <li class="mb-2">
+                    <div class="env-variables-container">
+                      ${envVariablesHTML}
+                    </div>
+                  </li>
+                  <li class="mb-0">${this.$t('After doing it once it will be available for all your users to enable.')}</li>
+                </ol>
+              `;
+            },
+            
+            getUserCardContent() {
+              return `
+                <p class="card-text mb-0">${this.$t('Once a PM Admin configures the integration, you will be able to enable this option to receive your PM notifications in Slack.')}</p>
+              `;
+            },
+            
+            createErrorCard(content) {
+              const errorCard = document.createElement('div');
+              errorCard.id = 'slack-error-card';
+              errorCard.className = 'slack-config-card mt-3';
+              errorCard.innerHTML = `
+                <div class="d-flex align-items-start">
+                  <div class="warning-icon mr-3">
+                    <span class="exclamation-mark">!</span>
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="card-title mb-2">${this.$t('Slack API Keys required')}</h6>
+                    ${content}
+                  </div>
+                </div>
+              `;
+              
+              // Add copy method to global context
+              window.copyToClipboard = (text) => {
+                navigator.clipboard.writeText(text).then(() => {
+                  // Feedback visual
+                  const btn = event.target.closest('.copy-btn');
+                  const icon = btn.querySelector('i');
+                  const originalClass = icon.className;
+                  
+                  icon.className = 'fas fa-check text-success';
+                  setTimeout(() => {
+                    icon.className = originalClass;
+                  }, 1000);
+                });
+              };
+              
+              return errorCard;
+            },
+            hideSlackMessages() {
+              const existingLoading = document.getElementById('slack-loading-card');
+              const existingError = document.getElementById('slack-error-card');
+              
+              if (existingLoading) {
+                existingLoading.remove();
+              }
+              if (existingError) {
+                existingError.remove();
+              }
+            },
+            insertSlackMessage(messageElement) {
+              // Find the Slack account item in the accounts list
+              const accountsList = document.querySelector('.accounts-list');
+              if (!accountsList) {
+                // Fallback: append to the connected accounts container
+                const container = document.querySelector('#nav-accounts');
+                if (container) {
+                  container.appendChild(messageElement);
                 }
+                return;
+              }
+              
+              // Find the Slack account item
+              const slackItem = Array.from(accountsList.children).find(item => {
+                const accountName = item.querySelector('.account-name');
+                return accountName && accountName.textContent.trim() === 'Slack';
+              });
+              
+              if (slackItem) {
+                // Insert the message after the Slack item
+                slackItem.parentNode.insertBefore(messageElement, slackItem.nextSibling);
+              } else {
+                // Fallback: append to the accounts list
+                accountsList.appendChild(messageElement);
+              }
+            },
+            formatIcon(icon) {
+              return `/img/connected-account-images/${icon}.svg`;
             }
-        });
-    </script>
+        },
+        computed: {
+            state2FA() {
+                return typeof this.formData.preferences_2fa != "undefined" &&
+                    this.formData.preferences_2fa != null && this.formData.preferences_2fa.length > 0;
+            },
+            disableRecommendations: {
+              get() {
+                return this.formData?.meta?.disableRecommendations ?? false;
+              },
+              set(value) {
+                if (value === true) {
+                  if (!this.formData.meta) {
+                    this.$set(this.formData, 'meta', {});
+                  }
+                  this.$set(this.formData.meta, 'disableRecommendations', true);
+                } else {
+                  this.$delete(this.formData.meta, 'disableRecommendations');
+                }
+              }
+            },
+            accounts() {
+              let accounts = this.formData.connected_accounts
+                ? JSON.parse(this.formData.connected_accounts) 
+                : [];
 
-    <script>
-      var accountsModalInstance = new Vue({
-        el: '#editConnectionModal',
+              if (window.ProcessMaker.packages.includes('connector-slack')) {
+                if (!accounts.some(account => account.name === 'Slack')) {
+                  accounts.push(DEFAULT_ACCOUNTS.connectorSlack);
+                }
+              }
+
+              // Apply configuration error state from the reactive property
+              if (this.slackConfigurationError) {
+                const slackAccount = accounts.find(account => account.name === 'Slack');
+                if (slackAccount) {
+                  slackAccount.hasConfigurationError = true;
+                }
+              }
+
+              return accounts;
+            }
+        }
+    });
+
+
+    let modalVueInstance = new Vue({
+        el: '#updateAvatarModal',
         data() {
-          return {
-            customModalButtons: [
-              {"content": "Cancel", "action": "close", "variant": "secondary", "size": "md"},
-              {"content": "OK", "action": "onSubmit", "variant": "primary", "size": "md"},
-            ],
-            formData: {},
-            errors: {
-              'url': null,
-              'user': null,
-              'accessKey': null
-            },
-            disabled: false
-          }
+            return {
+                avatar: formVueInstance.$data.formData.avatar,
+                image: "",
+                idxx: window.ProcessMaker.user.id
+            };
         },
         methods: {
-          hideModal() {
-            accountsModalInstance.$refs.editConnectionModal.hide();
-          },
-          onCloseModal() {
-            this.hideModal();
-            this.resetFormData();
-            this.resetModalErrors();
-          },
-          resetFormData() {
-            this.formData = Object.assign({}, {
-              url: null,
-              user: null,
-              accessKey: null
-            });
-          },
-          resetModalErrors() {
-            this.errors = Object.assign({}, {
-              url: null,
-              user: null,
-              accessKey: null
-            });
-          },
-          onSubmit() {
-            this.resetModalErrors();
-            //single click
-            if (this.disabled) {
-              return
-            }
-            this.disabled = true;
+            // Called when the croppie instance is completed
+            cropResult() {
+            },
+            saveAvatar() {
+                // We will close our modal, but we will ALSO emit a message stating the image has been updated
+                // The parent component will listen for that message and update it's data to reflect the new image
+                this.$refs.croppie.result({}, (selectedImage) => {
+                    // Update the profile's avatar image with the selected one
+                    let optionValues = formVueInstance.$data.options[0];
+                    optionValues.src = selectedImage;
+                    formVueInstance.$data.options.splice(0, 1, optionValues)
+                    formVueInstance.$data.formData.avatar = selectedImage;
+                    formVueInstance.$data.image = selectedImage;
 
-            //TODO: HANDLE CONNECTION UPDATE
-            this.onCloseModal;
-          },
+                    // And finally close the modal
+                    this.hideModal();
+                })
+            },
+            browse() {
+                this.$refs.customFile.click();
+            },
+            hideModal() {
+                this.$refs.updateAvatarModal.hide();
+            },
+            hiddenModal() {
+                this.image = '';
+            },
+            onFileChange(e) {
+                let files = e.target.files || e.dataTransfer.files;
+                if (!files.length) return;
+                this.createImage(files[0]);
+            },
+            createImage(file) {
+                let reader = new FileReader();
+
+                // Assigning the load listener to store the contents of the file to our image property
+                reader.onload = e => {
+                    // Show we now have an image in our modal to use
+                    this.image = true;
+                    this.$refs.croppie.bind({
+                        url: e.target.result
+                    });
+                };
+                // Now actually read it, calling the onload after it's read
+                reader.readAsDataURL(file);
+            }
         }
-      });
-    </script>
+    });
+
+    var accountsModalInstance = new Vue({
+      el: '#editConnectionModal',
+      data() {
+        return {
+          customModalButtons: [
+            {"content": "Cancel", "action": "close", "variant": "secondary", "size": "md"},
+            {"content": "OK", "action": "onSubmit", "variant": "primary", "size": "md"},
+          ],
+          formData: {},
+          errors: {
+            'url': null,
+            'user': null,
+            'accessKey': null
+          },
+          disabled: false
+        }
+      },
+      methods: {
+        hideModal() {
+          accountsModalInstance.$refs.editConnectionModal.hide();
+        },
+        onCloseModal() {
+          this.hideModal();
+          this.resetFormData();
+          this.resetModalErrors();
+        },
+        resetFormData() {
+          this.formData = Object.assign({}, {
+            url: null,
+            user: null,
+            accessKey: null
+          });
+        },
+        resetModalErrors() {
+          this.errors = Object.assign({}, {
+            url: null,
+            user: null,
+            accessKey: null
+          });
+        },
+        onSubmit() {
+          this.resetModalErrors();
+          //single click
+          if (this.disabled) {
+            return
+          }
+          this.disabled = true;
+
+          //TODO: HANDLE CONNECTION UPDATE
+          this.onCloseModal;
+        },
+      }
+    });
+  });
+</script>
 
 <style>
   /* Slack Configuration Card Styles */

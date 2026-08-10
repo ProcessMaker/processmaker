@@ -101,7 +101,6 @@ mix
   .js("resources/js/processes/modeler/initialLoad.js", "public/js/processes/modeler")
   .js("resources/js/admin/auth/passwords/change.js", "public/js/admin/auth/passwords/change.js")
   // .js("resources/js/admin/queues/index.js", "public/js/admin/queues")
-  .js("resources/js/admin/profile/edit.js", "public/js/admin/profile/edit.js")
 
   .js("resources/js/templates/import/index.js", "public/js/templates/import")
   .js("resources/js/templates/configure.js", "public/js/templates")

@@ -136,6 +136,12 @@
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
 @endif
 
+<script>
+  window.temporal = window.temporal || {};
+  window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+  window.packages = window.temporal.packages;
+</script>
+
 @yield('js')
 @stack('scripts')
 @foreach(GlobalScripts::getScripts() as $script)
