@@ -53,7 +53,8 @@ resources/views/layouts/layoutnextvite.blade.php
 resources/views/tasks/index.blade.php                 ← Vite
 resources/views/tasks/preview.blade.php               ← Vite standalone (iframe)
 resources/views/notifications/index.blade.php         ← Vite
-resources/views/templates/import.blade.php            ← Vite (others still Mix)
+resources/views/templates/import.blade.php            ← Vite
+resources/views/templates/configure.blade.php         ← Vite (assets/export-screen/import-screen/list still Mix)
 resources/views/processes/index.blade.php             ← Vite (Designer /processes)
 resources/views/processes/edit.blade.php              ← Vite (Configure Process)
 resources/views/processes/list.blade.php              ← mounts @vite processes.js (@append)
@@ -99,6 +100,7 @@ vite.config.js
 | Requests index | **Vite** | `requests.index` + `layoutnextvite` | `requests/loaderRequests.js` → `requests/index.js` |
 | Notifications | **Vite** | `notifications.index` + `layoutnextvite` | `notifications/loaderNotifications.js` → `notifications/index.js` |
 | Template Import | **Vite** | `templates.import` + `layoutnextvite` | `templates/loaderTemplates.js` → `templates/import/index.js` (Vue Router) |
+| Template Configure | **Vite** | `templates.configure` + `layoutnextvite` | boot `window.temporal.templateConfigurations` → `templates/loaderTemplates.js` → `templates/configure.js` + `mixins: addons` |
 | Processes (Designer) | **Vite** | `processes.index` + `layoutnextvite`; apps via child `@append` | `processes/loaderProcesses.js` → `processes.js` / `templates` / `categories` / `archived` |
 | Designer home | **Vite** | `designer.index` + `layoutnextvite` | `processes/loaderProcesses.js` → `newDesigner.js` |
 | Process Export | **Vite** | `processes.export` + `layoutnextvite` | `processes/loaderProcesses.js` → `export/index.js` (Vue Router) |
@@ -177,6 +179,7 @@ resources/js/notifications/loaderNotifications.js
 resources/js/notifications/index.js
 resources/js/templates/loaderTemplates.js
 resources/js/templates/import/index.js
+resources/js/templates/configure.js
 resources/js/processes/environment-variables/loaderEnvironment.js
 resources/js/processes/environment-variables/index.js
 resources/js/processes/environment-variables/edit.js
@@ -473,14 +476,24 @@ Dev tips:
 - Vue 2 watcher pitfall: `screenFilteredData` computed always returns a **new object reference**. Watching it with `deep: true` and accessing `this.screenFilteredData` inside the handler causes Vue to re-queue the watcher infinitely. **Always use the `newValue` parameter** (`handler(newValue) { sendEvent("dataUpdated", newValue); }`)
 - Breadcrumbs guard: `window.ProcessMaker.breadcrumbs` is only set up by the full sidebar/navbar layout; preview runs standalone, so guard: `if (window.ProcessMaker.breadcrumbs) { ... }` in the `task` watcher
 
-**Template Import** — `/template/{type}/import`
+**Templates** — import & configure
 
-- Route: `templates.import` → `TemplateController@import`
+Shared loader: `templates/loaderTemplates.js` — `setupMain()` + `window.ProcessMaker.packages = window.temporal?.packages || []`. No explicit boot script needed for packages.
+
+*Template Import* — `/template/{type}/import` (`templates.import`)
+
 - View: `resources/views/templates/import.blade.php` → `layoutnextvite`
-- Asset type passed via `<meta name="import-template-asset-type" content="{{ $type }}">` (read in JS with `document.head.querySelector(...)`)
-- No explicit boot script; loader reads `window.temporal?.packages || []`
-- Entries: `templates/loaderTemplates.js` (`setupMain` + packages) → `templates/import/index.js` (Vue Router on `window.ProcessMaker.Router`; reuses `ImportManagerView` from `processes/import`, `State` from `processes/export`, and adds `TemplateDetailConfigs`)
-- Still Mix: `templates/configure`, `templates/assets`, `templates/export-screen`, `templates/import-screen` (all still on `layouts.layout`)
+- Asset type via `<meta name="import-template-asset-type" content="{{ $type }}">` (read in JS)
+- Entry: `templates/import/index.js` — Vue Router on `window.ProcessMaker.Router`; reuses `ImportManagerView` from `processes/import`, `State` from `processes/export`, adds `TemplateDetailConfigs`
+
+*Template Configure* — `/template/{type}/{template}/configure` (`templates.configure`)
+
+- View: `resources/views/templates/configure.blade.php` → `layoutnextvite`
+- Boot (in `@section('js')` before loader): `window.temporal.templateConfigurations = { data, templateType, screenTypes }`
+- Entry: `templates/configure.js` — registers `ProcessTemplateConfigurations` / `ScreenTemplateConfigurations`, mounts `#configureTemplate` with `mixins: addons` and reads all data from `window.temporal.templateConfigurations`
+- **Pitfall**: `:permission="{{ ... }}"` passes PHP `true` as string `"1"`; should use `:permission="@json(...)"`. Flag for future fix.
+
+Still Mix: `templates/assets`, `templates/export-screen`, `templates/import-screen`, `templates/list` (child partial — no standalone layout)
 
 **Notifications** — `/notifications`
 
