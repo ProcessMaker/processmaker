@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
 test status
@@ -19,7 +19,9 @@ test status
 @endsection
 
 @section('js')
+  @vite('resources/js/templates/loaderTemplates.js')  
 <script>
+window.addEventListener('load', () => {    
   new Vue({
     'el': '#app',
     data() {
@@ -48,5 +50,6 @@ test status
       },
     },
   })
+});
 </script>
 @endsection
