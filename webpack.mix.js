@@ -119,7 +119,6 @@ mix
   .js("resources/js/processes/translations/import.js", "public/js/processes/translations")
 
   .js("resources/js/tasks/mobile.js", "public/js/tasks/mobile.js")
-  .js("resources/js/tasks/show.js", "public/js/tasks/show.js")
   .js("resources/js/tasks/router.js", "public/js/tasks/router.js")
 
   .js("resources/js/notifications/index.js", "public/js/notifications/index.js")

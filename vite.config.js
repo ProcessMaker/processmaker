@@ -112,6 +112,9 @@ export default defineConfig(({ mode }) => {
 
           'resources/js/tasks/loaderEdit.js',
           'resources/js/tasks/edit.js',
+          
+          'resources/js/tasks/loaderTasks.js',
+          'resources/js/tasks/show.js',
 
           
           'resources/js/processes/loaderProcesses.js',
