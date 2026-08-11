@@ -2,7 +2,7 @@ const mix = require("laravel-mix");
 const path = require("path");
 require("laravel-mix-polyfill");
 // const packageJson = require("./package.json");
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 /*
  |--------------------------------------------------------------------------
@@ -72,25 +72,7 @@ mix
     "vue-router",
     "axios",
     "lodash",
-  ], "public/js/vue-vendor.js")
-  .copy("resources/img/*", "public/img")
-  .copy("resources/img/launchpad-images/*", "public/img/launchpad-images")
-  .copy("resources/img/launchpad-images/icons/*", "public/img/launchpad-images/icons")
-  .copy("resources/img/connected-account-images/*", "public/img/connected-account-images")
-  .copy("resources/img/smartinbox-images/*", "public/img/smartinbox-images")
-  .copy("resources/img/pagination-images/*", "public/img/pagination-images")
-  .copy("resources/img/script_lang/*", "public/img/script_lang")
-  .copy("node_modules/snapsvg/dist/snap.svg.js", "public/js")
-  .copy("resources/js/components/CustomActions.vue", "public/js")
-  .copy("resources/js/components/DetailRow.vue", "public/js")
-  // .copy("resources/fonts/Open_Sans/", "public/fonts")
-  .copy("resources/js/components/FilterBar.vue", "public/js")
-  .copy("resources/js/timeout.js", "public/js")
-  // Copy files necessary for images for the designer/modeler to it's own img directory
-  .copy("node_modules/@processmaker/modeler/dist/img", "public/js/img")
-  // .copy("node_modules/@processmaker/screen-builder/dist/img", "public/js/img")
-  // .copy("node_modules/@processmaker/vue-form-elements/dist", "public/js")
-  .copy("node_modules/bpmn-font/dist", "public/css/bpmn-symbols");
+  ], "public/js/vue-vendor.js");
 
 mix
   .js("resources/js/print-layout.js", "public/js")
@@ -109,7 +91,7 @@ mix
   .js("resources/js/processes/screen-builder/typeForm.js", "public/js/processes/screen-builder")
   .js("resources/js/processes/screen-builder/typeDisplay.js", "public/js/processes/screen-builder")
   .js("resources/js/leave-warning.js", "public/js")
-  
+
   .js("resources/js/requests/mobile.js", "public/js/requests/mobile.js")
   .js("resources/js/requests/show.js", "public/js/requests")
   .js("resources/js/requests/preview.js", "public/js/requests")
@@ -133,36 +115,10 @@ mix
 //   targets: "> 0.25%, not dead"
 // });
 
-// Monaco AMD modules. Copy only the files we need to make the build faster.
-const monacoSource = "node_modules/monaco-editor/min/vs/";
-const monacoDestination = "public/vendor/monaco-editor/min/vs/";
-const monacoLanguages = ["php", "css", "lua", "javascript", "csharp", "java", "python", "r", "html", "xml", "typescript", "sql"];
-const monacoFiles = [
-  "loader.js",
-  "editor/editor.main.js",
-  "editor/editor.main.css",
-  "editor/editor.main.nls.js",
-  "base/browser/ui/codicons/codicon/codicon.ttf",
-  "base/worker/workerMain.js",
-  "base/common/worker/simpleWorker.nls.js",
-];
-monacoFiles.forEach((file) => {
-  mix.copy(monacoSource + file, monacoDestination + file);
-});
-monacoLanguages.forEach((lang) => {
-  const path = `basic-languages/${lang}/${lang}.js`;
-  mix.copy(monacoSource + path, monacoDestination + path);
-});
-mix.copyDirectory(`${monacoSource}language`, `${monacoDestination}language`);
-
+// sidebar.scss, collapseDetails.scss, app.scss, tailwind.css → moved to vite.config.js
+// queues.scss stays here: CompileUI.php compiles it at runtime to public/css/admin/queues.css
 mix
-  .sass("resources/sass/sidebar/sidebar.scss", "public/css")
-  .sass("resources/sass/collapseDetails.scss", "public/css")
-  .sass("resources/sass/app.scss", "public/css")
   .sass("resources/sass/admin/queues.scss", "public/css/admin")
-  .postCss("resources/sass/tailwind.css", "public/css", [
-    require("tailwindcss"),
-  ])
   .version();
 
 mix.vue({ version: 2 });
