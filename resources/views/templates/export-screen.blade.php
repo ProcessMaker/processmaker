@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Export Screen Template')}}
@@ -45,7 +45,9 @@
 @endsection
 
 @section('js')
+    @vite('resources/js/templates/loaderTemplates.js')  
     <script>
+    window.addEventListener('load', () => {    
       new Vue({
         el: '#exportScreen',
         data: {
@@ -81,5 +83,6 @@
           }
         }
       })
+    });
     </script>
 @endsection
