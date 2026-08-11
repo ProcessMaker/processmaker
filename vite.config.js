@@ -115,6 +115,7 @@ export default defineConfig(({ mode }) => {
           
           'resources/js/tasks/loaderTasks.js',
           'resources/js/tasks/show.js',
+          'resources/js/inbox-rules/index.js',
 
           
           'resources/js/processes/loaderProcesses.js',
