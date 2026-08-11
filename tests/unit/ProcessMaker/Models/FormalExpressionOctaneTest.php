@@ -40,7 +40,7 @@ class FormalExpressionOctaneTest extends TestCase
         $this->assertCount(1, $this->registry()->all());
 
         // Simulate Octane RequestTerminated reset
-        $resetState = new ResetRequestState();
+        $resetState = app(ResetRequestState::class);
         $resetState->handle();
 
         // After reset, runtime-registered functions should be cleared
