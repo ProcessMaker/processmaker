@@ -205,9 +205,6 @@ class MetricsService
         // Add system labels
         $labels['app_version'] = $this->getApplicationVersion();
         $labels['app_name'] = config('app.name');
-        if (config('app.prometheus_custom_label')) {
-            $labels['app_custom_label'] = config('app.prometheus_custom_label');
-        }
 
         return $labels;
     }

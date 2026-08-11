@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Console;
 
-use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
@@ -12,8 +11,6 @@ use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Services\MetricsService;
 use Prometheus\Histogram;
 use Prometheus\Storage\InMemory;
-use ReflectionMethod;
-use ReflectionProperty;
 use Tests\TestCase;
 
 class ScheduleMultitenantRunTest extends TestCase
@@ -27,7 +24,7 @@ class ScheduleMultitenantRunTest extends TestCase
     public function testCommandIsRegistered()
     {
         $this->assertTrue(
-            array_key_exists('schedule:multitenant-run', Artisan::all())
+            array_key_exists('schedule:tenants-run', Artisan::all())
         );
     }
 
@@ -35,7 +32,7 @@ class ScheduleMultitenantRunTest extends TestCase
     {
         config(['app.multitenancy' => false]);
 
-        $this->artisan('schedule:multitenant-run')
+        $this->artisan('schedule:tenants-run')
             ->assertSuccessful();
     }
 
@@ -53,7 +50,7 @@ class ScheduleMultitenantRunTest extends TestCase
                     return str_contains($message, 'already running');
                 });
 
-            $this->artisan('schedule:multitenant-run')
+            $this->artisan('schedule:tenants-run')
                 ->expectsOutputToContain('already running')
                 ->assertFailed();
         } finally {
@@ -65,7 +62,7 @@ class ScheduleMultitenantRunTest extends TestCase
     {
         config(['app.multitenancy' => false]);
 
-        $this->artisan('schedule:multitenant-run')
+        $this->artisan('schedule:tenants-run')
             ->assertSuccessful();
 
         $lock = Cache::lock(ScheduleMultitenantRun::LOCK_KEY, ScheduleMultitenantRun::LOCK_SECONDS);
@@ -77,7 +74,7 @@ class ScheduleMultitenantRunTest extends TestCase
     {
         config(['app.multitenancy' => false]);
 
-        $this->artisan('schedule:multitenant-run')
+        $this->artisan('schedule:tenants-run')
             ->assertSuccessful();
 
         $ns = config('app.prometheus_namespace', 'app');
@@ -107,7 +104,7 @@ class ScheduleMultitenantRunTest extends TestCase
                     return str_contains($message, 'already running');
                 });
 
-            $this->artisan('schedule:multitenant-run')
+            $this->artisan('schedule:tenants-run')
                 ->assertFailed();
 
             $this->assertStringNotContainsString(
@@ -117,23 +114,5 @@ class ScheduleMultitenantRunTest extends TestCase
         } finally {
             $lock->release();
         }
-    }
-
-    public function testForgetScheduleRebindsSingletonWithFreshMutexes()
-    {
-        $command = app(ScheduleMultitenantRun::class);
-        $forgetSchedule = new ReflectionMethod($command, 'forgetSchedule');
-
-        $first = app(Schedule::class);
-        $firstMutexProperty = new ReflectionProperty(Schedule::class, 'eventMutex');
-        $firstMutex = $firstMutexProperty->getValue($first);
-
-        $forgetSchedule->invoke($command);
-
-        $second = app(Schedule::class);
-        $secondMutex = $firstMutexProperty->getValue($second);
-
-        $this->assertNotSame($first, $second);
-        $this->assertNotSame($firstMutex, $secondMutex);
     }
 }

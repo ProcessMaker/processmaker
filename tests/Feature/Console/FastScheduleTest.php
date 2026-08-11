@@ -73,6 +73,41 @@ class FastScheduleTest extends TestCase
             'Command should see container state from the current process'
         );
     }
+
+    public function testClearTenantEventsPreservesBaseEvents()
+    {
+        $schedule = new FastSchedule();
+        $baseEvent = $schedule->command('base:command');
+
+        $schedule->beginTenantEventRegistration();
+        $schedule->command('tenant:command');
+        $schedule->call(fn () => null);
+
+        $this->assertCount(3, $schedule->events());
+
+        $schedule->clearTenantEvents();
+
+        $this->assertSame([$baseEvent], $schedule->events());
+    }
+
+    public function testTenantEventRegistrationCanBeRepeatedForDifferentTenants()
+    {
+        $schedule = new FastSchedule();
+        $baseEvent = $schedule->command('base:command');
+
+        $schedule->beginTenantEventRegistration();
+        $schedule->command('first-tenant:command');
+        $schedule->clearTenantEvents();
+
+        $schedule->beginTenantEventRegistration();
+        $secondTenantEvent = $schedule->command('second-tenant:command');
+
+        $this->assertSame([$baseEvent, $secondTenantEvent], $schedule->events());
+
+        $schedule->clearTenantEvents();
+
+        $this->assertSame([$baseEvent], $schedule->events());
+    }
 }
 
 class FastScheduleProbeCommand extends Command

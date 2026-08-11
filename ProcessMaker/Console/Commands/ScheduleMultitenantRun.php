@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Console\Scheduling\FastSchedule;
 use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Multitenancy\Tenant;
 use Throwable;
@@ -28,7 +29,7 @@ class ScheduleMultitenantRun extends Command
      *
      * @var string
      */
-    protected $signature = 'schedule:multitenant-run';
+    protected $signature = 'schedule:tenants-run';
 
     /**
      * The console command description.
@@ -45,7 +46,7 @@ class ScheduleMultitenantRun extends Command
         $lock = Cache::lock(self::LOCK_KEY, self::LOCK_SECONDS);
 
         if (!$lock->get()) {
-            $message = 'schedule:multitenant-run is already running; skipping this invocation.';
+            $message = 'schedule:tenants-run is already running; skipping this invocation.';
             Log::error($message);
             $this->error($message);
 
@@ -57,13 +58,20 @@ class ScheduleMultitenantRun extends Command
         try {
             return $this->runSchedules();
         } catch (Throwable $e) {
-            Log::error('schedule:multitenant-run failed: ' . $e->getMessage(), [
+            Log::error('schedule:tenants-run failed: ' . $e->getMessage(), [
                 'exception' => $e,
             ]);
 
             throw $e;
         } finally {
             $lock->release();
+            Metrics::histogramObserve(
+                self::DURATION_METRIC,
+                'Duration of the multitenant scheduler run in seconds',
+                [],
+                self::DURATION_BUCKETS,
+                microtime(true) - $startedAt
+            );
         }
     }
 
@@ -73,24 +81,24 @@ class ScheduleMultitenantRun extends Command
             return $this->call('schedule:run');
         }
 
+        $schedule = app(Schedule::class);
         $tenants = Tenant::query()->cursor();
 
         $ranForTenant = false;
 
         foreach ($tenants as $tenant) {
             $ranForTenant = true;
-            $this->info("Running schedule for tenant [{$tenant->id}] {$tenant->name}");
-
-            $tenant->makeCurrent();
+            $this->info("Running schedule for tenant [{$tenant->id}]");
 
             try {
-                // Schedule holds sticky CacheEventMutex/CacheSchedulingMutex instances.
-                // Forget it after makeCurrent so locks use this tenant's cache prefix.
-                // $this->forgetSchedule();
+                $tenant->makeCurrent();
                 $this->call('schedule:run');
             } finally {
                 Tenant::forgetCurrent();
-                // $this->forgetSchedule();
+
+                if ($schedule instanceof FastSchedule) {
+                    $schedule->clearTenantEvents();
+                }
             }
         }
 
@@ -99,13 +107,5 @@ class ScheduleMultitenantRun extends Command
         }
 
         return self::SUCCESS;
-    }
-
-    /**
-     * Drop the Schedule singleton so the next resolve gets fresh mutexes/cache bindings.
-     */
-    private function forgetSchedule(): void
-    {
-        app()->forgetInstance(Schedule::class);
     }
 }

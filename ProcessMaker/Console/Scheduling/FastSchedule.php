@@ -3,12 +3,81 @@
 namespace ProcessMaker\Console\Scheduling;
 
 use Illuminate\Console\Application;
+use Illuminate\Console\Scheduling\CacheAware;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Container\Container;
+use Illuminate\Contracts\Cache\Factory as CacheFactory;
+use LogicException;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 
 class FastSchedule extends Schedule
 {
+    /**
+     * The index where the current tenant's scheduled events begin.
+     */
+    private ?int $tenantEventStartIndex = null;
+
+    /**
+     * Begin tracking events registered for the current tenant.
+     *
+     * @return void
+     */
+    public function beginTenantEventRegistration(): void
+    {
+        if ($this->tenantEventStartIndex !== null) {
+            throw new LogicException(
+                'Tenant schedule event registration is already active.'
+            );
+        }
+
+        $this->tenantEventStartIndex = count($this->events);
+        $this->mutexCache = [];
+    }
+
+    /**
+     * Remove events registered for the current tenant.
+     *
+     * @return void
+     */
+    public function clearTenantEvents(): void
+    {
+        if ($this->tenantEventStartIndex === null) {
+            return;
+        }
+
+        $this->events = array_slice($this->events, 0, $this->tenantEventStartIndex);
+        $this->tenantEventStartIndex = null;
+        $this->mutexCache = [];
+    }
+
+    /**
+     * Re-point the event and scheduling mutexes at the given cache factory.
+     *
+     * The mutexes hold a hard reference to the CacheManager resolved when the
+     * schedule was created. When the tenant cache prefix changes, that stale
+     * manager keeps writing mutex keys under the previous prefix, so
+     * onOneServer()/withoutOverlapping() locks leak across tenants. Refreshing
+     * the factory (and clearing the in-process mutex cache) ensures locks use
+     * the currently active, tenant-prefixed cache store.
+     *
+     * @param  CacheFactory|null  $cache
+     * @return void
+     */
+    public function resetCache(?CacheFactory $cache = null): void
+    {
+        $cache ??= Container::getInstance()->make('cache');
+
+        if ($this->eventMutex instanceof CacheAware) {
+            $this->eventMutex->cache = $cache;
+        }
+
+        if ($this->schedulingMutex instanceof CacheAware) {
+            $this->schedulingMutex->cache = $cache;
+        }
+
+        $this->mutexCache = [];
+    }
+
     /**
      * Add a new Artisan command event that runs in-process when possible.
      *
