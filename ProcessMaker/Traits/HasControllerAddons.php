@@ -2,10 +2,10 @@
 
 namespace ProcessMaker\Traits;
 
+use ProcessMaker\Managers\ControllerAddonsRegistry;
+
 trait HasControllerAddons
 {
-    private static $addons = [];
-
     /**
      * Get configured addons for this controller
      *
@@ -16,26 +16,7 @@ trait HasControllerAddons
      */
     protected function getPluginAddons($method, array $data)
     {
-        if (!isset(static::$addons)) {
-            return;
-        }
-
-        $addons = [];
-        foreach (static::$addons as $addon) {
-            // The addon must have the requested method and must be associated to the current controller
-            if ($addon['method'] === $method && $addon['scope'] === get_class($this)) {
-                if (isset($addon['data']) && is_callable($addon['data'])) {
-                    $data = call_user_func($addon['data'], $data);
-                }
-                $addon['content'] = isset($addon['view']) && !isset($addon['content'])
-                    ? view($addon['view'], $data)->render() : (isset($addon['content'])
-                    ? $addon['content'] : '');
-                $addon['script'] = isset($addon['script']) && is_string($addon['script']) ? view($addon['script'], $data)->render() : '';
-                $addons[] = $addon;
-            }
-        }
-
-        return $addons;
+        return app(ControllerAddonsRegistry::class)->getAddons(static::class, $method, $data);
     }
 
     /**
@@ -47,8 +28,6 @@ trait HasControllerAddons
      */
     public static function registerAddon(array $config)
     {
-        // Add the controller to which the addon is attached
-        $config['scope'] = static::class;
-        static::$addons[] = $config;
+        app(ControllerAddonsRegistry::class)->register(static::class, $config);
     }
 }

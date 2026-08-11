@@ -12,6 +12,12 @@ class AnonymousUser extends User
 
     protected $table = 'users';
 
+    public static function resolve(): self
+    {
+        return static::where('username', '=', static::ANONYMOUS_USERNAME)
+            ->firstOrFail();
+    }
+
     public $isAnonymous = true;
 
     public function receivesBroadcastNotificationsOn($notification)

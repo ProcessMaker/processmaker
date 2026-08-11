@@ -56,6 +56,9 @@ use ProcessMaker\PolicyExtension;
 use ProcessMaker\Providers\PermissionServiceProvider;
 use ProcessMaker\Repositories\SettingsConfigRepository;
 use ProcessMaker\Services\ConditionalRedirectService;
+use ProcessMaker\Services\RedirectToEventService;
+use ProcessMaker\Services\SmartExtractConfiguration;
+use ProcessMaker\Services\WorkerBootTimingService;
 use RuntimeException;
 use Spatie\Multitenancy\Events\MadeTenantCurrentEvent;
 use Spatie\Multitenancy\Events\TenantNotFoundForRequestEvent;
@@ -66,25 +69,13 @@ use Spatie\Multitenancy\TenantCollection;
  */
 class ProcessMakerServiceProvider extends ServiceProvider
 {
-    // Track the start time for service providers boot
-    private static $bootStart;
-
-    // Track the boot time for service providers
-    private static $bootTime;
-
-    // Track the boot time for each package
-    private static $packageBootTiming = [];
-
     // Track the query time for each request
     private static $queryTime = 0;
-
-    // Track the landlord values for multitenancy
-    private static $landlordValues = null;
 
     public function boot(): void
     {
         // Track the start time for service providers boot
-        self::$bootStart = microtime(true);
+        $bootStart = microtime(true);
 
         // Set the current tenant
         $this->setCurrentTenantForConsoleCommands();
@@ -113,11 +104,15 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->registerOctaneListeners();
 
         // Hook after service providers boot
-        self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
+        $this->app->make(WorkerBootTimingService::class)
+            ->setProviderBootTime((microtime(true) - $bootStart) * 1000);
     }
 
     public function register(): void
     {
+        // Boot metrics live for the lifetime of the application worker.
+        $this->app->singleton(WorkerBootTimingService::class);
+
         if (config('app.server_timing.enabled')) {
             // Listen to query events and accumulate query execution time
             DB::listen(function ($query) {
@@ -128,12 +123,18 @@ class ProcessMakerServiceProvider extends ServiceProvider
         // Register our permission services
         $this->app->register(PermissionServiceProvider::class);
 
+        $this->app->scoped(SmartExtractConfiguration::class);
+
         $this->app->singleton(Managers\PackageManager::class, function () {
             return new Managers\PackageManager();
         });
 
         $this->app->singleton(Managers\LoginManager::class, function () {
             return new Managers\LoginManager();
+        });
+
+        $this->app->singleton(Managers\ControllerAddonsRegistry::class, function () {
+            return new Managers\ControllerAddonsRegistry();
         });
 
         /*
@@ -194,10 +195,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new Managers\GlobalScriptsManager();
         });
 
-        $this->app->singleton(Models\AnonymousUser::class, function ($app) {
-            return Models\AnonymousUser::where('username', '=', Models\AnonymousUser::ANONYMOUS_USERNAME)
-                                       ->firstOrFail();
+        $this->app->scoped(Models\AnonymousUser::class, function ($app) {
+            return Models\AnonymousUser::resolve();
         });
+
+        $this->app->scoped(Observers\SettingObserver::class);
 
         $this->app->singleton(PolicyExtension::class, function ($app) {
             return new PolicyExtension();
@@ -248,6 +250,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         $this->app->instance('tenant-resolved', false);
+
+        $this->app->scoped(RedirectToEventService::class);
 
         /**
          * Conditional Redirect Service
@@ -505,16 +509,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
     }
 
     /**
-     * Get the boot time for service providers.
-     *
-     * @return float|null
-     */
-    public static function getBootTime(): ?float
-    {
-        return self::$bootTime;
-    }
-
-    /**
      * Reset per-request query timing metrics.
      */
     public static function beginRequestTiming(): void
@@ -530,53 +524,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
     public static function getQueryTime(): float
     {
         return self::$queryTime;
-    }
-
-    /**
-     * Set the boot time for service providers.
-     *
-     * @param string $package
-     * @param float $time
-     */
-    public static function setPackageBootStart(string $package, float $time): void
-    {
-        if ($time < 0) {
-            Log::info("Server Timing: Invalid boot time for package: {$package}, time: {$time}");
-
-            $time = 0;
-        }
-
-        self::$packageBootTiming[$package] = [
-            'start' => $time,
-            'end' => null,
-        ];
-    }
-
-    /**
-     * Set the boot time for service providers.
-     *
-     *
-     * @param float $time
-     */
-    public static function setPackageBootedTime(string $package, $time): void
-    {
-        if (!isset(self::$packageBootTiming[$package]) || $time < 0) {
-            Log::info("Server Timing: Invalid booted time for package: {$package}, time: {$time}");
-
-            return;
-        }
-
-        self::$packageBootTiming[$package]['end'] = $time;
-    }
-
-    /**
-     * Get the boot time for service providers.
-     *
-     * @return array
-     */
-    public static function getPackageBootTiming(): array
-    {
-        return self::$packageBootTiming;
     }
 
     /**

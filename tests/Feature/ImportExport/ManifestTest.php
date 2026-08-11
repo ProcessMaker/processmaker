@@ -22,6 +22,13 @@ class ManifestTest extends TestCase
 {
     use HelperTrait;
 
+    protected function tearDown(): void
+    {
+        Manifest::resetRequestState();
+
+        parent::tearDown();
+    }
+
     private function mockExporter($dependents)
     {
         return $this->mock(ScreenExporter::class, function ($mock) use ($dependents) {

@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Exception\HttpABTestingException;
-use ProcessMaker\Listeners\HandleRedirectListener;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
+use ProcessMaker\Services\RedirectToEventService;
 use Throwable;
 
 abstract class BpmnAction implements ShouldQueue
@@ -60,6 +60,7 @@ abstract class BpmnAction implements ShouldQueue
     public function handle()
     {
         $response = null;
+        $redirectToEventService = app(RedirectToEventService::class);
         try {
             extract($this->loadContext());
             $this->engine = $engine;
@@ -74,7 +75,7 @@ abstract class BpmnAction implements ShouldQueue
             // (e.g. completed, assigned, process completed, etc)
             // excluding system process (non_persistent_process)
             if ($this->processId !== 'non_persistent_process') {
-                HandleRedirectListener::sendRedirectToEvent();
+                $redirectToEventService->sendRedirectToEvent();
             }
         } catch (HttpABTestingException $exception) {
             Log::error($exception->getMessage());
@@ -87,6 +88,7 @@ abstract class BpmnAction implements ShouldQueue
                 $request->logError($exception, $element);
             }
         } finally {
+            $redirectToEventService->reset();
             $this->unlock();
         }
 

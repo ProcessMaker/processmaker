@@ -5,22 +5,19 @@ namespace ProcessMaker\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use ProcessMaker\Providers\ProcessMakerServiceProvider;
+use ProcessMaker\Services\WorkerBootTimingService;
 use Symfony\Component\HttpFoundation\Response;
 
 class ServerTimingMiddleware
 {
-    // Minimum time in ms to include a package in the Server-Timing header
-    private static $minPackageTime;
-
-    public function __construct()
+    public function __construct(private WorkerBootTimingService $workerBootTimingService)
     {
-        self::$minPackageTime = config('app.server_timing.min_package_time');
     }
 
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -39,7 +36,7 @@ class ServerTimingMiddleware
         // Calculate execution times
         $controllerTime = (microtime(true) - $startController) * 1000; // Convert to ms
         // Fetch service provider boot time
-        $serviceProviderTime = ProcessMakerServiceProvider::getBootTime() ?? 0;
+        $serviceProviderTime = $this->workerBootTimingService->getProviderBootTime() ?? 0;
         // Fetch query time
         $queryTime = ProcessMakerServiceProvider::getQueryTime() ?? 0;
 
@@ -55,13 +52,14 @@ class ServerTimingMiddleware
             array_unshift($serverTiming, "boot;dur={$bootTiming}");
         }
 
-        $packageTimes = ProcessMakerServiceProvider::getPackageBootTiming();
+        $packageTimes = $this->workerBootTimingService->getPackageBootTiming();
+        $minPackageTime = config('app.server_timing.min_package_time');
 
         foreach ($packageTimes as $package => $timing) {
             $time = ($timing['end'] - $timing['start']) * 1000;
 
             // Only include packages that took more than MIN_PACKAGE_TIME ms
-            if ($time > self::$minPackageTime) {
+            if ($time > $minPackageTime) {
                 $serverTiming[] = "{$package};dur={$time}";
             }
         }
