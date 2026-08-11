@@ -53,6 +53,7 @@ resources/views/layouts/layoutnextvite.blade.php
 resources/views/tasks/index.blade.php                 ← Vite
 resources/views/tasks/preview.blade.php               ← Vite standalone (iframe)
 resources/views/notifications/index.blade.php         ← Vite
+resources/views/templates/import.blade.php            ← Vite (others still Mix)
 resources/views/processes/index.blade.php             ← Vite (Designer /processes)
 resources/views/processes/edit.blade.php              ← Vite (Configure Process)
 resources/views/processes/list.blade.php              ← mounts @vite processes.js (@append)
@@ -97,6 +98,7 @@ vite.config.js
 | Profile edit | **Vite** | `profile.edit` + `layoutnextvite` | `admin/profile/loaderProfile.js` → `admin/profile/edit.js` |
 | Requests index | **Vite** | `requests.index` + `layoutnextvite` | `requests/loaderRequests.js` → `requests/index.js` |
 | Notifications | **Vite** | `notifications.index` + `layoutnextvite` | `notifications/loaderNotifications.js` → `notifications/index.js` |
+| Template Import | **Vite** | `templates.import` + `layoutnextvite` | `templates/loaderTemplates.js` → `templates/import/index.js` (Vue Router) |
 | Processes (Designer) | **Vite** | `processes.index` + `layoutnextvite`; apps via child `@append` | `processes/loaderProcesses.js` → `processes.js` / `templates` / `categories` / `archived` |
 | Designer home | **Vite** | `designer.index` + `layoutnextvite` | `processes/loaderProcesses.js` → `newDesigner.js` |
 | Process Export | **Vite** | `processes.export` + `layoutnextvite` | `processes/loaderProcesses.js` → `export/index.js` (Vue Router) |
@@ -173,6 +175,8 @@ resources/js/requests/loaderRequests.js
 resources/js/requests/index.js
 resources/js/notifications/loaderNotifications.js
 resources/js/notifications/index.js
+resources/js/templates/loaderTemplates.js
+resources/js/templates/import/index.js
 resources/js/processes/environment-variables/loaderEnvironment.js
 resources/js/processes/environment-variables/index.js
 resources/js/processes/environment-variables/edit.js
@@ -468,6 +472,15 @@ Dev tips:
 - Cross-frame events: `preview.js` dispatches `dataUpdated`, `taskReady`, `userHasInteracted` to `window.parent`. **Guard every `sendEvent` call with `if (!window.frameElement) return`** — without this, `window.parent === window` (direct access, not iframe), events loop back into the same page and trigger an infinite Vue reactivity cycle
 - Vue 2 watcher pitfall: `screenFilteredData` computed always returns a **new object reference**. Watching it with `deep: true` and accessing `this.screenFilteredData` inside the handler causes Vue to re-queue the watcher infinitely. **Always use the `newValue` parameter** (`handler(newValue) { sendEvent("dataUpdated", newValue); }`)
 - Breadcrumbs guard: `window.ProcessMaker.breadcrumbs` is only set up by the full sidebar/navbar layout; preview runs standalone, so guard: `if (window.ProcessMaker.breadcrumbs) { ... }` in the `task` watcher
+
+**Template Import** — `/template/{type}/import`
+
+- Route: `templates.import` → `TemplateController@import`
+- View: `resources/views/templates/import.blade.php` → `layoutnextvite`
+- Asset type passed via `<meta name="import-template-asset-type" content="{{ $type }}">` (read in JS with `document.head.querySelector(...)`)
+- No explicit boot script; loader reads `window.temporal?.packages || []`
+- Entries: `templates/loaderTemplates.js` (`setupMain` + packages) → `templates/import/index.js` (Vue Router on `window.ProcessMaker.Router`; reuses `ImportManagerView` from `processes/import`, `State` from `processes/export`, and adds `TemplateDetailConfigs`)
+- Still Mix: `templates/configure`, `templates/assets`, `templates/export-screen`, `templates/import-screen` (all still on `layouts.layout`)
 
 **Notifications** — `/notifications`
 

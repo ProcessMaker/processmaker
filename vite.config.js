@@ -118,6 +118,9 @@ export default defineConfig(({ mode }) => {
           'resources/js/notifications/loaderNotifications.js',
           'resources/js/notifications/index.js',
 
+          'resources/js/templates/loaderTemplates.js',
+          'resources/js/templates/import/index.js',
+
           'resources/js/tasks/loaderTasks.js',
           'resources/js/tasks/show.js',
           'resources/js/inbox-rules/index.js',
@@ -170,6 +173,11 @@ export default defineConfig(({ mode }) => {
           'resources/js/requests/loaderRequests.js',
           'resources/js/requests/index.js',
 
+          'resources/js/notifications/loaderNotifications.js',
+          'resources/js/notifications/index.js',
+
+          'resources/js/templates/loaderTemplates.js',
+          'resources/js/templates/import/index.js',
 
           'resources/js/processes/signals/loaderSignals.js',
           'resources/js/processes/signals/index.js',
