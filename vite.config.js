@@ -179,6 +179,7 @@ export default defineConfig(({ mode }) => {
           'resources/js/templates/loaderTemplates.js',
           'resources/js/templates/import/index.js',
           'resources/js/templates/configure.js',
+          'resources/js/templates/assets.js',
 
           'resources/js/processes/signals/loaderSignals.js',
           'resources/js/processes/signals/index.js',

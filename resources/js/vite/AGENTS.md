@@ -54,7 +54,8 @@ resources/views/tasks/index.blade.php                 ← Vite
 resources/views/tasks/preview.blade.php               ← Vite standalone (iframe)
 resources/views/notifications/index.blade.php         ← Vite
 resources/views/templates/import.blade.php            ← Vite
-resources/views/templates/configure.blade.php         ← Vite (assets/export-screen/import-screen/list still Mix)
+resources/views/templates/configure.blade.php         ← Vite
+resources/views/templates/assets.blade.php            ← Vite (export-screen/import-screen/list still Mix)
 resources/views/processes/index.blade.php             ← Vite (Designer /processes)
 resources/views/processes/edit.blade.php              ← Vite (Configure Process)
 resources/views/processes/list.blade.php              ← mounts @vite processes.js (@append)
@@ -101,6 +102,7 @@ vite.config.js
 | Notifications | **Vite** | `notifications.index` + `layoutnextvite` | `notifications/loaderNotifications.js` → `notifications/index.js` |
 | Template Import | **Vite** | `templates.import` + `layoutnextvite` | `templates/loaderTemplates.js` → `templates/import/index.js` (Vue Router) |
 | Template Configure | **Vite** | `templates.configure` + `layoutnextvite` | boot `window.temporal.templateConfigurations` → `templates/loaderTemplates.js` → `templates/configure.js` + `mixins: addons` |
+| Template Assets | **Vite** | `templates.assets` + `layoutnextvite` | `templates/loaderTemplates.js` → `templates/assets.js` (state from `localStorage`) |
 | Processes (Designer) | **Vite** | `processes.index` + `layoutnextvite`; apps via child `@append` | `processes/loaderProcesses.js` → `processes.js` / `templates` / `categories` / `archived` |
 | Designer home | **Vite** | `designer.index` + `layoutnextvite` | `processes/loaderProcesses.js` → `newDesigner.js` |
 | Process Export | **Vite** | `processes.export` + `layoutnextvite` | `processes/loaderProcesses.js` → `export/index.js` (Vue Router) |
@@ -180,6 +182,7 @@ resources/js/notifications/index.js
 resources/js/templates/loaderTemplates.js
 resources/js/templates/import/index.js
 resources/js/templates/configure.js
+resources/js/templates/assets.js
 resources/js/processes/environment-variables/loaderEnvironment.js
 resources/js/processes/environment-variables/index.js
 resources/js/processes/environment-variables/edit.js
@@ -493,7 +496,13 @@ Shared loader: `templates/loaderTemplates.js` — `setupMain()` + `window.Proces
 - Entry: `templates/configure.js` — registers `ProcessTemplateConfigurations` / `ScreenTemplateConfigurations`, mounts `#configureTemplate` with `mixins: addons` and reads all data from `window.temporal.templateConfigurations`
 - **Pitfall**: `:permission="{{ ... }}"` passes PHP `true` as string `"1"`; should use `:permission="@json(...)"`. Flag for future fix.
 
-Still Mix: `templates/assets`, `templates/export-screen`, `templates/import-screen`, `templates/list` (child partial — no standalone layout)
+*Template Assets* — `templates.assets`
+
+- View: `resources/views/templates/assets.blade.php` → `layoutnextvite`
+- No boot script; data is read from `localStorage.getItem("templateAssetsState")` in `mounted()` (state is written before the browser navigates to this page)
+- Entry: `templates/assets.js` — mounts `#template-asset-manager` with `TemplateAssetsView`
+
+Still Mix: `templates/export-screen`, `templates/import-screen`, `templates/list` (child partial — no standalone layout)
 
 **Notifications** — `/notifications`
 
