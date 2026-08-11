@@ -121,8 +121,6 @@ mix
   .js("resources/js/tasks/mobile.js", "public/js/tasks/mobile.js")
   .js("resources/js/tasks/router.js", "public/js/tasks/router.js")
 
-  .js("resources/js/notifications/index.js", "public/js/notifications/index.js")
-
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
   .js("resources/js/initialLoad.js", "public/js")

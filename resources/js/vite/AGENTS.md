@@ -51,6 +51,8 @@ Shared admin chrome: `resources/js/admin/loaderAdmin.js` (`setupMain` + packages
 ```
 resources/views/layouts/layoutnextvite.blade.php
 resources/views/tasks/index.blade.php                 ← Vite
+resources/views/tasks/preview.blade.php               ← Vite standalone (iframe)
+resources/views/notifications/index.blade.php         ← Vite
 resources/views/processes/index.blade.php             ← Vite (Designer /processes)
 resources/views/processes/edit.blade.php              ← Vite (Configure Process)
 resources/views/processes/list.blade.php              ← mounts @vite processes.js (@append)
@@ -87,6 +89,14 @@ vite.config.js
 | Route area | Status | View | JS entry(ies) |
 |------------|--------|------|----------------|
 | Tasks inbox | **Vite** | `tasks.index` + `layoutnextvite` | `vite/tasks/loaderTasks.js` → ScreenBuilder scripts → `vite/tasks/tasks.js` |
+| Task edit | **Vite** | `tasks.edit` + `layoutnextvite` | `tasks/loaderEdit.js` → `tasks/edit.js` + inline Vue on `load` |
+| Task preview (iframe) | **Vite** | `tasks.preview` — **standalone** (no layout) | `tasks/loaderPreview.js` → `tasks/preview.js` |
+| Task show | **Vite** | `tasks.show` + `layoutnextvite` | `tasks/loaderTasks.js` → `tasks/show.js` |
+| Inbox Rules | **Vite** | `inbox-rules.index` + `layoutnextvite` | `inbox-rules/index.js` |
+| About | **Vite** | `about.index` + `layoutnextvite` | layout change only; no page JS entry |
+| Profile edit | **Vite** | `profile.edit` + `layoutnextvite` | `admin/profile/loaderProfile.js` → `admin/profile/edit.js` |
+| Requests index | **Vite** | `requests.index` + `layoutnextvite` | `requests/loaderRequests.js` → `requests/index.js` |
+| Notifications | **Vite** | `notifications.index` + `layoutnextvite` | `notifications/loaderNotifications.js` → `notifications/index.js` |
 | Processes (Designer) | **Vite** | `processes.index` + `layoutnextvite`; apps via child `@append` | `processes/loaderProcesses.js` → `processes.js` / `templates` / `categories` / `archived` |
 | Designer home | **Vite** | `designer.index` + `layoutnextvite` | `processes/loaderProcesses.js` → `newDesigner.js` |
 | Process Export | **Vite** | `processes.export` + `layoutnextvite` | `processes/loaderProcesses.js` → `export/index.js` (Vue Router) |
@@ -122,6 +132,13 @@ resources/js/vite/auth/login.js
 resources/js/translations/index.js
 resources/js/vite/tasks/loaderTasks.js
 resources/js/vite/tasks/tasks.js
+resources/js/tasks/loaderEdit.js
+resources/js/tasks/edit.js
+resources/js/tasks/loaderPreview.js
+resources/js/tasks/preview.js
+resources/js/tasks/loaderTasks.js
+resources/js/tasks/show.js
+resources/js/inbox-rules/index.js
 resources/js/processes/loaderProcesses.js
 resources/js/processes/processes.js
 resources/js/processes/edit.js
@@ -150,6 +167,12 @@ resources/js/admin/tenant-queues/index.js
 resources/js/admin/devlink/index.js
 resources/js/admin/cases-retention/index.js
 resources/js/admin/logs/index.js
+resources/js/admin/profile/loaderProfile.js
+resources/js/admin/profile/edit.js
+resources/js/requests/loaderRequests.js
+resources/js/requests/index.js
+resources/js/notifications/loaderNotifications.js
+resources/js/notifications/index.js
 resources/js/processes/environment-variables/loaderEnvironment.js
 resources/js/processes/environment-variables/index.js
 resources/js/processes/environment-variables/edit.js
@@ -435,6 +458,25 @@ Dev tips:
 - Entries: `resources/js/vite/tasks/loaderTasks.js` → `$manager->getScripts()` → `tasks.js`
 - Boot: `window.temporal` before loader
 
+**Task Preview (iframe)** — `/tasks/{task}/edit/preview`
+
+- Route: `tasks.preview` → `TaskController@edit($task, $preview = 'preview')`
+- View: `resources/views/tasks/preview.blade.php` — **standalone HTML** (no `@extends`); designed to be embedded as an `<iframe>` in the Tasks inbox sidebar
+- Boot (before loader): `window.packages` + `const task` + `const screenBuilderScripts` + `const screenFields` — all as regular `<script>` so they are synchronously available to ESM modules
+- Entries: `tasks/loaderPreview.js` (`setupMain` + `screenBuilder`) → `tasks/preview.js`
+- EventBus registration: use `window.addEventListener('app-bootstrapped', …)` **not** `'load'`. `setupMain` dispatches `app-bootstrapped` synchronously during `loaderPreview.js`; by `'load'` the screen has already emitted `screen-renderer-init`
+- Cross-frame events: `preview.js` dispatches `dataUpdated`, `taskReady`, `userHasInteracted` to `window.parent`. **Guard every `sendEvent` call with `if (!window.frameElement) return`** — without this, `window.parent === window` (direct access, not iframe), events loop back into the same page and trigger an infinite Vue reactivity cycle
+- Vue 2 watcher pitfall: `screenFilteredData` computed always returns a **new object reference**. Watching it with `deep: true` and accessing `this.screenFilteredData` inside the handler causes Vue to re-queue the watcher infinitely. **Always use the `newValue` parameter** (`handler(newValue) { sendEvent("dataUpdated", newValue); }`)
+- Breadcrumbs guard: `window.ProcessMaker.breadcrumbs` is only set up by the full sidebar/navbar layout; preview runs standalone, so guard: `if (window.ProcessMaker.breadcrumbs) { ... }` in the `task` watcher
+
+**Notifications** — `/notifications`
+
+- Route: `notifications.index` → `NotificationController@index`
+- View: `resources/views/notifications/index.blade.php` → `layoutnextvite`
+- No explicit boot script needed; `loaderNotifications.js` reads `window.temporal?.packages` with optional chaining (defaults to `[]`)
+- Entries: `notifications/loaderNotifications.js` (`setupMain` + packages) → `notifications/index.js` (mounts `#notifications` with `NotificationsList`, `filter`, `filterComments`)
+- Mix: no longer builds notifications page entry
+
 **Processes Catalogue (desktop)**
 
 - Route: `/process-browser` (`process.browser.index`)
@@ -467,4 +509,5 @@ Dev tips:
 
 - Processes Catalogue mobile: `resources/views/processes-catalogue/mobile.blade.php`
 - Shared Designer child lists / other Designer routes still Mix (`templates/list` on some paths, script **builder**/preview, modeler, screens **preview**, …) even when listing tabs under Vite `/designer/screens`, `/designer/scripts`, or `/processes`
-- Admin profile, password change, and most other non-listed admin/designer pages
+- Password change, and most other non-listed admin/designer pages
+- `requests/show.blade.php` — already on `layoutnextvite`; removed redundant `<link href="{{ mix('css/collapseDetails.css') }}">` (already included by `layoutnextvite` via `@vite`)
