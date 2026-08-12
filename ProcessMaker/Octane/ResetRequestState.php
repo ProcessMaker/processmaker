@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ProcessMaker\Octane;
 
+use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\ImportExport\Manifest;
 use ProcessMaker\Providers\ProcessMakerServiceProvider;
 use ProcessMaker\Services\RedirectToEventService;
@@ -18,6 +19,7 @@ final class ResetRequestState
     public function handle(): void
     {
         ProcessMakerServiceProvider::beginRequestTiming();
+        FormalExpression::resetPmFunctions();
         Manifest::resetRequestState();
         $this->redirectToEventService->reset();
     }
