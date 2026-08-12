@@ -51,7 +51,7 @@ class BoundaryEventsTest extends TestCase
     public function testCycleTimerBoundaryEvent()
     {
         // Mock current date for TaskSchedulerManager
-        $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
+        $now = (new TaskSchedulerManager())->fakeToday('2018-05-01T00:00:00Z');
 
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Timer_BoundaryEvent_Cycle.bpmn'));
@@ -71,7 +71,7 @@ class BoundaryEventsTest extends TestCase
 
         // Trigger timer event
         $now->modify('+1 minute');
-        TaskSchedulerManager::fakeToday($now);
+        (new TaskSchedulerManager())->fakeToday($now);
         $this->runScheduledTasks();
 
         // There should be no scheduled tasks
@@ -138,7 +138,7 @@ class BoundaryEventsTest extends TestCase
     public function testCycleTimerBoundaryEventCallActivity()
     {
         // Mock current date for TaskSchedulerManager
-        $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
+        $now = (new TaskSchedulerManager())->fakeToday('2018-05-01T00:00:00Z');
 
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Timer_BoundaryEvent_CallActivity.bpmn'));
@@ -163,7 +163,7 @@ class BoundaryEventsTest extends TestCase
 
         // Trigger timer event
         $now->modify('+1 minute');
-        TaskSchedulerManager::fakeToday($now);
+        (new TaskSchedulerManager())->fakeToday($now);
         $this->runScheduledTasks();
 
         // Get active tokens
@@ -207,7 +207,7 @@ class BoundaryEventsTest extends TestCase
     public function testCycleTimerBoundaryEventNonInterrupting()
     {
         // Mock current date for TaskSchedulerManager
-        $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
+        $now = (new TaskSchedulerManager())->fakeToday('2018-05-01T00:00:00Z');
 
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Timer_BoundaryEvent_Cycle_NonInterrupting.bpmn'));
@@ -224,7 +224,7 @@ class BoundaryEventsTest extends TestCase
 
         // Trigger timer event
         $now->modify('+1 minute');
-        TaskSchedulerManager::fakeToday($now);
+        (new TaskSchedulerManager())->fakeToday($now);
         $this->runScheduledTasks();
 
         // Get active tokens
@@ -290,7 +290,7 @@ class BoundaryEventsTest extends TestCase
     public function testCycleTimerBoundaryEventCallActivityNonInterrupting()
     {
         // Mock current date for TaskSchedulerManager
-        $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
+        $now = (new TaskSchedulerManager())->fakeToday('2018-05-01T00:00:00Z');
 
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Timer_BoundaryEvent_CallActivity_NonInterrupting.bpmn'));
@@ -315,7 +315,7 @@ class BoundaryEventsTest extends TestCase
 
         // Trigger timer event
         $now->modify('+1 minute');
-        TaskSchedulerManager::fakeToday($now);
+        (new TaskSchedulerManager())->fakeToday($now);
         $this->runScheduledTasks();
 
         // Get active tokens
@@ -359,7 +359,7 @@ class BoundaryEventsTest extends TestCase
     public function testConcurrentBoundaryEventCallActivityNonInterrupting()
     {
         // Mock current date for TaskSchedulerManager
-        $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
+        $now = (new TaskSchedulerManager())->fakeToday('2018-05-01T00:00:00Z');
 
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Concurrent_BoundaryEvent_CallActivity_NonInterrupting.bpmn'));
@@ -376,7 +376,7 @@ class BoundaryEventsTest extends TestCase
 
         // Trigger timer event
         $now->modify('+4 minute');
-        TaskSchedulerManager::fakeToday($now);
+        (new TaskSchedulerManager())->fakeToday($now);
         $this->runScheduledTasks();
 
         // Get active tokens
@@ -401,7 +401,7 @@ class BoundaryEventsTest extends TestCase
      */
     public function testTimerBoundaryEventMultiInstance()
     {
-        $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
+        $now = (new TaskSchedulerManager())->fakeToday('2018-05-01T00:00:00Z');
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Timer_BoundaryEvent_MultiInstance.bpmn'));
 
@@ -426,7 +426,7 @@ class BoundaryEventsTest extends TestCase
 
         // Move forward 1 minute
         $now->modify('+1 minute');
-        TaskSchedulerManager::fakeToday($now);
+        (new TaskSchedulerManager())->fakeToday($now);
         $this->runScheduledTasks();
 
         // BoundaryEvent catches timer then
