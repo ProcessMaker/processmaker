@@ -38,7 +38,7 @@ return [
     |
     */
 
-    'server' => env('OCTANE_SERVER', 'roadrunner'),
+    'server' => env('OCTANE_SERVER', 'frankenphp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -132,10 +132,7 @@ return [
 
     'warm' => [
         ...Octane::defaultServicesToWarm(),
-        // Services to pre-resolve on worker start
-        ProcessMaker\Managers\PackageManager::class,
-        ProcessMaker\Managers\LoginManager::class,
-        ProcessMaker\Managers\IndexManager::class,
+
     ],
 
     'flush' => [
@@ -144,6 +141,22 @@ return [
         ProcessMaker\ImportExport\Extension::class,
         ProcessMaker\ImportExport\SignalHelper::class,
         ProcessMaker\Managers\MenuManager::class,
+        ProcessMaker\Managers\PackageManager::class,
+        ProcessMaker\Managers\LoginManager::class,
+        ProcessMaker\Managers\IndexManager::class,
+        ProcessMaker\Managers\ModelerManager::class,
+        ProcessMaker\Managers\ScreenBuilderManager::class,
+        ProcessMaker\Managers\ScriptBuilderManager::class,
+        ProcessMaker\Managers\DockerManager::class,
+        ProcessMaker\Managers\GlobalScriptsManager::class,
+        ProcessMaker\Helpers\PmHash::class,
+        ProcessMaker\Models\RequestDevice::class,
+        ProcessMaker\PolicyExtension::class,
+        Lavary\Menu\Menu::class,
+        Illuminate\Foundation\PackageManifest::class,
+        'compiledscreen',
+        'setting.cache',
+        'currentTenant',
     ],
 
     /*
