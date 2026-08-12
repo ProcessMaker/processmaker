@@ -50,6 +50,7 @@ class SwitchTenant implements SwitchTenantTask
         // exists. This lets `TENANT=<id> php artisan route:cache` create the cache
         // for a tenant that does not have one yet.
         Env::getRepository()->set('APP_ROUTES_CACHE', storage_path('routes-v7.php'));
+        $this->reloadRouteCache($app);
     }
 
     /**
@@ -89,6 +90,29 @@ class SwitchTenant implements SwitchTenantTask
         putenv("$key=$value");
         $_SERVER[$key] = $value;
         $_ENV[$key] = $value;
+    }
+
+    /**
+     * Reload the tenant's cached routes when the router can persist in memory.
+     *
+     * Octane keeps the router in memory between requests. The console and test
+     * environments may also initialize the router before a tenant is made
+     * current. Updating APP_ROUTES_CACHE alone is insufficient in those cases.
+     */
+    private function reloadRouteCache(Application $app): void
+    {
+        if (!$app->routesAreCached() || !$this->shouldReinitializeRouter()) {
+            return;
+        }
+
+        require $app->getCachedRoutesPath();
+    }
+
+    private function shouldReinitializeRouter(): bool
+    {
+        return isset($_SERVER['LARAVEL_OCTANE'])
+            || app()->runningInConsole()
+            || app()->runningUnitTests();
     }
 
     private function overrideConfigs(Application $app, IsTenant $tenant)
