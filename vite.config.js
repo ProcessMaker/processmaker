@@ -229,6 +229,7 @@ export default defineConfig(({ mode }) => {
           "resources/js/processes/scripts/loaderScripts.js",
           "resources/js/processes/scripts/index.js",
           "resources/js/processes/scripts/editConfig.js",
+          "resources/js/processes/scripts/edit.js",
 
           "resources/js/requests/loaderRequests.js",
           "resources/js/requests/index.js",

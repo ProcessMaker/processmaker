@@ -1,4 +1,4 @@
-@extends('layouts.layout', ['content_margin' => ''])
+@extends('layouts.layoutnextvite', ['content_margin' => ''])
 
 @section('title')
   {{ __('Edit Script') }}
@@ -53,9 +53,11 @@
 @endsection
 
 @section('js')
-  <script src="{{mix('js/leave-warning.js')}}"></script>
+  @include('shared.monaco')
+  @vite(['resources/js/processes/scripts/loaderScripts.js'])
   @foreach ($manager->getScripts() as $script)
-    <script src="{{ $script }}"></script>
+    <script defer src="{{ $script }}"></script>
   @endforeach
-  <script src="{{ mix('js/processes/scripts/edit.js') }}"></script>
+  @vite(['resources/js/leave-warning.js'])
+  @vite(['resources/js/processes/scripts/edit.js'])
 @endsection

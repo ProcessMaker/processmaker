@@ -134,7 +134,7 @@
       });
     </script>
     @foreach($manager->getScripts() as $script)
-    kiko
+
         <script defer src="{{$script}}"></script>
     @endforeach
 

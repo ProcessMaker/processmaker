@@ -84,7 +84,6 @@ mix
   .js("resources/js/admin/auth/passwords/change.js", "public/js/admin/auth/passwords/change.js")
   // .js("resources/js/admin/queues/index.js", "public/js/admin/queues")
 
-  .js("resources/js/processes/scripts/edit.js", "public/js/processes/scripts")
   .js("resources/js/processes/scripts/preview.js", "public/js/processes/scripts")
   .js("resources/js/processes/screens/preview.js", "public/js/processes/screens")
 
