@@ -6,6 +6,7 @@ use Illuminate\Broadcasting\BroadcastManager;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
+use Illuminate\Support\Facades\Context;
 use Monolog\Handler\RotatingFileHandler;
 use ProcessMaker\Application;
 use ProcessMaker\Multitenancy\Broadcasting\TenantAwareBroadcastManager;
@@ -17,7 +18,7 @@ class SwitchTenant implements SwitchTenantTask
 {
     use UsesMultitenancyConfig;
 
-    public static $landlordValues = null;
+    private const LANDLORD_VALUES_CONTEXT_KEY = 'multitenancy.landlord_values';
 
     /**
      * Make the given tenant current.
@@ -31,9 +32,8 @@ class SwitchTenant implements SwitchTenantTask
 
         \Log::debug('SwitchTenant: ' . $tenant->id, ['domain' => request()->getHost()]);
 
-        // Save the landlord values for later use
-        if (!self::$landlordValues) {
-            self::$landlordValues = $app->make('config')->all();
+        if (!Context::has(self::LANDLORD_VALUES_CONTEXT_KEY)) {
+            Context::add(self::LANDLORD_VALUES_CONTEXT_KEY, $app->make('config')->all());
         }
 
         // Set the tenant's domain in the request headers. Used for things like the global url() helper.
@@ -70,7 +70,7 @@ class SwitchTenant implements SwitchTenantTask
 
     private function landlordConfig($key)
     {
-        return Arr::get(self::$landlordValues, $key);
+        return Arr::get(Context::get(self::LANDLORD_VALUES_CONTEXT_KEY), $key);
     }
 
     private function setConfig($key, $value)

@@ -4,27 +4,71 @@ declare(strict_types=1);
 
 namespace Tests\Unit\ProcessMaker\Octane;
 
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Laravel\Octane\Events\RequestTerminated;
 use ProcessMaker\Events\RedirectToEvent;
+use ProcessMaker\ImportExport\Manifest;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Listeners\HandleRedirectListener;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Octane\ResetRequestState;
 use ProcessMaker\Providers\ProcessMakerServiceProvider;
+use ProcessMaker\Services\RedirectToEventService;
+use ProcessMaker\Services\WorkerBootTimingService;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class ResetRequestStateTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        ProcessMakerServiceProvider::beginRequestTiming();
+        Manifest::resetRequestState();
+
+        parent::tearDown();
+    }
+
+    private function recordQueryDuration(float $milliseconds): void
+    {
+        $connection = DB::connection();
+
+        event(new QueryExecuted('SELECT 1', [], $milliseconds, $connection));
+    }
+
+    public function test_octane_request_termination_resets_manifest_request_state(): void
+    {
+        Manifest::buildParentModeMap([
+            'parent-uuid' => [
+                'dependents' => [
+                    ['uuid' => 'child-uuid'],
+                ],
+            ],
+        ], new Options([
+            'parent-uuid' => ['mode' => 'update'],
+        ]));
+
+        $this->assertNotNull(Manifest::$parents);
+
+        event(new RequestTerminated(
+            $this->app,
+            $this->app,
+            Request::create('/import-request'),
+            new Response()
+        ));
+
+        $this->assertNull(Manifest::$parents);
+    }
+
     public function test_it_clears_request_timing_before_the_next_request(): void
     {
         DB::select('SELECT 1');
 
         $this->assertGreaterThan(0, ProcessMakerServiceProvider::getQueryTime());
 
-        $listener = new ResetRequestState();
+        $listener = app(ResetRequestState::class);
         $listener->handle();
 
         $this->assertSame(0.0, ProcessMakerServiceProvider::getQueryTime());
@@ -37,10 +81,10 @@ class ResetRequestStateTest extends TestCase
         $redirectListener = new RedirectStateProbe();
         $redirectListener->queue(ProcessRequest::factory()->create());
 
-        $listener = new ResetRequestState();
+        $listener = app(ResetRequestState::class);
         $listener->handle();
 
-        HandleRedirectListener::sendRedirectToEvent();
+        app(RedirectToEventService::class)->sendRedirectToEvent();
 
         Event::assertNotDispatched(RedirectToEvent::class);
     }
@@ -48,6 +92,13 @@ class ResetRequestStateTest extends TestCase
     public function test_octane_request_termination_automatically_resets_request_state(): void
     {
         Event::fake([RedirectToEvent::class]);
+
+        ProcessMakerServiceProvider::beginRequestTiming();
+        $this->recordQueryDuration(5000);
+
+        $firstRequestQueryTime = ProcessMakerServiceProvider::getQueryTime();
+
+        $this->assertSame(5000.0, $firstRequestQueryTime);
 
         $redirectListener = new RedirectStateProbe();
         $redirectListener->queue(ProcessRequest::factory()->create());
@@ -59,9 +110,53 @@ class ResetRequestStateTest extends TestCase
             new Response()
         ));
 
-        HandleRedirectListener::sendRedirectToEvent();
+        $this->assertSame(0.0, ProcessMakerServiceProvider::getQueryTime());
+
+        app(RedirectToEventService::class)->sendRedirectToEvent();
 
         Event::assertNotDispatched(RedirectToEvent::class);
+
+        $this->recordQueryDuration(10);
+
+        $nextRequestQueryTime = ProcessMakerServiceProvider::getQueryTime();
+
+        $this->assertSame(10.0, $nextRequestQueryTime);
+    }
+
+    public function test_octane_request_termination_resets_timing_after_an_error_response(): void
+    {
+        DB::select('SELECT 1');
+
+        $this->assertGreaterThan(0, ProcessMakerServiceProvider::getQueryTime());
+
+        event(new RequestTerminated(
+            $this->app,
+            $this->app,
+            Request::create('/failed-request'),
+            new Response(status: 500)
+        ));
+
+        $this->assertSame(0.0, ProcessMakerServiceProvider::getQueryTime());
+    }
+
+    public function test_octane_request_termination_preserves_worker_boot_timing(): void
+    {
+        $workerTiming = app(WorkerBootTimingService::class);
+        $workerTiming->setProviderBootTime(12.5);
+        $workerTiming->setPackageBootStart('ExamplePackage', 10.0);
+        $workerTiming->setPackageBootedTime('ExamplePackage', 10.25);
+        $expectedPackageTiming = $workerTiming->getPackageBootTiming();
+
+        event(new RequestTerminated(
+            $this->app,
+            $this->app,
+            Request::create('/first-request'),
+            new Response()
+        ));
+
+        $this->assertSame($workerTiming, app(WorkerBootTimingService::class));
+        $this->assertSame(12.5, $workerTiming->getProviderBootTime());
+        $this->assertSame($expectedPackageTiming, $workerTiming->getPackageBootTiming());
     }
 }
 
