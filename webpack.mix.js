@@ -87,10 +87,6 @@ mix
   .js("resources/js/processes/scripts/edit.js", "public/js/processes/scripts")
   .js("resources/js/processes/scripts/preview.js", "public/js/processes/scripts")
   .js("resources/js/processes/screens/preview.js", "public/js/processes/screens")
-  .js("resources/js/processes/screen-builder/main.js", "public/js/processes/screen-builder")
-  .js("resources/js/processes/screen-builder/typeForm.js", "public/js/processes/screen-builder")
-  .js("resources/js/processes/screen-builder/typeDisplay.js", "public/js/processes/screen-builder")
-  .js("resources/js/leave-warning.js", "public/js")
 
   .js("resources/js/requests/mobile.js", "public/js/requests/mobile.js")
   .js("resources/js/requests/show.js", "public/js/requests")

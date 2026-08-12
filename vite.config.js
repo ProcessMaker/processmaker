@@ -80,6 +80,32 @@ const stylesImporter = {
 };
 
 /**
+ * vue-monaco's ESM build (dist/vue-monaco.es.js) has a CJS fallback:
+ *   var monaco = require('monaco-editor');
+ * that fires when `amdRequire` prop is falsy. In browser ESM context there is
+ * no global `require`, so we stub it out here. The real loading is always done
+ * via the `amdRequire` prop (set to `window.require` in vue-monaco-amd.js).
+ */
+const vueMonacoRequireShim = {
+  name: "pm:vue-monaco-require-shim",
+  transform(code, id) {
+    if (!id.includes("node_modules/vue-monaco")) return null;
+    if (!code.includes("require('monaco-editor')")) return null;
+    // Replace the CJS require with AMD window.require (synchronous single-arg form,
+    // works if vs/editor/editor.main is already registered by loader.js).
+    // This branch is only reached when amdRequire prop is falsy; with shared.monaco
+    // loaded, window.require is always truthy so this is a safety net.
+    return {
+      code: code.replace(
+        "require('monaco-editor')",
+        "(window.require && window.require('monaco-editor'))",
+      ),
+      map: null,
+    };
+  },
+};
+
+/**
  * Tailwind's `content` globs make every SFC a PostCSS dependency of
  * tailwind.css, so Vite registers an extra `type: 'asset'` node under each
  * SFC's path. plugin-vue2 treats the first node without a `type=` query as the
@@ -143,6 +169,11 @@ export default defineConfig(({ mode }) => {
           "resources/js/tasks/loaderPreview.js",
           "resources/js/tasks/preview.js",
 
+          "resources/js/processes/screen-builder/loaderScreen.js",
+          "resources/js/processes/screen-builder/typeForm.js",
+          "resources/js/processes/screen-builder/typeDisplay.js",
+          "resources/js/processes/screen-builder/main.js",
+
           "resources/js/notifications/loaderNotifications.js",
           "resources/js/notifications/index.js",
 
@@ -154,6 +185,8 @@ export default defineConfig(({ mode }) => {
           "resources/js/inbox-rules/index.js",
 
           "resources/js/processes/loaderProcesses.js",
+
+          "resources/js/leave-warning.js",
           "resources/js/processes/processes.js",
           "resources/js/processes/edit.js",
           "resources/js/processes/newDesigner.js",
@@ -240,6 +273,7 @@ export default defineConfig(({ mode }) => {
         },
       }),
       vue2HmrMainModuleFix,
+      vueMonacoRequireShim,
       // dest paths are relative to outDir (public/build), so '../' escapes to public/
       viteStaticCopy({
         targets: [
