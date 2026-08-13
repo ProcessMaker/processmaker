@@ -138,7 +138,6 @@ return [
         ProcessMaker\Managers\MenuManager::class,
         ProcessMaker\Managers\PackageManager::class,
         ProcessMaker\Managers\IndexManager::class,
-        ProcessMaker\Managers\ModelerManager::class,
         ProcessMaker\Managers\ScreenBuilderManager::class,
         ProcessMaker\Managers\ScriptBuilderManager::class,
         ProcessMaker\Managers\DockerManager::class,
@@ -155,6 +154,7 @@ return [
     'flush' => [
         // Services with mutable state that must be recreated per request
         ProcessMaker\Managers\LoginManager::class,
+        ProcessMaker\Managers\ModelerManager::class,
         Lavary\Menu\Menu::class,
     ],
 
