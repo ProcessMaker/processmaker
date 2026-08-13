@@ -1050,6 +1050,68 @@ class TasksTest extends TestCase
         $this->assertNotContains($regularTask->id, $returnedIds);
     }
 
+    public function testNestedOrSelfServiceWithInProgressReturnsBothStatuses()
+    {
+        $user = User::factory()->create(['is_administrator' => true]);
+        $group = Group::factory()->create();
+
+        GroupMember::factory()->create([
+            'group_id' => $group->id,
+            'member_id' => $user->id,
+            'member_type' => User::class,
+        ]);
+
+        $selfServiceTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'user_id' => null,
+            'is_self_service' => 1,
+            'self_service_groups' => ['groups' => [strval($group->id)], 'users' => []],
+        ]);
+
+        $inProgressTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'user_id' => $user->id,
+            'is_self_service' => 0,
+        ]);
+
+        $completedTask = ProcessRequestToken::factory()->create([
+            'status' => 'CLOSED',
+            'element_type' => 'task',
+            'user_id' => $user->id,
+            'is_self_service' => 0,
+        ]);
+
+        // Same nested `or` payload produced by the Status column filter UI
+        $statusFilter = json_encode([
+            [
+                'subject' => ['type' => 'Status'],
+                'operator' => '=',
+                'value' => 'In Progress',
+                'or' => [
+                    [
+                        'subject' => ['type' => 'Status'],
+                        'operator' => '=',
+                        'value' => 'Self Service',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response = $this->actingAs($user, 'api')->get(route('api.tasks.index', [
+            'pmql' => '(user_id = ' . $user->id . ') AND (status = "In Progress")',
+            'advanced_filter' => $statusFilter,
+        ]));
+
+        $response->assertStatus(200);
+        $returnedIds = collect($response->json('data'))->pluck('id')->toArray();
+
+        $this->assertContains($inProgressTask->id, $returnedIds);
+        $this->assertContains($selfServiceTask->id, $returnedIds);
+        $this->assertNotContains($completedTask->id, $returnedIds);
+    }
+
     public function testGetScreenFields()
     {
         $this->be($this->user);

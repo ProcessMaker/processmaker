@@ -41,7 +41,7 @@
           <b-form-group :key="'logical' + index"
                         v-if="switchLogical(index)">
             <b-form-select v-model="item.logical" 
-                           :options="getLogicals()"
+                           :options="getLogicals(index)"
                            :data-cy="'logical' + index"
                            class="pm-filter-form-logical-operators"
                            @change="onChangeLogicalOp(item,index)"
@@ -121,6 +121,7 @@
         this.$emit("onChangeSort", value);
       },
       onApply() {
+        this.normalizeStatusLogicals();
         let json = this.getValues();
         this.$emit("onApply", json);
       },
@@ -134,21 +135,46 @@
       },
       onClickButtonAdd() {
         this.addItem(this.items.length);
+        this.normalizeStatusLogicals();
       },
       onClickButtonRemove(item, index) {
         if (this.items.length === 1) {
           return;
         }
         this.removeItem(index);
+        this.normalizeStatusLogicals();
       },
       onChangeOperator(item) {
         this.switchViewControl(item);
+        this.normalizeStatusLogicals();
       },
-      onChangeLogicalOp() {
+      onChangeLogicalOp(item, index) {
+        if (this.requiresStatusOrLogical(index)) {
+          item.logical = "or";
+        }
       },
       setValues(json) {
         let items = this.transformToFilterSyntax(json);
+        this.normalizeStatusLogicals(items);
         this.items = items;
+      },
+      /**
+       * Status is a single-value enum column: AND between different statuses can never match.
+       * Force OR so multi-status filters mean "any of these statuses".
+       */
+      isStatusColumn() {
+        return this.value === "status";
+      },
+      requiresStatusOrLogical(index) {
+        return this.isStatusColumn() && this.switchLogical(index);
+      },
+      normalizeStatusLogicals(items = this.items) {
+        if (!this.isStatusColumn()) {
+          return;
+        }
+        for (let i = 0; i < items.length - 1; i++) {
+          items[i].logical = "or";
+        }
       },
       getValues() {
         let json = JSON.parse(JSON.stringify(this.items));
@@ -236,7 +262,10 @@
         }
         return operators;
       },
-      getLogicals() {
+      getLogicals(index) {
+        if (this.requiresStatusOrLogical(index)) {
+          return [{ value: "or", text: "or" }];
+        }
         return [
           {value: "and", text: "and"},
           {value: "or", text: "or"}

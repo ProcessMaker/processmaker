@@ -349,12 +349,26 @@ trait TaskControllerIndexMethods
 
     private function advancedFilterHasSelfServiceStatus($request): bool
     {
-        foreach ($this->getAdvancedFilterArray($request) as $filter) {
+        return $this->filterDefinitionsContainSelfService($this->getAdvancedFilterArray($request));
+    }
+
+    /**
+     * Detect "Self Service" in Status filters, including nested `or` chains produced by the
+     * column filter UI (Status = X OR Status = Self Service).
+     */
+    private function filterDefinitionsContainSelfService(array $filters): bool
+    {
+        foreach ($filters as $filter) {
             $values = (array) ($filter['value'] ?? []);
-            foreach ($values as $v) {
-                if (mb_strtolower($v) === self::SELF_SERVICE_STATUS) {
+            foreach ($values as $value) {
+                if (is_string($value) && mb_strtolower($value) === self::SELF_SERVICE_STATUS) {
                     return true;
                 }
+            }
+
+            $nestedOr = $filter['or'] ?? [];
+            if (is_array($nestedOr) && $nestedOr !== [] && $this->filterDefinitionsContainSelfService($nestedOr)) {
+                return true;
             }
         }
 
@@ -376,6 +390,52 @@ trait TaskControllerIndexMethods
         return array_filter($filterArray, function ($filter) {
             return isset($filter['subject']['type']) && $filter['subject']['type'] === 'Status';
         });
+    }
+
+    /**
+     * Remove Self Service values from a Status filter (including nested `or`), keeping other statuses.
+     * Returns null when nothing remains after stripping Self Service.
+     */
+    private function stripSelfServiceFromStatusFilter(array $filter): ?array
+    {
+        $values = is_array($filter['value'] ?? null) ? $filter['value'] : [$filter['value'] ?? null];
+        $values = array_values(array_filter($values, function ($value) {
+            return $value !== null && $value !== ''
+                && (!is_string($value) || mb_strtolower($value) !== self::SELF_SERVICE_STATUS);
+        }));
+
+        $nestedOr = [];
+        foreach ($filter['or'] ?? [] as $orFilter) {
+            if (!is_array($orFilter)) {
+                continue;
+            }
+            $stripped = $this->stripSelfServiceFromStatusFilter($orFilter);
+            if ($stripped !== null) {
+                $nestedOr[] = $stripped;
+            }
+        }
+
+        if ($values === [] && $nestedOr === []) {
+            return null;
+        }
+
+        if ($values === [] && $nestedOr !== []) {
+            $first = array_shift($nestedOr);
+            if ($nestedOr !== []) {
+                $first['or'] = array_values(array_merge($first['or'] ?? [], $nestedOr));
+            }
+
+            return $first;
+        }
+
+        $filter['value'] = count($values) === 1 ? $values[0] : $values;
+        if ($nestedOr === []) {
+            unset($filter['or']);
+        } else {
+            $filter['or'] = $nestedOr;
+        }
+
+        return $filter;
     }
 
     private function removeStatusFromPmql(string $pmql): string
@@ -419,24 +479,12 @@ trait TaskControllerIndexMethods
                         continue;
                     }
 
-                    $values = is_array($filter['value']) ? $filter['value'] : [$filter['value']];
-                    $hasSelfServiceValue = in_array(
-                        self::SELF_SERVICE_STATUS,
-                        array_map(fn ($value) => is_string($value) ? mb_strtolower($value) : $value, $values),
-                        true
-                    );
-
-                    if ($hasSelfServiceValue) {
+                    if ($this->filterDefinitionsContainSelfService([$filter])) {
                         $hasSelfServiceFilter = true;
-                        $values = array_values(array_filter($values, function ($value) {
-                            return !is_string($value) || mb_strtolower($value) !== self::SELF_SERVICE_STATUS;
-                        }));
-
-                        if (empty($values)) {
+                        $filter = $this->stripSelfServiceFromStatusFilter($filter);
+                        if ($filter === null) {
                             continue;
                         }
-
-                        $filter['value'] = is_array($filter['value']) ? $values : $values[0];
                     }
 
                     $statusFilters[] = $filter;
