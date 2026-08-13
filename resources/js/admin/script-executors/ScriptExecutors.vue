@@ -252,6 +252,7 @@ export default {
     "filter",
     "permission",
     "script_microservice_enabled",
+    "script_microservice_tenant_id",
   ],
   data() {
     return {
@@ -271,7 +272,8 @@ export default {
       exitCode: 0,
       showDockerfile: false,
       loading: true,
-      script_microservice_broadcast_uui: null,
+      activeBuildUuid: null,
+      pendingBuildEvents: [],
 
       localLoadOnStart: true,
       orderBy: "language",
@@ -356,15 +358,14 @@ export default {
         }
       );
     }
+
+    if (this.script_microservice_enabled && this.script_microservice_tenant_id) {
+      this.subscribeToTenantBuildChannel();
+    }
   },
   watch: {
     commandOutput() {
       this.scrollToBottom();
-    },
-    script_microservice_broadcast_uui(newVal) {
-      if (newVal) {
-        this.subscribeToScriptMicroserviceChannel(newVal);
-      }
     },
   },
   computed: {
@@ -434,7 +435,13 @@ export default {
     },
     setErrors(errors) {
       this.status = "error";
-      this.errors = errors.response.data.errors;
+      this.errors = _.get(errors, "response.data.errors", {});
+      const messages = Object.values(this.errors)
+        .flat()
+        .filter((message) => typeof message === "string" && message !== "");
+      if (messages.length) {
+        this.output(messages.join("\n") + "\n");
+      }
     },
     doNotHideIfRunning(e) {
       if (this.isRunning) {
@@ -472,13 +479,15 @@ export default {
     save() {
       this.resetProcessInfo();
       this.status = "saving";
+      this.activeBuildUuid = this.formData.uuid || null;
+      this.pendingBuildEvents = [];
       if (this.formData.id) {
         const path = "/script-executors/" + this.formData.id;
         ProcessMaker.apiClient
           .put(path, this.formData)
           .then((result) => {
             this.status = _.get(result, "data.status", "error");
-            this.script_microservice_broadcast_uui = result.data.uuid;
+            this.setActiveBuildUuid(_.get(result, "data.uuid", this.formData.uuid));
           })
           .catch((e) => {
             this.setErrors(e);
@@ -489,9 +498,10 @@ export default {
           .post(path, this.formData)
           .then((result) => {
             this.status = _.get(result, "data.status", "error");
-            this.script_microservice_broadcast_uui = result.data.uuid;
+            this.setActiveBuildUuid(_.get(result, "data.uuid"));
             if (this.status === "started") {
               this.formData.id = result.data.id;
+              this.formData.uuid = result.data.uuid;
               this.fetch(); // refresh the table (beneath the modal)
             }
           })
@@ -505,13 +515,17 @@ export default {
     },
     edit(row) {
       this.formData = _.cloneDeep(row);
+      this.activeBuildUuid = row.uuid || null;
       this.$refs.edit.show();
     },
     reset() {
       this.formData = _.cloneDeep(this.emptyFormData);
       this.errors = {};
       this.showDockerfile = false;
-      (this.status = "idle"), this.resetProcessInfo();
+      this.status = "idle";
+      this.activeBuildUuid = null;
+      this.pendingBuildEvents = [];
+      this.resetProcessInfo();
     },
     resetProcessInfo() {
       this.commandOutput = "";
@@ -550,31 +564,72 @@ export default {
     onAddToBundle(data) {
       this.$root.$emit('add-to-bundle', data);
     },
-    subscribeToScriptMicroserviceChannel(name) {
-      const channel = `build-image-${name}`;
-      if (this.script_microservice_enabled) {
-      // Subscribe to new channel
-        window.ScriptMicroserviceEcho
-          .channel(channel)
-          .listenToAll((eventName, data) => {
-            this.status = this.status === "idle" ? "starting" : this.status;
-            switch (eventName) {
-              case ".build-image":
-                this.output(`${data}\n`);
-                break;
-              case ".build-finished":
-                this.pidFile = null;
-                this.exitCode = 0;
-                this.status = "done";
-                break;
-              case ".build-error":
-                this.output(data);
-                this.pidFile = null;
-                this.exitCode = 1;
-                this.status = "done";
-                break;
-            }
-          });
+    subscribeToTenantBuildChannel() {
+      if (!window.ScriptMicroserviceEcho) {
+        return;
+      }
+      const channel = `tenant-${this.script_microservice_tenant_id}-builds`;
+      window.ScriptMicroserviceEcho.channel(channel).listen(
+        ".executor-build",
+        (data) => {
+          this.handleExecutorBuildEvent(data);
+        }
+      );
+    },
+    setActiveBuildUuid(uuid) {
+      if (!uuid) {
+        return;
+      }
+      this.activeBuildUuid = uuid;
+      const pending = this.pendingBuildEvents.filter(
+        (event) => event.executor_id === uuid
+      );
+      this.pendingBuildEvents = [];
+      pending.forEach((event) => this.applyExecutorBuildEvent(event));
+    },
+    handleExecutorBuildEvent(data) {
+      if (!data || typeof data !== "object") {
+        return;
+      }
+      if (!this.isRunning) {
+        return;
+      }
+      if (!this.activeBuildUuid) {
+        this.pendingBuildEvents.push(data);
+        return;
+      }
+      if (data.executor_id !== this.activeBuildUuid) {
+        return;
+      }
+      this.applyExecutorBuildEvent(data);
+    },
+    applyExecutorBuildEvent(data) {
+      if (this.status === "saving") {
+        this.status = "starting";
+      } else if (this.status === "idle") {
+        this.status = "starting";
+      }
+
+      if (data.type === "status") {
+        this.output(`[${data.phase}] ${data.message || ""}\n`);
+      } else if (data.message) {
+        const message = data.message.endsWith("\n")
+          ? data.message
+          : `${data.message}\n`;
+        this.output(message);
+      }
+
+      if (data.phase === "completed" && data.type === "status") {
+        this.pidFile = null;
+        this.exitCode = 0;
+        this.status = "done";
+        return;
+      }
+
+      if (data.phase === "error" || data.type === "error") {
+        this.pidFile = null;
+        this.exitCode = 1;
+        this.status = "done";
       }
     },
   },

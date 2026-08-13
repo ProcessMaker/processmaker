@@ -19,6 +19,7 @@
         <div class="card card-body">
             <script-executors
                     :script_microservice_enabled="@json($script_microservice_enabled)"
+                    script_microservice_tenant_id="{{$script_microservice_tenant_id}}"
             ></script-executors>
         </div>
     </div>
