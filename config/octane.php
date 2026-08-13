@@ -132,17 +132,11 @@ return [
 
     'warm' => [
         ...Octane::defaultServicesToWarm(),
-
-    ],
-
-    'flush' => [
-        // Services with mutable state that must be recreated per request
         ProcessMaker\Models\AnonymousUser::class,
         ProcessMaker\ImportExport\Extension::class,
         ProcessMaker\ImportExport\SignalHelper::class,
         ProcessMaker\Managers\MenuManager::class,
         ProcessMaker\Managers\PackageManager::class,
-        ProcessMaker\Managers\LoginManager::class,
         ProcessMaker\Managers\IndexManager::class,
         ProcessMaker\Managers\ModelerManager::class,
         ProcessMaker\Managers\ScreenBuilderManager::class,
@@ -152,11 +146,16 @@ return [
         ProcessMaker\Helpers\PmHash::class,
         ProcessMaker\Models\RequestDevice::class,
         ProcessMaker\PolicyExtension::class,
-        Lavary\Menu\Menu::class,
         Illuminate\Foundation\PackageManifest::class,
         'compiledscreen',
         'setting.cache',
         'currentTenant',
+    ],
+
+    'flush' => [
+        // Services with mutable state that must be recreated per request
+        ProcessMaker\Managers\LoginManager::class,
+        Lavary\Menu\Menu::class,
     ],
 
     /*
