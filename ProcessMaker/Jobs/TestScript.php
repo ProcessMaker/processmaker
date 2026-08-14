@@ -58,24 +58,26 @@ class TestScript implements ShouldQueue
      */
     public function handle()
     {
+        $startTime = microtime(true);
         try {
             // Just set the code but do not save the object (preview only)
             $this->script->code = $this->code;
             $metadata = [
                 'nonce' => $this->nonce,
                 'current_user' => $this->current_user?->id,
+                'start_time' => microtime(true),
             ];
             $response = $this->script->runScript($this->data, $this->configuration, '', null, 0, $metadata);
             \Log::debug('Response from runScript: ' . print_r($response, true));
 
             if (!config('script-runner-microservice.enabled')) {
-                $this->sendResponse(200, $response);
+                $this->sendResponse(200, $response, (microtime(true) - $startTime));
             }
         } catch (Throwable $exception) {
             $this->sendResponse(500, [
                 'exception' => get_class($exception),
                 'message' => $exception->getMessage(),
-            ]);
+            ], (microtime(true) - $startTime));
         }
     }
 
@@ -85,8 +87,8 @@ class TestScript implements ShouldQueue
      * @param int $status
      * @param array $response
      */
-    private function sendResponse($status, array $response)
+    private function sendResponse($status, array $response, float $duration)
     {
-        event(new ScriptResponseEvent($this->current_user, $status, $response, null, $this->nonce));
+        event(new ScriptResponseEvent($this->current_user, $status, $response, null, $this->nonce, $duration));
     }
 }

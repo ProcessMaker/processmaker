@@ -299,7 +299,7 @@
                             {{ preview.error.exception }}
                           </div>
                           <pre class="text-light text-monospace small">{{
-                            preview.error.message
+                            formatErrorMessage(preview.error.message)
                           }}</pre>
                         </div>
                       </div>
@@ -357,6 +357,7 @@
           <span class="text-uppercase">{{ language }}</span>
         </span>
         <span class="ml-auto">
+          <span v-if="displayDuration" class="text-secondary text-sm">{{ displayDuration }}</span>
           <i
             v-if="preview.executing"
             class="fas fa-spinner fa-spin"
@@ -506,6 +507,7 @@ export default {
       lineContext: null,
       isDiffEditor: false,
       currentNonce: null,
+      duration: null,
       progress: {
         progress: 0,
       },
@@ -539,6 +541,25 @@ export default {
     };
   },
   computed: {
+    displayDuration() {
+      if (this.preview.executing) {
+        return null;
+      }
+
+      if (!this.preview.success && !this.preview.failure) {
+        return null;
+      }
+      
+      if (!this.duration && this.duration !== 0) return null;
+
+      if (this.duration < 1) {
+        // less than a second, show ms
+        return `${Math.round(this.duration * 1000)}ms`;
+      }
+      // 1s or more, show s with 2 decimals
+      return `${this.duration.toFixed(2)}s`;
+ 
+    },
     previewChanges() {
       return this.showDiffEditor || this.showExplainEditor;
     },
@@ -798,10 +819,33 @@ export default {
       }
       this.stringifyJson = JSON.stringify(output, null, 2);
     },
+    formatErrorMessage(value) {
+      if (value == null || value === "") {
+        return "";
+      }
+      if (typeof value === "string") {
+        return value;
+      }
+      try {
+        return JSON.stringify(value, null, 2);
+      } catch (e) {
+        return String(value);
+      }
+    },
+    setPreviewFailure(exception, message) {
+      this.preview.executing = false;
+      this.preview.success = false;
+      this.preview.failure = true;
+      this.preview.error.exception = exception;
+      this.preview.error.message = message;
+      this.outputOpen = true;
+    },
     outputResponse(response) {
       if (response.nonce !== this.nonce) {
         return;
       }
+
+      this.duration = response.duration;
 
       if (this.executionKey && this.executionKey !== response.data.watcher) {
         return;
@@ -842,27 +886,28 @@ export default {
         nonce: this.nonce,
       }).then((response) => {
         if (isRealtime) {
-          this.preview.executing = false;
+          this.duration = response.data.metadata?.duration || null;
           if (response.data.status === "error") {
-            this.preview.failure = true;
-            this.preview.error.exception = response.data.exception || "ScriptException";
-            this.preview.error.message = response.data.error_message
-              || response.data.error?.error
-              || response.data.error
-              || response.data.message;
-          } else {
-            this.preview.success = true;
-            this.preview.output = response.data.output;
+            this.setPreviewFailure(
+              response.data.error_message,
+              response.data.error,
+            );
+            return;
           }
+          this.preview.executing = false;
+          this.preview.success = true;
+          // The extra "output" key is actually the result of fetching srn cache for the non-realtime system
+          // But people are use to seeing it, so we'll add it here.
+          this.preview.output = { output: response.data.output };
           return;
         }
 
         this.executionKey = response.data.key;
       }).catch((error) => {
-        this.preview.executing = false;
-        this.preview.failure = true;
-        this.preview.error.exception = error.response?.data?.exception || error.response?.status || "Error";
-        this.preview.error.message = error.response?.data?.message || error.message;
+        this.setPreviewFailure(
+          error.response?.data?.exception || error.response?.status || "Error",
+          error.response?.data || error.message,
+        );
       });
     },
     save(onSuccess, onError, shouldRedirect = false) {

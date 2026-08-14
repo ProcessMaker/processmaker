@@ -1,21 +1,16 @@
 # syntax=docker/dockerfile:1
-# Experiment: warm Python container blocked on stdin
+# Realtime Python executor: fresh container per request via `docker run --rm -i`.
 #
-# Same idea as the PHP variant: keep a container running with the interpreter
-# already loaded and blocked on stdin.readline(). A client attaches, writes one
-# JSON payload; bootstrap.py execs the script, prints the result, and exits.
-#
-# Usage:
-#   ./warm.sh          # build + start warm container (foreground via docker wait)
-#   ./run.sh           # attach, send payload.json, print result
+# The service pipes one JSON payload on stdin. bootstrap.py execs the script,
+# prints the JSON result on stdout, and exits. The container is removed on exit.
 
 FROM python:3.12-alpine
 
 COPY <<'EOF' /bootstrap.py
 #!/usr/bin/env python3
-"""Wait for one JSON payload on stdin, exec the script, print result, exit.
+"""Read one JSON payload from stdin, exec the script, print result, exit.
 
-Expected payload shape (see ../../payload.schema.json):
+Expected payload shape:
   { "script": "...", "data": {}, "config": {}, "env": {} }
 """
 
@@ -53,13 +48,13 @@ def write_error(
 
 
 def main() -> int:
-    line = sys.stdin.readline()
-    if not line:
+    raw = sys.stdin.read()
+    if not raw or not raw.strip():
         print("No input on stdin", file=sys.stderr)
         return 1
 
     try:
-        payload = json.loads(line.strip())
+        payload = json.loads(raw.strip())
     except json.JSONDecodeError as e:
         write_error(f"Invalid JSON: {e}")
         return 1
@@ -73,7 +68,6 @@ def main() -> int:
     data = payload.get("data") or {}
     config = payload.get("config") or {}
 
-    # Apply per-request env before exec (warm containers can't use docker run -e).
     for key, value in (payload.get("env") or {}).items():
         if value is None or isinstance(value, (str, int, float, bool)):
             os.environ[str(key)] = "" if value is None else str(value)

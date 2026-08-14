@@ -1,36 +1,27 @@
 # syntax=docker/dockerfile:1
-# Experiment: warm PHP container blocked on stdin
+# Realtime PHP executor: fresh container per request via `docker run --rm -i`.
 #
-# Instead of starting a fresh container per request (cold start), we keep a
-# container running with PHP already loaded and blocked on fgets(STDIN). A
-# separate client attaches and writes one JSON payload; bootstrap.php evals
-# the script, prints the result on stdout, and exits so the container stops.
-# Eventually a pool of these warm containers could sit ready for fast attach.
-#
-# Usage:
-#   ./warm.sh          # build + start warm container (foreground via docker wait)
-#   ./run.sh           # attach, send payload.json, print result
+# The service pipes one JSON payload on stdin. bootstrap.php evals the script,
+# prints the JSON result on stdout, and exits. The container is removed on exit.
 
 FROM php:8.3-cli-alpine
 
 COPY <<'EOF' /bootstrap.php
 <?php
 /**
- * Wait for one JSON payload on stdin, eval the script, print result, exit.
+ * Read one JSON payload from stdin, eval the script, print result, exit.
  *
- * Expected payload shape (see ../../payload.schema.json):
+ * Expected payload shape:
  *   { "script": "...", "data": {}, "config": {}, "env": {} }
  */
 
-stream_set_blocking(STDIN, true);
-
-$line = fgets(STDIN);
-if ($line === false) {
+$raw = file_get_contents('php://stdin');
+if ($raw === false || trim($raw) === '') {
     fwrite(STDERR, "No input on stdin\n");
     exit(1);
 }
 
-$payload = json_decode(trim($line), true);
+$payload = json_decode($raw, true);
 if (json_last_error() !== JSON_ERROR_NONE) {
     fwrite(STDERR, json_encode([
         'error' => 'Invalid JSON: ' . json_last_error_msg(),
@@ -60,7 +51,6 @@ if ($script === null || $script === '') {
 $data = $payload['data'] ?? [];
 $config = $payload['config'] ?? [];
 
-// Apply per-request env before eval (warm containers can't use docker run -e).
 foreach (($payload['env'] ?? []) as $key => $value) {
     $stringValue = is_scalar($value) || $value === null ? (string) $value : json_encode($value);
     putenv($key . '=' . $stringValue);
@@ -70,6 +60,9 @@ foreach (($payload['env'] ?? []) as $key => $value) {
 
 // eval() does not accept opening tags.
 $script = preg_replace('/^<\?php\s*/i', '', trim($script));
+// ProcessMaker encodes ' as &#39; (classic executor shell quoting). Restore
+// before eval so `return ['x' => ...]` is not parsed as `return [&` + comment.
+$script = str_replace('&#39;', "'", $script);
 
 try {
     $result = eval($script);

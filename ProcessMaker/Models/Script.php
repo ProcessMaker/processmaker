@@ -179,6 +179,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
         if (!$user) {
             throw new ConfigurationException('A user is required to run scripts');
         }
+        $metadata['start_time'] = microtime(true);
 
         return $runner->run($this->code, $data, $config, $timeout, $user, $sync, $metadata);
     }

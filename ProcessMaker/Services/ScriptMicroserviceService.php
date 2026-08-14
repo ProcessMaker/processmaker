@@ -241,6 +241,9 @@ class ScriptMicroserviceService
     {
         $response = $request->all();
         Log::debug('Response microservice executor: ' . print_r($response, true));
+
+        $duration = isset($response['metadata']['start_time']) ? (microtime(true) - $response['metadata']['start_time']) : null;
+
         // If the call is from preview
         if (!empty($response['metadata']['nonce'])) {
             $formattedResponse = $this->formatPreviewResponse($response);
@@ -249,7 +252,8 @@ class ScriptMicroserviceService
                 $formattedResponse['status'],
                 $formattedResponse['output'],
                 null,
-                $response['metadata']['nonce']));
+                $response['metadata']['nonce'],
+                $duration));
         }
         if (!empty($response['metadata']['script_task'])) {
             $script = Script::find($response['metadata']['script_task']['script_id']);

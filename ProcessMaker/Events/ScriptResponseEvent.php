@@ -25,18 +25,21 @@ class ScriptResponseEvent implements ShouldBroadcastNow
 
     public $nonce;
 
+    public $duration;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(User $user, $status, array $response, $watcher = null, $nonce = null)
+    public function __construct(User $user, $status, array $response, $watcher = null, $nonce = null, $duration = null)
     {
         $this->userId = $user->id;
         $this->status = $status;
         $this->response = $response;
         $this->watcher = $watcher;
         $this->nonce = $nonce;
+        $this->duration = $duration;
     }
 
     /**
@@ -75,6 +78,7 @@ class ScriptResponseEvent implements ShouldBroadcastNow
             'watcher' => $this->watcher,
             'response' => $response,
             'nonce' => $this->nonce,
+            'duration' => $this->duration,
         ];
     }
 }

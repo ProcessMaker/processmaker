@@ -21,6 +21,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\Services\ScriptMicroserviceService;
 use ProcessMaker\Traits\ProjectAssetTrait;
+use Throwable;
 
 class ScriptController extends Controller
 {
@@ -192,11 +193,22 @@ class ScriptController extends Controller
         $nonce = $request->get('nonce');
 
         if ($script->scriptExecutor->type === ScriptExecutorType::Realtime) {
-            // Set the preview code without persisting it and wait for the realtime
-            // executor to return its response in this request.
-            $script->code = $code;
+            return $this->realtimePreview($data, $config, $code, $nonce, $request, $script);
+        }
 
-            return $script->runScript(
+        TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce)->onQueue('bpmn');
+
+        return ['status' => 'success'];
+    }
+
+    private function realtimePreview(array $data, array $config, string $code, string $nonce, Request $request, Script $script)
+    {
+        // Set the preview code without persisting it and wait for the realtime
+        // executor to return its response in this request.
+        $script->code = $code;
+
+        try {
+            $response = $script->runScript(
                 $data,
                 $config,
                 '',
@@ -207,11 +219,22 @@ class ScriptController extends Controller
                     'current_user' => $request->user()?->id,
                 ]
             );
+            \Log::debug('Response from realtime preview: ' . print_r($response, true));
+
+            if (isset($response['metadata']['start_time'])) {
+                $response['metadata']['duration'] = microtime(true) - $response['metadata']['start_time'];
+            }
+
+            return $response;
+        } catch (Throwable $exception) {
+            \Log::debug('Realtime preview failed: ' . $exception->getMessage());
+
+            return response([
+                'status' => 'error',
+                'exception' => get_class($exception),
+                'message' => $exception->getMessage(),
+            ], 500);
         }
-
-        TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce)->onQueue('bpmn');
-
-        return ['status' => 'success'];
     }
 
     /**
