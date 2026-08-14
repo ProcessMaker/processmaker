@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Jobs\CompleteActivity;
@@ -87,6 +88,7 @@ class ScriptMicroserviceService
             'language' => strtolower($scriptExecutor->language),
             'version' => config('script-runner-microservice.version'),
             'config' => $scriptExecutor->config,
+            'realtime' => $scriptExecutor->type === ScriptExecutorType::Realtime,
         ];
         Log::debug('Payload: ', $payload);
 
@@ -114,6 +116,7 @@ class ScriptMicroserviceService
             'language' => strtolower($scriptExecutor->language),
             'version' => config('script-runner-microservice.version'),
             'config' => $scriptExecutor->config,
+            'realtime' => $scriptExecutor->type === ScriptExecutorType::Realtime,
         ];
         Log::debug('Payload: ', $payload);
 
@@ -195,6 +198,7 @@ class ScriptMicroserviceService
 
         if (Cache::has($cacheKey)) {
             Log::debug('Cache hit for script runner', ['cacheKey' => $cacheKey]);
+
             return Cache::get($cacheKey);
         }
 
@@ -211,7 +215,9 @@ class ScriptMicroserviceService
                 return isset($item['language'], $item['id']) && $item['language'] === $language && $item['id'] === $executorUuid;
             })->first();
 
-        if (!empty($result)) Cache::put($cacheKey, $result, now()->addHour());
+        if (!empty($result)) {
+            Cache::put($cacheKey, $result, now()->addHour());
+        }
 
         return $result;
     }

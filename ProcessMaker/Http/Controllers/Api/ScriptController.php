@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Events\ScriptCreated;
 use ProcessMaker\Events\ScriptDeleted;
 use ProcessMaker\Events\ScriptDuplicated;
@@ -178,7 +179,7 @@ class ScriptController extends Controller
      *
      *     @OA\Response(
      *         response=200,
-     *         description="success if the script was queued",
+     *         description="The queued status or realtime execution response",
      *         ),
      *     ),
      * )
@@ -189,6 +190,24 @@ class ScriptController extends Controller
         $config = $this->getRequestArray($request->get('config'));
         $code = $request->get('code');
         $nonce = $request->get('nonce');
+
+        if ($script->scriptExecutor->type === ScriptExecutorType::Realtime) {
+            // Set the preview code without persisting it and wait for the realtime
+            // executor to return its response in this request.
+            $script->code = $code;
+
+            return $script->runScript(
+                $data,
+                $config,
+                '',
+                $request->get('timeout'),
+                0,
+                [
+                    'nonce' => $nonce,
+                    'current_user' => $request->user()?->id,
+                ]
+            );
+        }
 
         TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce)->onQueue('bpmn');
 

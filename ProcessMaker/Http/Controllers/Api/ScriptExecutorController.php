@@ -197,7 +197,7 @@ class ScriptExecutorController extends Controller
             $request->only($scriptExecutor->getFillable())
         );
 
-        if (config('script-runner-microservice.enabled') && $scriptExecutor->type == ScriptExecutorType::Custom) {
+        if (config('script-runner-microservice.enabled') && $scriptExecutor->type?->isCustomOrRealtime()) {
             try {
                 $service->updateCustomExecutor($scriptExecutor);
             } catch (RequestException $e) {
@@ -416,9 +416,28 @@ class ScriptExecutorController extends Controller
                 $languages[] = [
                     'value' => $key,
                     'text' => $config['name'],
+                    'language' => $key,
+                    'realtime' => false,
                     'initDockerfile' => ScriptExecutor::initDockerfile($key),
+                    'configExample' => '',
                 ];
             }
+        }
+
+        foreach (['php', 'python', 'javascript'] as $language) {
+            $dockerfilePath = resource_path("script-executors/realtime/{$language}.Dockerfile");
+            if (!file_exists($dockerfilePath)) {
+                continue;
+            }
+            $label = $language === 'javascript' ? 'nodejs (realtime)' : "{$language} (realtime)";
+            $languages[] = [
+                'value' => "{$language}-realtime",
+                'text' => $label,
+                'language' => $language,
+                'realtime' => true,
+                'initDockerfile' => '',
+                'configExample' => file_get_contents($dockerfilePath),
+            ];
         }
 
         return ['languages' => $languages];

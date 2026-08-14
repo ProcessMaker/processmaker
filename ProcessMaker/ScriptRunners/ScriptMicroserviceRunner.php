@@ -40,7 +40,7 @@ class ScriptMicroserviceRunner
         $scriptRunner = $this->service->getScriptRunner(
             $this->language,
             $this->script->scriptExecutor->uuid,
-            $this->script->scriptExecutor->type === ScriptExecutorType::Custom
+            $this->script->scriptExecutor->type?->isCustomOrRealtime()
         );
 
         if (!$scriptRunner) {
@@ -62,7 +62,8 @@ class ScriptMicroserviceRunner
             'callback_token' => $environmentVariables['API_TOKEN'],
             'debug' => true,
             'timeout' => $timeout,
-            'sync' => $sync,
+            // Realtime executors always run synchronously (service ignores sync too)
+            'sync' => $this->script->scriptExecutor->type === ScriptExecutorType::Realtime ? true : $sync,
         ];
 
         Log::debug('Payload: ' . print_r($payload, true));
