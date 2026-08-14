@@ -686,6 +686,7 @@ class ScriptsTest extends TestCase
         $script = Script::factory()->create([
             'code' => $publishedCode,
             'script_category_id' => $category->id,
+            'timeout' => 60,
         ]);
 
         $response = $this->apiCall('PUT', route('api.scripts.draft', ['script' => $script->id]), [
@@ -707,7 +708,7 @@ class ScriptsTest extends TestCase
             'run_as_user_id' => $user->id,
             'script_category_id' => $newCategory->id,
             'script_executor_id' => $script->script_executor_id,
-            'timeout' => $script->timeout,
+            'timeout' => 60,
         ]);
         $response->assertStatus(204);
 
