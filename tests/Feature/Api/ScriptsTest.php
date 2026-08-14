@@ -674,4 +674,89 @@ class ScriptsTest extends TestCase
         $response->assertStatus(204);
         $this->assertTrue($script->versions()->draft()->doesntExist());
     }
+
+    public function testUpdateScriptConfigurationPreservesDraft()
+    {
+        $user = User::factory()->create(['is_administrator' => true]);
+        $category = ScriptCategory::factory()->create();
+        $newCategory = ScriptCategory::factory()->create();
+        $publishedCode = '<?php return [];';
+        $draftCode = '<?php return ["draft" => true];';
+
+        $script = Script::factory()->create([
+            'code' => $publishedCode,
+            'script_category_id' => $category->id,
+        ]);
+
+        $response = $this->apiCall('PUT', route('api.scripts.draft', ['script' => $script->id]), [
+            'title' => $script->title,
+            'language' => $script->language,
+            'description' => $script->description,
+            'code' => $draftCode,
+            'run_as_user_id' => $user->id,
+            'script_category_id' => $script->script_category_id,
+        ]);
+        $response->assertStatus(204);
+
+        $publishedVersionCount = $script->versions()->published()->count();
+
+        $response = $this->apiCall('PUT', route('api.scripts.update', ['script' => $script->id]), [
+            'title' => 'Updated Script Title',
+            'language' => $script->language,
+            'description' => $script->description,
+            'run_as_user_id' => $user->id,
+            'script_category_id' => $newCategory->id,
+            'script_executor_id' => $script->script_executor_id,
+            'timeout' => $script->timeout,
+        ]);
+        $response->assertStatus(204);
+
+        $script->refresh();
+        $draft = $script->versions()->draft()->first();
+
+        $this->assertNotNull($draft);
+        $this->assertEquals($draftCode, $draft->code);
+        $this->assertEquals('Updated Script Title', $script->title);
+        $this->assertEquals('Updated Script Title', $draft->title);
+        $this->assertEquals($newCategory->id, (int) $script->script_category_id);
+        $this->assertEquals($publishedCode, $script->code);
+        $this->assertEquals($publishedVersionCount, $script->versions()->published()->count());
+    }
+
+    public function testUpdateScriptWithCodeDeletesDraft()
+    {
+        $faker = Faker::create();
+        $user = User::factory()->create(['is_administrator' => true]);
+        $publishedCode = '<?php return [];';
+        $draftCode = '<?php return ["draft" => true];';
+        $publishedCodeAfterSave = $faker->sentence(3);
+
+        $script = Script::factory()->create([
+            'code' => $publishedCode,
+        ]);
+
+        $response = $this->apiCall('PUT', route('api.scripts.draft', ['script' => $script->id]), [
+            'title' => $script->title,
+            'language' => $script->language,
+            'description' => $script->description,
+            'code' => $draftCode,
+            'run_as_user_id' => $user->id,
+            'script_category_id' => $script->script_category_id,
+        ]);
+        $response->assertStatus(204);
+
+        $response = $this->apiCall('PUT', route('api.scripts.update', ['script' => $script->id]), [
+            'title' => $script->title,
+            'language' => $script->language,
+            'description' => $script->description,
+            'code' => $publishedCodeAfterSave,
+            'run_as_user_id' => $user->id,
+            'script_category_id' => $script->script_category_id,
+        ]);
+        $response->assertStatus(204);
+
+        $script->refresh();
+        $this->assertTrue($script->versions()->draft()->doesntExist());
+        $this->assertEquals($publishedCodeAfterSave, $script->code);
+    }
 }
