@@ -75,6 +75,7 @@ resources/views/processes/environment-variables/index.blade.php ← Vite
 resources/views/processes/environment-variables/edit.blade.php  ← Vite
 resources/views/processes/screens/index.blade.php       ← Vite (Screens listing tabs)
 resources/views/processes/screens/edit.blade.php        ← Vite (Configure Screen)
+resources/views/processes/modeler/index.blade.php       ← Vite (process modeler)
 resources/js/vite/tasks/                              ← Tasks entries
 resources/js/vite/auth/login.js                       ← Login / auth layout entry
 resources/js/admin/loaderAdmin.js                     ← shared admin setupMain loader
@@ -124,6 +125,7 @@ vite.config.js
 | Screens (Designer) | **Vite** | `screens.index` + `edit` + `layoutnextvite`; tab apps via child `@append` | `processes/screens/loaderScreens.js` → `screens/index.js` / `screen-templates/myTemplates.js` / `publicTemplates.js` / `categories/index.js`; edit → `screens/edit.js` |
 | Scripts (Designer) | **Vite** | `scripts.index` + `scripts.edit` (configure) + `layoutnextvite` | `processes/scripts/loaderScripts.js` → `index.js`; configure → `editConfig.js` + inline Vue on `load` |
 | Signals (Designer) | **Vite** | `signals.index` + `signals.edit` + `layoutnextvite` | `processes/signals/loaderSignals.js` → `index.js`; edit → `edit.js` + inline Vue on `load` |
+| Modeler | **Vite** | `processes.modeler.index` + `layoutnextvite` | `modeler/loaderModeler.js` (imports `initialLoad.js`) → package Mix scripts → `leave-warning.js` → `modeler/index.js` on `load` |
 | Processes Catalogue (desktop) | **Vite** | `process.browser.index` (`/process-browser`) + `layoutnextvite` | `processes-catalogue/loaderProcessesCatalogue.js` → ScreenBuilder scripts → `processesCatalogue.js` |
 | Cases | **Vite** | `cases.casesMain` (`/cases`) + `layoutnextvite` | `jscomposition/.../loaderCasesMain.js` → GlobalScripts / ScreenBuilder → `casesMain.js` |
 | Case Detail | **Vite** | `cases.edit` + `layoutnextvite` | `jscomposition/.../loaderCasesDetail.js` → `initialLoad` (Vite) + GlobalScripts / modeler scripts → `casesDetail.js` |
@@ -194,6 +196,9 @@ resources/js/processes/screens/edit.js
 resources/js/processes/scripts/loaderScripts.js
 resources/js/processes/scripts/index.js
 resources/js/processes/scripts/editConfig.js
+resources/js/processes/scripts/edit.js
+resources/js/processes/modeler/loaderModeler.js
+resources/js/processes/modeler/index.js
 resources/js/processes/signals/loaderSignals.js
 resources/js/processes/signals/index.js
 resources/js/processes/signals/edit.js
@@ -311,7 +316,7 @@ Dev tips:
 - Loader: `@vite(['resources/js/processes/loaderProcesses.js'])`
 - Page apps via child `@append`: `processes.js`, `templates/index.js`, `categories/index.js`, `archived.js` (one mount each — avoid double-mounting the same `el`)
 - `loaderProcesses.js`: `setupMain()` + copy `window.temporal?.packages` onto `ProcessMaker.packages` / `window.packages`
-- Mix: `webpack.mix.js` no longer builds `resources/js/processes/index.js` / `edit.js` / `newDesigner.js`. Other Designer Mix bundles (script builder/preview, modeler, …) remain.
+- Mix: `webpack.mix.js` no longer builds `resources/js/processes/index.js` / `edit.js` / `newDesigner.js`. Other Designer Mix bundles (script preview, modeler inflight `process-map.js`, Mix `initialLoad.js` for Mix pages) remain.
 
 **Designer home** — `/designer`
 
@@ -535,6 +540,14 @@ Still Mix: `templates/export-screen`, `templates/import-screen`, `templates/list
 - Variables read from `window.temporal` (ESM-safe)
 - Modeler SVG icons: Vite plugin rewrites `@processmaker/modeler` asset URLs to `/js/img/` (same files Mix copies from `node_modules/@processmaker/modeler/dist/img`)
 
+**Modeler** — `/modeler/{process}`
+
+- View: `resources/views/processes/modeler/index.blade.php` → `layoutnextvite`
+- Boot: `window.temporal` (breadcrumbData, modeler payload, warnings, packages) before loader — `setupMain()` replaces `window.ProcessMaker`
+- Entries: `modeler/loaderModeler.js` (`setupMain` + monaco + nodeTypes + ScreenBuilder/VueFormElements + dynamic `import('./initialLoad.js')`) → skip Mix `initialLoad.js` from `$manager->getScriptWithParams()` → remaining package Mix scripts (`defer`) → `leave-warning.js` → `modeler/index.js` mounts `#modeler-app` on `window` `load`
+- Mix: no longer builds `processes/modeler/index.js`. Keep Mix `initialLoad.js` and `process-map.js` for inflight / `requests/show`
+- Pitfall: `initialLoad.js` uses `window.Vue` / `window.ProcessMaker`; must run after `setupMain()`. Inspector extensions listen on `modeler-init` before the Vue app mounts
+
 **Login / auth forms**
 
 - Login: `auth.newLogin` — `@vite` login entry + translations
@@ -543,6 +556,6 @@ Still Mix: `templates/export-screen`, `templates/import-screen`, `templates/list
 **Still Mix**
 
 - Processes Catalogue mobile: `resources/views/processes-catalogue/mobile.blade.php`
-- Shared Designer child lists / other Designer routes still Mix (`templates/list` on some paths, script **builder**/preview, modeler, screens **preview**, …) even when listing tabs under Vite `/designer/screens`, `/designer/scripts`, or `/processes`
+- Shared Designer child lists / other Designer routes still Mix (`templates/list` on some paths, script preview, modeler **inflight** / `process-map.js`, screens **preview**, …) even when listing tabs under Vite `/designer/screens`, `/designer/scripts`, or `/processes`
 - Password change, and most other non-listed admin/designer pages
 - `requests/show.blade.php` — already on `layoutnextvite`; removed redundant `<link href="{{ mix('css/collapseDetails.css') }}">` (already included by `layoutnextvite` via `@vite`)

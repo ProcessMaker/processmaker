@@ -231,6 +231,10 @@ export default defineConfig(({ mode }) => {
           "resources/js/processes/scripts/editConfig.js",
           "resources/js/processes/scripts/edit.js",
 
+          "resources/js/processes/modeler/loaderModeler.js",
+          "resources/js/processes/modeler/index.js",
+          "resources/js/processes/modeler/initialLoad.js",
+
           "resources/js/requests/loaderRequests.js",
           "resources/js/requests/index.js",
 
@@ -303,6 +307,7 @@ export default defineConfig(({ mode }) => {
     ],
     resolve: {
       extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".json", ".vue"],
+      dedupe: ["vue"],
       alias: {
         vue: nm("vue/dist/vue.esm.js"),
         // Bare peers imported by CI-linked screen-builder ESM

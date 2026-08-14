@@ -1,4 +1,4 @@
-import * as MonacoEditor from "vue-monaco";
+import MonacoEditor from "vue-monaco";
 import { getGlobalVariable, setGlobalVariable } from "./globalVariables";
 
 export default () => {
