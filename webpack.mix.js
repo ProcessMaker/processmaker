@@ -72,7 +72,8 @@ mix
     "vue-router",
     "axios",
     "lodash",
-  ], "public/js/vue-vendor.js");
+  ], "public/js/vue-vendor.js")
+  .copy("resources/js/timeout.js", "public/js");
 
 mix
   .js("resources/js/print-layout.js", "public/js")

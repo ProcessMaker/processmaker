@@ -234,6 +234,9 @@ export default defineConfig(({ mode }) => {
           "resources/js/processes/modeler/loaderModeler.js",
           "resources/js/processes/modeler/index.js",
           "resources/js/processes/modeler/initialLoad.js",
+          "resources/js/processes/modeler/loaderInflight.js",
+          "resources/js/processes/modeler/process-map.js",
+          "resources/js/process-map-layout.js",
 
           "resources/js/requests/loaderRequests.js",
           "resources/js/requests/index.js",
