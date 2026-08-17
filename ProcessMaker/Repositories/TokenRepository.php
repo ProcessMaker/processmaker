@@ -558,6 +558,7 @@ class TokenRepository implements TokenRepositoryInterface
         }
 
         $token->saveOrFail();
+        $this->instanceRepository->incrementExecutionRevision($token->getInstance());
 
         return $this;
     }
@@ -672,6 +673,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->subprocess_start_event_id = $startId;
         $token->updateTokenProperties();
         $token->saveOrFail();
+        $this->instanceRepository->incrementExecutionRevision($source);
     }
 
     /**
