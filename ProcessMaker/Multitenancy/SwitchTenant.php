@@ -46,10 +46,11 @@ class SwitchTenant implements SwitchTenantTask
             return new TenantAwareBroadcastManager($app, $tenant->id);
         });
 
-        // Setup tenant-specific route cache. This is needed for plugins.
-        if ($app->routesAreCached()) {
-            Env::getRepository()->set('APP_ROUTES_CACHE', storage_path('routes-v7.php'));
-        }
+        // Configure the tenant-specific route cache before Laravel checks whether it
+        // exists. This lets `TENANT=<id> php artisan route:cache` create or refresh
+        // the cache for a tenant after a plugin is installed, enabled, or disabled.
+        Env::getRepository()->set('APP_ROUTES_CACHE', storage_path('routes-v7.php'));
+        $this->reloadRouteCache($app);
     }
 
     /**
@@ -61,6 +62,7 @@ class SwitchTenant implements SwitchTenantTask
     {
         $app = app();
         $app->useStoragePath(base_path('storage'));
+        Env::getRepository()->clear('APP_ROUTES_CACHE');
 
         $this->setConfig('logging.channels.daily.path', storage_path('logs/processmaker.log'));
         $app->make('log')->reset();
@@ -88,6 +90,29 @@ class SwitchTenant implements SwitchTenantTask
         putenv("$key=$value");
         $_SERVER[$key] = $value;
         $_ENV[$key] = $value;
+    }
+
+    /**
+     * Reload the tenant's cached routes when the router can persist in memory.
+     *
+     * Octane keeps the router in memory between requests. The console and test
+     * environments may also initialize the router before a tenant is made
+     * current. Updating APP_ROUTES_CACHE alone is insufficient in those cases.
+     */
+    private function reloadRouteCache(Application $app): void
+    {
+        if (!$app->routesAreCached() || !$this->shouldReinitializeRouter()) {
+            return;
+        }
+
+        require $app->getCachedRoutesPath();
+    }
+
+    private function shouldReinitializeRouter(): bool
+    {
+        return isset($_SERVER['LARAVEL_OCTANE'])
+            || app()->runningInConsole()
+            || app()->runningUnitTests();
     }
 
     private function overrideConfigs(Application $app, IsTenant $tenant)
