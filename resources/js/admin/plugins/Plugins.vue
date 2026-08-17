@@ -459,7 +459,7 @@ const save = () => {
     data: { ...plugin },
   })
     .then(() => {
-      ProcessMaker.alert($t("The plugin was ") + verb + ".", "success");
+      reloadAfterPluginChange($t("The plugin was ") + verb + ".");
     })
     .catch((error) => {
       disabled.value = false;
@@ -469,6 +469,11 @@ const save = () => {
       isRunning.value = false;
       isDone.value = true;
     });
+};
+
+const reloadAfterPluginChange = (message) => {
+  ProcessMaker.alert(message, "success", 5, true);
+  window.location.reload();
 };
 
 const resetValues = () => {
@@ -526,8 +531,7 @@ const doToggle = (item) => {
   ProcessMaker.apiClient
     .patch(`/plugins/${item.name}/toggle`, { baseURL: "/api/1.0/" })
     .then(() => {
-      ProcessMaker.alert($t("The plugin was toggled."), "success");
-      fetch();
+      reloadAfterPluginChange($t("The plugin was toggled."));
     });
 };
 
@@ -542,8 +546,7 @@ const doDelete = (item) => {
       ProcessMaker.apiClient
         .delete(`/plugins/${item.name}`, { baseURL: "/api/1.0/" })
         .then(() => {
-          ProcessMaker.alert($t("The plugin was deleted."), "success");
-          fetch();
+          reloadAfterPluginChange($t("The plugin was deleted."));
         })
         .catch((error) => {
           const msg = _.get(error, "response.data.errors.delete.0");

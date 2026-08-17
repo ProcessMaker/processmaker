@@ -69,7 +69,7 @@ class PluginManagerTest extends TestCase
         Event::fake([PluginLog::class]);
 
         $manager = new PluginManager();
-        $manager->install($repoUrl);
+        $manager->install($repoUrl, null, null, 1);
 
         Event::assertDispatched(PluginLog::class, function ($event) {
             return str_contains($event->message, 'installed successfully');
@@ -133,8 +133,12 @@ class PluginManagerTest extends TestCase
 
         Event::fake([PluginLog::class]);
 
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+
         $manager = new PluginManager();
-        $manager->uninstall($pluginName);
+        $manager->uninstall($pluginName, 1);
 
         $this->assertFalse(is_dir($pluginPath));
         Event::assertDispatched(PluginLog::class, function ($event) {
@@ -210,7 +214,7 @@ class PluginManagerTest extends TestCase
         $this->assertEquals('Second test plugin', $plugins[1]['description']);
     }
 
-    public function testListIgnoresPluginsStartingWithUnderscore()
+    public function testListIncludesDisabledPlugins()
     {
         $this->setUpTestPluginManager();
 
@@ -244,9 +248,51 @@ class PluginManagerTest extends TestCase
 
         $manager = new PluginManager();
         $plugins = $manager->list();
+        $pluginsByName = collect($plugins)->keyBy('name');
 
-        $this->assertCount(1, $plugins);
-        $this->assertEquals('valid-plugin', $plugins[0]['name']);
+        $this->assertCount(2, $plugins);
+        $this->assertEquals('Enabled', $pluginsByName['valid-plugin']['enabled']);
+        $this->assertEquals('Disabled', $pluginsByName['hidden-plugin']['enabled']);
+    }
+
+    public function testArtisanEnvironmentIncludesCurrentTenant()
+    {
+        config(['app.multitenancy' => true]);
+        $this->app->instance('currentTenant', (object) ['id' => 7]);
+
+        $method = new \ReflectionMethod(PluginManager::class, 'artisanEnvironment');
+        $environment = $method->invoke(new PluginManager());
+
+        $this->assertSame(['TENANT' => '7'], $environment);
+    }
+
+    public function testToggleRebuildsRouteCache()
+    {
+        $this->setUpTestPluginManager();
+
+        $pluginName = 'toggle-plugin';
+        $pluginPath = $this->pluginsDir . '/' . $pluginName;
+        $this->tempPluginDir = $this->pluginsDir . '/_' . $pluginName;
+        mkdir($pluginPath, 0755, true);
+
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+
+        $manager = new PluginManager();
+        $enabled = $manager->toggle($pluginName);
+
+        $this->assertFalse($enabled);
+        $this->assertFalse(is_dir($pluginPath));
+        $this->assertTrue(is_dir($this->pluginsDir . '/_' . $pluginName));
+
+        Process::assertRan(function ($process) {
+            $command = is_array($process->command)
+                ? implode(' ', $process->command)
+                : (string) $process->command;
+
+            return str_contains($command, 'route:cache');
+        });
     }
 
     private function deleteDirectory($dir)

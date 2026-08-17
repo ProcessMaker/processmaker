@@ -92,9 +92,7 @@ class PluginManager
         $this->logRunning('Running plugin install command...', $repoName, $userId);
         $this->runCommand($installCommand, $repoName, $userId);
 
-        // Rebuild route cache so we pick up the new routes from the plugin
-        $this->logRunning('Rebuilding route cache...', $repoName, $userId);
-        $this->runCommand('route:cache', $repoName, $userId);
+        $this->rebuildRouteCache($repoName, $userId);
 
         $this->logDone('Plugin installed successfully', $repoName, $userId);
     }
@@ -129,9 +127,7 @@ class PluginManager
         $this->logRunning('Removing plugin directory...', $pluginName, $userId);
         $this->deleteDirectory($pluginPath, $pluginName, $userId);
 
-        // Rebuild route cache so we remove the routes from the plugin
-        $this->logRunning('Rebuilding route cache...', $pluginName, $userId);
-        $this->runCommand('route:cache', $pluginName);
+        $this->rebuildRouteCache($pluginName, $userId);
 
         $this->logDone('Plugin uninstalled successfully', $pluginName, $userId);
     }
@@ -141,7 +137,7 @@ class PluginManager
         // Use absolute path: web SAPI (php-fpm) cwd is not the app root, so plain "artisan" fails.
         //TODO: Change artisan_binary() for base_path('artisan')
         $artisan = base_path('artisan');
-        $result = Process::run(array_filter([
+        $result = Process::env($this->artisanEnvironment())->run(array_filter([
             php_binary(),
             $artisan,
             $command,
@@ -159,6 +155,52 @@ class PluginManager
             \Log::info("Plugin {$command} command output:\n\n{$result->output()}", ['output' => $result->output()]);
             $this->logRunning("Plugin {$command} command output:\n\n{$result->output()}", $pluginName, $userId);
         }
+    }
+
+    /**
+     * Rebuild the tenant's route cache in a fresh artisan process.
+     *
+     * The current request already booted without the plugin's providers, so
+     * Artisan::call('route:cache') would persist stale routes. A subprocess
+     * with TENANT set loads plugins from the tenant storage path and writes
+     * the cache for that tenant.
+     */
+    private function rebuildRouteCache(string $pluginName, ?int $userId = null): void
+    {
+        $this->logRunning('Rebuilding route cache...', $pluginName, $userId);
+        $this->runCommand('route:cache', $pluginName, $userId);
+        $this->reloadCachedRoutes();
+    }
+
+    /**
+     * Environment variables for artisan subprocesses started from a web request.
+     */
+    private function artisanEnvironment(): array
+    {
+        $environment = [];
+        $tenant = app()->bound('currentTenant') ? app('currentTenant') : null;
+
+        if (config('app.multitenancy') && $tenant) {
+            $environment['TENANT'] = (string) $tenant->id;
+        }
+
+        return $environment;
+    }
+
+    /**
+     * Load the freshly written route cache into the current process.
+     *
+     * Needed for Octane workers that keep the router in memory after
+     * `route:cache` finishes in a subprocess.
+     */
+    private function reloadCachedRoutes(): void
+    {
+        $cachedRoutesPath = app()->getCachedRoutesPath();
+        if (!is_file($cachedRoutesPath)) {
+            return;
+        }
+
+        require $cachedRoutesPath;
     }
 
     /**
@@ -231,9 +273,7 @@ class PluginManager
             $this->logRunning('Running plugin install command...', $repoName, $userId);
             $this->runCommand($installCommand, $repoName, $userId);
 
-            // Rebuild route cache
-            $this->logRunning('Rebuilding route cache...', $repoName, $userId);
-            $this->runCommand('route:cache', $repoName, $userId);
+            $this->rebuildRouteCache($repoName, $userId);
 
             $this->logDone('Plugin installed successfully', $repoName, $userId);
         } finally {
@@ -271,6 +311,8 @@ class PluginManager
                 throw new RuntimeException("Failed to disable plugin: {$pluginName}");
             }
 
+            $this->rebuildRouteCache($pluginName, $userId);
+
             return false;
         }
 
@@ -282,6 +324,8 @@ class PluginManager
                 $this->logError("Failed to enable plugin: {$pluginName}", $pluginName, $userId);
                 throw new RuntimeException("Failed to enable plugin: {$pluginName}");
             }
+
+            $this->rebuildRouteCache($enabledName, $userId);
 
             return true;
         }
