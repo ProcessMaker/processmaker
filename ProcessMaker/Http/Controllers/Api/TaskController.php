@@ -42,9 +42,11 @@ class TaskController extends Controller
 {
     use TaskControllerIndexMethods;
 
+    private ?ProcessExecutionRawRepository $processExecutionRaw = null;
+
     private function processExecutionRaw(): ProcessExecutionRawRepository
     {
-        return app(ProcessExecutionRawRepository::class);
+        return $this->processExecutionRaw ??= app(ProcessExecutionRawRepository::class);
     }
 
     /**
@@ -352,14 +354,13 @@ class TaskController extends Controller
             }
             // Skip ConvertEmptyStringsToNull and TrimStrings middlewares
             $data = json_optimize_decode($request->getContent(), true);
-            $requestRow = $this->processExecutionRaw()->getProcessRequestRowForCompleteRaw($task->process_request_id);
-            $data = SanitizeHelper::sanitizeData($data['data'], null, $this->processExecutionRaw()->getDoNotSanitizeFromRowRaw($requestRow));
+            $instance = $this->processExecutionRaw()->getProcessRequestForCompleteRaw($task->process_request_id);
+            $data = SanitizeHelper::sanitizeData($data['data'], null, $instance->do_not_sanitize ?? []);
 
             //Call the manager to trigger the start event
             $process = $this->processExecutionRaw()->getProcessForCompleteRaw($task->process_id);
-            $instance = $this->processExecutionRaw()->getProcessRequestFromRowRaw($requestRow);
             $instance->setRelation('process', $process);
-            if ($processVersion = $this->processExecutionRaw()->getProcessVersionForCompleteRaw($requestRow->process_version_id ?? null)) {
+            if ($processVersion = $this->processExecutionRaw()->getProcessVersionForCompleteRaw($instance->process_version_id)) {
                 $instance->setRelation('processVersion', $processVersion);
             }
             $task->setRelation('processRequest', $instance);

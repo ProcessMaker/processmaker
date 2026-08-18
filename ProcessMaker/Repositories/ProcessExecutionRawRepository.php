@@ -6,6 +6,8 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Mustache_Engine;
+use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
+use ProcessMaker\AssignmentRules\ProcessManagerAssigned;
 use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\ThereIsNoProcessManagerAssignedException;
@@ -27,8 +29,12 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
  */
 class ProcessExecutionRawRepository
 {
+    private ?PreviousTaskAssignee $previousTaskAssignee = null;
+
+    private ?ProcessManagerAssigned $processManagerAssigned = null;
+
     /**
-     * Analog to Process::getNextUser() — activity properties + flat queries (no getVersionDefinitions).
+     * Analog to Process::getNextUser() — flat queries with the same assignment rules as the Eloquent path.
      */
     public function getNextUserRaw(Process $process, ActivityInterface $activity, ProcessRequestToken $token): ?User
     {
@@ -38,8 +44,9 @@ class ProcessExecutionRawRepository
         $config = json_decode($activity->getProperty('config', '{}'), true) ?: [];
         $escalateToManager = $config['escalateToManager'] ?? false;
 
-        $assignmentLock = filter_var($activity->getProperty('assignmentLock', false), FILTER_VALIDATE_BOOLEAN);
-        $isSelfService = (bool) ($config['selfService'] ?? false);
+        $definitionFlags = $this->resolveAssignmentLockAndSelfServiceFromDefinitions($token, $activity);
+        $assignmentLock = $definitionFlags['assignmentLock'];
+        $isSelfService = $definitionFlags['isSelfService'];
 
         $request = $token->getInstance();
         $requestId = (int) $request->getKey();
@@ -63,7 +70,7 @@ class ProcessExecutionRawRepository
             }
         }
 
-        if ($assignmentLock) {
+        if (filter_var($assignmentLock, FILTER_VALIDATE_BOOLEAN) === true) {
             $userId = $this->getLastUserAssignedToTaskRaw($processId, $activity->getId(), $requestId);
             if ($userId) {
                 return $this->checkAssignmentRaw(
@@ -97,10 +104,10 @@ class ProcessExecutionRawRepository
                 $userId = $this->getRequesterUserIdRaw($activity, $token);
                 break;
             case 'previous_task_assignee':
-                $userId = $this->getPreviousTaskAssigneeUserIdRaw($requestId);
+                $userId = $this->previousTaskAssignee()->getNextUser($activity, $token, $process, $request);
                 break;
             case 'process_manager':
-                $userId = $this->getNextProcessManagerUserIdRaw($processId, $activity, $request);
+                $userId = $this->processManagerAssigned()->getNextUser($activity, $token, $process, $request);
                 break;
             case 'manual':
             case 'self_service':
@@ -130,19 +137,13 @@ class ProcessExecutionRawRepository
     }
 
     /**
-     * Analog to $task->processRequest->do_not_sanitize (Eloquent), from a raw request row.
+     * Analog to $task->processRequest for completeTask (without loading data JSON).
      */
-    public function getDoNotSanitizeFromRowRaw(object $requestRow): array
+    public function getProcessRequestForCompleteRaw(int $processRequestId): ProcessRequest
     {
-        $doNotSanitize = $requestRow->do_not_sanitize ?? null;
-        if ($doNotSanitize === null) {
-            return [];
-        }
-        if (is_array($doNotSanitize)) {
-            return $doNotSanitize;
-        }
-
-        return json_decode($doNotSanitize, true) ?? [];
+        return ProcessRequest::query()
+            ->select(['do_not_sanitize', 'id', 'process_id', 'process_version_id', 'collaboration_uuid'])
+            ->findOrFail($processRequestId);
     }
 
     /**
@@ -150,31 +151,9 @@ class ProcessExecutionRawRepository
      */
     public function getProcessForAuthorizeRaw(int $processId): Process
     {
-        $processRow = DB::selectOne(
-            'SELECT id, properties FROM processes WHERE id = ? LIMIT 1',
-            [$processId]
-        );
-        if (!$processRow) {
-            abort(404);
-        }
-
-        return $this->hydrateModelFromRowRaw(Process::class, $processRow);
-    }
-
-    /**
-     * Analog to ProcessRequest::find / $task->processRequest for completeTask (without loading data JSON).
-     */
-    public function getProcessRequestRowForCompleteRaw(int $processRequestId): object
-    {
-        $requestRow = DB::selectOne(
-            'SELECT do_not_sanitize, id, process_id, process_version_id, collaboration_uuid FROM process_requests WHERE id = ? LIMIT 1',
-            [$processRequestId]
-        );
-        if (!$requestRow) {
-            abort(404);
-        }
-
-        return $requestRow;
+        return Process::query()
+            ->select(['id', 'properties'])
+            ->findOrFail($processId);
     }
 
     /**
@@ -182,15 +161,9 @@ class ProcessExecutionRawRepository
      */
     public function getProcessForCompleteRaw(int $processId): Process
     {
-        $processRow = DB::selectOne(
-            'SELECT id, name, bpmn FROM processes WHERE id = ? LIMIT 1',
-            [$processId]
-        );
-        if (!$processRow) {
-            abort(404);
-        }
-
-        return $this->hydrateModelFromRowRaw(Process::class, $processRow);
+        return Process::query()
+            ->select(['id', 'name', 'bpmn'])
+            ->findOrFail($processId);
     }
 
     /**
@@ -202,15 +175,9 @@ class ProcessExecutionRawRepository
             return null;
         }
 
-        $versionRow = DB::selectOne(
-            'SELECT id, process_id, bpmn FROM process_versions WHERE id = ? LIMIT 1',
-            [$processVersionId]
-        );
-        if (!$versionRow) {
-            abort(404);
-        }
-
-        return $this->hydrateModelFromRowRaw(ProcessVersion::class, $versionRow);
+        return ProcessVersion::query()
+            ->select(['id', 'process_id', 'bpmn'])
+            ->findOrFail($processVersionId);
     }
 
     /**
@@ -218,23 +185,29 @@ class ProcessExecutionRawRepository
      */
     public function getProcessRequestForResponseRaw(int $processRequestId): ProcessRequest
     {
-        $requestRow = DB::selectOne(
-            'SELECT id, process_id, process_version_id, collaboration_uuid, do_not_sanitize, name, status, case_number, case_title, parent_request_id, user_id, uuid, process_collaboration_id, callable_id, initiated_at, completed_at, created_at, updated_at FROM process_requests WHERE id = ? LIMIT 1',
-            [$processRequestId]
-        );
-        if (!$requestRow) {
-            abort(404);
-        }
-
-        return $this->hydrateModelFromRowRaw(ProcessRequest::class, $requestRow);
-    }
-
-    /**
-     * Analog to $task->processRequest built from a raw row (without data JSON or BPMN).
-     */
-    public function getProcessRequestFromRowRaw(object $requestRow): ProcessRequest
-    {
-        return $this->hydrateModelFromRowRaw(ProcessRequest::class, $requestRow);
+        return ProcessRequest::query()
+            ->select([
+                'id',
+                'process_id',
+                'process_version_id',
+                'collaboration_uuid',
+                'do_not_sanitize',
+                'data',
+                'name',
+                'status',
+                'case_number',
+                'case_title',
+                'parent_request_id',
+                'user_id',
+                'uuid',
+                'process_collaboration_id',
+                'callable_id',
+                'initiated_at',
+                'completed_at',
+                'created_at',
+                'updated_at',
+            ])
+            ->findOrFail($processRequestId);
     }
 
     /**
@@ -242,15 +215,9 @@ class ProcessExecutionRawRepository
      */
     public function getProcessForReassignRaw(int $processId): Process
     {
-        $processRow = DB::selectOne(
-            'SELECT id, properties, stages, case_title FROM processes WHERE id = ? LIMIT 1',
-            [$processId]
-        );
-        if (!$processRow) {
-            abort(404);
-        }
-
-        return $this->hydrateModelFromRowRaw(Process::class, $processRow);
+        return Process::query()
+            ->select(['id', 'properties', 'stages', 'case_title'])
+            ->findOrFail($processId);
     }
 
     /**
@@ -333,7 +300,7 @@ class ProcessExecutionRawRepository
             if ($token === null) {
                 throw new ThereIsNoProcessManagerAssignedException($activity);
             }
-            $userId = $this->getNextProcessManagerUserIdRaw($processId, $activity, $request);
+            $userId = $this->processManagerAssigned()->getNextUser($activity, $token, $process, $request);
             if (!$userId) {
                 throw new ThereIsNoProcessManagerAssignedException($activity);
             }
@@ -341,6 +308,37 @@ class ProcessExecutionRawRepository
         }
 
         return $user;
+    }
+
+    /**
+     * Match Process::getNextUser() — assignmentLock and selfService from version BPMN element properties.
+     */
+    private function resolveAssignmentLockAndSelfServiceFromDefinitions(
+        ProcessRequestToken $token,
+        ActivityInterface $activity
+    ): array {
+        $definitions = $token->getInstance()->getVersionDefinitions();
+        $element = $definitions->findElementById($activity->getId());
+        $properties = $element?->getBpmnElementInstance()?->getProperties() ?? [];
+
+        $assignmentLock = array_key_exists('assignmentLock', $properties) ? $properties['assignmentLock'] : false;
+        $config = array_key_exists('config', $properties) ? json_decode($properties['config'], true) : [];
+        $isSelfService = array_key_exists('selfService', $config ?? []) ? $config['selfService'] : false;
+
+        return [
+            'assignmentLock' => $assignmentLock,
+            'isSelfService' => (bool) $isSelfService,
+        ];
+    }
+
+    private function previousTaskAssignee(): PreviousTaskAssignee
+    {
+        return $this->previousTaskAssignee ??= new PreviousTaskAssignee();
+    }
+
+    private function processManagerAssigned(): ProcessManagerAssigned
+    {
+        return $this->processManagerAssigned ??= new ProcessManagerAssigned();
     }
 
     /**
@@ -369,71 +367,6 @@ class ProcessExecutionRawRepository
         }
 
         return $processRequest->user_id ? (int) $processRequest->user_id : null;
-    }
-
-    private function getPreviousTaskAssigneeUserIdRaw(int $requestId): ?int
-    {
-        $row = DB::selectOne(
-            'SELECT user_id FROM process_request_tokens WHERE process_request_id = ? AND element_type = ? ORDER BY id DESC LIMIT 1',
-            [$requestId, 'task']
-        );
-
-        return $row && $row->user_id ? (int) $row->user_id : null;
-    }
-
-    private function getNextProcessManagerUserIdRaw(int $processId, ActivityInterface $task, ProcessRequest $request): ?int
-    {
-        $managers = $this->getManagerIdsFromRequestRaw($request);
-        if (empty($managers)) {
-            return null;
-        }
-        if (count($managers) === 1) {
-            return $managers[0];
-        }
-
-        $placeholders = implode(',', array_fill(0, count($managers), '?'));
-        $row = DB::selectOne(
-            "SELECT user_id FROM process_request_tokens WHERE process_id = ? AND element_id = ? AND user_id IN ($placeholders) ORDER BY created_at DESC LIMIT 1",
-            array_merge([$processId, $task->getId()], $managers)
-        );
-
-        $lastUserId = $row && $row->user_id ? (int) $row->user_id : null;
-        sort($managers);
-        $key = array_search($lastUserId, $managers, true);
-        if ($key === false) {
-            $key = 0;
-        } else {
-            $key = ($key + 1) % count($managers);
-        }
-
-        return $managers[$key];
-    }
-
-    private function getManagerIdsFromRequestRaw(ProcessRequest $request): array
-    {
-        if ($request->process_version_id) {
-            $row = DB::selectOne(
-                'SELECT properties FROM process_versions WHERE id = ? LIMIT 1',
-                [$request->process_version_id]
-            );
-        } else {
-            $row = DB::selectOne(
-                'SELECT properties FROM processes WHERE id = ? LIMIT 1',
-                [$request->process_id]
-            );
-        }
-
-        if (!$row || empty($row->properties)) {
-            return [];
-        }
-
-        $properties = is_array($row->properties)
-            ? $row->properties
-            : (json_decode($row->properties, true) ?: []);
-
-        $managerId = $properties['manager_id'] ?? [];
-
-        return array_values(array_map('intval', is_array($managerId) ? $managerId : [$managerId]));
     }
 
     private function getLastUserAssignedToTaskRaw(int $processId, string $processTaskUuid, int $processRequestId): ?int
@@ -707,7 +640,11 @@ class ProcessExecutionRawRepository
                     $userId = null;
             }
 
-            return $userId ?: null;
+            if (!$userId) {
+                return null;
+            }
+
+            return $this->getUserByIdRaw((int) $userId)?->getKey();
         }
 
         return null;

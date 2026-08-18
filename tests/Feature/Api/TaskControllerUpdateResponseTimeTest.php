@@ -89,4 +89,29 @@ class TaskControllerUpdateResponseTimeTest extends TestCase
         $response->assertStatus(200);
         $this->assertResponseWithinMs($elapsedMs, $maxMs, 'PUT api/tasks/{id} (reassign)');
     }
+
+    public function testCompleteTaskUpdateIncludesRequestData(): void
+    {
+        $token = ProcessRequestToken::factory()->create([
+            'user_id' => $this->user->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        $token->processRequest->update([
+            'data' => array_merge($token->processRequest->data ?? [], ['marker' => 'persisted']),
+        ]);
+
+        WorkflowManager::shouldReceive('completeTask')
+            ->once()
+            ->with(Mockery::any(), Mockery::any(), Mockery::any(), Mockery::any());
+
+        $response = $this->actingAs($this->user, 'api')
+            ->json('PUT', '/api/1.0/tasks/' . $token->id . '?include=requestData', [
+                'status' => 'COMPLETED',
+                'data' => ['foo' => 'bar'],
+            ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('request_data.marker', 'persisted');
+    }
 }
