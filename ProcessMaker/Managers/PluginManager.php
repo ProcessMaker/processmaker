@@ -92,7 +92,7 @@ class PluginManager
         $this->logRunning('Running plugin install command...', $repoName, $userId);
         $this->runCommand($installCommand, $repoName, $userId);
 
-        $this->rebuildRouteCache($repoName, $userId);
+        $this->refreshRuntimeAfterPluginChange($repoName, $userId);
 
         $this->logDone('Plugin installed successfully', $repoName, $userId);
     }
@@ -127,7 +127,7 @@ class PluginManager
         $this->logRunning('Removing plugin directory...', $pluginName, $userId);
         $this->deleteDirectory($pluginPath, $pluginName, $userId);
 
-        $this->rebuildRouteCache($pluginName, $userId);
+        $this->refreshRuntimeAfterPluginChange($pluginName, $userId);
 
         $this->logDone('Plugin uninstalled successfully', $pluginName, $userId);
     }
@@ -145,16 +145,22 @@ class PluginManager
 
         if (!$result->successful()) {
             if (str_contains($result->output(), 'is not defined')) {
-                \Log::info("Plugin does not have a {$command} command", ['output' => $result->output()]);
                 $this->logRunning("Plugin does not have a {$command} command", $pluginName, $userId);
             } else {
-                \Log::info("Plugin {$command} command failed. Got output:\n\n{$result->output()}", ['output' => $result->output()]);
                 $this->logError("Plugin {$command} command failed. Got output:\n\n{$result->output()}", $pluginName, $userId);
             }
         } else {
-            \Log::info("Plugin {$command} command output:\n\n{$result->output()}", ['output' => $result->output()]);
             $this->logRunning("Plugin {$command} command output:\n\n{$result->output()}", $pluginName, $userId);
         }
+    }
+
+    /**
+     * Refresh routes and queue workers after plugin code changes.
+     */
+    private function refreshRuntimeAfterPluginChange(string $pluginName, ?int $userId = null): void
+    {
+        $this->rebuildRouteCache($pluginName, $userId);
+        $this->terminateHorizon($pluginName, $userId);
     }
 
     /**
@@ -170,6 +176,15 @@ class PluginManager
         $this->logRunning('Rebuilding route cache...', $pluginName, $userId);
         $this->runCommand('route:cache', $pluginName, $userId);
         $this->reloadCachedRoutes();
+    }
+
+    /**
+     * Always stop current Horizon workers so a new process picks up plugin code.
+     */
+    private function terminateHorizon(string $pluginName, ?int $userId = null): void
+    {
+        $this->logRunning('Restarting queue workers...', $pluginName, $userId);
+        $this->runCommand('horizon:terminate', $pluginName, $userId);
     }
 
     /**
@@ -273,7 +288,7 @@ class PluginManager
             $this->logRunning('Running plugin install command...', $repoName, $userId);
             $this->runCommand($installCommand, $repoName, $userId);
 
-            $this->rebuildRouteCache($repoName, $userId);
+            $this->refreshRuntimeAfterPluginChange($repoName, $userId);
 
             $this->logDone('Plugin installed successfully', $repoName, $userId);
         } finally {
@@ -311,7 +326,7 @@ class PluginManager
                 throw new RuntimeException("Failed to disable plugin: {$pluginName}");
             }
 
-            $this->rebuildRouteCache($pluginName, $userId);
+            $this->refreshRuntimeAfterPluginChange($pluginName, $userId);
 
             return false;
         }
@@ -325,7 +340,7 @@ class PluginManager
                 throw new RuntimeException("Failed to enable plugin: {$pluginName}");
             }
 
-            $this->rebuildRouteCache($enabledName, $userId);
+            $this->refreshRuntimeAfterPluginChange($enabledName, $userId);
 
             return true;
         }
@@ -775,16 +790,14 @@ class PluginManager
      */
     protected function log(string $message, string $type, string $pluginName, ?int $userId = null): void
     {
+        if ($type === 'error') {
+            \Log::error($message);
+        } else {
+            \Log::info($message);
+        }
+
         if ($userId) {
             event(new PluginLog($message, $type, $pluginName, $userId));
-        } else {
-            if ($type === 'done') {
-                \Log::info($message);
-            } elseif ($type === 'error') {
-                \Log::error($message);
-            } else {
-                \Log::info($message);
-            }
         }
     }
 }

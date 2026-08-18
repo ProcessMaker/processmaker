@@ -2,12 +2,10 @@
 
 namespace Tests\Managers;
 
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Process;
 use ProcessMaker\Events\PluginLog;
 use ProcessMaker\Managers\PluginManager;
-use ProcessMaker\Models\Plugin;
 use RuntimeException;
 use Tests\TestCase;
 
@@ -62,10 +60,6 @@ class PluginManagerTest extends TestCase
             '*' => Process::result('', exitCode: 0),
         ]);
 
-        // Mock Artisan::all() to return empty array (no plugin install command)
-        Artisan::shouldReceive('all')
-            ->andReturn([]);
-
         Event::fake([PluginLog::class]);
 
         $manager = new PluginManager();
@@ -74,6 +68,7 @@ class PluginManagerTest extends TestCase
         Event::assertDispatched(PluginLog::class, function ($event) {
             return str_contains($event->message, 'installed successfully');
         });
+        $this->assertProcessRanCommand('horizon:terminate');
     }
 
     public function testInstallValidatesComposerJsonNamespace()
@@ -127,10 +122,6 @@ class PluginManagerTest extends TestCase
         mkdir($this->tempPluginDir, 0755, true);
         file_put_contents($this->tempPluginDir . '/test.txt', 'test');
 
-        // Mock Artisan::all() to return empty array (no plugin uninstall command)
-        Artisan::shouldReceive('all')
-            ->andReturn([]);
-
         Event::fake([PluginLog::class]);
 
         Process::fake([
@@ -144,6 +135,7 @@ class PluginManagerTest extends TestCase
         Event::assertDispatched(PluginLog::class, function ($event) {
             return str_contains($event->message, 'uninstalled successfully');
         });
+        $this->assertProcessRanCommand('horizon:terminate');
     }
 
     public function testUninstallThrowsExceptionForNonExistentPlugin()
@@ -266,7 +258,7 @@ class PluginManagerTest extends TestCase
         $this->assertSame(['TENANT' => '7'], $environment);
     }
 
-    public function testToggleRebuildsRouteCache()
+    public function testToggleRebuildsRouteCacheAndTerminatesHorizon()
     {
         $this->setUpTestPluginManager();
 
@@ -286,12 +278,55 @@ class PluginManagerTest extends TestCase
         $this->assertFalse(is_dir($pluginPath));
         $this->assertTrue(is_dir($this->pluginsDir . '/_' . $pluginName));
 
-        Process::assertRan(function ($process) {
+        $this->assertProcessRanCommand('route:cache');
+        $this->assertProcessRanCommand('horizon:terminate');
+    }
+
+    public function testToggleEnableTerminatesHorizon()
+    {
+        $this->setUpTestPluginManager();
+
+        $pluginName = 'toggle-plugin';
+        $disabledPath = $this->pluginsDir . '/_' . $pluginName;
+        $this->tempPluginDir = $this->pluginsDir . '/' . $pluginName;
+        mkdir($disabledPath, 0755, true);
+
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+
+        $manager = new PluginManager();
+        $enabled = $manager->toggle($pluginName);
+
+        $this->assertTrue($enabled);
+        $this->assertTrue(is_dir($this->pluginsDir . '/' . $pluginName));
+        $this->assertProcessRanCommand('horizon:terminate');
+    }
+
+    public function testRunCommandLogsSuccessfulOutputOnce()
+    {
+        Process::fake([
+            '*' => Process::result("Routes cached successfully.\n", exitCode: 0),
+        ]);
+        Event::fake([PluginLog::class]);
+
+        $method = new \ReflectionMethod(PluginManager::class, 'runCommand');
+        $method->invoke(new PluginManager(), 'route:cache', 'test-plugin', 1);
+
+        Event::assertDispatchedTimes(PluginLog::class, 1);
+        Event::assertDispatched(PluginLog::class, function (PluginLog $event) {
+            return str_contains($event->message, 'Plugin route:cache command output');
+        });
+    }
+
+    private function assertProcessRanCommand(string $artisanCommand): void
+    {
+        Process::assertRan(function ($process) use ($artisanCommand) {
             $command = is_array($process->command)
                 ? implode(' ', $process->command)
                 : (string) $process->command;
 
-            return str_contains($command, 'route:cache');
+            return str_contains($command, $artisanCommand);
         });
     }
 
