@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
   {{ __('Request Detail') }}
@@ -469,19 +469,11 @@
 @endsection
 
 @section('js')
-  <script src="{{ mix('js/processes/modeler/initialLoad.js') }}"></script>
-  <script>
-    window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
-    window.Processmaker = {
-      csrfToken: "{{csrf_token()}}",
-      userId: "{{\Auth::user()->id}}",
-      messages: [],
-      apiTimeout: {{config('app.api_timeout')}}
-    };
-  </script>
+  @vite(['resources/js/requests/loaderRequestsShow.js'])
+  @vite(['resources/js/processes/modeler/initialLoad.js'])
 
   @foreach($managerModelerScripts as $params)
-    <script
+    <script defer
     @foreach ($params as $key => $value)
       @if (is_bool($value))
         {{ $key }}
@@ -492,12 +484,12 @@
     ></script>
   @endforeach
   @foreach($manager->getScripts() as $script)
-        <script src="{{$script}}"></script>
-    @endforeach
+    <script defer src="{{$script}}"></script>
+  @endforeach
   @if (hasPackage('package-files'))
     @can('files-tab-task')
       <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
-      <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
+      <script defer src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
     @endif
   @endif
 
@@ -508,9 +500,9 @@
     const request = @json($request);
   </script>
 
-  <script src="{{ mix('js/requests/show.js') }}"></script>
   <script>
-    new Vue({
+    window.addEventListener('load', () => {
+      new Vue({
       el: '#request',
       mixins: addons,
       data() {
@@ -909,30 +901,33 @@
         this.editJsonData();
         this.defineUserConfiguration();
       },
+      });
     });
   </script>
   <script>
     const inflightData = @json($inflightData);
-    window.ProcessMaker.modeler = {
-      xml: @json($bpmn),
-      configurables: [],
-      requestCompletedNodes: inflightData.requestCompletedNodes,
-      requestInProgressNodes: inflightData.requestInProgressNodes,
-      requestIdleNodes: inflightData.requestIdleNodes,
-      requestId: inflightData.requestId,
-    }
-  
-    window.ProcessMaker.EventBus.$on('modeler-start', async ({
-      loadXML
-    }) => {
-      loadXML(window.ProcessMaker.modeler.xml);
+    window.addEventListener('load', () => {
+    
+      window.ProcessMaker.modeler = {
+        xml: @json($bpmn),
+        configurables: [],
+        requestCompletedNodes: inflightData.requestCompletedNodes,
+        requestInProgressNodes: inflightData.requestInProgressNodes,
+        requestIdleNodes: inflightData.requestIdleNodes,
+        requestId: inflightData.requestId,
+      }
+
+      window.ProcessMaker.EventBus.$on('modeler-start', async ({
+        loadXML
+      }) => {
+        loadXML(window.ProcessMaker.modeler.xml);
+      });
+      window.ProcessMaker.PMBlockList = @json($pmBlockList);
     });
-    window.ProcessMaker.PMBlockList = @json($pmBlockList);
   </script>
 @endsection
 
 @section('css')
-<link href="{{ mix('css/collapseDetails.css') }}" rel="stylesheet">
 <style>
   .hidden {
     visibility: hidden;
