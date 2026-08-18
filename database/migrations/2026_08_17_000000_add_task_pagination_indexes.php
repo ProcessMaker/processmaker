@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     private const TABLE = 'process_request_tokens';
 
-    private const COUNT_INDEX = 'idx_prt_completed_task_count';
+    private const COUNT_INDEX = 'process_request_tokens_prt_completed_task_count';
 
-    private const PAGE_INDEX = 'idx_prt_task_created';
+    private const PAGE_INDEX = 'process_request_tokens_prt_task_created';
 
     /**
      * Add indexes used by completed-task pagination.
