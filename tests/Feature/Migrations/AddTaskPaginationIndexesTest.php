@@ -11,9 +11,9 @@ class AddTaskPaginationIndexesTest extends TestCase
 {
     private const MIGRATION_PATH = 'database/migrations/2026_08_17_000000_add_task_pagination_indexes.php';
 
-    private const COUNT_INDEX = 'idx_prt_completed_task_count';
+    private const COUNT_INDEX = 'process_request_tokens_prt_completed_task_count';
 
-    private const PAGE_INDEX = 'idx_prt_task_created';
+    private const PAGE_INDEX = 'process_request_tokens_prt_task_created';
 
     protected $connectionsToTransact = [];
 
