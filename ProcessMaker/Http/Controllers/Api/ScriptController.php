@@ -21,7 +21,6 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\Services\ScriptMicroserviceService;
 use ProcessMaker\Traits\ProjectAssetTrait;
-use Throwable;
 
 class ScriptController extends Controller
 {
@@ -192,49 +191,14 @@ class ScriptController extends Controller
         $code = $request->get('code');
         $nonce = $request->get('nonce');
 
+        $job = TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce);
         if ($script->scriptExecutor->type === ScriptExecutorType::Realtime) {
-            return $this->realtimePreview($data, $config, $code, $nonce, $request, $script);
+            $job->onConnection('redis-realtime')->onQueue('realtime');
+        } else {
+            $job->onQueue('bpmn');
         }
-
-        TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce)->onQueue('bpmn');
 
         return ['status' => 'success'];
-    }
-
-    private function realtimePreview(array $data, array $config, string $code, string $nonce, Request $request, Script $script)
-    {
-        // Set the preview code without persisting it and wait for the realtime
-        // executor to return its response in this request.
-        $script->code = $code;
-
-        try {
-            $response = $script->runScript(
-                $data,
-                $config,
-                '',
-                $request->get('timeout'),
-                0,
-                [
-                    'nonce' => $nonce,
-                    'current_user' => $request->user()?->id,
-                ]
-            );
-            \Log::debug('Response from realtime preview: ' . print_r($response, true));
-
-            if (isset($response['metadata']['start_time'])) {
-                $response['metadata']['duration'] = microtime(true) - $response['metadata']['start_time'];
-            }
-
-            return $response;
-        } catch (Throwable $exception) {
-            \Log::debug('Realtime preview failed: ' . $exception->getMessage());
-
-            return response([
-                'status' => 'error',
-                'exception' => get_class($exception),
-                'message' => $exception->getMessage(),
-            ], 500);
-        }
     }
 
     /**
@@ -291,7 +255,12 @@ class ScriptController extends Controller
         if ($request->get('sync') === true) {
             return (new ExecuteScript($script, $request->user(), $code, $data, $watcher, $config, true))->handle();
         } else {
-            ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config)->onQueue('bpmn');
+            $job = ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config);
+            if ($script->scriptExecutor->type === ScriptExecutorType::Realtime) {
+                $job->onConnection('redis-realtime')->onQueue('realtime');
+            } else {
+                $job->onQueue('bpmn');
+            }
         }
 
         return ['status' => 'success', 'key' => $watcher];

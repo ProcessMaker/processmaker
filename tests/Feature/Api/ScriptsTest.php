@@ -6,10 +6,13 @@ use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Jobs\TestScript;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
@@ -393,6 +396,31 @@ class ScriptsTest extends TestCase
             $nonce = $event->nonce;
 
             return $response['output'] === ['response' => 1] && $nonce === '123abc';
+        });
+    }
+
+    public function testRealtimePreviewUsesRealtimeQueue()
+    {
+        Queue::fake();
+        $executor = ScriptExecutor::factory()->create([
+            'language' => 'php',
+            'type' => ScriptExecutorType::Realtime,
+        ]);
+        $script = Script::factory()->create([
+            'run_as_user_id' => $this->user->id,
+            'language' => 'php',
+            'script_executor_id' => $executor->id,
+        ]);
+
+        $response = $this->apiCall('POST', route('api.scripts.preview', $script), [
+            'data' => '{}',
+            'code' => '<?php return ["response" => 1];',
+            'nonce' => '123abc',
+        ]);
+
+        $response->assertOk()->assertJson(['status' => 'success']);
+        Queue::assertPushed(TestScript::class, function (TestScript $job) {
+            return $job->connection === 'redis-realtime' && $job->queue === 'realtime';
         });
     }
 
