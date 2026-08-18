@@ -46,7 +46,7 @@
         "open-telemetry/opentelemetry-auto-laravel": "dev-main",
         "open-telemetry/transport-grpc": "^1.1",
         "openai-php/laravel": "^0.19.1",
-        "paragonie/sodium_compat": "^2.5",
+        "paragonie/sodium_compat": "^2.5.1",
         "php-amqplib/php-amqplib": "^3.7",
         "php-http/promise": "~1.2.0",
         "phpseclib/phpseclib": "^3.0.54",
