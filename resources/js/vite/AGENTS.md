@@ -21,6 +21,7 @@ Vite runs **alongside** Laravel Mix. Do not replace Mix globally. Migrate routes
 |--------|----------|----------|
 | `layouts.layout` / `layouts.layoutnext` | Mix CSS/JS chrome | Legacy Mix pages (e.g. catalogue mobile) |
 | `layouts.layoutnextvite` | `@vite` of `app.scss`, `sidebar`, `collapseDetails`, `tailwind.css` | Authenticated Vite pages (Tasks, Processes Designer, Processes Catalogue desktop, Cases, Admin…) |
+| `layouts.mobilenextvite` | Vite-based wrapper around `layoutnextvite` with mobile chrome | Mobile authenticated pages such as request detail |
 | Standalone / `auth.layouts.auth` | Page-level `@vite` | Login and password-reset style pages |
 
 File: `resources/views/layouts/layoutnextvite.blade.php` (must be `.blade.php`).
@@ -76,6 +77,8 @@ resources/views/processes/environment-variables/edit.blade.php  ← Vite
 resources/views/processes/screens/index.blade.php       ← Vite (Screens listing tabs)
 resources/views/processes/screens/edit.blade.php        ← Vite (Configure Screen)
 resources/views/processes/modeler/index.blade.php       ← Vite (process modeler)
+resources/views/requests/show.blade.php                 ← Vite (request detail)
+resources/views/requests/showMobile.blade.php           ← Vite (mobile request detail)
 resources/js/vite/tasks/                              ← Tasks entries
 resources/js/vite/auth/login.js                       ← Login / auth layout entry
 resources/js/admin/loaderAdmin.js                     ← shared admin setupMain loader
@@ -100,6 +103,8 @@ vite.config.js
 | About | **Vite** | `about.index` + `layoutnextvite` | layout change only; no page JS entry |
 | Profile edit | **Vite** | `profile.edit` + `layoutnextvite` | `admin/profile/loaderProfile.js` → `admin/profile/edit.js` |
 | Requests index | **Vite** | `requests.index` + `layoutnextvite` | `requests/loaderRequests.js` → `requests/index.js` |
+| Request detail | **Vite** | `requests.show` + `layoutnextvite` | `requests/loaderRequestsShow.js` → modeler `initialLoad.js` + `requests/show.js` → inline Vue mount on `window` `load` |
+| Mobile request detail | **Vite** | `requests.showMobile` + `mobilenextvite` | `requests/loaderRequestsShow.js` + `requests/show.js` → inline Vue mount on `window` `load` |
 | Notifications | **Vite** | `notifications.index` + `layoutnextvite` | `notifications/loaderNotifications.js` → `notifications/index.js` |
 | Template Import | **Vite** | `templates.import` + `layoutnextvite` | `templates/loaderTemplates.js` → `templates/import/index.js` (Vue Router) |
 | Template Configure | **Vite** | `templates.configure` + `layoutnextvite` | boot `window.temporal.templateConfigurations` → `templates/loaderTemplates.js` → `templates/configure.js` + `mixins: addons` |
@@ -178,6 +183,7 @@ resources/js/admin/logs/index.js
 resources/js/admin/profile/loaderProfile.js
 resources/js/admin/profile/edit.js
 resources/js/requests/loaderRequests.js
+resources/js/requests/loaderRequestsShow.js
 resources/js/requests/index.js
 resources/js/notifications/loaderNotifications.js
 resources/js/notifications/index.js
@@ -199,6 +205,10 @@ resources/js/processes/scripts/editConfig.js
 resources/js/processes/scripts/edit.js
 resources/js/processes/modeler/loaderModeler.js
 resources/js/processes/modeler/index.js
+resources/js/processes/modeler/initialLoad.js
+resources/js/processes/modeler/loaderInflight.js
+resources/js/processes/modeler/process-map.js
+resources/js/process-map-layout.js
 resources/js/processes/signals/loaderSignals.js
 resources/js/processes/signals/index.js
 resources/js/processes/signals/edit.js
@@ -545,8 +555,25 @@ Still Mix: `templates/export-screen`, `templates/import-screen`, `templates/list
 - View: `resources/views/processes/modeler/index.blade.php` → `layoutnextvite`
 - Boot: `window.temporal` (breadcrumbData, modeler payload, warnings, packages) before loader — `setupMain()` replaces `window.ProcessMaker`
 - Entries: `modeler/loaderModeler.js` (`setupMain` + monaco + nodeTypes + ScreenBuilder/VueFormElements + dynamic `import('./initialLoad.js')`) → skip Mix `initialLoad.js` from `$manager->getScriptWithParams()` → remaining package Mix scripts (`defer`) → `leave-warning.js` → `modeler/index.js` mounts `#modeler-app` on `window` `load`
-- Mix: no longer builds `processes/modeler/index.js`. Keep Mix `initialLoad.js` and `process-map.js` for inflight / `requests/show`
+- Mix: no longer builds `processes/modeler/index.js`. Keep Mix `initialLoad.js` and `process-map.js` for inflight pages; `requests/show` loads modeler `initialLoad.js` through its Vite loader
 - Pitfall: `initialLoad.js` uses `window.Vue` / `window.ProcessMaker`; must run after `setupMain()`. Inspector extensions listen on `modeler-init` before the Vue app mounts
+
+**Request detail** — `/requests/{request}`
+
+- View: `resources/views/requests/show.blade.php` → `layoutnextvite`
+- Entry: `resources/js/requests/loaderRequestsShow.js` initializes `setupMain`, Monaco, modeler, VueFormElements, ScreenBuilder, request components, and the modeler `initialLoad.js`
+- Package scripts from `$manager->getScriptWithParams()` and `$manager->getScripts()` remain classic deferred scripts because packages still publish Mix assets
+- The Blade Vue root remains inline and mounts `#request` on `window` `load`, after Vite and package scripts are available
+- Inflight modeler data and its `modeler-start` listener are also initialized on `window` `load`; this prevents access to `ProcessMaker.EventBus` before the Vite loader has booted it
+- The optional `package-files` manager remains a vendor Mix asset and is intentionally not part of the application Vite entry
+
+**Mobile request detail** — `/requests/{request}` on mobile
+
+- View: `resources/views/requests/showMobile.blade.php` → `mobilenextvite`
+- Reuses `requests/loaderRequestsShow.js` and `requests/show.js` so mobile and desktop share the same component registrations
+- Loads the modeler `initialLoad.js` entry and keeps the optional `package-files` manager as a deferred vendor Mix script
+- The `#requestMobile` Vue root mounts on `window` `load`, allowing Vite modules and package addons to finish before `mixins: addons` is evaluated
+- Keep `layouts/mobile.blade.php` for routes that have not migrated; `mobilenextvite` is the Vite wrapper for mobile pages
 
 **Login / auth forms**
 
@@ -558,4 +585,4 @@ Still Mix: `templates/export-screen`, `templates/import-screen`, `templates/list
 - Processes Catalogue mobile: `resources/views/processes-catalogue/mobile.blade.php`
 - Shared Designer child lists / other Designer routes still Mix (`templates/list` on some paths, script preview, modeler **inflight** / `process-map.js`, screens **preview**, …) even when listing tabs under Vite `/designer/screens`, `/designer/scripts`, or `/processes`
 - Password change, and most other non-listed admin/designer pages
-- `requests/show.blade.php` — already on `layoutnextvite`; removed redundant `<link href="{{ mix('css/collapseDetails.css') }}">` (already included by `layoutnextvite` via `@vite`)
+- `requests/show.blade.php` is Vite-backed through `requests/loaderRequestsShow.js`; the redundant `collapseDetails.css` Mix link was removed because `layoutnextvite` already loads it with `@vite`. The optional `package-files` vendor manager remains Mix-backed.
