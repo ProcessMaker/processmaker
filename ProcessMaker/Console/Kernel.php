@@ -37,9 +37,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('processmaker:sync-default-templates --queue')
                  ->daily();
 
-        $schedule->command('processmaker:sync-guided-templates --queue')
-                 ->daily();
-
         $schedule->command('processmaker:sync-screen-templates --queue')
                  ->daily();
 

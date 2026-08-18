@@ -171,11 +171,7 @@ abstract class BaseFilter
      */
     private function manuallyAddJsonWhere($query): void
     {
-        $parts = explode('.', $this->subjectValue);
-
-        array_shift($parts);
-
-        $selector = implode('"."', $parts);
+        $path = $this->jsonSelectorPath();
         $operator = $this->operator();
         $value = $this->value();
 
@@ -186,11 +182,40 @@ abstract class BaseFilter
         if ($operator === 'like') {
             // For JSON data is required to do a CAST in order to make insensitive the comparison
             $query->whereRaw(
-                "cast(json_unquote(json_extract(`data`, '$.\"{$selector}\"')) as CHAR) {$operator} {$value}"
+                "cast(json_unquote(json_extract(`data`, ?)) as CHAR) {$operator} {$value}",
+                [$path]
             );
         } else {
-            $query->whereRaw("json_unquote(json_extract(`data`, '$.\"{$selector}\"')) {$operator} {$value}");
+            $query->whereRaw("json_unquote(json_extract(`data`, ?)) {$operator} {$value}", [$path]);
         }
+    }
+
+    /**
+     * Build the JSON path used to address the filtered field within the `data` column.
+     *
+     * The path segments come straight from the request (the part of subject.value after the
+     * leading "data."), so they must never be interpolated into raw SQL. Each segment is
+     * validated against a strict allow-list and the assembled path is returned to be passed
+     * as a bound parameter to json_extract().
+     *
+     * @return string
+     */
+    private function jsonSelectorPath(): string
+    {
+        $parts = explode('.', $this->subjectValue);
+
+        array_shift($parts);
+
+        foreach ($parts as $part) {
+            // Allow any Unicode letter (\p{L}) or number (\p{N}) plus underscore, hyphen and
+            // space, so field names in any language are accepted. The /u flag enables UTF-8
+            // matching. SQL/JSON-path metacharacters such as ' " ( ) are intentionally rejected.
+            if (!preg_match('/^[\p{L}\p{N}_\- ]+$/u', $part)) {
+                abort(422, 'Invalid filter field.');
+            }
+        }
+
+        return '$."' . implode('"."', $parts) . '"';
     }
 
     private function operator()

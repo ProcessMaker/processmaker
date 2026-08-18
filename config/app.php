@@ -11,6 +11,9 @@ return [
     // The url of our host, will usually be set during installation
     'url' => env('APP_URL', 'http://localhost'),
 
+    // Comma-separated list of additional trusted hosts (e.g. https://www.google.com)
+    'trusted_hosts_links' => env('TRUSTED_HOSTS_LINKS', ''),
+
     // The application key to be used for hashing secrets
     'key' => env('APP_KEY', 'base64:x80I9vQNxwllSuwBkTwfUa5qkgPTRdwqHCPSz7zHi1U='),
 
@@ -28,6 +31,9 @@ return [
 
     // The timezone for the application
     'timezone' => env('APP_TIMEZONE', 'America/Los_Angeles'),
+
+    // The timezone for the anonymous user
+    'anonymous_user_timezone' => env('ANONYMOUS_USER_TIMEZONE', 'UTC'),
 
     // The time format for the application
     'dateformat' => env('DATE_FORMAT', 'm/d/Y h:i A'),
@@ -133,6 +139,9 @@ return [
     // PM Analytics Chart
     'pm_analytics_chart' => env('PM_ANALYTICS_CHART', 'https://localhost'),
 
+    // When true, email notifications are sent even when the assigned user matches the current user.
+    'notifications_send_to_same_user' => env('NOTIFICATIONS_SEND_TO_SAME_USER', 'true'),
+
     // Enable default SSO
     'enable_default_sso' => env('ENABLE_DEFAULT_SSO', 'true'),
 
@@ -155,7 +164,7 @@ return [
         'icon_path' => env('ICON_PATH_PATH', '/img/processmaker-icon.svg'),
 
         // Path to site-wide favicon
-        'favicon_path' => env('FAVICON_PATH', '/img/favicon.svg'),
+        'favicon_path' => env('FAVICON_PATH', '/img/favicon.ico'),
 
         // Maximum file size for images to be set as default (in bytes) (5MB)
         'img_max_filesize_limit' => env('IMG_MAX_FILESIZE_LIMIT', '5M'),
