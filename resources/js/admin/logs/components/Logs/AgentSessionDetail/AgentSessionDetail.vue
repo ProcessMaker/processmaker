@@ -141,6 +141,13 @@
                   <div class="tw-flex tw-items-center tw-gap-2">
                     <span class="tw-text-xs tw-font-medium tw-text-gray-500">{{ getEventTypeLabel(event) }}</span>
                     <span class="tw-text-sm tw-font-semibold tw-text-gray-800">{{ getEventName(event) }}</span>
+                    <i
+                      v-if="isGuardrailEvent(event)"
+                      class="tw-text-xs"
+                      :class="getGuardrailStatusIconClass(event)"
+                      :title="getGuardrailStatusLabel(event)"
+                      aria-hidden="true"
+                    />
                   </div>
                   <div class="tw-flex tw-items-center tw-gap-3">
                     <span v-if="event.duration_ms" class="tw-text-xs tw-text-gray-500">
@@ -167,8 +174,66 @@
 
                 <!-- Expanded Content -->
                 <div v-if="expandedEvents[index]" class="tw-border-t tw-border-gray-100">
+                  <!-- Guardrail evaluation (same semantics as FlowGenie Studio timeline) -->
+                  <div v-if="isGuardrailEvent(event)" class="tw-p-3">
+                    <div class="tw-mb-3">
+                      <div class="tw-text-xs tw-font-medium tw-text-gray-500 tw-mb-1">{{ $t('Status') }}</div>
+                      <div class="tw-text-sm tw-font-medium" :class="getGuardrailStatusTextClass(event)">
+                        <i
+                          class="tw-mr-1"
+                          :class="getGuardrailStatusIconClass(event)"
+                          aria-hidden="true"
+                        />
+                        {{ getGuardrailStatusLabel(event) }}
+                      </div>
+                    </div>
+                    <div v-if="guardrailPayload(event).phase" class="tw-mb-3">
+                      <div class="tw-text-xs tw-font-medium tw-text-gray-500 tw-mb-1">{{ $t('Phase') }}</div>
+                      <div class="tw-font-mono tw-text-xs tw-text-gray-800">
+                        {{ formatGuardrailPhase(guardrailPayload(event).phase) }}
+                      </div>
+                    </div>
+                    <div v-if="guardrailPayload(event).tool_name" class="tw-mb-3">
+                      <div class="tw-text-xs tw-font-medium tw-text-gray-500 tw-mb-1">{{ $t('Tool') }}</div>
+                      <div class="tw-font-mono tw-text-sm tw-text-gray-900">
+                        {{ guardrailPayload(event).tool_name }}
+                      </div>
+                    </div>
+                    <div
+                      v-if="guardrailViolations(event).length"
+                      class="tw-mb-3"
+                    >
+                      <div class="tw-text-xs tw-font-medium tw-text-gray-500 tw-mb-1">{{ $t('Violations') }}</div>
+                      <ul class="tw-m-0 tw-pl-4 tw-text-sm tw-text-gray-800">
+                        <li
+                          v-for="(violation, vIdx) in guardrailViolations(event)"
+                          :key="vIdx"
+                          class="tw-mb-1"
+                        >
+                          <span class="tw-font-medium">
+                            {{ violation.policy_name || violation.policy_id || $t('Policy') }}
+                          </span>
+                          <span v-if="violation.message"> — {{ violation.message }}</span>
+                          <div
+                            v-if="violation.detail"
+                            class="tw-text-xs tw-text-gray-500 tw-font-mono tw-mt-0.5"
+                          >
+                            {{ violation.detail }}
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                    <div v-else-if="guardrailPayload(event).message" class="tw-mb-3">
+                      <div class="tw-text-xs tw-font-medium tw-text-gray-500 tw-mb-1">{{ $t('Message') }}</div>
+                      <div class="tw-text-sm tw-text-gray-700">{{ guardrailPayload(event).message }}</div>
+                    </div>
+                    <pre
+                      class="tw-bg-gray-50 tw-rounded tw-p-2 tw-text-xs tw-overflow-auto tw-max-h-48 tw-text-gray-700 tw-whitespace-pre-wrap tw-break-words"
+                    >{{ formatJson(guardrailPayload(event)) }}</pre>
+                  </div>
+
                   <!-- Tool call details -->
-                  <div v-if="isToolEvent(event)" class="tw-p-3">
+                  <div v-else-if="isToolEvent(event)" class="tw-p-3">
                     <div v-if="event.status" class="tw-mb-3">
                       <div class="tw-text-xs tw-font-medium tw-text-gray-500 tw-mb-1">{{ $t('Status') }}</div>
                       <span
@@ -643,7 +708,15 @@ export default {
       this.$set(this.expandedEvents, index, !this.expandedEvents[index]);
     },
 
+    isGuardrailEvent(event) {
+      const type = event._type || event.type;
+      return type === 'guardrail_evaluation_event';
+    },
+
     isToolEvent(event) {
+      if (this.isGuardrailEvent(event)) {
+        return false;
+      }
       const type = event._type || event.type;
       return type === 'tool_call' || event.tool_name || event.tool_arguments;
     },
@@ -669,7 +742,99 @@ export default {
         || event.error || event.error_message;
     },
 
+    guardrailPayload(event) {
+      if (event && event.data && typeof event.data === 'object') {
+        return event.data;
+      }
+      return event || {};
+    },
+
+    guardrailViolations(event) {
+      const violations = this.guardrailPayload(event).violations;
+      return Array.isArray(violations) ? violations : [];
+    },
+
+    isGuardrailPassed(event) {
+      return this.guardrailPayload(event).passed === true;
+    },
+
+    isGuardrailRedacted(event) {
+      const data = this.guardrailPayload(event);
+      if (data.recommended_action === 'redacted') {
+        return true;
+      }
+      return this.guardrailViolations(event).some((item) => item && item.severity === 'redact');
+    },
+
+    getGuardrailStatusLabel(event) {
+      if (!this.isGuardrailPassed(event)) {
+        return this.$t('Blocked');
+      }
+      if (this.isGuardrailRedacted(event)) {
+        return this.$t('Redacted');
+      }
+      return this.$t('Passed');
+    },
+
+    getGuardrailStatusIconClass(event) {
+      if (!this.isGuardrailPassed(event)) {
+        return 'fas fa-ban tw-text-red-600';
+      }
+      if (this.isGuardrailRedacted(event)) {
+        return 'fas fa-eraser tw-text-amber-600';
+      }
+      return 'fas fa-check tw-text-green-600';
+    },
+
+    getGuardrailStatusTextClass(event) {
+      if (!this.isGuardrailPassed(event)) {
+        return 'tw-text-red-700';
+      }
+      if (this.isGuardrailRedacted(event)) {
+        return 'tw-text-amber-700';
+      }
+      return 'tw-text-green-700';
+    },
+
+    getGuardrailIconClasses(event) {
+      if (!this.isGuardrailPassed(event)) {
+        return 'tw-bg-red-100 tw-text-red-600';
+      }
+      if (this.isGuardrailRedacted(event)) {
+        return 'tw-bg-amber-100 tw-text-amber-600';
+      }
+      return 'tw-bg-green-100 tw-text-green-600';
+    },
+
+    getGuardrailBarClass(event) {
+      if (!this.isGuardrailPassed(event)) {
+        return 'tw-bg-red-500';
+      }
+      if (this.isGuardrailRedacted(event)) {
+        return 'tw-bg-amber-500';
+      }
+      return 'tw-bg-green-500';
+    },
+
+    formatGuardrailPhase(phase) {
+      const labels = {
+        on_input: this.$t('On input'),
+        on_output: this.$t('On output'),
+        before_response: this.$t('Before response'),
+        before_tool: this.$t('Before tool'),
+        after_tool: this.$t('After tool'),
+      };
+      return labels[phase] || phase || '—';
+    },
+
+    getGuardrailEventName(event) {
+      const data = this.guardrailPayload(event);
+      const phase = this.formatGuardrailPhase(data.phase);
+      return data.tool_name ? `${phase} · ${data.tool_name}` : phase;
+    },
+
     getEventTypeLabel(event) {
+      if (this.isGuardrailEvent(event)) return this.$t('Guardrail');
       if (this.isErrorEvent(event)) return this.$t('Error');
       if (this.isToolEvent(event)) return this.$t('Tool');
       if (this.isLlmEvent(event)) return this.$t('LLM');
@@ -686,6 +851,9 @@ export default {
     },
 
     getEventName(event) {
+      if (this.isGuardrailEvent(event)) {
+        return this.getGuardrailEventName(event);
+      }
       if (this.isErrorEvent(event)) {
         return this.$t('Execution Error');
       }
@@ -712,6 +880,7 @@ export default {
     },
 
     getEventIcon(event) {
+      if (this.isGuardrailEvent(event)) return 'fas fa-shield-alt';
       if (this.isErrorEvent(event)) return 'fas fa-exclamation-triangle';
       if (this.isToolEvent(event)) return 'fas fa-wrench';
       if (this.isLlmEvent(event)) return 'fas fa-brain';
@@ -728,6 +897,9 @@ export default {
     },
 
     getEventIconClasses(event) {
+      if (this.isGuardrailEvent(event)) {
+        return this.getGuardrailIconClasses(event);
+      }
       if (this.isErrorEvent(event)) return 'tw-bg-red-100 tw-text-red-600';
       if (this.isToolEvent(event)) return 'tw-bg-indigo-100 tw-text-indigo-600';
       if (this.isLlmEvent(event)) return 'tw-bg-purple-100 tw-text-purple-600';
@@ -744,6 +916,9 @@ export default {
     },
 
     getEventBarClass(event) {
+      if (this.isGuardrailEvent(event)) {
+        return this.getGuardrailBarClass(event);
+      }
       if (this.isErrorEvent(event)) return 'tw-bg-red-500';
       if (this.isToolEvent(event)) return 'tw-bg-indigo-400';
       if (this.isLlmEvent(event)) return 'tw-bg-purple-400';
