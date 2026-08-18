@@ -145,7 +145,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
     /**
      * Hide executor diagnostics from Smart Extract request errors while keeping them in logs.
      */
-    protected function prepareExceptionForHandling(string $implementation, Throwable $exception): Throwable
+    protected function prepareExceptionForHandling(mixed $implementation, Throwable $exception): Throwable
     {
         if ($implementation !== SmartExtractConfiguration::SEND_DOCUMENT_SCRIPT_KEY) {
             return $exception;

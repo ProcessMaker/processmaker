@@ -196,4 +196,16 @@ class ErrorHandlingTest extends TestCase
                 && !str_contains($context['message'], 'dXNlcjpwYXNz');
         });
     }
+
+    public function testMissingServiceTaskImplementationDoesNotCauseATypeError(): void
+    {
+        $job = (new ReflectionClass(RunServiceTask::class))->newInstanceWithoutConstructor();
+        $prepare = (new ReflectionClass(RunServiceTask::class))->getMethod('prepareExceptionForHandling');
+        $exception = new ScriptException('Service task implementation not defined');
+
+        $handled = $prepare->invoke($job, null, $exception);
+
+        $this->assertSame($exception, $handled);
+        $this->assertSame('Service task implementation not defined', $handled->getMessage());
+    }
 }
