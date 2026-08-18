@@ -259,7 +259,7 @@ class ErrorHandling
     private static function extractMessageCandidate(mixed $candidate, int $depth = 0): string
     {
         if (is_string($candidate) || is_numeric($candidate)) {
-            return self::shortenMessage((string) $candidate);
+            return self::sanitizeScriptErrorMessage((string) $candidate);
         }
 
         if (!is_array($candidate) || $depth >= 3) {
@@ -283,7 +283,7 @@ class ErrorHandling
     /**
      * Keep only the first line of the error and limit its length to avoid noisy traces.
      */
-    private static function shortenMessage(string $message): string
+    public static function sanitizeScriptErrorMessage(string $message): string
     {
         $firstLine = strtok($message, "\n");
         $firstLine = $firstLine === false ? $message : $firstLine;
@@ -299,22 +299,36 @@ class ErrorHandling
             '',
             $trimmed
         ) ?? $trimmed;
-        $trimmed = preg_replace('/\bBearer\s+\S+/i', 'Bearer [REDACTED]', $trimmed) ?? $trimmed;
-        $trimmed = preg_replace(
-            '/\b(api[_-]?token|access[_-]?token|client[_-]?secret|password|authorization)\b\s*[:=]\s*[^\s,;]+/i',
-            '$1=[REDACTED]',
-            $trimmed
-        ) ?? $trimmed;
-        $trimmed = preg_replace(
-            '/\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/',
-            '[REDACTED]',
-            $trimmed
-        ) ?? $trimmed;
+        $trimmed = self::redactScriptErrorDetails($trimmed);
 
         if (strlen($trimmed) > 400) {
-            return substr($trimmed, 0, 400) . '…';
+            return mb_strcut($trimmed, 0, 400, 'UTF-8') . '…';
         }
 
         return $trimmed;
+    }
+
+    /**
+     * Redact credentials while preserving multiline diagnostics for application logs.
+     */
+    public static function redactScriptErrorDetails(string $details): string
+    {
+        $redacted = preg_replace(
+            '/\bauthorization\b\s*[:=]\s*[^\r\n]*/i',
+            'Authorization=[REDACTED]',
+            $details
+        ) ?? $details;
+        $redacted = preg_replace('/\bBearer\s+\S+/i', 'Bearer [REDACTED]', $redacted) ?? $redacted;
+        $redacted = preg_replace(
+            '/\b(api[_-]?token|access[_-]?token|client[_-]?secret|password)\b\s*[:=]\s*[^\s,;]+/i',
+            '$1=[REDACTED]',
+            $redacted
+        ) ?? $redacted;
+
+        return preg_replace(
+            '/\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/',
+            '[REDACTED]',
+            $redacted
+        ) ?? $redacted;
     }
 }

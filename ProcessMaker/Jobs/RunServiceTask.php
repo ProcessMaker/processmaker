@@ -15,6 +15,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Repositories\DefinitionsRepository;
+use ProcessMaker\Services\SmartExtractConfiguration;
 use Throwable;
 
 class RunServiceTask extends BpmnAction implements ShouldQueue
@@ -112,11 +113,12 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             $this->unlock();
             $this->updateData(['output' => $exception->getMessageForData($token)]);
         } catch (Throwable $exception) {
+            $handledException = $this->prepareExceptionForHandling($implementation, $exception);
             $finalAttempt = true;
             if ($errorHandling) {
-                [$message, $finalAttempt] = $errorHandling->handleRetries($this, $exception);
+                [$message, $finalAttempt] = $errorHandling->handleRetries($this, $handledException);
             } else {
-                $message = $exception->getMessage();
+                $message = $handledException->getMessage();
             }
 
             if ($finalAttempt) {
@@ -128,16 +130,37 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             $error->setName($message);
 
             $token->setProperty('error', $error);
-            if ($message !== $exception->getMessage()) {
-                $modifiedException = new Exception($message, $exception->getCode(), $exception);
+            if ($message !== $handledException->getMessage()) {
+                $modifiedException = new Exception($message, $handledException->getCode(), $handledException);
             } else {
-                $modifiedException = $exception;
+                $modifiedException = $handledException;
             }
             $token->logError($modifiedException, $element);
 
             Log::error('Service task failed: ' . $implementation . ' - ' . $message);
-            Log::debug($exception->getTraceAsString());
+            Log::debug($handledException->getTraceAsString());
         }
+    }
+
+    /**
+     * Hide executor diagnostics from Smart Extract request errors while keeping them in logs.
+     */
+    protected function prepareExceptionForHandling(string $implementation, Throwable $exception): Throwable
+    {
+        if ($implementation !== SmartExtractConfiguration::SEND_DOCUMENT_SCRIPT_KEY) {
+            return $exception;
+        }
+
+        Log::error('Smart Extract document-send executor failed', [
+            'message' => ErrorHandling::redactScriptErrorDetails($exception->getMessage()),
+            'trace' => ErrorHandling::redactScriptErrorDetails($exception->getTraceAsString()),
+        ]);
+
+        return new ScriptException(
+            ErrorHandling::sanitizeScriptErrorMessage($exception->getMessage()),
+            $exception->getCode(),
+            $exception
+        );
     }
 
     private function updateData($response)
