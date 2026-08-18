@@ -52,6 +52,7 @@ Shared admin chrome: `resources/js/admin/loaderAdmin.js` (`setupMain` + packages
 ```
 resources/views/layouts/layoutnextvite.blade.php
 resources/views/tasks/index.blade.php                 ← Vite
+resources/views/tasks/editMobile.blade.php             ← Vite (mobile task edit)
 resources/views/tasks/preview.blade.php               ← Vite standalone (iframe)
 resources/views/notifications/index.blade.php         ← Vite
 resources/views/templates/import.blade.php            ← Vite
@@ -97,6 +98,7 @@ vite.config.js
 |------------|--------|------|----------------|
 | Tasks inbox | **Vite** | `tasks.index` + `layoutnextvite` | `vite/tasks/loaderTasks.js` → ScreenBuilder scripts → `vite/tasks/tasks.js` |
 | Task edit | **Vite** | `tasks.edit` + `layoutnextvite` | `tasks/loaderEdit.js` → `tasks/edit.js` + inline Vue on `load` |
+| Mobile task edit | **Vite** | `tasks.editMobile` + `mobilenextvite` | `tasks/loaderTasks.js` → deferred package scripts → `tasks/show.js` + inline Vue mount on `load` |
 | Task preview (iframe) | **Vite** | `tasks.preview` — **standalone** (no layout) | `tasks/loaderPreview.js` → `tasks/preview.js` |
 | Task show | **Vite** | `tasks.show` + `layoutnextvite` | `tasks/loaderTasks.js` → `tasks/show.js` |
 | Inbox Rules | **Vite** | `inbox-rules.index` + `layoutnextvite` | `inbox-rules/index.js` |
@@ -482,6 +484,14 @@ Dev tips:
 - View: `resources/views/tasks/index.blade.php` → `layoutnextvite`
 - Entries: `resources/js/vite/tasks/loaderTasks.js` → `$manager->getScripts()` → `tasks.js`
 - Boot: `window.temporal` before loader
+
+**Mobile task edit** — `/tasks/{task}/edit` on mobile
+
+- View: `resources/views/tasks/editMobile.blade.php` → `mobilenextvite`
+- Entries: `tasks/loaderTasks.js` (`setupMain` + packages) → deferred `$manager->getScripts()` → `tasks/show.js`
+- The inline root mounts `#taskMobile` on `window` `load`, after the Vite modules and ScreenBuilder package scripts have executed
+- Register the `screen-renderer-init` listener inside the same `load` callback; `layoutnextvite` yields page scripts before package scripts, so `ProcessMaker.EventBus` is not guaranteed during the first inline tick
+- Keep `mixins: addons` for package-provided mobile task behavior
 
 **Task Preview (iframe)** — `/tasks/{task}/edit/preview`
 
