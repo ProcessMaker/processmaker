@@ -272,10 +272,10 @@ class ScriptMicroserviceService
      * @param array $response
      * @return array{status: int, output: array}
      */
-    private function formatPreviewResponse(array $response): array
+    public function formatPreviewResponse(array $response): array
     {
         // Simple status determination: success = 200, others = 500
-        $status = $response['status'] === 'success' ? 200 : 500;
+        $status = ($response['status'] ?? '') === 'success' ? 200 : 500;
 
         return [
             'status' => $status,
@@ -294,7 +294,7 @@ class ScriptMicroserviceService
         $output = $response;
         if (($response['status'] ?? '') === 'success') {
             $output = ['output' => $response['output']];
-        } elseif ($response['status'] === 'error') {
+        } elseif (($response['status'] ?? '') === 'error') {
             $output = [
                 'exception' => $response['exception'] ?? ScriptException::class,
                 'message' => $response['error'],

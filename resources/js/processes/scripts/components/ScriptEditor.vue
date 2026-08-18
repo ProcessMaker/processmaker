@@ -877,7 +877,6 @@ export default {
       this.preview.output = undefined;
       // Attempt to execute a script, using our temp variables
       this.nonce = Math.random().toString(36);
-      const isRealtime = this.scriptExecutor.type === "realtime";
       ProcessMaker.apiClient.post(`scripts/${this.script.id}/preview`, {
         code: this.code,
         data: this.preview.data,
@@ -885,23 +884,6 @@ export default {
         timeout: this.script.timeout,
         nonce: this.nonce,
       }).then((response) => {
-        if (isRealtime) {
-          this.duration = response.data.metadata?.duration || null;
-          if (response.data.status === "error") {
-            this.setPreviewFailure(
-              response.data.error_message,
-              response.data.error,
-            );
-            return;
-          }
-          this.preview.executing = false;
-          this.preview.success = true;
-          // The extra "output" key is actually the result of fetching srn cache for the non-realtime system
-          // But people are use to seeing it, so we'll add it here.
-          this.preview.output = { output: response.data.output };
-          return;
-        }
-
         this.executionKey = response.data.key;
       }).catch((error) => {
         this.setPreviewFailure(
