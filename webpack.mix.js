@@ -89,7 +89,6 @@ mix
 
   .js("resources/js/requests/mobile.js", "public/js/requests/mobile.js")
   .js("resources/js/requests/show.js", "public/js/requests")
-  .js("resources/js/requests/preview.js", "public/js/requests")
   .js("resources/js/processes/translations/import.js", "public/js/processes/translations")
 
   .js("resources/js/tasks/mobile.js", "public/js/tasks/mobile.js")

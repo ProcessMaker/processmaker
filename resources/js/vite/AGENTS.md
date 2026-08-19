@@ -80,6 +80,7 @@ resources/views/processes/screens/edit.blade.php        ← Vite (Configure Scre
 resources/views/processes/modeler/index.blade.php       ← Vite (process modeler)
 resources/views/requests/show.blade.php                 ← Vite (request detail)
 resources/views/requests/showMobile.blade.php           ← Vite (mobile request detail)
+resources/views/requests/preview.blade.php              ← Vite (request screen preview)
 resources/js/vite/tasks/                              ← Tasks entries
 resources/js/vite/auth/login.js                       ← Login / auth layout entry
 resources/js/admin/loaderAdmin.js                     ← shared admin setupMain loader
@@ -107,6 +108,7 @@ vite.config.js
 | Requests index | **Vite** | `requests.index` + `layoutnextvite` | `requests/loaderRequests.js` → `requests/index.js` |
 | Request detail | **Vite** | `requests.show` + `layoutnextvite` | `requests/loaderRequestsShow.js` → modeler `initialLoad.js` + `requests/show.js` → inline Vue mount on `window` `load` |
 | Mobile request detail | **Vite** | `requests.showMobile` + `mobilenextvite` | `requests/loaderRequestsShow.js` + `requests/show.js` → inline Vue mount on `window` `load` |
+| Request screen preview | **Vite** | `requests.preview` + `layoutnextvite` | `requests/loaderRequestsPreview.js` (`setupMain` + ScreenBuilder) → `requests/preview.js` → inline Vue mount on `window` `load` |
 | Notifications | **Vite** | `notifications.index` + `layoutnextvite` | `notifications/loaderNotifications.js` → `notifications/index.js` |
 | Template Import | **Vite** | `templates.import` + `layoutnextvite` | `templates/loaderTemplates.js` → `templates/import/index.js` (Vue Router) |
 | Template Configure | **Vite** | `templates.configure` + `layoutnextvite` | boot `window.temporal.templateConfigurations` → `templates/loaderTemplates.js` → `templates/configure.js` + `mixins: addons` |
@@ -186,6 +188,7 @@ resources/js/admin/profile/loaderProfile.js
 resources/js/admin/profile/edit.js
 resources/js/requests/loaderRequests.js
 resources/js/requests/loaderRequestsShow.js
+resources/js/requests/loaderRequestsPreview.js
 resources/js/requests/index.js
 resources/js/notifications/loaderNotifications.js
 resources/js/notifications/index.js
@@ -492,6 +495,14 @@ Dev tips:
 - The inline root mounts `#taskMobile` on `window` `load`, after the Vite modules and ScreenBuilder package scripts have executed
 - Register the `screen-renderer-init` listener inside the same `load` callback; `layoutnextvite` yields page scripts before package scripts, so `ProcessMaker.EventBus` is not guaranteed during the first inline tick
 - Keep `mixins: addons` for package-provided mobile task behavior
+
+**Request screen preview** — `/requests/{request}/task/{task}/screen/{screen}`
+
+- View: `resources/views/requests/preview.blade.php` → `layoutnextvite`
+- Boot `screenBuilderScripts` before `loaderRequestsPreview.js`; the loader runs `setupMain`, registers Vue form elements, initializes ScreenBuilder, and imports `requests/preview.js`
+- The manager's ScreenBuilder scripts are loaded by the Vite ScreenBuilder integration rather than rendered as direct Mix script tags
+- The `#request` Vue root mounts on `window` `load` so the `ScreenDetail` component and ScreenBuilder globals are ready before rendering
+- Removed `resources/js/requests/preview.js` from `webpack.mix.js`; it is now built through the `loaderRequestsPreview.js` Vite entry
 
 **Task Preview (iframe)** — `/tasks/{task}/edit/preview`
 
