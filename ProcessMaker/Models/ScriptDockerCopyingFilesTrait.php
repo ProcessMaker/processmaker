@@ -23,20 +23,26 @@ trait ScriptDockerCopyingFilesTrait
      */
     protected function executeCopying(array $options)
     {
-        $container = $this->createContainer($options['image'], $options['command'], $options['parameters']);
-        foreach ($options['inputs'] as $path => $data) {
-            $this->putInContainer($container, $path, $data);
-        }
-        $response = $this->startContainer($container, $options['timeout']);
-        $outputs = [];
-        foreach ($options['outputs'] as $name => $path) {
-            $outputs[$name] = $this->getFromContainer($container, $path);
-        }
+        $container = null;
 
-        exec(Docker::command() . ' rm ' . $container);
-        $response['outputs'] = $outputs;
+        try {
+            $container = $this->createContainer($options['image'], $options['command'], $options['parameters']);
+            foreach ($options['inputs'] as $path => $data) {
+                $this->putInContainer($container, $path, $data);
+            }
+            $response = $this->startContainer($container, $options['timeout']);
+            $outputs = [];
+            foreach ($options['outputs'] as $name => $path) {
+                $outputs[$name] = $this->getFromContainer($container, $path);
+            }
+            $response['outputs'] = $outputs;
 
-        return $response;
+            return $response;
+        } finally {
+            if ($container) {
+                exec(Docker::command() . ' rm -f ' . $container);
+            }
+        }
     }
 
     /**
