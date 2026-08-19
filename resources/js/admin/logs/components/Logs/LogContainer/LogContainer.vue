@@ -102,7 +102,7 @@ export default {
           design: 'FlowGenie Studio Logs',
           execution: 'Runtime Logs',
         };
-        return agentTitles[this.logType] ?? 'FlowGenie Agents Logs';
+        return agentTitles[this.logType] ?? 'FlowGenie Agents logs';
       }
 
       const titles = {

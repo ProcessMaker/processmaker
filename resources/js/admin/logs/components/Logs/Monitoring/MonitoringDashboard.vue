@@ -12,7 +12,7 @@
             : 'tw-text-zinc-700 hover:tw-bg-zinc-50'"
           @click="setExecutionType(option.value)"
         >
-          {{ $t(option.label) }}
+          {{ option.label }}
         </button>
       </div>
       <div class="tw-flex tw-items-center tw-gap-1 tw-bg-gray-100 tw-rounded-lg tw-p-1">
@@ -26,7 +26,7 @@
             : 'tw-text-zinc-700 hover:tw-bg-zinc-50'"
           @click="setRange(option.value)"
         >
-          {{ $t(option.label) }}
+          {{ option.label }}
         </button>
       </div>
     </div>
@@ -52,7 +52,7 @@
             {{ kpi.value }}
           </div>
           <div class="tw-text-xs tw-text-zinc-500 tw-mt-1">
-            {{ $t(kpi.label) }}
+            {{ kpi.label }}
           </div>
         </div>
       </div>
@@ -76,7 +76,7 @@
             v-else
             class="tw-text-sm tw-text-zinc-500"
           >
-            {{ $t(emptyGuardrails) }}
+            {{ $t('No guardrail evaluations in this period.') }}
           </p>
         </section>
 
@@ -94,7 +94,7 @@
             v-else
             class="tw-text-sm tw-text-zinc-500"
           >
-            {{ $t(emptyBlocks) }}
+            {{ $t('No blocked sessions in this period.') }}
           </p>
         </section>
       </div>
@@ -132,7 +132,7 @@
             v-else
             class="tw-text-sm tw-text-zinc-500"
           >
-            {{ $t(emptyGuardrails) }}
+            {{ $t('No guardrail evaluations in this period.') }}
           </p>
         </section>
       </div>
@@ -168,7 +168,7 @@
             v-else
             class="tw-text-sm tw-text-zinc-500"
           >
-            {{ $t(emptyTokens) }}
+            {{ $t('No token usage in this period.') }}
           </p>
         </section>
 
@@ -186,7 +186,7 @@
             v-else
             class="tw-text-sm tw-text-zinc-500"
           >
-            {{ $t(emptyTokens) }}
+            {{ $t('No token usage in this period.') }}
           </p>
         </section>
       </div>
@@ -259,7 +259,7 @@
           v-else
           class="tw-text-sm tw-text-zinc-500"
         >
-          {{ $t(emptyBlocks) }}
+          {{ $t('No blocked sessions in this period.') }}
         </p>
         </div>
       </section>
@@ -316,36 +316,37 @@ export default {
       range: '7d',
       executionType: 'all',
       monitoring: EMPTY_MONITORING(),
-      emptyGuardrails: 'No guardrail evaluations in this period.',
-      emptyBlocks: 'No blocked sessions in this period.',
-      emptyTokens: 'No token usage in this period.',
       doughnutOptions,
       stackedBarOptions,
       lineOptions,
       percentBarOptions: horizontalBarOptions('%'),
       countBarOptions: horizontalBarOptions(),
-      rangeOptions: [
-        { value: '7d', label: 'Last 7 days' },
-        { value: '30d', label: 'Last 30 days' },
-        { value: '90d', label: 'Last 90 days' },
-      ],
-      executionOptions: [
-        { value: 'all', label: 'All' },
-        { value: 'design', label: 'Studio' },
-        { value: 'execution', label: 'Runtime' },
-      ],
     };
   },
   computed: {
+    rangeOptions() {
+      return [
+        { value: '7d', label: this.$t('Last 7 days') },
+        { value: '30d', label: this.$t('Last 30 days') },
+        { value: '90d', label: this.$t('Last 90 days') },
+      ];
+    },
+    executionOptions() {
+      return [
+        { value: 'all', label: this.$t('All') },
+        { value: 'design', label: this.$t('Studio') },
+        { value: 'execution', label: this.$t('Runtime') },
+      ];
+    },
     kpiCards() {
       const kpis = this.monitoring.kpis || {};
       return [
-        { label: 'Sessions', value: this.formatCount(kpis.sessions), toneClass: 'tw-text-zinc-900' },
-        { label: 'Block rate', value: this.formatRate(kpis.block_rate), toneClass: 'tw-text-red-600' },
-        { label: 'Redact rate', value: this.formatRate(kpis.redact_rate), toneClass: 'tw-text-amber-600' },
-        { label: 'Error rate', value: this.formatRate(kpis.error_rate), toneClass: 'tw-text-zinc-900' },
-        { label: 'Tokens', value: this.formatTokens(kpis.tokens), toneClass: 'tw-text-zinc-900' },
-        { label: 'Avg duration', value: this.formatDuration(kpis.avg_duration_ms), toneClass: 'tw-text-zinc-900' },
+        { label: this.$t('Sessions'), value: this.formatCount(kpis.sessions), toneClass: 'tw-text-zinc-900' },
+        { label: this.$t('Block rate'), value: this.formatRate(kpis.block_rate), toneClass: 'tw-text-red-600' },
+        { label: this.$t('Redact rate'), value: this.formatRate(kpis.redact_rate), toneClass: 'tw-text-amber-600' },
+        { label: this.$t('Error rate'), value: this.formatRate(kpis.error_rate), toneClass: 'tw-text-zinc-900' },
+        { label: this.$t('Tokens'), value: this.formatTokens(kpis.tokens), toneClass: 'tw-text-zinc-900' },
+        { label: this.$t('Avg duration'), value: this.formatDuration(kpis.avg_duration_ms), toneClass: 'tw-text-zinc-900' },
       ];
     },
     hasOutcomes() {
