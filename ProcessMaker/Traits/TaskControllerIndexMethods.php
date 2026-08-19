@@ -324,6 +324,9 @@ trait TaskControllerIndexMethods
             if ($this->advancedFilterHasStatus($request)) {
                 $pmql = $this->removeStatusFromPmql($pmql);
 
+                // Exclusive Self Service: unassigned tasks cannot match a global user_id AND.
+                // Mixed Self Service + other statuses: also drop the global user_id AND here;
+                // applyMixedSelfServiceStatusFilter() re-applies it only on the regular-status branch.
                 if ($this->advancedFilterHasSelfServiceStatus($request)) {
                     $pmql = $this->removeUserIdFromPmql($pmql);
                 }
@@ -351,6 +354,25 @@ trait TaskControllerIndexMethods
     private function advancedFilterHasSelfServiceStatus($request): bool
     {
         return $this->filterDefinitionsContainSelfService($this->getAdvancedFilterArray($request));
+    }
+
+    /**
+     * True when every Status criterion is Self Service (no In Progress / Completed / etc.).
+     */
+    private function advancedFilterIsExclusiveSelfService($request): bool
+    {
+        $statusFilters = array_values($this->getAdvancedFilterArray($request));
+        if ($statusFilters === [] || !$this->filterDefinitionsContainSelfService($statusFilters)) {
+            return false;
+        }
+
+        foreach ($statusFilters as $filter) {
+            if ($this->stripSelfServiceFromStatusFilter($filter) !== null) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -516,11 +538,75 @@ trait TaskControllerIndexMethods
                 } else {
                     $query->whereIn('process_request_tokens.id', $selfServiceTaskIds);
                 }
+            } elseif (
+                is_array($filterArray)
+                && $this->filterDefinitionsContainSelfService(array_values($this->getAdvancedFilterArray($request)))
+                && !$this->advancedFilterIsExclusiveSelfService($request)
+            ) {
+                $this->applyMixedSelfServiceStatusFilter($query, $filterArray, $request);
             } else {
                 // Normal behavior - apply the filter as-is
                 Filter::filter($query, $advancedFilter);
             }
         }
+    }
+
+    /**
+     * Mixed Status filter (e.g. In Progress OR Self Service):
+     * (assignee AND regular statuses) OR eligible Self Service tasks.
+     */
+    private function applyMixedSelfServiceStatusFilter($query, array $filterArray, $request): void
+    {
+        $nonStatusFilters = [];
+        $regularStatusFilters = [];
+
+        foreach ($filterArray as $filter) {
+            $isStatusFilter = isset($filter['subject']['type']) && $filter['subject']['type'] === 'Status';
+            if (!$isStatusFilter) {
+                $nonStatusFilters[] = $filter;
+                continue;
+            }
+
+            $stripped = $this->stripSelfServiceFromStatusFilter($filter);
+            if ($stripped !== null) {
+                $regularStatusFilters[] = $stripped;
+            }
+        }
+
+        if ($nonStatusFilters !== []) {
+            Filter::filter($query, $nonStatusFilters);
+        }
+
+        $requestedUserId = $this->parseUserIdFromPmql((string) $request->input('pmql', ''));
+        $user = $request->user() ?? Auth::user();
+
+        $query->where(function ($query) use ($regularStatusFilters, $requestedUserId, $user) {
+            $query->where(function ($regularQuery) use ($regularStatusFilters, $requestedUserId) {
+                if ($regularStatusFilters !== []) {
+                    Filter::filter($regularQuery, $regularStatusFilters);
+                }
+                if ($requestedUserId) {
+                    $regularQuery->where('process_request_tokens.user_id', $requestedUserId);
+                }
+            });
+
+            if ($user) {
+                $query->orWhereIn('process_request_tokens.id', $user->availableSelfServiceTasksQuery());
+            }
+        });
+    }
+
+    private function parseUserIdFromPmql(string $pmql): ?int
+    {
+        if ($pmql === '') {
+            return null;
+        }
+
+        if (preg_match('/user_id\s*=\s*(\d+)/i', $pmql, $matches)) {
+            return (int) $matches[1];
+        }
+
+        return null;
     }
 
     private function applyUserFilter($response, $request, $user)

@@ -1076,6 +1076,15 @@ class TasksTest extends TestCase
             'is_self_service' => 0,
         ]);
 
+        $otherUser = User::factory()->create();
+        $foreignInProgressTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'element_name' => 'FOREIGN TASK - MUST NOT APPEAR',
+            'user_id' => $otherUser->id,
+            'is_self_service' => 0,
+        ]);
+
         $completedTask = ProcessRequestToken::factory()->create([
             'status' => 'CLOSED',
             'element_type' => 'task',
@@ -1102,6 +1111,7 @@ class TasksTest extends TestCase
         $response = $this->actingAs($user, 'api')->get(route('api.tasks.index', [
             'pmql' => '(user_id = ' . $user->id . ') AND (status = "In Progress")',
             'advanced_filter' => $statusFilter,
+            'per_page' => 100,
         ]));
 
         $response->assertStatus(200);
@@ -1110,6 +1120,72 @@ class TasksTest extends TestCase
         $this->assertContains($inProgressTask->id, $returnedIds);
         $this->assertContains($selfServiceTask->id, $returnedIds);
         $this->assertNotContains($completedTask->id, $returnedIds);
+        $this->assertNotContains(
+            $foreignInProgressTask->id,
+            $returnedIds,
+            'ACTIVE task assigned to another user must not appear for mixed In Progress OR Self Service'
+        );
+    }
+
+    public function testInOperatorSelfServiceWithInProgressScopesRegularTasksToPmqlUser()
+    {
+        $user = User::factory()->create(['is_administrator' => true]);
+        $group = Group::factory()->create();
+
+        GroupMember::factory()->create([
+            'group_id' => $group->id,
+            'member_id' => $user->id,
+            'member_type' => User::class,
+        ]);
+
+        $selfServiceTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'user_id' => null,
+            'is_self_service' => 1,
+            'self_service_groups' => ['groups' => [strval($group->id)], 'users' => []],
+        ]);
+
+        $inProgressTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'user_id' => $user->id,
+            'is_self_service' => 0,
+        ]);
+
+        $otherUser = User::factory()->create();
+        $foreignInProgressTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'task',
+            'element_name' => 'FOREIGN TASK - MUST NOT APPEAR',
+            'user_id' => $otherUser->id,
+            'is_self_service' => 0,
+        ]);
+
+        $statusFilter = json_encode([
+            [
+                'subject' => ['type' => 'Status'],
+                'operator' => 'in',
+                'value' => ['In Progress', 'Self Service'],
+            ],
+        ]);
+
+        $response = $this->actingAs($user, 'api')->get(route('api.tasks.index', [
+            'pmql' => '(user_id = ' . $user->id . ') AND (status = "In Progress")',
+            'advanced_filter' => $statusFilter,
+            'per_page' => 100,
+        ]));
+
+        $response->assertStatus(200);
+        $returnedIds = collect($response->json('data'))->pluck('id')->toArray();
+
+        $this->assertContains($inProgressTask->id, $returnedIds);
+        $this->assertContains($selfServiceTask->id, $returnedIds);
+        $this->assertNotContains(
+            $foreignInProgressTask->id,
+            $returnedIds,
+            'ACTIVE task assigned to another user must not appear for mixed In Progress OR Self Service'
+        );
     }
 
     public function testGetScreenFields()
