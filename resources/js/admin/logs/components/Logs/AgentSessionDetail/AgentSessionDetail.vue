@@ -111,7 +111,7 @@
         <div v-else class="tw-relative">
           <div
             v-for="(event, index) in sortedEvents"
-            :key="event.id || index"
+            :key="getEventKey(event, index)"
             class="tw-relative tw-pb-4"
           >
             <!-- Timeline connector -->
@@ -361,11 +361,11 @@
               <div class="tw-text-xs tw-text-gray-500 tw-uppercase tw-font-medium tw-mb-1">{{ $t('MCP Servers') }}</div>
               <div class="tw-flex tw-flex-wrap tw-gap-1">
                 <span
-                  v-for="server in sessionData.mcp_servers_used"
-                  :key="server"
+                  v-for="(server, serverIndex) in sessionData.mcp_servers_used"
+                  :key="getMcpServerKey(server, serverIndex)"
                   class="tw-px-2 tw-py-0.5 tw-bg-purple-100 tw-text-purple-700 tw-rounded tw-text-xs"
                 >
-                  {{ server }}
+                  {{ formatMcpServerLabel(server) }}
                 </span>
               </div>
             </div>
@@ -374,13 +374,13 @@
               <div class="tw-text-xs tw-text-gray-500 tw-uppercase tw-font-medium tw-mb-1">{{ $t('Collections') }}</div>
               <div class="tw-flex tw-flex-wrap tw-gap-1">
                 <a
-                  v-for="collection in sessionData.collections_used"
-                  :key="collection.uuid || collection.id"
-                  :href="`/collections/${collection.id}`"
+                  v-for="(collection, collectionIndex) in sessionData.collections_used"
+                  :key="getCollectionKey(collection, collectionIndex)"
+                  :href="`/collections/${collection.id || collection.uuid}`"
                   class="tw-px-2 tw-py-0.5 tw-bg-blue-100 tw-text-blue-700 tw-rounded tw-text-xs hover:tw-bg-blue-200 tw-transition-colors tw-no-underline"
                   @click.stop
                 >
-                  {{ collection.name }}
+                  {{ formatCollectionLabel(collection) }}
                 </a>
               </div>
             </div>
@@ -706,6 +706,61 @@ export default {
 
     toggleEvent(index) {
       this.$set(this.expandedEvents, index, !this.expandedEvents[index]);
+    },
+
+    getEventKey(event, index) {
+      const id = event.id ?? event.call_id ?? event.response_id;
+      if (typeof id === 'string' || typeof id === 'number') {
+        return String(id);
+      }
+      const type = event._type || event.type || 'event';
+      const timestamp = event.timestamp || event.created_at || '';
+      return `${type}-${timestamp}-${index}`;
+    },
+
+    getMcpServerKey(server, index) {
+      if (typeof server === 'string' || typeof server === 'number') {
+        return `mcp-${server}-${index}`;
+      }
+      if (server && typeof server === 'object') {
+        const name = server.name || server.id || 'server';
+        const type = server.type || server.server_type || '';
+        return `mcp-${name}-${type}-${index}`;
+      }
+      return `mcp-server-${index}`;
+    },
+
+    formatMcpServerLabel(server) {
+      if (typeof server === 'string' || typeof server === 'number') {
+        return String(server);
+      }
+      if (server && typeof server === 'object') {
+        return server.name || server.id || JSON.stringify(server);
+      }
+      return String(server ?? '');
+    },
+
+    getCollectionKey(collection, index) {
+      if (typeof collection === 'string' || typeof collection === 'number') {
+        return `collection-${collection}-${index}`;
+      }
+      if (collection && typeof collection === 'object') {
+        const id = collection.uuid || collection.id;
+        if (typeof id === 'string' || typeof id === 'number') {
+          return `collection-${id}`;
+        }
+      }
+      return `collection-${index}`;
+    },
+
+    formatCollectionLabel(collection) {
+      if (typeof collection === 'string' || typeof collection === 'number') {
+        return String(collection);
+      }
+      if (collection && typeof collection === 'object') {
+        return collection.name || collection.uuid || collection.id || JSON.stringify(collection);
+      }
+      return String(collection ?? '');
     },
 
     isGuardrailEvent(event) {
