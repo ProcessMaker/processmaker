@@ -241,4 +241,21 @@ return [
 
     'max_execution_time' => 30,
 
+    /*
+    |--------------------------------------------------------------------------
+    | FrankenPHP / Caddy
+    |--------------------------------------------------------------------------
+    |
+    | Extra env vars for the FrankenPHP process. Start Octane with
+    | `--caddyfile=Caddyfile` so php_ini memory_limit is applied.
+    | PHPRC / PHP_INI does not change FrankenPHP worker memory (stays 128M).
+    |
+    */
+
+    'caddy' => [
+        'env' => [
+            'FRANKENPHP_MEMORY_LIMIT' => env('FRANKENPHP_MEMORY_LIMIT', '3072M'),
+        ],
+    ],
+
 ];
