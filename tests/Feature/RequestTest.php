@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use Illuminate\Http\Testing\File;
+use Illuminate\Support\Facades\Gate;
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
@@ -121,6 +123,54 @@ class RequestTest extends TestCase
 
         $response = $this->webCall('GET', '/requests/' . $request_id);
         $response->assertStatus(200);
+    }
+
+    public function testProcessManagerCanViewManagedRequestSummary()
+    {
+        $this->user = User::factory()->create();
+        $firstManager = User::factory()->create();
+        $process = Process::factory()->create([
+            'manager_id' => [$firstManager->id, $this->user->id],
+        ]);
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'status' => 'COMPLETED',
+        ]);
+
+        $response = $this->webCall('GET', route('requests.show', [$request]));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('requests.show');
+        $response->assertViewHas('isProcessManager', true);
+    }
+
+    public function testProcessManagerCannotViewUnmanagedRequestSummary()
+    {
+        $this->user = User::factory()->create();
+        Process::factory()->create([
+            'manager_id' => [$this->user->id],
+        ]);
+        $unmanagedRequest = ProcessRequest::factory()->create();
+
+        $this->webCall('GET', route('requests.show', [$unmanagedRequest]))
+            ->assertStatus(403);
+    }
+
+    public function testProcessManagerCannotViewAllRequestsWithoutPermission()
+    {
+        Permission::firstOrCreate(
+            ['name' => 'view-all_requests'],
+            ['title' => 'View All Requests'],
+        );
+        Gate::define('view-all_requests', fn ($user) => $user->hasPermission('view-all_requests'));
+
+        $this->user = User::factory()->create();
+        Process::factory()->create([
+            'manager_id' => [$this->user->id],
+        ]);
+
+        $this->webCall('GET', route('requests_by_type', ['type' => 'all']))
+            ->assertStatus(403);
     }
 
     public function testShowRouteWithAdministrator()
