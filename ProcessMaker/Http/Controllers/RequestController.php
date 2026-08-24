@@ -200,7 +200,7 @@ class RequestController extends Controller
         $addons = $this->getPluginAddons('edit', compact(['request']));
         $dataActionsAddons = $this->getPluginAddons('edit.dataActions', []);
 
-        $isProcessManager = $request->process?->manager_id === Auth::user()->id;
+        $isProcessManager = in_array(Auth::user()->id, $request->process?->manager_id ?? []);
 
         $eligibleRollbackTask = null;
         $errorTask = RollbackProcessRequest::getErrorTask($request);
