@@ -1099,12 +1099,12 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Get the assignees from the expression
      *
-     * @param string $form_data
+     * @param string|array $form_data
      * @return array
      */
-    public function getAssigneesFromExpression(string $form_data): array
+    public function getAssigneesFromExpression(string|array $form_data): array
     {
-        $formData = json_decode($form_data, true);
+        $formData = is_array($form_data) ? $form_data : json_decode($form_data, true);
 
         $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
         $assignmentRules = $activity->getProperty('assignmentRules', null);

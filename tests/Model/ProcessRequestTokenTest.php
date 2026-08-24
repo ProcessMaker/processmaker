@@ -424,4 +424,56 @@ class ProcessRequestTokenTest extends TestCase
         $this->assertNotContains(0, $result);
         $this->assertNotContains(-1, $result);
     }
+
+    public function testGetAssigneesFromExpressionAcceptsArrayFormData()
+    {
+        $manager = User::factory()->create(['status' => 'ACTIVE']);
+        $assignableUser = User::factory()->create(['status' => 'ACTIVE']);
+        $otherUser = User::factory()->create(['status' => 'ACTIVE']);
+
+        $process = Process::factory()->create(['manager_id' => $manager->id]);
+        $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
+
+        $rules = [
+            ['type' => 'user', 'assignee' => $assignableUser->id, 'expression' => 'TestVar < 10'],
+            ['type' => 'user', 'assignee' => $otherUser->id, 'expression' => 'TestVar > 10'],
+        ];
+
+        $activity = $this->createMock(\ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface::class);
+        $activity->method('getProperty')
+            ->willReturnCallback(function ($key, $default) use ($rules) {
+                if ($key === 'assignmentRules') {
+                    return json_encode($rules);
+                }
+
+                return $default;
+            });
+
+        $bpmnDefinition = $this->createMock(\ProcessMaker\Nayra\Storage\BpmnElement::class);
+        $bpmnDefinition->method('getBpmnElementInstance')
+            ->willReturn($activity);
+
+        $token = $this->getMockBuilder(ProcessRequestToken::class)
+            ->onlyMethods(['getBpmnDefinition'])
+            ->getMock();
+
+        $token->process_id = $process->id;
+        $token->process_request_id = $request->id;
+        $token->process = $process;
+
+        $token->expects($this->atLeastOnce())
+            ->method('getBpmnDefinition')
+            ->willReturn($bpmnDefinition);
+
+        $formData = ['TestVar' => 5];
+
+        $result = $token->getAssigneesFromExpression($formData);
+
+        $this->assertContains($assignableUser->id, $result);
+        $this->assertContains($manager->id, $result);
+        $this->assertNotContains($otherUser->id, $result);
+
+        $resultFromString = $token->getAssigneesFromExpression(json_encode($formData));
+        $this->assertEquals($result, $resultFromString);
+    }
 }
