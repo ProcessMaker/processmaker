@@ -32,7 +32,7 @@
           <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.title }}</span>
         </template>
         <template slot="type" slot-scope="props">
-          {{ (props.rowData.type === "custom") ? "Custom" : "Base" }}
+          {{ typeLabel(props.rowData.type) }}
         </template>
 
         <template slot="actions" slot-scope="props">
@@ -49,7 +49,7 @@
               </b-btn>
               <b-btn
                 variant="link"
-                :disabled="props.rowData.type !== 'custom'"
+                :disabled="!isEditableType(props.rowData.type)"
                 @click="deleteExecutor(props.rowData)"
                 v-b-tooltip.hover
                 :title="$t('Delete')"
@@ -110,7 +110,7 @@
                   required
                   v-model="formData.title"
                   name="title"
-                  :disabled="formData.type !== 'custom'"
+                  :disabled="!isEditableType(formData.type)"
                 ></b-input>
               </b-form-group>
               <b-form-group
@@ -121,10 +121,11 @@
               >
               <b-form-select
                 required
-                v-model="formData.language"
+                v-model="selectedLanguage"
                 :options="languagesSelect"
                 name="language"
-                :disabled="formData.type !== 'custom'"
+                :disabled="!isEditableType(formData.type)"
+                @change="onLanguageChange"
               >
               </b-form-select>
               </b-form-group>
@@ -137,7 +138,7 @@
               v-model="formData.description"
               class="flex-grow-1"
               name="description"
-              :disabled="formData.type !== 'custom'"
+              :disabled="!isEditableType(formData.type)"
             ></b-textarea>
           </b-col>
         </b-row>
@@ -145,7 +146,7 @@
 
       <p class="mb-0">{{ $t("Docker file") }}</p>
 
-      <div class="d-flex flex-row mb-1">
+      <div v-if="formData.type !== 'realtime'" class="d-flex flex-row mb-1">
         <div class="mr-1">
           <a
             @click="showDockerfile = !showDockerfile"
@@ -177,7 +178,7 @@
       <b-form-textarea
         v-model="formData.config"
         class="mb-3 dockerfile"
-        :disabled="isRunning || formData.type !== 'custom'"
+        :disabled="isRunning || !isEditableType(formData.type)"
       >
       </b-form-textarea>
 
@@ -215,7 +216,7 @@
         </b-button>
 
         <b-button
-          v-if="showCancel && formData.type === 'custom'"
+          v-if="showCancel && isEditableType(formData.type)"
           :disabled="pidFile === null"
           variant="secondary"
           @click="cancel"
@@ -224,7 +225,7 @@
         </b-button>
 
         <b-button
-          v-if="showSave && formData.type === 'custom'"
+          v-if="showSave && isEditableType(formData.type)"
           :disabled="isRunning"
           variant="primary"
           @click="save()"
@@ -252,12 +253,14 @@ export default {
     "filter",
     "permission",
     "script_microservice_enabled",
+    "script_microservice_tenant_id",
   ],
   data() {
     return {
       commandOutput: "",
       languages: [],
       formData: null,
+      selectedLanguage: null,
       emptyFormData: {
         name: "",
         description: "",
@@ -271,7 +274,8 @@ export default {
       exitCode: 0,
       showDockerfile: false,
       loading: true,
-      script_microservice_broadcast_uui: null,
+      activeBuildUuid: null,
+      pendingBuildEvents: [],
 
       localLoadOnStart: true,
       orderBy: "language",
@@ -356,15 +360,14 @@ export default {
         }
       );
     }
+
+    if (this.script_microservice_enabled && this.script_microservice_tenant_id) {
+      this.subscribeToTenantBuildChannel();
+    }
   },
   watch: {
     commandOutput() {
       this.scrollToBottom();
-    },
-    script_microservice_broadcast_uui(newVal) {
-      if (newVal) {
-        this.subscribeToScriptMicroserviceChannel(newVal);
-      }
     },
   },
   computed: {
@@ -389,19 +392,24 @@ export default {
     languagesSelect() {
       return [
         { value: null, text: this.$t("Select a language") },
-        ...this.languages,
+        ...this.languages.map((lang) => ({
+          value: lang.value,
+          text: lang.text,
+        })),
       ];
+    },
+    selectedLanguageOption() {
+      if (!this.selectedLanguage) {
+        return null;
+      }
+      return this.languages.find((l) => l.value === this.selectedLanguage) || null;
     },
     initDockerfile() {
       let content = "";
-      if (this.formData.language) {
-        content = _.get(
-          this.languages.find((l) => l.value === this.formData.language),
-          "initDockerfile",
-          ""
-        );
+      if (this.selectedLanguageOption) {
+        content = _.get(this.selectedLanguageOption, "initDockerfile", "");
       }
-      return content;
+      return content || "";
     },
   },
   methods: {
@@ -434,7 +442,13 @@ export default {
     },
     setErrors(errors) {
       this.status = "error";
-      this.errors = errors.response.data.errors;
+      this.errors = _.get(errors, "response.data.errors", {});
+      const messages = Object.values(this.errors)
+        .flat()
+        .filter((message) => typeof message === "string" && message !== "");
+      if (messages.length) {
+        this.output(messages.join("\n") + "\n");
+      }
     },
     doNotHideIfRunning(e) {
       if (this.isRunning) {
@@ -472,13 +486,15 @@ export default {
     save() {
       this.resetProcessInfo();
       this.status = "saving";
+      this.activeBuildUuid = this.formData.uuid || null;
+      this.pendingBuildEvents = [];
       if (this.formData.id) {
         const path = "/script-executors/" + this.formData.id;
         ProcessMaker.apiClient
           .put(path, this.formData)
           .then((result) => {
             this.status = _.get(result, "data.status", "error");
-            this.script_microservice_broadcast_uui = result.data.uuid;
+            this.setActiveBuildUuid(_.get(result, "data.uuid", this.formData.uuid));
           })
           .catch((e) => {
             this.setErrors(e);
@@ -489,9 +505,10 @@ export default {
           .post(path, this.formData)
           .then((result) => {
             this.status = _.get(result, "data.status", "error");
-            this.script_microservice_broadcast_uui = result.data.uuid;
+            this.setActiveBuildUuid(_.get(result, "data.uuid"));
             if (this.status === "started") {
               this.formData.id = result.data.id;
+              this.formData.uuid = result.data.uuid;
               this.fetch(); // refresh the table (beneath the modal)
             }
           })
@@ -505,13 +522,50 @@ export default {
     },
     edit(row) {
       this.formData = _.cloneDeep(row);
+      this.selectedLanguage = row.type === "realtime"
+        ? `${row.language}-realtime`
+        : row.language;
+      this.activeBuildUuid = row.uuid || null;
       this.$refs.edit.show();
     },
     reset() {
       this.formData = _.cloneDeep(this.emptyFormData);
+      this.selectedLanguage = null;
       this.errors = {};
       this.showDockerfile = false;
-      (this.status = "idle"), this.resetProcessInfo();
+      this.status = "idle";
+      this.activeBuildUuid = null;
+      this.pendingBuildEvents = [];
+      this.resetProcessInfo();
+    },
+    onLanguageChange(value) {
+      const option = this.languages.find((l) => l.value === value);
+      if (!option) {
+        this.formData.language = null;
+        this.formData.type = "custom";
+        return;
+      }
+      this.formData.language = option.language || option.value;
+      this.formData.type = option.realtime ? "realtime" : "custom";
+      if (!this.formData.id) {
+        this.formData.config = option.realtime
+          ? (option.configExample || "")
+          : "";
+      } else if (option.realtime && !this.formData.config && option.configExample) {
+        this.formData.config = option.configExample;
+      }
+    },
+    isEditableType(type) {
+      return type === "custom" || type === "realtime";
+    },
+    typeLabel(type) {
+      if (type === "realtime") {
+        return "Realtime";
+      }
+      if (type === "custom") {
+        return "Custom";
+      }
+      return "Base";
     },
     resetProcessInfo() {
       this.commandOutput = "";
@@ -550,31 +604,72 @@ export default {
     onAddToBundle(data) {
       this.$root.$emit('add-to-bundle', data);
     },
-    subscribeToScriptMicroserviceChannel(name) {
-      const channel = `build-image-${name}`;
-      if (this.script_microservice_enabled) {
-      // Subscribe to new channel
-        window.ScriptMicroserviceEcho
-          .channel(channel)
-          .listenToAll((eventName, data) => {
-            this.status = this.status === "idle" ? "starting" : this.status;
-            switch (eventName) {
-              case ".build-image":
-                this.output(`${data}\n`);
-                break;
-              case ".build-finished":
-                this.pidFile = null;
-                this.exitCode = 0;
-                this.status = "done";
-                break;
-              case ".build-error":
-                this.output(data);
-                this.pidFile = null;
-                this.exitCode = 1;
-                this.status = "done";
-                break;
-            }
-          });
+    subscribeToTenantBuildChannel() {
+      if (!window.ScriptMicroserviceEcho) {
+        return;
+      }
+      const channel = `tenant-${this.script_microservice_tenant_id}-builds`;
+      window.ScriptMicroserviceEcho.channel(channel).listen(
+        ".executor-build",
+        (data) => {
+          this.handleExecutorBuildEvent(data);
+        }
+      );
+    },
+    setActiveBuildUuid(uuid) {
+      if (!uuid) {
+        return;
+      }
+      this.activeBuildUuid = uuid;
+      const pending = this.pendingBuildEvents.filter(
+        (event) => event.executor_id === uuid
+      );
+      this.pendingBuildEvents = [];
+      pending.forEach((event) => this.applyExecutorBuildEvent(event));
+    },
+    handleExecutorBuildEvent(data) {
+      if (!data || typeof data !== "object") {
+        return;
+      }
+      if (!this.isRunning) {
+        return;
+      }
+      if (!this.activeBuildUuid) {
+        this.pendingBuildEvents.push(data);
+        return;
+      }
+      if (data.executor_id !== this.activeBuildUuid) {
+        return;
+      }
+      this.applyExecutorBuildEvent(data);
+    },
+    applyExecutorBuildEvent(data) {
+      if (this.status === "saving") {
+        this.status = "starting";
+      } else if (this.status === "idle") {
+        this.status = "starting";
+      }
+
+      if (data.type === "status") {
+        this.output(`[${data.phase}] ${data.message || ""}\n`);
+      } else if (data.message) {
+        const message = data.message.endsWith("\n")
+          ? data.message
+          : `${data.message}\n`;
+        this.output(message);
+      }
+
+      if (data.phase === "completed" && data.type === "status") {
+        this.pidFile = null;
+        this.exitCode = 0;
+        this.status = "done";
+        return;
+      }
+
+      if (data.phase === "error" || data.type === "error") {
+        this.pidFile = null;
+        this.exitCode = 1;
+        this.status = "done";
       }
     },
   },

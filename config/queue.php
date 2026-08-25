@@ -71,6 +71,15 @@ return [
             'after_commit' => false,
         ],
 
+        'redis-realtime' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+            'queue' => 'realtime',
+            'retry_after' => 86400,
+            'block_for' => 10,
+            'after_commit' => false,
+        ],
+
     ],
 
     /*

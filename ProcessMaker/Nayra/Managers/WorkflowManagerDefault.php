@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\ServiceTaskImplementationInterface;
 use ProcessMaker\Contracts\WorkflowManagerInterface;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Jobs\BoundaryEvent;
 use ProcessMaker\Jobs\CallProcess;
 use ProcessMaker\Jobs\CatchEvent;
@@ -23,6 +24,7 @@ use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken as Token;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
@@ -231,7 +233,14 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
 
         $instance = $token->processRequest;
         $process = $instance->process;
-        RunScriptTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
+        $job = new RunScriptTask($process, $instance, $token, []);
+        $script = Script::find($scriptTask->getProperty('scriptRef'));
+
+        if ($script?->scriptExecutor?->type === ScriptExecutorType::Realtime) {
+            $job->onConnection('redis-realtime')->onQueue('realtime');
+        }
+
+        dispatch($job);
     }
 
     /**

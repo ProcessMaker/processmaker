@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Events\ScriptCreated;
 use ProcessMaker\Events\ScriptDeleted;
 use ProcessMaker\Events\ScriptDuplicated;
@@ -178,7 +179,7 @@ class ScriptController extends Controller
      *
      *     @OA\Response(
      *         response=200,
-     *         description="success if the script was queued",
+     *         description="The queued status or realtime execution response",
      *         ),
      *     ),
      * )
@@ -190,7 +191,12 @@ class ScriptController extends Controller
         $code = $request->get('code');
         $nonce = $request->get('nonce');
 
-        TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce)->onQueue('bpmn');
+        $job = TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce);
+        if ($script->scriptExecutor->type === ScriptExecutorType::Realtime) {
+            $job->onConnection('redis-realtime')->onQueue('realtime');
+        } else {
+            $job->onQueue('bpmn');
+        }
 
         return ['status' => 'success'];
     }
@@ -249,7 +255,12 @@ class ScriptController extends Controller
         if ($request->get('sync') === true) {
             return (new ExecuteScript($script, $request->user(), $code, $data, $watcher, $config, true))->handle();
         } else {
-            ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config)->onQueue('bpmn');
+            $job = ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config);
+            if ($script->scriptExecutor->type === ScriptExecutorType::Realtime) {
+                $job->onConnection('redis-realtime')->onQueue('realtime');
+            } else {
+                $job->onQueue('bpmn');
+            }
         }
 
         return ['status' => 'success', 'key' => $watcher];

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Jobs\CompleteActivity;
@@ -87,6 +88,7 @@ class ScriptMicroserviceService
             'language' => strtolower($scriptExecutor->language),
             'version' => config('script-runner-microservice.version'),
             'config' => $scriptExecutor->config,
+            'realtime' => $scriptExecutor->type === ScriptExecutorType::Realtime,
         ];
         Log::debug('Payload: ', $payload);
 
@@ -114,6 +116,7 @@ class ScriptMicroserviceService
             'language' => strtolower($scriptExecutor->language),
             'version' => config('script-runner-microservice.version'),
             'config' => $scriptExecutor->config,
+            'realtime' => $scriptExecutor->type === ScriptExecutorType::Realtime,
         ];
         Log::debug('Payload: ', $payload);
 
@@ -195,6 +198,7 @@ class ScriptMicroserviceService
 
         if (Cache::has($cacheKey)) {
             Log::debug('Cache hit for script runner', ['cacheKey' => $cacheKey]);
+
             return Cache::get($cacheKey);
         }
 
@@ -211,7 +215,9 @@ class ScriptMicroserviceService
                 return isset($item['language'], $item['id']) && $item['language'] === $language && $item['id'] === $executorUuid;
             })->first();
 
-        if (!empty($result)) Cache::put($cacheKey, $result, now()->addHour());
+        if (!empty($result)) {
+            Cache::put($cacheKey, $result, now()->addHour());
+        }
 
         return $result;
     }
@@ -235,6 +241,9 @@ class ScriptMicroserviceService
     {
         $response = $request->all();
         Log::debug('Response microservice executor: ' . print_r($response, true));
+
+        $duration = isset($response['metadata']['start_time']) ? (microtime(true) - $response['metadata']['start_time']) : null;
+
         // If the call is from preview
         if (!empty($response['metadata']['nonce'])) {
             $formattedResponse = $this->formatPreviewResponse($response);
@@ -243,7 +252,8 @@ class ScriptMicroserviceService
                 $formattedResponse['status'],
                 $formattedResponse['output'],
                 null,
-                $response['metadata']['nonce']));
+                $response['metadata']['nonce'],
+                $duration));
         }
         if (!empty($response['metadata']['script_task'])) {
             $script = Script::find($response['metadata']['script_task']['script_id']);
@@ -262,10 +272,10 @@ class ScriptMicroserviceService
      * @param array $response
      * @return array{status: int, output: array}
      */
-    private function formatPreviewResponse(array $response): array
+    public function formatPreviewResponse(array $response): array
     {
         // Simple status determination: success = 200, others = 500
-        $status = $response['status'] === 'success' ? 200 : 500;
+        $status = ($response['status'] ?? '') === 'success' ? 200 : 500;
 
         return [
             'status' => $status,
@@ -284,7 +294,7 @@ class ScriptMicroserviceService
         $output = $response;
         if (($response['status'] ?? '') === 'success') {
             $output = ['output' => $response['output']];
-        } elseif ($response['status'] === 'error') {
+        } elseif (($response['status'] ?? '') === 'error') {
             $output = [
                 'exception' => $response['exception'] ?? ScriptException::class,
                 'message' => $response['error'],

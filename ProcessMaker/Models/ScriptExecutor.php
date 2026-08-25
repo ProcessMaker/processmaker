@@ -32,6 +32,7 @@ use ProcessMaker\Traits\HideSystemResources;
  *   @OA\Property(property="language", type="string"),
  *   @OA\Property(property="config", type="string"),
  *   @OA\Property(property="is_system", type="boolean"),
+ *   @OA\Property(property="type", type="string"),
  * ),
  * @OA\Schema(
  *   schema="scriptExecutors",
@@ -176,6 +177,12 @@ class ScriptExecutor extends ProcessMakerModel
                 return !in_array($language, Script::deprecatedLanguages);
             });
         }
+
+        // Realtime executors may use php/python/javascript even if a package is not installed
+        $allowedLanguages = array_values(array_unique(array_merge(
+            $allowedLanguages,
+            ['php', 'python', 'javascript']
+        )));
 
         return [
             'title' => 'required',

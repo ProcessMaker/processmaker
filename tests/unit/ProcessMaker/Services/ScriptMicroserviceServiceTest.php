@@ -87,7 +87,9 @@ class ScriptMicroserviceServiceTest extends TestCase
                 && isset($request->data()['id'])
                 && $request->data()['name'] === 'Test Executor'
                 && $request->data()['language'] === 'php'
-                && $request->data()['version'] === '1.0.0';
+                && $request->data()['version'] === '1.0.0'
+                && array_key_exists('realtime', $request->data())
+                && $request->data()['realtime'] === false;
         });
 
         $this->assertEquals('test-executor-uuid', $result['id']);
@@ -130,7 +132,8 @@ class ScriptMicroserviceServiceTest extends TestCase
                 && $request->hasHeader('Authorization', 'Bearer ' . $this->accessToken)
                 && $request->data()['name'] === 'Updated Executor'
                 && $request->data()['language'] === 'javascript'
-                && $request->data()['version'] === '1.0.0';
+                && $request->data()['version'] === '1.0.0'
+                && array_key_exists('realtime', $request->data());
         });
 
         $this->assertEquals('test-executor-uuid', $result['id']);

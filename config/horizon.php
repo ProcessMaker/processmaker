@@ -163,6 +163,16 @@ return [
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MAX_PROCESSES', 1),
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
             ],
+            'supervisor-realtime' => [
+                'connection' => 'redis-realtime',
+                'queue' => ['realtime'],
+                'balance' => env('PM4_HORIZON_SUPERVISOR_REALTIME_BALANCE', 'auto'), // auto: dynamically adjust the number of processes based on the load
+                'tries' => env('PM4_HORIZON_SUPERVISOR_REALTIME_TRIES', 3),
+                'timeout' => env('PM4_HORIZON_SUPERVISOR_REALTIME_TIMEOUT', 600),
+                'minProcesses' => env('PM4_HORIZON_SUPERVISOR_REALTIME_MIN_PROCESSES', 2),
+                'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_REALTIME_MAX_PROCESSES', 20),
+                'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
+            ],
         ],
 
         'local' => [
@@ -187,6 +197,16 @@ return [
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MAX_PROCESSES', 1),
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
             ],
+            'supervisor-realtime' => [
+                'connection' => 'redis-realtime',
+                'queue' => ['realtime'],
+                'balance' => env('PM4_HORIZON_SUPERVISOR_REALTIME_BALANCE', 'auto'), // auto: dynamically adjust the number of processes based on the load
+                'tries' => env('PM4_HORIZON_SUPERVISOR_REALTIME_TRIES', 3),
+                'timeout' => env('PM4_HORIZON_SUPERVISOR_REALTIME_TIMEOUT', 600),
+                'minProcesses' => env('PM4_HORIZON_SUPERVISOR_REALTIME_MIN_PROCESSES', 2),
+                'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_REALTIME_MAX_PROCESSES', 20),
+                'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
+            ],
         ],
 
         'staging' => [
@@ -209,6 +229,16 @@ return [
                 'timeout' => env('PM4_HORIZON_SUPERVISOR_1_TIMEOUT', 600),
                 'minProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MIN_PROCESSES', 1),
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MAX_PROCESSES', 1),
+                'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
+            ],
+            'supervisor-realtime' => [
+                'connection' => 'redis-realtime',
+                'queue' => ['realtime'],
+                'balance' => env('PM4_HORIZON_SUPERVISOR_REALTIME_BALANCE', 'auto'),
+                'tries' => env('PM4_HORIZON_SUPERVISOR_REALTIME_TRIES', 3),
+                'timeout' => env('PM4_HORIZON_SUPERVISOR_REALTIME_TIMEOUT', 600),
+                'minProcesses' => env('PM4_HORIZON_SUPERVISOR_REALTIME_MIN_PROCESSES', 2),
+                'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_REALTIME_MAX_PROCESSES', 20),
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
             ],
         ],

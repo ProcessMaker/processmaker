@@ -83,7 +83,8 @@ class ErrorHandling
             );
         }
         $newJob->delay($this->retryWaitTime());
-        $newJob->onQueue('bpmn');
+        $newJob->onConnection($job->connection);
+        $newJob->onQueue($job->queue ?? 'bpmn');
         dispatch($newJob);
     }
 
