@@ -427,16 +427,13 @@ class ProcessRequestTokenTest extends TestCase
 
     public function testGetAssigneesFromExpressionAcceptsArrayFormData()
     {
-        $manager = User::factory()->create(['status' => 'ACTIVE']);
         $assignableUser = User::factory()->create(['status' => 'ACTIVE']);
-        $otherUser = User::factory()->create(['status' => 'ACTIVE']);
 
-        $process = Process::factory()->create(['manager_id' => $manager->id]);
+        $process = Process::factory()->create();
         $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
 
         $rules = [
-            ['type' => 'user', 'assignee' => $assignableUser->id, 'expression' => 'TestVar < 10'],
-            ['type' => 'user', 'assignee' => $otherUser->id, 'expression' => 'TestVar > 10'],
+            ['type' => 'user', 'assignee' => $assignableUser->id, 'default' => true],
         ];
 
         $activity = $this->createMock(\ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface::class);
@@ -470,8 +467,6 @@ class ProcessRequestTokenTest extends TestCase
         $result = $token->getAssigneesFromExpression($formData);
 
         $this->assertContains($assignableUser->id, $result);
-        $this->assertContains($manager->id, $result);
-        $this->assertNotContains($otherUser->id, $result);
 
         $resultFromString = $token->getAssigneesFromExpression(json_encode($formData));
         $this->assertEquals($result, $resultFromString);

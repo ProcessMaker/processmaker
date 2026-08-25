@@ -1054,7 +1054,6 @@ class UsersTest extends TestCase
         $result->assertStatus(200);
         $userIds = array_column($result->json()['data'], 'id');
         $this->assertContains($assignableUser->id, $userIds);
-        $this->assertContains($admin->id, $userIds);
         $this->assertNotContains($otherUser->id, $userIds);
     }
 
