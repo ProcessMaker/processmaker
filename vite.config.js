@@ -167,6 +167,7 @@ export default defineConfig(({ mode }) => {
           "resources/js/tasks/loaderEdit.js",
           "resources/js/tasks/edit.js",
           "resources/js/tasks/loaderPreview.js",
+          "resources/js/tasks/loaderOnlyPreview.js",
           "resources/js/tasks/preview.js",
 
           "resources/js/processes/screen-builder/loaderScreen.js",
