@@ -99,8 +99,6 @@ mix
   .js("resources/js/initialLoad.js", "public/js")
 
   .js("resources/js/tasks/loaderMain.js", "public/js/tasks")
-  .js("resources/js/tasks/loaderPreview.js", "public/js/tasks")
-  .js("resources/js/tasks/preview.js", "public/js/tasks/preview.js")
 
   .js("resources/js/app.js", "public/js");
 // .polyfill({
@@ -113,6 +111,12 @@ mix
 // queues.scss stays here: CompileUI.php compiles it at runtime to public/css/admin/queues.css
 mix
   .sass("resources/sass/admin/queues.scss", "public/css/admin")
+  .sass("resources/sass/sidebar/sidebar.scss", "public/css")
+  .sass("resources/sass/collapseDetails.scss", "public/css")
+  .sass("resources/sass/app.scss", "public/css")
+  .postCss("resources/sass/tailwind.css", "public/css", [
+    require("tailwindcss"),
+  ])
   .version();
 
 mix.vue({ version: 2 });
