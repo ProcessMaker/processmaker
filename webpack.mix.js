@@ -82,7 +82,6 @@ mix
   .js("resources/js/processes/modeler/process-map.js", "public/js/processes/modeler")
   .js("resources/js/processes/modeler/initialLoad.js", "public/js/processes/modeler")
 
-  .js("resources/js/processes/scripts/preview.js", "public/js/processes/scripts")
   .js("resources/js/processes/screens/preview.js", "public/js/processes/screens")
 
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location

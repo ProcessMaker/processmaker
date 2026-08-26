@@ -235,6 +235,9 @@ export default defineConfig(({ mode }) => {
           "resources/js/processes/scripts/editConfig.js",
           "resources/js/processes/scripts/edit.js",
 
+          "resources/js/processes/scripts/loaderScriptsPreview.js",
+          "resources/js/processes/scripts/preview.js",
+
           "resources/js/processes/modeler/loaderModeler.js",
           "resources/js/processes/modeler/index.js",
           "resources/js/processes/modeler/initialLoad.js",
