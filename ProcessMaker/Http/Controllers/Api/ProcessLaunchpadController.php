@@ -28,8 +28,13 @@ class ProcessLaunchpadController extends Controller
         $category = $request->input('category', null);
         if ($category === 'recent') {
             $processes->orderByRecentRequests();
-        } elseif (!empty($category)) {
-            $processes->processCategory($category);
+        } elseif ($category !== null && $category !== '') {
+            $categoryId = filter_var($category, FILTER_VALIDATE_INT);
+            if ($categoryId === false) {
+                $processes->whereRaw('1 = 0');
+            } else {
+                $processes->processCategory($categoryId);
+            }
         }
         // Filter pmql
         $pmql = $request->input('pmql', '');
