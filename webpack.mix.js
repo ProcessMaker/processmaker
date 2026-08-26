@@ -87,8 +87,6 @@ mix
   .js("resources/js/processes/scripts/preview.js", "public/js/processes/scripts")
   .js("resources/js/processes/screens/preview.js", "public/js/processes/screens")
 
-  .js("resources/js/requests/mobile.js", "public/js/requests/mobile.js")
-
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
   .js("resources/js/initialLoad.js", "public/js")
