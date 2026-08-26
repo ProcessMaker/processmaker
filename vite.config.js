@@ -216,6 +216,8 @@ export default defineConfig(({ mode }) => {
           "resources/js/admin/devlink/index.js",
           "resources/js/admin/cases-retention/index.js",
           "resources/js/admin/logs/index.js",
+          "resources/js/admin/auth/passwords/change.js",
+          "resources/js/vite/auth/auth.js",
 
           "resources/js/admin/profile/loaderProfile.js",
           "resources/js/admin/profile/edit.js",

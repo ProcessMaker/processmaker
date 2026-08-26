@@ -81,8 +81,6 @@ mix
   .js("resources/js/process-map-layout.js", "public/js")
   .js("resources/js/processes/modeler/process-map.js", "public/js/processes/modeler")
   .js("resources/js/processes/modeler/initialLoad.js", "public/js/processes/modeler")
-  .js("resources/js/admin/auth/passwords/change.js", "public/js/admin/auth/passwords/change.js")
-  // .js("resources/js/admin/queues/index.js", "public/js/admin/queues")
 
   .js("resources/js/processes/scripts/preview.js", "public/js/processes/scripts")
   .js("resources/js/processes/screens/preview.js", "public/js/processes/screens")
