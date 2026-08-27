@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- New minimal ERR-01 fixture; shared failing fixtures do not model a complete linear chain. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" targetNamespace="http://processmaker.com/tests/inline-task-execution">
+  <bpmn:process id="inline_failing_chain" name="ERR-01 Failing Task Chain" isExecutable="true">
+    <bpmn:startEvent id="start" name="Start">
+      <bpmn:outgoing>flow_start_success</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="successful_task" name="Successful Task" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_start_success</bpmn:incoming>
+      <bpmn:outgoing>flow_success_failure</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['successful_task_ran' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="failing_task" name="Failing Task" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_success_failure</bpmn:incoming>
+      <bpmn:outgoing>flow_failure_later</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php throw new Exception('inline-chain-failure');]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="must_not_run" name="Must Not Run" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_failure_later</bpmn:incoming>
+      <bpmn:outgoing>flow_later_end</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['must_not_run' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="end" name="End">
+      <bpmn:incoming>flow_later_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_start_success" sourceRef="start" targetRef="successful_task" />
+    <bpmn:sequenceFlow id="flow_success_failure" sourceRef="successful_task" targetRef="failing_task" />
+    <bpmn:sequenceFlow id="flow_failure_later" sourceRef="failing_task" targetRef="must_not_run" />
+    <bpmn:sequenceFlow id="flow_later_end" sourceRef="must_not_run" targetRef="end" />
+  </bpmn:process>
+</bpmn:definitions>
