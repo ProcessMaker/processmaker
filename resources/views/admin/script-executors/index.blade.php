@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{ __('Script Executors') }}
@@ -15,6 +15,7 @@
     ]])
 @endsection
 @section('content')
+    @vite(['resources/js/admin/loaderAdmin.js'])
     <div id="script-executors" class="px-3">
         <div class="card card-body">
             <script-executors
@@ -25,6 +26,11 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/script-executors/index.js')}}"></script>
+    <script>
+        window.temporal = window.temporal || {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+    </script>
+    @vite(['resources/js/admin/script-executors/index.js'])
 @endsection
 

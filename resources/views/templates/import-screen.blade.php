@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Import Screen Template')}}
@@ -90,7 +90,9 @@
 @endsection
 
 @section('js')
+    @vite('resources/js/templates/loaderTemplates.js')  
     <script>
+     window.addEventListener('load', () => {    
       new Vue({
         el: '#importScreen',
         data: {
@@ -149,5 +151,6 @@
           },
         }
       })
+    });
     </script>
 @endsection

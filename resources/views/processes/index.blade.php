@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     @php
@@ -24,6 +24,7 @@
     ]])
 @endsection
 @section('content')
+@vite(['resources/js/processes/loaderProcesses.js'])
     @component('components.categorized_resource', [
             'tabs' => [
             __('Processes'),

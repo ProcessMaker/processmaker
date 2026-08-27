@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
 {{__('Notifications Inbox')}}
@@ -52,5 +52,6 @@
 @endsection
 
 @section('js')
-<script src="{{mix('js/notifications/index.js')}}"></script>
+@vite('resources/js/notifications/loaderNotifications.js')  
+@vite('resources/js/notifications/index.js')
 @endsection

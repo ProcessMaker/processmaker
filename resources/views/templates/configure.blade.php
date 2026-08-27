@@ -1,4 +1,4 @@
-@extends('layouts.layout', ['title' => __('Processes Management')])
+@extends('layouts.layoutnextvite', ['title' => __('Processes Management')])
 
 @section('title')
     {{__('Configure Template')}}
@@ -79,13 +79,15 @@
 
 @section('js')
     <script>
-        window.ProcessMaker.templateConfigurations = {
+        window.temporal.templateConfigurations = {
             data: @json($template),
             templateType: @json($type),
             screenTypes: @json($screenTypes),
         }
     </script>
-    <script src="{{mix('js/templates/configure.js')}}"></script>
+    @vite('resources/js/templates/loaderTemplates.js')  
+
+    @vite('resources/js/templates/configure.js')
 @endsection
 
 @section('css')

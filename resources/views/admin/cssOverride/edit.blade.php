@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{ __('Customize UI') }}
@@ -35,79 +35,88 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/cssOverride/edit.js')}}"></script>
     <script>
-      const config = @json($config);
-      const loginFooterSetting = @json($loginFooter);
-      const altTextSetting = @json($altText);
-      const route = @json($tab);
+      window.temporal = window.temporal || {};
+      window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+      window.packages = window.temporal.packages;
+      window.config = @json($config);
+      window.loginFooterSetting = @json($loginFooter);
+      window.altTextSetting = @json($altText);
+      window.temporal.routes = @json($tab);
+    </script>
+    @vite(['resources/js/admin/cssOverride/loaderCssOverride.js'])
+    @vite(['resources/js/admin/cssOverride/edit.js'])
+    <script>
+      window.addEventListener("load", function () {
+        const route = @json($tab);
 
-      new Vue({
-        el: '#editCss',
-        data() {
-          return {
-            route: null,
-            tabs: [
-                { name: this.$t('Site Design'), route: 'design', component: 'site-design', href: '/admin/customize-ui' },
-            ],
-          }
-        },
-        computed: {
-          currentTab() {
-            const tab = this.tabs.findIndex((tab) => tab.route == this.route);
-            if (tab > -1) {
-              return tab;
-            } else {
-              return 0;
+        new Vue({
+          el: '#editCss',
+          data() {
+            return {
+              route: null,
+              tabs: [
+                  { name: this.$t('Site Design'), route: 'design', component: 'site-design', href: '/admin/customize-ui' },
+              ],
             }
           },
-          showTabs() {
-            return this.tabs.length > 1;
-          },
-          cardClass() {
-            if (this.showTabs) {
-              return 'border-top-0';
-            } else {
-              return null;
+          computed: {
+            currentTab() {
+              const tab = this.tabs.findIndex((tab) => tab.route == this.route);
+              if (tab > -1) {
+                return tab;
+              } else {
+                return 0;
+              }
+            },
+            showTabs() {
+              return this.tabs.length > 1;
+            },
+            cardClass() {
+              if (this.showTabs) {
+                return 'border-top-0';
+              } else {
+                return null;
+              }
             }
-          }
-        },
-        methods: {
-          isActive(tab) {
-            return this.route == tab.route;
           },
-          routeTo(tab) {
-            history.pushState(null, null, tab.href);
-            this.route = tab.route;
-            this.setBreadcrumbs(tab);
-          },
-          setBreadcrumbs(tab) {
-            if (this.showTabs) {
-              window.ProcessMaker.navbar.setRoutes([
-                {
-                  title: 'Admin',
-                  link: '{{ route('admin.index') }}',
-                },
-                {
-                  title: 'Customize UI',
-                  link: '{{ route('customize-ui.edit') }}',
-                },
-                {
-                  title: tab.name
-                }
-              ]);
+          methods: {
+            isActive(tab) {
+              return this.route == tab.route;
+            },
+            routeTo(tab) {
+              history.pushState(null, null, tab.href);
+              this.route = tab.route;
+              this.setBreadcrumbs(tab);
+            },
+            setBreadcrumbs(tab) {
+              if (this.showTabs) {
+                window.ProcessMaker.navbar.setRoutes([
+                  {
+                    title: 'Admin',
+                    link: '{{ route('admin.index') }}',
+                  },
+                  {
+                    title: 'Customize UI',
+                    link: '{{ route('customize-ui.edit') }}',
+                  },
+                  {
+                    title: tab.name
+                  }
+                ]);
+              }
             }
-          }
-        },
-        created() {
-          this.route = route;
-        },
-        mounted() {
-          if (window.ProcessMaker.cssOverrideTabs && window.ProcessMaker.cssOverrideTabs.length) {
-            this.tabs = this.tabs.concat(window.ProcessMaker.cssOverrideTabs);
-          }
-          this.setBreadcrumbs(this.tabs[this.currentTab]);
-        },
+          },
+          created() {
+            this.route = route;
+          },
+          mounted() {
+            if (window.ProcessMaker.cssOverrideTabs && window.ProcessMaker.cssOverrideTabs.length) {
+              this.tabs = this.tabs.concat(window.ProcessMaker.cssOverrideTabs);
+            }
+            this.setBreadcrumbs(this.tabs[this.currentTab]);
+          },
+        });
       });
     </script>
 
@@ -134,4 +143,3 @@
         }
     </style>
 @endsection
-

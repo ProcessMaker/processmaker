@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 @section('title')
     {{__('Scripts')}}
 @endsection
@@ -15,6 +15,12 @@
 @endsection
 
 @section('content')
+    <script>
+        window.temporal = window.temporal || {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.packages = window.temporal.packages;
+    </script>
+    @vite(['resources/js/processes/scripts/loaderScripts.js'])
     @component('components.categorized_resource', [
             'tabs' => [
             __('Scripts'),
@@ -39,4 +45,3 @@
 
 @section('js')
 @endsection
-

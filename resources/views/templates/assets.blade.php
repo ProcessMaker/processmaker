@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
   {{ __('Template Assets') }}
@@ -30,5 +30,6 @@
 @endsection
 
 @section('js')
-  <script src="{{ mix('js/templates/assets.js') }}"></script>
+  @vite('resources/js/templates/loaderTemplates.js')  
+  @vite('resources/js/templates/assets.js')
 @endsection

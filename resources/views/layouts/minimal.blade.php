@@ -10,7 +10,7 @@
     <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
     @include('layouts.common-meta')
     <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    @vite('resources/sass/app.scss')
     <link rel="icon" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
     @if (hasPackage('package-accessibility'))
         @include('package-accessibility::userway')

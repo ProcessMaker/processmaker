@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Queue Management')}}
@@ -16,6 +16,7 @@
 @endsection
 
 @section('content')
+    @vite(['resources/js/admin/users/loaderUsers.js'])
     <iframe class="iframe-horizon mb-n1" src="/admin/horizon"></iframe>
 @endsection
 

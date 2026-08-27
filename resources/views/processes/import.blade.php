@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Import Process')}}
@@ -23,8 +23,12 @@
 
 @section('js')
   <script>
-    window.ProcessMaker.importIsRunning = {{ $importIsRunning ? 'true' : 'false' }};
-    window.ProcessMaker.queueImports = {{ config('app.queue_imports') ? 'true' : 'false' }};
+    window.temporal = window.temporal || {};
+    window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+    window.packages = window.temporal.packages;
+    window.temporal.importIsRunning = @json((bool) $importIsRunning);
+    window.temporal.queueImports = @json((bool) config('app.queue_imports'));
   </script>
-  <script src="{{ mix('js/processes/import/index.js') }}"></script>
+  @vite(['resources/js/processes/loaderProcesses.js'])
+  @vite(['resources/js/processes/import/index.js'])
 @endsection

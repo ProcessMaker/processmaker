@@ -60,14 +60,10 @@
 @endsection
 
 @section('js')
-<script src="{{ mix('js/manifest.js') }}"></script>
-<script src="{{ mix('js/vue-vendor.js') }}"></script>
-<script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
-<script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
-<script src="{{ mix('js/modeler-vendor.js') }}"></script>
-<script src="{{ mix('js/app.js') }}"></script>
-<script src="{{ mix('js/admin/auth/passwords/change.js') }}"></script>
+@vite(['resources/js/vite/auth/auth.js'])
+@vite(['resources/js/admin/auth/passwords/change.js'])
 <script>
+window.addEventListener('load', () => {
   var formVueInstance = new Vue({
     el: '#changePassword',
     data() {
@@ -128,6 +124,16 @@
       },
     }
   });
+});
 </script>
-@include('auth.partials.auth-language-scripts-minimal')
+@foreach(GlobalScripts::getScripts() as $script)
+  @if (strpos($script, '/vendor/processmaker/packages/package-dynamic-ui/js/global.js') !== 0)
+    <script src="{{ $script }}" defer></script>
+  @endif
+@endforeach
+<script>
+  window.ProcessMaker = window.ProcessMaker || {};
+  window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+</script>
+@vite(['resources/js/translations/index.js'])
 @endsection

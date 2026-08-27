@@ -22,7 +22,7 @@ const main = new Vue({
   },
   mixins: addons,
   data: {
-    tceEnableCaseNumberScreen: window.ProcessMaker.tceEnableCaseNumberScreen,
+    tceEnableCaseNumberScreen: window.temporal.tceEnableCaseNumberScreen,
     // Edit data
     fieldsToUpdate: [],
     jsonData: "",
@@ -61,7 +61,7 @@ const main = new Vue({
     userHasInteracted: false,
     caseTitle: "",
     showMenu: true,
-    userConfiguration,
+    userConfiguration: window.temporal.userConfiguration,
     urlConfiguration: "users/configuration",
     showTabs: true,
   },

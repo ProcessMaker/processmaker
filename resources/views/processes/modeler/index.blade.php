@@ -1,4 +1,4 @@
-@extends('layouts.layout', ['content_margin'=>''])
+@extends('layouts.layoutnextvite', ['content_margin'=>''])
 
 @section('title')
   {{__('Edit Process')}}
@@ -40,9 +40,10 @@ a {
 @endsection
 
 @section('js')
-  <script src="{{mix('js/leave-warning.js')}}"></script>
+  @include('shared.monaco')
   <script>
-  const breadcrumbData = [
+  window.temporal = window.temporal || {};
+  window.temporal.breadcrumbData = [
     {
       'text':'{{__('Designer')}}',
       'url':'{{route('processes.index')}}'
@@ -59,18 +60,18 @@ a {
       'text':'{{$process->name}}',
       'url':''
     },
-  ]
+  ];
 
-  window.ProcessMaker.defaultEmailNotification = @json($defaultEmailNotification);
+  window.temporal.defaultEmailNotification = @json($defaultEmailNotification);
 
-  window.ProcessMaker.multiplayer = {
+  window.temporal.multiplayer = {
     broadcaster: "{{config('multiplayer.default')}}",
     host: "{{config('multiplayer.url')}}",
     enabled: "{{ config('multiplayer.enabled') }}",
   };
-  window.ProcessMaker.PMBlockList = @json($pmBlockList);
-  window.ProcessMaker.ExternalIntegrationsList = @json($externalIntegrationsList);
-  window.ProcessMaker.modeler = {
+  window.temporal.PMBlockList = @json($pmBlockList);
+  window.temporal.ExternalIntegrationsList = @json($externalIntegrationsList);
+  window.temporal.modeler = {
     process: @json($process),
     autoSaveDelay: @json($autoSaveDelay),
     xml: @json($process->bpmn),
@@ -102,18 +103,15 @@ a {
     alternative: @json($alternative),
     draftAlternative: @json($draftAlternative),
     launchpad: @json($launchpad),
-  }
-  const warnings = @json($process->warnings);
-  window.ProcessMaker.tceCustomizationEnable = @json($isTceCustomization);
-
-  window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML, addWarnings, addBreadcrumbs }) => {
-    loadXML(window.ProcessMaker.modeler.xml);
-    addWarnings(warnings || []);
-    addBreadcrumbs(breadcrumbData || []);
-  });
+  };
+  window.temporal.warnings = @json($process->warnings);
+  window.temporal.tceCustomizationEnable = @json($isTceCustomization);
   </script>
+  @vite(['resources/js/processes/modeler/loaderModeler.js'])
+  @vite(['resources/js/leave-warning.js'])
+  @vite(['resources/js/processes/modeler/initialLoad.js'])
     @foreach($manager->getScriptWithParams() as $params)
-      <script
+      <script defer
       @foreach ($params as $key => $value)
         @if (is_bool($value))
           {{ $key }}
@@ -123,6 +121,6 @@ a {
       @endforeach
       ></script>
     @endforeach
-  <script src="{{ mix('js/processes/modeler/index.js') }}"></script>
+    @vite(['resources/js/processes/modeler/index.js'])
   @yield('extra_js')
 @endsection

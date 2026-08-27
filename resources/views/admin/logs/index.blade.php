@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Logs')}}
@@ -21,8 +21,12 @@
 
 @section('js')
     <script>
+        window.temporal = window.temporal || {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
         const permission = @json(\Auth::user()->hasPermissionsFor('settings'));
     </script>
-    <script src="{{mix('js/admin/logs/index.js')}}"></script>
+    @vite(['resources/js/admin/loaderAdmin.js'])
+    @vite(['resources/js/admin/logs/index.js'])
 @endsection
 

@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Edit Environment Variable')}}
@@ -52,7 +52,10 @@
 
 @section('js')
     <script>
-        window.ProcessMaker.EnvironmentVariableEdit = {
+        window.temporal = window.temporal || {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.temporal.EnvironmentVariableEdit = {
             id: @json($environmentVariable->id),
             name: @json($environmentVariable->name),
             description: @json($environmentVariable->description),
@@ -62,5 +65,6 @@
             do_not_update: @json((bool) $environmentVariable->do_not_update),
         };
     </script>
-    <script src="{{mix('js/processes/environment-variables/edit.js')}}"></script>
+    @vite(['resources/js/processes/environment-variables/loaderEnvironment.js'])
+    @vite(['resources/js/processes/environment-variables/edit.js'])
 @endsection

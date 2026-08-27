@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
 {{__('Designer')}}
@@ -14,7 +14,6 @@
     ]])
 @endsection
 @section('content')
-
 <div id="new-designer" class="p-3 page-content mb-0 bg-white">
     <welcome-designer></welcome-designer>
     <div class="card card-body border-0">
@@ -56,10 +55,12 @@
 @endsection
 
 @section('js')
-
 <script>
+    window.temporal = window.temporal || {};
+    window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+    window.packages = window.temporal.packages;
     window.Processmaker.user = @json($currentUser);
 </script>
-<script src="{{mix('js/processes/newDesigner.js')}}"></script>
+@vite(['resources/js/processes/loaderProcesses.js'])
+@vite(['resources/js/processes/newDesigner.js'])
 @endsection
-

@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Groups')}}
@@ -63,76 +63,11 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/groups/index.js')}}"></script>
     <script>
-      new Vue({
-        el: '#listGroups',
-        data() {
-          return {
-            filter: '',
-            formData: {},
-            errors: {
-              'name': null,
-              'description': null,
-              'status': null
-            },
-            disabled: false
-          }
-        },
-        mounted() {
-          this.resetFormData();
-          this.resetErrors();
-        },
-        methods: {
-          reload () {
-            this.$refs.groupList.dataManager([
-              {
-                field: "updated_at",
-                direction: "desc"
-              }
-            ]);
-          },
-          onClose() {
-            this.resetFormData();
-            this.resetErrors();
-          },
-          resetFormData() {
-            this.formData = Object.assign({}, {
-              name: null,
-              description: null,
-              status: 'ACTIVE'
-            });
-          },
-          resetErrors() {
-            this.errors = Object.assign({}, {
-              name: null,
-              description: null,
-              status: null
-            });
-          },
-          onSubmit() {
-            this.resetErrors();
-            //single click
-            if (this.disabled) {
-              return
-            }
-            this.disabled = true;
-            ProcessMaker.apiClient.post('groups', this.formData)
-              .then(response => {
-                ProcessMaker.alert(this.$t('The group was created.'), 'success');
-                //redirect show group
-                window.location = "/admin/groups/" + response.data.id + "/edit"
-              })
-              .catch(error => {
-                //define how display errors
-                if (error.response.status && error.response.status === 422) {
-                  // Validation error
-                  this.errors = error.response.data.errors;
-                }
-                this.disabled = false;
-              });
-          }
-        }
-      });
+      window.temporal = window.temporal || {};
+      window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+      window.packages = window.temporal.packages;
     </script>
+    @vite(['resources/js/admin/groups/loaderGroups.js'])
+    @vite(['resources/js/admin/groups/index.js'])
 @endsection

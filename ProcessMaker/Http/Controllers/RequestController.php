@@ -269,7 +269,9 @@ class RequestController extends Controller
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
 
-        return view('requests.preview', compact('request', 'screen', 'manager', 'data'));
+        $type = strtoupper($screen->type ?? 'FORM');
+
+        return view('requests.preview', compact('request', 'screen', 'manager', 'data', 'type'));
     }
 
     /**

@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
 {{__('Profile')}}
@@ -86,7 +86,9 @@
 @endsection
 
 @section('js')
+  @vite('resources/js/admin/profile/loaderProfile.js')
 <script>
+window.addEventListener('load', () => {
     new Vue({
         el: '#profileForm',
         data: {
@@ -103,5 +105,6 @@
             }
         }
     });
+});
 </script>
 @endsection
