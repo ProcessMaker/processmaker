@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "47d1471b5383bbd226596fd2add4531b",
+    "content-hash": "784dab9b6898ceb42d5b862114263faa",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7085,16 +7085,16 @@
         },
         {
             "name": "paragonie/sodium_compat",
-            "version": "v2.5.0",
+            "version": "v2.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/sodium_compat.git",
-                "reference": "4714da6efdc782c06690bc72ce34fae7941c2d9f"
+                "reference": "e4d4933af9463a96a1a3cbaeb94327b90e3350ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/4714da6efdc782c06690bc72ce34fae7941c2d9f",
-                "reference": "4714da6efdc782c06690bc72ce34fae7941c2d9f",
+                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/e4d4933af9463a96a1a3cbaeb94327b90e3350ca",
+                "reference": "e4d4933af9463a96a1a3cbaeb94327b90e3350ca",
                 "shasum": ""
             },
             "require": {
@@ -7175,9 +7175,9 @@
             ],
             "support": {
                 "issues": "https://github.com/paragonie/sodium_compat/issues",
-                "source": "https://github.com/paragonie/sodium_compat/tree/v2.5.0"
+                "source": "https://github.com/paragonie/sodium_compat/tree/v2.5.1"
             },
-            "time": "2025-12-30T16:12:18+00:00"
+            "time": "2026-08-18T15:39:41+00:00"
         },
         {
             "name": "php-amqplib/php-amqplib",

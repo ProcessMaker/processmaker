@@ -38,7 +38,7 @@ return [
     |
     */
 
-    'server' => env('OCTANE_SERVER', 'roadrunner'),
+    'server' => env('OCTANE_SERVER', 'frankenphp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -132,18 +132,30 @@ return [
 
     'warm' => [
         ...Octane::defaultServicesToWarm(),
-        // Services to pre-resolve on worker start
-        ProcessMaker\Managers\PackageManager::class,
-        ProcessMaker\Managers\LoginManager::class,
-        ProcessMaker\Managers\IndexManager::class,
-    ],
-
-    'flush' => [
-        // Services with mutable state that must be recreated per request
         ProcessMaker\Models\AnonymousUser::class,
         ProcessMaker\ImportExport\Extension::class,
         ProcessMaker\ImportExport\SignalHelper::class,
         ProcessMaker\Managers\MenuManager::class,
+        ProcessMaker\Managers\PackageManager::class,
+        ProcessMaker\Managers\IndexManager::class,
+        ProcessMaker\Managers\ScreenBuilderManager::class,
+        ProcessMaker\Managers\ScriptBuilderManager::class,
+        ProcessMaker\Managers\DockerManager::class,
+        ProcessMaker\Managers\GlobalScriptsManager::class,
+        ProcessMaker\Helpers\PmHash::class,
+        ProcessMaker\Models\RequestDevice::class,
+        ProcessMaker\PolicyExtension::class,
+        Illuminate\Foundation\PackageManifest::class,
+        'compiledscreen',
+        'setting.cache',
+        'currentTenant',
+    ],
+
+    'flush' => [
+        // Services with mutable state that must be recreated per request
+        ProcessMaker\Managers\LoginManager::class,
+        ProcessMaker\Managers\ModelerManager::class,
+        Lavary\Menu\Menu::class,
     ],
 
     /*
@@ -227,6 +239,23 @@ return [
     |
     */
 
-    'max_execution_time' => 30,
+    'max_execution_time' => env('OCTANE_MAX_EXECUTION_TIME', 30),
+
+    /*
+    |--------------------------------------------------------------------------
+    | FrankenPHP / Caddy
+    |--------------------------------------------------------------------------
+    |
+    | Extra env vars for the FrankenPHP process. Start Octane with
+    | `--caddyfile=Caddyfile` so php_ini memory_limit is applied.
+    | PHPRC / PHP_INI does not change FrankenPHP worker memory (stays 128M).
+    |
+    */
+
+    'caddy' => [
+        'env' => [
+            'FRANKENPHP_MEMORY_LIMIT' => env('FRANKENPHP_MEMORY_LIMIT', '3072M'),
+        ],
+    ],
 
 ];
