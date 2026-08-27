@@ -35,6 +35,39 @@ class UserController extends Controller
     public $doNotSanitize = [
         'username', // has alpha_dash rule
         'password',
+        'firstname', // validated as plain text by User::rules()
+        'lastname', // validated as plain text by User::rules()
+        'title', // validated as plain text by User::rules()
+    ];
+
+    /**
+     * Fields accepted when a non-administrative user updates their own profile.
+     *
+     * @var array<string>
+     */
+    private const SELF_SERVICE_UPDATE_FIELDS = [
+        'username',
+        'password',
+        'firstname',
+        'lastname',
+        'title',
+        'email',
+        'address',
+        'city',
+        'state',
+        'postal',
+        'country',
+        'phone',
+        'fax',
+        'cell',
+        'timezone',
+        'datetime_format',
+        'status',
+        'avatar',
+        'preferences_2fa',
+        'connected_accounts',
+        'meta',
+        'valpassword',
     ];
 
     /**
@@ -452,12 +485,14 @@ class UserController extends Controller
      */
     public function update(User $user, Request $request)
     {
-        if (!Auth::user()->can('edit', $user)) {
+        $authenticatedUser = Auth::user();
+        if (!$authenticatedUser->can('edit', $user)) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
-        $request->validate(User::rules($user));
         $fields = $request->json()->all();
+        $this->authorizeSelfServiceUpdate($authenticatedUser, $user, $fields);
+        $request->validate(User::rules($user));
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
             $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
@@ -562,6 +597,29 @@ class UserController extends Controller
         RecommendationEngine::handleUserSettingChanges($user, $original);
 
         return response([], 204);
+    }
+
+    /**
+     * Authorize and constrain self-service profile updates.
+     */
+    private function authorizeSelfServiceUpdate(User $authenticatedUser, User $targetUser, array $fields): void
+    {
+        $isSelfServiceUpdate = $authenticatedUser->id === $targetUser->id
+            && !$authenticatedUser->is_administrator
+            && !$authenticatedUser->hasPermission('edit-users');
+
+        if (!$isSelfServiceUpdate) {
+            return;
+        }
+
+        if (!$authenticatedUser->hasPermission('edit-personal-profile')) {
+            throw new AuthorizationException(__('Not authorized to update this user.'));
+        }
+
+        $disallowedFields = array_diff(array_keys($fields), self::SELF_SERVICE_UPDATE_FIELDS);
+        if ($disallowedFields !== []) {
+            throw new AuthorizationException(__('Not authorized to update one or more user fields.'));
+        }
     }
 
     /**

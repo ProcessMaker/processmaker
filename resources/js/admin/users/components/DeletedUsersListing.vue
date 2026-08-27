@@ -23,6 +23,9 @@
         <template slot="username" slot-scope="props">
           <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.username }}</span>
         </template>
+        <template slot="fullname" slot-scope="props">
+          <span>{{ props.rowData.fullname }}</span>
+        </template>
         <template slot="avatar" slot-scope="props">
           <avatar-image size="25" :input-data="props.rowData" hide-name="true"></avatar-image>
         </template>
@@ -93,7 +96,7 @@ export default {
         },
         {
           title: () => this.$t("Full Name"),
-          name: "fullname",
+          name: "__slot:fullname",
           sortField: "fullname"
         },
         {
