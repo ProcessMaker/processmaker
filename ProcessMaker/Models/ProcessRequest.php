@@ -592,7 +592,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         if (!$this->isNonPersistent()) {
             $this->save();
             // Update Case status
-            CaseUpdateStatus::dispatchSync($this);
+            CaseUpdateStatus::dispatch($this)->onQueue('bpmn');
         }
     }
 

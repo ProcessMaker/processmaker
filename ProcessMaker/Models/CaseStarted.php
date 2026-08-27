@@ -41,6 +41,7 @@ class CaseStarted extends ProcessMakerModel
         'request_tokens' => AsCollection::class,
         'tasks' => AsCollection::class,
         'participants' => AsCollection::class,
+        'keywords' => AsCollection::class,
         'completed_at' => 'datetime:c',
         'initiated_at' => 'datetime:c',
     ];

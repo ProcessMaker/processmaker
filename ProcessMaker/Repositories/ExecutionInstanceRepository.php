@@ -189,7 +189,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         // Set id
         $instance->setId($instance->getKey());
 
-        CaseStore::dispatchSync($instance);
+        CaseStore::dispatch($instance)->onQueue('bpmn');
 
         // Persists collaboration
         $this->persistCollaboration($instance);
@@ -217,7 +217,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $this->advanceExecutionRevision($instance);
         $instance->saveOrFail();
 
-        CaseUpdateStatus::dispatchSync($instance);
+        CaseUpdateStatus::dispatch($instance)->onQueue('bpmn');
     }
 
     /**
@@ -244,7 +244,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $this->advanceExecutionRevision($instance);
         $instance->saveOrFail();
 
-        CaseUpdateStatus::dispatchSync($instance);
+        CaseUpdateStatus::dispatch($instance)->onQueue('bpmn');
     }
 
     /**
@@ -270,7 +270,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $this->advanceExecutionRevision($instance);
         $instance->saveOrFail();
 
-        CaseUpdateStatus::dispatchSync($instance);
+        CaseUpdateStatus::dispatch($instance)->onQueue('bpmn');
     }
 
     /**

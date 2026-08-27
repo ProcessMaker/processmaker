@@ -72,7 +72,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         //Validate data
         $element = $token->getDefinition(true);
         $this->validateData($data, $definitions, $element);
-        CompleteActivity::dispatchSync($definitions, $instance, $token, $data);
+        CompleteActivity::dispatch($definitions, $instance, $token, $data)->onQueue('bpmn');
     }
 
     /**
@@ -112,7 +112,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         //Validate data
         $element = $token->getDefinition(true);
         $this->validateData($data, $definitions, $element);
-        CatchEvent::dispatchSync($definitions, $instance, $token, $data);
+        CatchEvent::dispatch($definitions, $instance, $token, $data)->onQueue('bpmn');
     }
 
     /**
@@ -135,7 +135,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     ) {
         //Validate data
         $this->validateData($data, $definitions, $boundaryEvent);
-        BoundaryEvent::dispatchSync($definitions, $instance, $token, $boundaryEvent, $data);
+        BoundaryEvent::dispatch($definitions, $instance, $token, $boundaryEvent, $data)->onQueue('bpmn');
     }
 
     /**
@@ -251,7 +251,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
 
         $instance = $token->processRequest;
         $process = $instance->process;
-        RunServiceTask::dispatch($process, $instance, $token, []);
+        RunServiceTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
     }
 
     /**
@@ -375,11 +375,11 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
      */
     public function throwSignalEventRequest(ProcessRequest $request, $signalRef, array $data)
     {
-        CatchSignalEventInRequest::dispatchSync(
+        CatchSignalEventInRequest::dispatch(
             $request,
             $data,
             $signalRef
-        );
+        )->onQueue('bpmn');
     }
 
     /**

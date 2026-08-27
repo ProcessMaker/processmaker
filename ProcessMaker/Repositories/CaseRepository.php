@@ -97,25 +97,33 @@ class CaseRepository implements CaseRepositoryInterface
         }
 
         try {
-            $taskData = CaseUtils::extractData($token, 'TASK');
-            $dataKeywords = CaseUtils::extractData($instance, 'KEYWORD');
-
-            $this->case->case_title = $instance->case_title;
-            $this->case->case_title_formatted = $instance->case_title_formatted;
-            $this->case->case_status = CaseUtils::getStatus($instance->status);
-            $this->case->request_tokens = CaseUtils::storeRequestTokens($this->case->request_tokens, $token->getKey());
-            $this->case->tasks = CaseUtils::storeTasks($this->case->tasks, $taskData);
-            $this->case->keywords = CaseUtils::getKeywords($dataKeywords);
-            $this->case->last_stage_id = $token->stage_id;
-            $this->case->last_stage_name = $token->stage_name;
-            $this->case->progress = calculateProgressById($token->stage_id, $instance?->process?->stages);
-
-            $this->updateParticipants($token);
-
+            $this->updateCaseWithSingleToken($instance, $token);
             $this->case->saveOrFail();
         } catch (\Exception $e) {
             Log::error('CaseException: ' . $e->getMessage());
             Log::error('CaseException: ' . $e->getTraceAsString());
+        }
+    }
+
+    /**
+     * Update the case started with a batch of tokens for performance optimization.
+     *
+     * @param ExecutionInstanceInterface $instance
+     * @param array $tokenBatch Array of token data from batch processing
+     * @return void
+     */
+    public function updateBatch(ExecutionInstanceInterface $instance, array $tokenBatch): void
+    {
+        if (!$this->checkIfCaseStartedExist($instance->case_number)) {
+            return;
+        }
+
+        try {
+            $this->updateCaseWithTokenBatch($instance, $tokenBatch);
+            $this->case->saveOrFail();
+        } catch (\Exception $e) {
+            Log::error('CaseException (batch): ' . $e->getMessage());
+            Log::error('CaseException (batch): ' . $e->getTraceAsString());
         }
     }
 
@@ -159,22 +167,265 @@ class CaseRepository implements CaseRepositoryInterface
     }
 
     /**
+     * Update the case with a single token (used by update() method).
+     *
+     * @param ExecutionInstanceInterface $instance
+     * @param TokenInterface $token
+     * @return void
+     */
+    private function updateCaseWithSingleToken(ExecutionInstanceInterface $instance, TokenInterface $token): void
+    {
+        $taskData = CaseUtils::extractData($token, 'TASK');
+        $dataKeywords = CaseUtils::extractData($instance, 'KEYWORD');
+
+        $this->updateCaseCoreFields($instance, $dataKeywords);
+        $this->case->last_stage_id = $token->stage_id;
+        $this->case->last_stage_name = $token->stage_name;
+        $this->case->progress = calculateProgressById($token->stage_id, $instance?->process?->stages);
+
+        // Update collections for single token
+        $this->updateRequestTokens([$token->getKey()]);
+        $this->updateTasks([$taskData]);
+        $this->updateParticipantsWithToken($token);
+    }
+
+    /**
+     * Update the case with a batch of tokens (used by updateBatch() method).
+     *
+     * @param ExecutionInstanceInterface $instance
+     * @param array $tokenBatch Array of token data from batch processing
+     * @return void
+     */
+    private function updateCaseWithTokenBatch(ExecutionInstanceInterface $instance, array $tokenBatch): void
+    {
+        $dataKeywords = CaseUtils::extractData($instance, 'KEYWORD');
+        
+        // Get all tokens for this batch
+        $tokenIds = collect($tokenBatch)->pluck('token_id')->toArray();
+        $tokens = \ProcessMaker\Models\ProcessRequestToken::whereIn('id', $tokenIds)
+            ->with(['user'])
+            ->get()
+            ->keyBy('id');
+
+        // Find the latest token for stage information
+        $latestToken = $this->findLatestToken($tokenBatch, $tokens);
+        
+        // Process batch data
+        $batchData = $this->processTokenBatch($tokenBatch, $tokens);
+
+        // Update case with batch data
+        $this->updateCaseCoreFields($instance, $dataKeywords);
+        
+        // Use latest token for stage info
+        if ($latestToken) {
+            $this->case->last_stage_id = $latestToken->stage_id;
+            $this->case->last_stage_name = $latestToken->stage_name;
+            $this->case->progress = calculateProgressById($latestToken->stage_id, $instance?->process?->stages);
+        }
+
+        // Update collections for batch
+        $this->updateRequestTokens($batchData['request_tokens']);
+        $this->updateTasks($batchData['tasks']);
+        $this->updateParticipantsWithUserIds($batchData['participants']);
+
+        // Update case participated with latest data
+        $this->caseParticipatedRepository->update($this->case);
+    }
+
+    /**
+     * Update core case fields that are common for both single and batch updates.
+     *
+     * @param ExecutionInstanceInterface $instance
+     * @param array $dataKeywords
+     * @return void
+     */
+    private function updateCaseCoreFields(ExecutionInstanceInterface $instance, array $dataKeywords): void
+    {
+        $this->case->case_title = $instance->case_title;
+        $this->case->case_title_formatted = $instance->case_title_formatted;
+        $this->case->case_status = CaseUtils::getStatus($instance->status);
+        $this->case->keywords = CaseUtils::getKeywords($dataKeywords);
+    }
+
+    /**
+     * Process a batch of tokens and extract aggregated data.
+     *
+     * @param array $tokenBatch
+     * @param \Illuminate\Support\Collection $tokens
+     * @return array
+     */
+    private function processTokenBatch(array $tokenBatch, \Illuminate\Support\Collection $tokens): array
+    {
+        $allParticipants = collect();
+        $allRequestTokens = collect($this->case->request_tokens ?? []);
+        $allTasks = collect($this->case->tasks ?? []);
+
+        foreach ($tokenBatch as $tokenData) {
+            $token = $tokens->get($tokenData['token_id']);
+            if (!$token) continue;
+
+            $taskData = CaseUtils::extractData($token, 'TASK');
+            
+            // Collect unique request tokens
+            $tokenKey = $token->getKey();
+            if (!$allRequestTokens->contains($tokenKey)) {
+                $allRequestTokens->push($tokenKey);
+            }
+            
+            // Merge tasks data efficiently
+            $this->mergeTaskData($allTasks, $taskData);
+
+            // Collect participants
+            $user = $token->user;
+            if ($user?->id && !$allParticipants->contains($user->id)) {
+                $allParticipants->push($user->id);
+            }
+        }
+
+        return [
+            'request_tokens' => $allRequestTokens->unique()->values()->toArray(),
+            'tasks' => $allTasks->values()->toArray(),
+            'participants' => $allParticipants->unique()->values()->toArray(),
+        ];
+    }
+
+    /**
+     * Find the latest token in a batch based on timestamp.
+     *
+     * @param array $tokenBatch
+     * @param \Illuminate\Support\Collection $tokens
+     * @return \ProcessMaker\Models\ProcessRequestToken|null
+     */
+    private function findLatestToken(array $tokenBatch, \Illuminate\Support\Collection $tokens): ?\ProcessMaker\Models\ProcessRequestToken
+    {
+        $latestToken = null;
+        $latestTimestamp = 0;
+        
+        foreach ($tokenBatch as $tokenData) {
+            if ($tokenData['timestamp'] > $latestTimestamp) {
+                $latestTimestamp = $tokenData['timestamp'];
+                $latestToken = $tokens->get($tokenData['token_id']);
+            }
+        }
+
+        return $latestToken;
+    }
+
+    /**
+     * Merge task data efficiently into the tasks collection.
+     *
+     * @param \Illuminate\Support\Collection $allTasks
+     * @param array|null $taskData
+     * @return void
+     */
+    private function mergeTaskData(\Illuminate\Support\Collection $allTasks, ?array $taskData): void
+    {
+        if (!$taskData || !is_array($taskData)) {
+            return;
+        }
+
+        $existingTask = $allTasks->firstWhere('id', $taskData['id'] ?? null);
+        if ($existingTask) {
+            // Update existing task
+            $index = $allTasks->search(function($task) use ($taskData) {
+                return ($task['id'] ?? null) === ($taskData['id'] ?? null);
+            });
+            if ($index !== false) {
+                $allTasks[$index] = array_merge($allTasks[$index], $taskData);
+            }
+        } else {
+            // Add new task
+            $allTasks->push($taskData);
+        }
+    }
+
+    /**
+     * Update request tokens collection.
+     *
+     * @param array $tokenKeys
+     * @return void
+     */
+    private function updateRequestTokens(array $tokenKeys): void
+    {
+        $currentTokens = collect($this->case->request_tokens ?? []);
+        $newTokens = collect($tokenKeys)->diff($currentTokens);
+        
+        if ($newTokens->isNotEmpty()) {
+            $this->case->request_tokens = $currentTokens->merge($newTokens)->unique()->values()->toArray();
+        }
+    }
+
+    /**
+     * Update tasks collection.
+     *
+     * @param array $taskDataArray
+     * @return void
+     */
+    private function updateTasks(array $taskDataArray): void
+    {
+        $currentTasks = collect($this->case->tasks ?? []);
+        
+        foreach ($taskDataArray as $taskData) {
+            if (!$taskData || !is_array($taskData)) continue;
+            
+            $this->mergeTaskData($currentTasks, $taskData);
+        }
+        
+        $this->case->tasks = $currentTasks->values()->toArray();
+    }
+
+    /**
+     * Update participants with a single token.
+     *
+     * @param TokenInterface $token
+     * @return void
+     */
+    private function updateParticipantsWithToken(TokenInterface $token): void
+    {
+        $user = $token->user;
+        $currentParticipants = collect($this->case->participants ?? []);
+        
+        if ($user?->id && !$currentParticipants->contains($user->id)) {
+            $this->case->participants = $currentParticipants->merge([$user->id])->unique()->values()->toArray();
+            $this->caseParticipatedRepository->create($this->case, $user->id);
+        }
+
+        $this->caseParticipatedRepository->update($this->case);
+    }
+
+    /**
+     * Update participants with a list of user IDs.
+     *
+     * @param array $participantUserIds
+     * @return void
+     */
+    private function updateParticipantsWithUserIds(array $participantUserIds): void
+    {
+        $currentParticipants = collect($this->case->participants ?? []);
+        $newParticipants = collect($participantUserIds)->diff($currentParticipants);
+        
+        if ($newParticipants->isNotEmpty()) {
+            $this->case->participants = $currentParticipants->merge($newParticipants)->unique()->values()->toArray();
+            
+            // Create case participated for all new participants
+            foreach ($newParticipants as $userId) {
+                $this->caseParticipatedRepository->create($this->case, $userId);
+            }
+        }
+    }
+
+    /**
      * Update the participants of the case started.
+     * This is a legacy method that uses the original CaseUtils implementation.
+     * Kept for compatibility.
      *
      * @param TokenInterface $token
      * @return void
      */
     private function updateParticipants(TokenInterface $token): void
     {
-        $user = $token->user;
-
-        $this->case->participants = CaseUtils::storeParticipants($this->case->participants, $user?->id);
-
-        if (!is_null($user?->id)) {
-            $this->caseParticipatedRepository->create($this->case, $user->id);
-        }
-
-        $this->caseParticipatedRepository->update($this->case);
+        // Redirect to the new optimized method
+        $this->updateParticipantsWithToken($token);
     }
 
     /**

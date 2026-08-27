@@ -376,7 +376,8 @@ class TaskController extends Controller
 
             $taskRefreshed = $task->refresh();
 
-            CaseUpdate::dispatchSync($task->processRequest, $taskRefreshed);
+            // Use optimized CaseUpdate with batching for better performance
+            CaseUpdate::dispatch($task->processRequest, $taskRefreshed)->onQueue('bpmn');
 
             return new Resource($taskRefreshed);
         } else {
@@ -396,7 +397,7 @@ class TaskController extends Controller
                 //Reassign to the user.
                 $processRequestToken->reassign($userToAssign, $request->user());
                 $taskRefreshed = $processRequestToken->refresh();
-                CaseUpdate::dispatchSync($processRequestToken->processRequest, $taskRefreshed);
+                CaseUpdate::dispatch($processRequestToken->processRequest, $taskRefreshed)->onQueue('bpmn');
             }
         }
     }

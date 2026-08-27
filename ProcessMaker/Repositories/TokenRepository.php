@@ -174,7 +174,7 @@ class TokenRepository implements TokenRepositoryInterface
         $request->progress = calculateProgressById($token->stage_id, $request?->process?->stages);
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED', $token);
 
-        CaseUpdate::dispatchSync($request, $token);
+        CaseUpdate::dispatch($request, $token)->onQueue('bpmn');
 
         if (!is_null($user)) {
             // Review if the task has enable the action by email
