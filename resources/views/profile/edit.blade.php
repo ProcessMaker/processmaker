@@ -149,7 +149,6 @@
             'avatar',
             'preferences_2fa',
             'connected_accounts',
-            'meta',
             'valpassword',
         ];
         let formVueInstance = new Vue({
@@ -276,13 +275,19 @@
                   $('#validateModal').modal('hide');
                 },
                 profilePayload() {
-                    return SELF_SERVICE_PROFILE_FIELDS.reduce((payload, field) => {
+                    const payload = SELF_SERVICE_PROFILE_FIELDS.reduce((payload, field) => {
                         if (Object.prototype.hasOwnProperty.call(this.formData, field)) {
                             payload[field] = this.formData[field];
                         }
 
                         return payload;
                     }, {});
+
+                    payload.meta = {
+                        disableRecommendations: Boolean(this.disableRecommendations),
+                    };
+
+                    return payload;
                 },
                 saveProfileChanges() {
                   this.resetErrors();

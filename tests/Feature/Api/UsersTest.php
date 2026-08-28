@@ -944,6 +944,168 @@ class UsersTest extends TestCase
         ]);
     }
 
+    public function testSelfServiceUpdateRejectsServerManagedMetadataWithoutPersistingChanges(): void
+    {
+        $this->user = User::factory()->create([
+            'is_administrator' => false,
+            'status' => 'ACTIVE',
+            'meta' => [
+                'authenticationType' => 'ldap',
+                'serverManagedSetting' => 'preserve-me',
+            ],
+        ]);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+        $originalFirstname = $this->user->firstname;
+        $originalEmail = $this->user->email;
+
+        foreach (['authenticationType', 'serverManagedSetting'] as $metaField) {
+            $response = $this->apiCall(
+                'PUT',
+                self::API_TEST_URL . '/' . $this->user->id,
+                $this->getSelfServiceUpdateData($this->user, [
+                    'firstname' => 'Should Not Persist',
+                    'email' => 'changed@example.com',
+                    'valpassword' => 'oneOnlyPassword',
+                    'meta' => [
+                        $metaField => null,
+                        'disableRecommendations' => true,
+                    ],
+                ])
+            );
+
+            $response->assertStatus(403);
+        }
+
+        $user = $this->user->fresh();
+        $this->assertSame($originalFirstname, $user->firstname);
+        $this->assertSame($originalEmail, $user->email);
+        $this->assertSame('ldap', $user->meta->authenticationType);
+        $this->assertSame('preserve-me', $user->meta->serverManagedSetting);
+        $this->assertFalse(property_exists($user->meta, 'disableRecommendations'));
+    }
+
+    public function testSelfServiceUpdateOnlyChangesDisableRecommendationsMetadata(): void
+    {
+        $this->user = User::factory()->create([
+            'is_administrator' => false,
+            'status' => 'ACTIVE',
+            'meta' => [
+                'authenticationType' => 'ldap',
+                'serverManagedSetting' => 'preserve-me',
+            ],
+        ]);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+        $url = self::API_TEST_URL . '/' . $this->user->id;
+
+        $response = $this->apiCall(
+            'PUT',
+            $url,
+            $this->getSelfServiceUpdateData($this->user, [
+                'meta' => ['disableRecommendations' => true],
+            ])
+        );
+
+        $response->assertStatus(204);
+        $user = $this->user->fresh();
+        $this->assertTrue($user->meta->disableRecommendations);
+        $this->assertSame('ldap', $user->meta->authenticationType);
+        $this->assertSame('preserve-me', $user->meta->serverManagedSetting);
+
+        $response = $this->apiCall(
+            'PUT',
+            $url,
+            $this->getSelfServiceUpdateData($user, [
+                'meta' => ['disableRecommendations' => false],
+            ])
+        );
+
+        $response->assertStatus(204);
+        $user = $this->user->fresh();
+        $this->assertFalse(property_exists($user->meta, 'disableRecommendations'));
+        $this->assertSame('ldap', $user->meta->authenticationType);
+        $this->assertSame('preserve-me', $user->meta->serverManagedSetting);
+    }
+
+    public function testSelfServiceUpdateValidatesDisableRecommendationsAsBoolean(): void
+    {
+        $this->user = User::factory()->create(['is_administrator' => false, 'status' => 'ACTIVE']);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+
+        $response = $this->apiCall(
+            'PUT',
+            self::API_TEST_URL . '/' . $this->user->id,
+            $this->getSelfServiceUpdateData($this->user, [
+                'meta' => ['disableRecommendations' => 'not-a-boolean'],
+            ])
+        );
+
+        $response->assertStatus(422)->assertJsonValidationErrors('meta.disableRecommendations');
+    }
+
+    public function testLdapUserCannotBypassEmailRestrictionWithAllowedMetadata(): void
+    {
+        $this->user = User::factory()->create([
+            'is_administrator' => false,
+            'status' => 'ACTIVE',
+            'password' => Hash::make('oneOnlyPassword'),
+            'meta' => [
+                'authenticationType' => 'ldap',
+                'serverManagedSetting' => 'preserve-me',
+            ],
+        ]);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+        $originalEmail = $this->user->email;
+
+        $response = $this->apiCall(
+            'PUT',
+            self::API_TEST_URL . '/' . $this->user->id,
+            $this->getSelfServiceUpdateData($this->user, [
+                'email' => 'changed@example.com',
+                'valpassword' => 'oneOnlyPassword',
+                'meta' => ['disableRecommendations' => true],
+            ])
+        );
+
+        $response->assertStatus(422)->assertJsonValidationErrors('email');
+        $user = $this->user->fresh();
+        $this->assertSame($originalEmail, $user->email);
+        $this->assertSame('ldap', $user->meta->authenticationType);
+        $this->assertSame('preserve-me', $user->meta->serverManagedSetting);
+        $this->assertFalse(property_exists($user->meta, 'disableRecommendations'));
+    }
+
+    public function testAdministratorCanUpdateServerManagedMetadata(): void
+    {
+        $targetUser = User::factory()->create([
+            'status' => 'ACTIVE',
+            'meta' => ['authenticationType' => 'ldap'],
+        ]);
+
+        $response = $this->apiCall(
+            'PUT',
+            self::API_TEST_URL . '/' . $targetUser->id,
+            $this->getSelfServiceUpdateData($targetUser, [
+                'meta' => [
+                    'authenticationType' => 'saml',
+                    'serverManagedSetting' => 'updated-by-admin',
+                ],
+            ])
+        );
+
+        $response->assertStatus(204);
+        $targetUser->refresh();
+        $this->assertSame('saml', $targetUser->meta->authenticationType);
+        $this->assertSame('updated-by-admin', $targetUser->meta->serverManagedSetting);
+    }
+
     public function testUsernameUpdateRequiresCredentialPermission(): void
     {
         $this->user = User::factory()->create(['is_administrator' => false, 'status' => 'ACTIVE']);

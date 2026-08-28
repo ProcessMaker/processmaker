@@ -57,12 +57,14 @@
 
 
 <script>
+import escapeHtml from "lodash/escape";
+import { createUniqIdsMixin } from "vue-uniq-ids";
+
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../../components/AvatarImage";
 import AddToBundle from "../../../components/shared/AddToBundle.vue";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
-import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 Vue.component("avatar-image", AvatarImage);
 
@@ -184,7 +186,7 @@ export default {
             this.$t("Caution!"),
             this.$t("Are you sure you want to delete the user") +
               " " +
-              data.fullname +
+              escapeHtml(data.fullname) +
               this.$t("?"),
             "",
             () => {

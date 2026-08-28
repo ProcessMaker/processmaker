@@ -59,10 +59,12 @@
 
 
 <script>
+import escapeHtml from "lodash/escape";
+import { createUniqIdsMixin } from "vue-uniq-ids";
+
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../../components/AvatarImage";
-import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 Vue.component("avatar-image", AvatarImage);
 
@@ -172,7 +174,7 @@ export default {
 
       ProcessMaker.confirmModal(
         this.$t('Caution!'),
-        this.$t('Are you sure you want to restore the user {{item}}?', {item: data.fullname}),
+        this.$t('Are you sure you want to restore the user {{item}}?', {item: escapeHtml(data.fullname)}),
         "",
         () => {
           ProcessMaker.apiClient.put('users/restore', $body).then(response => {

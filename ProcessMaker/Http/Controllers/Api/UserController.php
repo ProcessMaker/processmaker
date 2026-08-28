@@ -71,6 +71,15 @@ class UserController extends Controller
     ];
 
     /**
+     * Metadata fields accepted during a self-service profile update.
+     *
+     * @var array<string>
+     */
+    private const SELF_SERVICE_META_FIELDS = [
+        'disableRecommendations',
+    ];
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -491,8 +500,16 @@ class UserController extends Controller
         }
 
         $fields = $request->json()->all();
-        $this->authorizeSelfServiceUpdate($authenticatedUser, $user, $fields);
-        $request->validate(User::rules($user));
+        $isSelfServiceUpdate = $this->authorizeSelfServiceUpdate($authenticatedUser, $user, $fields);
+        $rules = User::rules($user);
+        if ($isSelfServiceUpdate) {
+            $rules['meta'] = ['sometimes', 'array'];
+            $rules['meta.disableRecommendations'] = ['sometimes', 'boolean'];
+        }
+        $request->validate($rules);
+        if ($isSelfServiceUpdate) {
+            $fields = $this->normalizeSelfServiceMeta($user, $fields);
+        }
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
             $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
@@ -501,6 +518,7 @@ class UserController extends Controller
             session()->forget('login-error');
         }
         $original = $user->getOriginal();
+        $isLdapUser = $user->meta?->authenticationType === 'ldap';
         $user->fill($fields);
         if (array_key_exists('cell', $fields)) {
             $response = $this->validateCellPhoneNumber($user, $fields['cell']);
@@ -509,28 +527,24 @@ class UserController extends Controller
             }
         }
         if ($fields['email'] !== $original['email']) {
+            $ssoUser = $isLdapUser;
             if (class_exists(SsoUser::class)) {
                 // Check if the user is an SSO user (including SAML)
-                $ssoUser = SsoUser::where('user_id', $user->id)->exists();
-
-                // Check if the user is an LDAP user
-                if (isset($user->meta?->authenticationType) && $user->meta->authenticationType === 'ldap') {
-                    $ssoUser = true;
-                }
-                if ($ssoUser) {
-                    return response([
-                        'message' => __(
-                            "The email can't be edited. This action is only available for SSO-synced users."
-                        ),
-                        'errors' => [
-                            'email' => [
-                                __(
-                                    "The email can't be edited. This action is only available for SSO-synced users."
-                                ),
-                            ],
+                $ssoUser = $ssoUser || SsoUser::where('user_id', $user->id)->exists();
+            }
+            if ($ssoUser) {
+                return response([
+                    'message' => __(
+                        "The email can't be edited. This action is only available for SSO-synced users."
+                    ),
+                    'errors' => [
+                        'email' => [
+                            __(
+                                "The email can't be edited. This action is only available for SSO-synced users."
+                            ),
                         ],
-                    ], 422);
-                }
+                    ],
+                ], 422);
             }
             if (!isset($fields['valpassword'])) {
                 return response([
@@ -602,14 +616,14 @@ class UserController extends Controller
     /**
      * Authorize and constrain self-service profile updates.
      */
-    private function authorizeSelfServiceUpdate(User $authenticatedUser, User $targetUser, array $fields): void
+    private function authorizeSelfServiceUpdate(User $authenticatedUser, User $targetUser, array $fields): bool
     {
         $isSelfServiceUpdate = $authenticatedUser->id === $targetUser->id
             && !$authenticatedUser->is_administrator
             && !$authenticatedUser->hasPermission('edit-users');
 
         if (!$isSelfServiceUpdate) {
-            return;
+            return false;
         }
 
         if (!$authenticatedUser->hasPermission('edit-personal-profile')) {
@@ -620,6 +634,37 @@ class UserController extends Controller
         if ($disallowedFields !== []) {
             throw new AuthorizationException(__('Not authorized to update one or more user fields.'));
         }
+
+        if (isset($fields['meta']) && is_array($fields['meta'])) {
+            $disallowedMetaFields = array_diff(array_keys($fields['meta']), self::SELF_SERVICE_META_FIELDS);
+            if ($disallowedMetaFields !== []) {
+                throw new AuthorizationException(__('Not authorized to update one or more user fields.'));
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Merge self-service metadata into the persisted server-managed values.
+     */
+    private function normalizeSelfServiceMeta(User $user, array $fields): array
+    {
+        if (!array_key_exists('meta', $fields)) {
+            return $fields;
+        }
+
+        $meta = (array) $user->meta;
+        if (array_key_exists('disableRecommendations', $fields['meta'])) {
+            if ($fields['meta']['disableRecommendations']) {
+                $meta['disableRecommendations'] = true;
+            } else {
+                unset($meta['disableRecommendations']);
+            }
+        }
+        $fields['meta'] = $meta ?: null;
+
+        return $fields;
     }
 
     /**
