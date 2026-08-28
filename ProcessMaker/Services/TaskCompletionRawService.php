@@ -7,8 +7,8 @@ namespace ProcessMaker\Services;
 use Illuminate\Support\Facades\Gate;
 use ProcessMaker\Models\User;
 use ProcessMaker\Repositories\TaskCompletionRawRepository;
-use ProcessMaker\Support\TaskCompletionEngineBridge;
 use ProcessMaker\SanitizeHelper;
+use ProcessMaker\Support\TaskCompletionEngineBridge;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TaskCompletionRawService
