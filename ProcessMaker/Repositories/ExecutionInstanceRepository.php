@@ -9,6 +9,7 @@ use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
+use ProcessMaker\Repositories\TokenPersistenceRawRepository;
 use ProcessMaker\Nayra\Contracts\Bpmn\ParticipantInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\ExecutionInstanceRepositoryInterface;
@@ -233,6 +234,16 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
 
         // Do nothing if is not persistent
         if ($process->isNonPersistent()) {
+            return;
+        }
+
+        if (
+            config('app.token_persistence_raw_enabled', false)
+            && $instance instanceof ProcessRequest
+        ) {
+            app(TokenPersistenceRawRepository::class)->persistInstanceUpdated($instance);
+            CaseUpdateStatus::dispatchSync($instance);
+
             return;
         }
 
