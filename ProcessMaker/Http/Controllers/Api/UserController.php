@@ -650,12 +650,11 @@ class UserController extends Controller
      */
     private function normalizeSelfServiceMeta(User $user, array $fields): array
     {
-        if (!array_key_exists('meta', $fields)) {
-            return $fields;
-        }
-
         $meta = (array) $user->meta;
-        if (array_key_exists('disableRecommendations', $fields['meta'])) {
+        if (
+            array_key_exists('meta', $fields)
+            && array_key_exists('disableRecommendations', $fields['meta'])
+        ) {
             if ($fields['meta']['disableRecommendations']) {
                 $meta['disableRecommendations'] = true;
             } else {

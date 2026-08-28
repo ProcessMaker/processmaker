@@ -1030,6 +1030,53 @@ class UsersTest extends TestCase
         $this->assertSame('preserve-me', $user->meta->serverManagedSetting);
     }
 
+    public function testSelfServiceUpdateWithoutMetaPreservesServerManagedMetadata(): void
+    {
+        $this->user = User::factory()->create([
+            'is_administrator' => false,
+            'status' => 'ACTIVE',
+            'password' => Hash::make('oneOnlyPassword'),
+            'meta' => [
+                'authenticationType' => 'ldap',
+                'serverManagedSetting' => 'preserve-me',
+            ],
+        ]);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+        $url = self::API_TEST_URL . '/' . $this->user->id;
+        $originalEmail = $this->user->email;
+
+        $response = $this->apiCall(
+            'PUT',
+            $url,
+            $this->getSelfServiceUpdateData($this->user, [
+                'firstname' => 'Updated Without Meta',
+            ])
+        );
+
+        $response->assertStatus(204);
+        $user = $this->user->fresh();
+        $this->assertSame('Updated Without Meta', $user->firstname);
+        $this->assertSame('ldap', $user->meta->authenticationType);
+        $this->assertSame('preserve-me', $user->meta->serverManagedSetting);
+
+        $response = $this->apiCall(
+            'PUT',
+            $url,
+            $this->getSelfServiceUpdateData($user, [
+                'email' => 'changed@example.com',
+                'valpassword' => 'oneOnlyPassword',
+            ])
+        );
+
+        $response->assertStatus(422)->assertJsonValidationErrors('email');
+        $user = $this->user->fresh();
+        $this->assertSame($originalEmail, $user->email);
+        $this->assertSame('ldap', $user->meta->authenticationType);
+        $this->assertSame('preserve-me', $user->meta->serverManagedSetting);
+    }
+
     public function testSelfServiceUpdateValidatesDisableRecommendationsAsBoolean(): void
     {
         $this->user = User::factory()->create(['is_administrator' => false, 'status' => 'ACTIVE']);
