@@ -5,7 +5,6 @@
       ref="breadcrumb"
       :category="category ? category.name : ''"
       :process="selectedProcess ? selectedProcess.name : ''"
-      :template="guidedTemplates ? 'Guided Templates' : ''"
     />
     <div class="tw-flex tw-h-full tw-relative">
       <component :is="isMobile ? 'mobile-drawer' : 'collapsable-container'"
@@ -103,14 +102,11 @@ export default {
         },
       ],
       fields: [],
-      wizardTemplates: [],
-      showWizardTemplates: false,
       showCardProcesses: false,
       showProcess: false,
       showProcessScreen: false,
       category: null,
       selectedProcess: null,
-      guidedTemplates: false,
       numCategories: 100,
       page: 1,
       key: 0,
@@ -292,7 +288,6 @@ export default {
      */
     openProcess(process) {
       this.showCardProcesses = false;
-      this.guidedTemplates = false;
       this.selectedProcess = process;
     },
     /**
@@ -301,12 +296,6 @@ export default {
     goBackCategory() {
       const categoryId = this.category ? this.category.id : "recent";
       this.$router.push({ name: "index", query: { categoryId } });
-    },
-    hasGuidedTemplateParamsOnly(url) {
-      return (
-        url.search.includes("?guided_templates=true")
-        && !url.search.includes("?guided_templates=true&template=")
-      );
     },
     hasTemplateParams(url) {
       return url.search.includes("&template=");

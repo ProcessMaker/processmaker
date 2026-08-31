@@ -155,6 +155,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         'do_not_sanitize' => 'array',
         'signal_events' => 'array',
         'locked_at' => 'datetime:c',
+        'execution_revision' => 'integer',
     ];
 
     /**

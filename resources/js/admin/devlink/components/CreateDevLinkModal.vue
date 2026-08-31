@@ -10,7 +10,13 @@
       :ok-title="$t('Create')"
       :cancel-title="$t('Cancel')"
     >
-      <div v-if="status === 'error'" class="alert alert-danger" role="alert">
+      <div v-if="errorMessage" class="alert alert-danger" role="alert">
+        <div class="alert-header">
+          <span class="icon">!</span>
+          <strong>{{ errorMessage }}</strong>
+        </div>
+      </div>
+      <div v-else-if="status === 'error'" class="alert alert-danger" role="alert">
         <div class="alert-header">
           <span class="icon">!</span>
           <strong>Connection Error</strong>
@@ -55,6 +61,10 @@ const props = defineProps({
     required: true
   },
   status: {
+    type: String,
+    default: ''
+  },
+  errorMessage: {
     type: String,
     default: ''
   },

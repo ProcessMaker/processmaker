@@ -1,4 +1,5 @@
 import { LogTable } from "./LogTable";
+import { MonitoringDashboard } from "./Monitoring";
 
 export default {};
 
@@ -69,6 +70,18 @@ export const routes = [
     name: "logs.agents.redirect",
     path: "/agents",
     redirect: "/agents/design",
+  },
+  {
+    name: "logs.agents.monitoring",
+    path: "/agents/monitoring",
+    component: MonitoringDashboard,
+    beforeEnter: (to, from, next) => {
+      if (!hasAiPackage()) {
+        next(hasEmailPackage() ? "/email/errors" : "/");
+      } else {
+        next();
+      }
+    },
   },
   {
     name: "logs.agents",

@@ -365,11 +365,51 @@
     .small-screen {
       border: 0;
       background: transparent;
+      flex: 0 0 auto;
+    }
+
+    .login-layout,
+    .login-layout.h-100-vh {
+      align-items: flex-start;
+      height: auto;
+      min-height: auto;
+      padding: 1rem 1rem 4.5rem;
+    }
+
+    .h-100-vh {
+      height: auto;
+    }
+
+    .login-panel {
+      width: 100%;
+    }
+
+    .login-logo {
+      margin-bottom: 1.5rem;
+    }
+
+    .login-logo-custom,
+    .login-logo-default {
+      max-width: 240px;
     }
 
     .login-container {
       max-width: 100%;
+      padding: 1.5rem 1.25rem 1.75rem;
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .password-field-header {
+      flex-wrap: wrap;
+    }
+
+    .caps-lock-warning {
+      white-space: normal;
+    }
+
+    .footer {
+      margin-left: 0;
+      padding: 0 1rem 1rem;
     }
   }
 </style>

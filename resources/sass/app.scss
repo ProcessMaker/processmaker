@@ -981,42 +981,6 @@ nav {
 }
 
 
-//Guided templates modal styling
-#wizardTemplateDetails___BV_modal_content_.first_slide {
-  background: linear-gradient(180deg, #3270BC 0%, #00B5DA 100%), linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2));
-  padding-left: 0;
-}
-
-#wizardTemplateDetails___BV_modal_content_.first_slide .wizard-template-carousel {
-  margin-left:-17px;
-}
-
-#wizardTemplateDetails___BV_modal_content_.first_slide .template-name {
-  color: #00345B;
-}
-
-#wizardTemplateDetails___BV_modal_content_,
-#processWizard___BV_modal_content_{
-  border-radius: 8px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.29) 0%, rgba(255, 255, 255, 0.62) 100%), var(--borders, #CDDDEE);
-  padding: 50px;
-  color: #556271;
-  min-height: 450px;
-}
-
-#wizardTemplateDetails___BV_modal_header_,
-#processWizard___BV_modal_header_ {
-  border-bottom: none;
-  padding: 0;
-  margin: 0.5rem;
-}
-
-#wizardTemplateDetails___BV_modal_body_ .card,
-#processWizard___BV_modal_body_ .card {
-  background-color: inherit;
-  border: none;
-}
-
 .title-designer {
   color: var(--Black-for-icons, #57646F);
   font-size: 14px;

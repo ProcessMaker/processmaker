@@ -13,4 +13,13 @@ return [
         'username' => env('KEYCLOAK_USERNAME'),
         'password' => env('KEYCLOAK_PASSWORD'),
     ],
+    'broadcasting' => [
+        'app_id' => env('SCRIPT_MICROSERVICE_PUSHER_APP_ID'),
+        'app_key' => env('SCRIPT_MICROSERVICE_PUSHER_APP_KEY'),
+        'app_secret' => env('SCRIPT_MICROSERVICE_PUSHER_APP_SECRET'),
+        'cluster' => env('SCRIPT_MICROSERVICE_PUSHER_CLUSTER', 'mt1'),
+        'scheme' => env('SCRIPT_MICROSERVICE_PUSHER_SCHEME', 'https'),
+        'host' => env('SCRIPT_MICROSERVICE_PUSHER_HOST'),
+        'port' => env('SCRIPT_MICROSERVICE_PUSHER_PORT', 6001),
+    ],
 ];

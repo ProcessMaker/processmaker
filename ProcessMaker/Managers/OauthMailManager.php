@@ -7,6 +7,8 @@ use DateTime;
 use Google\Client as GoogleClient;
 use GuzzleHttp\Client;
 use Illuminate\Mail\MailManager;
+use ProcessMaker\Mail\MicrosoftGraphTokenProvider;
+use ProcessMaker\Mail\Transports\MicrosoftGraphTransport;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Packages\Connectors\Email\EmailConfig;
@@ -75,6 +77,26 @@ class OauthMailManager extends MailManager
         }
 
         return $transport;
+    }
+
+    public function createTransport(array $config)
+    {
+        if ($this->app->config->get('mail.driver') === 'microsoft_graph') {
+            return $this->createMicrosoftGraphTransport($config);
+        }
+
+        return parent::createTransport($config);
+    }
+
+    protected function createMicrosoftGraphTransport(array $config)
+    {
+        return new MicrosoftGraphTransport(
+            new MicrosoftGraphTokenProvider(
+                $this->app->config->get('services.microsoft_graph', []),
+                $this->emailServerIndex ?? 0
+            ),
+            $this->fromAddress
+        );
     }
 
     public function checkForExpiredAccessToken()

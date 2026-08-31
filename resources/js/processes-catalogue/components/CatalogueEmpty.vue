@@ -21,7 +21,7 @@
         <button
           type="button"
           class="btn btn-primary text-capitalize"
-          @click="wizardLinkSelected"
+          @click="showTemplates"
         >
           {{ $t("Show Me The Templates") }}
         </button>
@@ -39,16 +39,13 @@ export default {
   components: { EmptySearch },
   props: ["showEmpty", "isBookmarkEmpty"],
   methods: {
-    /**
-     * go to wizard templates section
-     */
-    wizardLinkSelected() {
+    showTemplates() {
       window.ProcessMaker.EventBus.$emit(
-        "wizard-templates-selected",
+        "all-templates-selected",
         {
-          label: this.$t("Guided Templates"),
+          label: this.$t("All Templates"),
           selected: false,
-          id: "guided_templates",
+          id: "all_templates",
         },
       );
     },

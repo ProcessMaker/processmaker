@@ -1,22 +1,35 @@
 <template>
   <div class="main-content">
-    <div class="tw-flex tw-items-center tw-justify-center" v-if="loading">
-      <div class="spinner-border text-primary" role="status" />
+    <div
+      v-if="loading"
+      class="tw-flex tw-items-center tw-justify-center"
+    >
+      <div
+        class="spinner-border text-primary"
+        role="status"
+      />
       <span class="visually-hidden">Loading...</span>
     </div>
     <!-- Header -->
-    <div v-else class="content-header">
+    <div
+      v-else
+      class="content-header"
+    >
       <div class="content-header-title">
         {{ bundle.name }}
-        <VersionCheck @updateAvailable="updateAvailable = $event" :dev-link="bundle"></VersionCheck>
+        <VersionCheck
+          :dev-link="bundle"
+          @updateAvailable="updateAvailable = $event"
+          @availabilityChanged="remoteAvailable = $event"
+        />
       </div>
       <div class="header-actions">
         <b-button
           v-if="bundle.dev_link_id === null"
+          v-b-tooltip.hover
           class="btn text-secondary icon-button"
           variant="light"
           :aria-label="$t('Edit Bundle')"
-          v-b-tooltip.hover
           :title="$t('Edit Bundle')"
           @click.prevent="openBundleModalForEdit()"
         >
@@ -25,6 +38,7 @@
         <button
           v-if="bundle.dev_link_id !== null"
           class="btn btn-outline-secondary mr-2 dropdown-toggle"
+          :disabled="remoteAvailable !== true || invalidAssets.length > 0"
           data-toggle="dropdown"
           data-offset="5, 5"
           aria-haspopup="true"
@@ -32,9 +46,12 @@
         >
           {{ $t('Reinstall') }}
         </button>
-        <div class="dropdown-menu dropdown-menu-right" id="dropdown">
+        <div
+          id="dropdown"
+          class="dropdown-menu dropdown-menu-right"
+        >
           <a
-            v-if="updateAvailable"
+            v-if="updateAvailable && remoteAvailable"
             class="dropdown-item"
             href="#"
             @click.prevent="reinstallBundle.show(bundle)"
@@ -43,7 +60,7 @@
             {{ $t('Update Bundle') }}
           </a>
           <a
-            v-if="bundle.dev_link_id !== null"
+            v-if="bundle.dev_link_id !== null && remoteAvailable"
             class="dropdown-item"
             href="#"
             @click.prevent="executeReinstall('copy')"
@@ -52,7 +69,7 @@
             {{ $t('Add a Copy') }}
           </a>
           <a
-            v-if="bundle.dev_link_id !== null"
+            v-if="bundle.dev_link_id !== null && remoteAvailable"
             class="dropdown-item"
             href="#"
             @click.prevent="executeReinstall('update')"
@@ -65,6 +82,7 @@
           v-if="bundle.dev_link_id === null"
           variant="primary"
           class="btn-publish"
+          :disabled="invalidAssets.length > 0"
           @click="publishBundle"
         >
           {{ $t('Publish') }}
@@ -72,12 +90,42 @@
       </div>
     </div>
 
+    <b-alert
+      v-if="invalidAssets.length > 0"
+      show
+      variant="warning"
+      class="integrity-alert"
+    >
+      <strong>{{ $t('This bundle contains unavailable assets and cannot be exported.') }}</strong>
+      <p class="mb-2">
+        {{ $t('Remove the unavailable associations from the bundle before trying again. The underlying assets will not be deleted.') }}
+      </p>
+      <ul class="mb-0 pl-3">
+        <li
+          v-for="asset in invalidAssets"
+          :key="asset.id"
+          class="integrity-asset"
+        >
+          <span>{{ asset.name }}</span>
+          <b-button
+            size="sm"
+            variant="outline-danger"
+            @click.prevent="removeInvalidAsset(asset)"
+          >
+            {{ $t('Remove from bundle') }}
+          </b-button>
+        </li>
+      </ul>
+    </b-alert>
+
     <!-- Description -->
     <div class="description-section">
       <div class="description-section-title">
         {{ $t('Description:') }}
       </div>
-      <p class="description-section-text">{{ bundle.description || $t('No description available') }}</p>
+      <p class="description-section-text">
+        {{ bundle.description || $t('No description available') }}
+      </p>
     </div>
 
     <div class="divider" />
@@ -94,18 +142,19 @@
       :configurations="platformConfigurations"
       :values="bundle.settings"
       :disabled="bundle.dev_link_id !== null"
-      @config-change="handleConfigChange"
       title="Platform Configurations"
+      @config-change="handleConfigChange"
+      @open-settings-modal="openSettingsModal"
     />
 
     <BundleConfigurations
       :configurations="settings"
       :values="bundle.settings"
       :disabled="bundle.dev_link_id !== null"
-      @config-change="handleConfigChange"
-      @open-settings-modal="openSettingsModal"
       title="Settings"
       type="settings"
+      @config-change="handleConfigChange"
+      @open-settings-modal="openSettingsModal"
     />
 
     <BundleModal
@@ -131,22 +180,24 @@
       title="Publish New Version"
       @ok="executeIncrease"
     >
-      <p v-html="confirmPublishNewVersionText"></p>
+      <p v-html="confirmPublishNewVersionText" />
     </b-modal>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, getCurrentInstance } from 'vue';
-import { useRoute } from 'vue-router/composables';
-import BundleModal, { show as showBundleModal, hide as hideBundleModal } from './BundleModal.vue';
-import UpdateBundle from './UpdateBundle.vue';
-import BundleSettingsModal from './BundleSettingsModal.vue';
-import BundleAssets from './BundleAssets.vue';
-import BundleConfigurations from './BundleConfigurations.vue';
-import VersionCheck from './VersionCheck.vue';
-import platformConfigurations from './platformConfigurations';
-import settings from './settings';
+import {
+  ref, onMounted, computed, getCurrentInstance,
+} from "vue";
+import { useRoute } from "vue-router/composables";
+import BundleModal from "./BundleModal.vue";
+import UpdateBundle from "./UpdateBundle.vue";
+import BundleSettingsModal from "./BundleSettingsModal.vue";
+import BundleAssets from "./BundleAssets.vue";
+import BundleConfigurations from "./BundleConfigurations.vue";
+import VersionCheck from "./VersionCheck.vue";
+import platformConfigurations from "./platformConfigurations";
+import settings from "./settings";
 
 const vue = getCurrentInstance().proxy;
 const bundle = ref({});
@@ -158,6 +209,7 @@ const route = useRoute();
 const bundleId = route.params.id;
 const bundleForEdit = ref({});
 const updateAvailable = ref(false);
+const remoteAvailable = ref(null);
 const selected = ref(null);
 const confirmPublishNewVersion = ref(null);
 
@@ -190,9 +242,33 @@ const updateBundle = () => {
     });
 };
 
-const confirmPublishNewVersionText = computed(() => {
-  return vue.$t('Are you sure you increase the version of <strong>{{ bundleName }}</strong>?', { bundleName: bundle.value?.name });
-});
+const confirmPublishNewVersionText = computed(() => vue.$t(
+  "Are you sure you increase the version of <strong>{{ bundleName }}</strong>?",
+  { bundleName: bundle.value?.name },
+));
+
+const invalidAssets = computed(
+  () => bundle.value?.assets?.filter((asset) => asset.integrity_status !== "valid") || [],
+);
+
+const removeInvalidAsset = async (asset) => {
+  const confirm = await vue.$bvModal.msgBoxConfirm(
+    vue.$t("Remove this unavailable association from the bundle? The underlying asset will not be deleted."),
+    {
+      okTitle: vue.$t("Remove from bundle"),
+      okVariant: "danger",
+      cancelTitle: vue.$t("Cancel"),
+    },
+  );
+  if (!confirm) {
+    return;
+  }
+
+  await window.ProcessMaker.apiClient.delete(
+    `/api/1.0/devlink/local-bundles/assets/${asset.id}`,
+  );
+  await loadAssets();
+};
 
 const publishBundle = () => {
   selected.value = bundle.value;
@@ -202,7 +278,7 @@ const publishBundle = () => {
 const executeIncrease = () => {
   ProcessMaker.apiClient
     .post(`devlink/local-bundles/${selected.value.id}/increase-version`)
-    .then((result) => {
+    .then(() => {
       confirmPublishNewVersion.value.hide();
     });
 };
@@ -252,6 +328,15 @@ width: 100%;
 }
 .btn-publish {
   width: 104px;
+}
+.integrity-alert {
+  margin: 16px 24px;
+}
+.integrity-asset {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
 }
 .icon-button {
   background-color: #E9ECF1;

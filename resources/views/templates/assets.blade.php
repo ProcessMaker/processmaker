@@ -25,7 +25,6 @@
       :response-id="responseId"
       :request="request"
       :redirect-to="redirectTo"
-      :wizard-template-uuid="wizardTemplateUuid"
     />
   </div>
 @endsection

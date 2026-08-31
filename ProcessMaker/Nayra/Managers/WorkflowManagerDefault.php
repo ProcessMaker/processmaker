@@ -5,6 +5,7 @@ namespace ProcessMaker\Nayra\Managers;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\ServiceTaskImplementationInterface;
 use ProcessMaker\Contracts\WorkflowManagerInterface;
 use ProcessMaker\Jobs\BoundaryEvent;
@@ -177,6 +178,42 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         return (new CallProcess($definitions, $process, $data))->handle();
     }
 
+    private function runInlineTask(Token $token, $jobClass)
+    {
+        $instance = $token->getInstance();
+        $process = $instance->process;
+        $engine = $instance->getEngine();
+        $inlineJob = new $jobClass($process, $instance, $token, []);
+        $engine->scheduleInlineJob([
+            'job' => $inlineJob,
+            'context' => [
+                'token' => $token,
+                'instance' => $instance,
+                'element' => $token->getOwnerElement(),
+            ],
+        ]);
+    }
+
+    private function canRunInlineTask(Token $token): bool
+    {
+        $instance = $token->getInstance();
+        $engine = $instance->getEngine();
+        if (!$engine->isInlineTaskExecutionEnabled()) {
+            return false;
+        }
+
+        $activeTokens = collect($instance->getTokens())
+            ->filter(fn ($currentToken) => !in_array(
+                $currentToken->getStatus(),
+                BpmnEngine::INACTIVE_TOKEN_STATUSES,
+                true
+            ))
+            ->values();
+
+        return $activeTokens->count() === 1
+            && (string) $activeTokens->first()->getId() === (string) $token->getId();
+    }
+
     /**
      * Run a script task.
      *
@@ -186,6 +223,12 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     public function runScripTask(ScriptTaskInterface $scriptTask, Token $token)
     {
         Log::info('Dispatch a script task: ' . $scriptTask->getId() . ' #' . $token->getId());
+
+        if ($this->canRunInlineTask($token)) {
+            $this->runInlineTask($token, RunScriptTask::class);
+            return;
+        }
+
         $instance = $token->processRequest;
         $process = $instance->process;
         RunScriptTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
@@ -200,6 +243,12 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     public function runServiceTask(ServiceTaskInterface $serviceTask, Token $token)
     {
         Log::info('Dispatch a service task: ' . $serviceTask->getId());
+
+        if ($this->canRunInlineTask($token)) {
+            $this->runInlineTask($token, RunServiceTask::class);
+            return;
+        }
+
         $instance = $token->processRequest;
         $process = $instance->process;
         RunServiceTask::dispatch($process, $instance, $token, []);

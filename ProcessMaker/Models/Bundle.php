@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Http;
+use ProcessMaker\Exception\BundleIntegrityException;
 use ProcessMaker\Exception\ExporterNotSupported;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\ImportExport\Importer;
@@ -19,6 +20,13 @@ class Bundle extends ProcessMakerModel implements HasMedia
 {
     use HasFactory;
     use InteractsWithMedia;
+
+    private const SETTING_PREVIEW_PAYLOAD_TYPES = [
+        'ui_dashboards' => 'dashboard_package',
+        'ui_menus' => 'menu_package',
+    ];
+
+    private const SETTINGS_PAYLOADS_COMPLETE_PROPERTY = 'settings_payloads_complete';
 
     protected $guarded = ['id'];
 
@@ -71,6 +79,8 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     public function export()
     {
+        $this->assertIntegrity();
+
         $exports = [];
 
         foreach ($this->assets as $bundleAsset) {
@@ -84,6 +94,21 @@ class Bundle extends ProcessMakerModel implements HasMedia
         }
 
         return $exports;
+    }
+
+    public function invalidAssets()
+    {
+        return $this->assets->filter(
+            fn (BundleAsset $asset) => $asset->integrity_status !== BundleAsset::INTEGRITY_VALID
+        );
+    }
+
+    public function assertIntegrity(): void
+    {
+        $invalidAssets = $this->invalidAssets();
+        if ($invalidAssets->isNotEmpty()) {
+            throw new BundleIntegrityException($this, $invalidAssets);
+        }
     }
 
     public function exportSettings()
@@ -102,6 +127,92 @@ class Bundle extends ProcessMakerModel implements HasMedia
         return $this->settings()->get()->map(function ($setting) {
             return $setting->export();
         });
+    }
+
+    public function settingPreview(string $settingKey): array
+    {
+        if (!array_key_exists($settingKey, self::SETTING_PREVIEW_PAYLOAD_TYPES)) {
+            throw new \InvalidArgumentException('Unsupported bundle setting preview.');
+        }
+
+        $bundleSetting = $this->settings()->where('setting', $settingKey)->first();
+        $selection = match (true) {
+            $bundleSetting === null => 'none',
+            $bundleSetting->config === null => 'all',
+            default => 'partial',
+        };
+
+        $preview = [
+            'setting' => $settingKey,
+            'selection' => $selection,
+            'available' => true,
+            'items' => [],
+        ];
+
+        if ($selection === 'none') {
+            return $preview;
+        }
+
+        $payloads = $this->readNewestPayloads();
+        if ($payloads === null) {
+            $preview['available'] = false;
+
+            return $preview;
+        }
+
+        $payloadType = self::SETTING_PREVIEW_PAYLOAD_TYPES[$settingKey];
+        $items = [];
+        foreach ($payloads as $payload) {
+            if (!is_array($payload) || ($payload['type'] ?? null) !== $payloadType) {
+                continue;
+            }
+
+            $key = $payload['root'] ?? null;
+            $name = $payload['name'] ?? null;
+            if (!is_string($key) || !is_string($name)) {
+                continue;
+            }
+
+            $items[$key] = [
+                'key' => $key,
+                'name' => $name,
+            ];
+        }
+
+        $preview['items'] = array_values($items);
+        usort($preview['items'], function (array $left, array $right) {
+            return strcasecmp($left['name'], $right['name'])
+                ?: strcmp($left['key'], $right['key']);
+        });
+
+        return $preview;
+    }
+
+    private function readNewestPayloads(): ?array
+    {
+        $media = $this->newestVersionFile();
+        if (
+            $media === null
+            || $media->getCustomProperty(self::SETTINGS_PAYLOADS_COMPLETE_PROPERTY) !== true
+            || !is_readable($media->getPath())
+        ) {
+            return null;
+        }
+
+        $compressedPayloads = file_get_contents($media->getPath());
+        $payloads = null;
+        if ($compressedPayloads !== false && str_starts_with($compressedPayloads, "\x1f\x8b")) {
+            $decodedPayloads = gzdecode($compressedPayloads);
+            if ($decodedPayloads !== false) {
+                try {
+                    $payloads = json_decode($decodedPayloads, true, flags: JSON_THROW_ON_ERROR);
+                } catch (\JsonException) {
+                    $payloads = null;
+                }
+            }
+        }
+
+        return is_array($payloads) ? $payloads : null;
     }
 
     public function syncAssets($assets)
@@ -322,8 +433,9 @@ class Bundle extends ProcessMakerModel implements HasMedia
                 $media->getCustomProperty('version'),
             ];
         })->sort(function ($a, $b) {
-            // newest versions first
-            return version_compare($a[1], $b[1]) * -1;
+            $versionComparison = version_compare($a[1], $b[1]) * -1;
+
+            return $versionComparison ?: $b[0]->getKey() <=> $a[0]->getKey();
         })->map(function ($item) {
             return $item[0];
         });
@@ -341,18 +453,10 @@ class Bundle extends ProcessMakerModel implements HasMedia
         }
         $logger->status('Saving the bundle locally');
 
-        // Filter and extract export payloads from nested array
-        $exportPayloads = array_filter($payloadsSettings, function ($payload) {
-            return !empty($payload[0]) && isset($payload[0]['export']);
-        });
+        $exportPayloads = $this->extractSettingExportPayloads($payloadsSettings);
 
-        // Extract payloads from nested array structure
-        $flattenedExportPayloads = array_map(function ($payload) {
-            return $payload[0];  // Tomar solo el primer elemento del array anidado
-        }, array_values($exportPayloads));
-
-        if (!empty($flattenedExportPayloads)) {
-            $payloads = array_merge($payloads, $flattenedExportPayloads);
+        if (!empty($exportPayloads)) {
+            $payloads = array_merge($payloads, $exportPayloads);
         }
 
         $this->addMediaFromString(
@@ -360,10 +464,13 @@ class Bundle extends ProcessMakerModel implements HasMedia
                 json_encode($payloads)
             ),
         )->usingFileName('payloads.json.gz')
-        ->withCustomProperties(['version' => $this->version])
+        ->withCustomProperties([
+            'version' => $this->version,
+            self::SETTINGS_PAYLOADS_COMPLETE_PROPERTY => true,
+        ])
         ->toMediaCollection();
 
-        // Keep only the 3 most recent versions
+        // Keep only the 3 most recent snapshots
         $count = 0;
         foreach ($this->filesSortedByVersion() as $media) {
             if ($count >= 3) {
@@ -388,27 +495,50 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     public function installSettingsPayloads(array $payloads, $mode, $logger = null)
     {
+        if ($logger === null) {
+            $logger = new Logger();
+        }
+
         $options = new Options([
             'mode' => $mode,
-        ]);
+        ], $logger->userId);
 
-        $assets = [];
-        foreach ($payloads as $payload) {
-            // Verify the type of payload without considering the order
-            if (!empty($payload) && is_array($payload[0])) {
-                // If it is a settings payload
-                if (isset($payload[0]['setting_type'])) {
-                    $this->processSettingsPayload($payload);
-                }
+        foreach ($payloads as $payloadGroup) {
+            $settingPayloads = array_filter($payloadGroup, function ($payload) {
+                return is_array($payload) && isset($payload['setting_type']);
+            });
 
-                // If it is an export payload (it can be the same or another element)
-                if (isset($payload[0]['export'])) {
-                    $logger->status('Installing bundle settings on the this instance');
-                    $logger->setSteps($payload);
-                    $assets[] = DevLink::import($payload[0], $options, $logger);
+            if (!empty($settingPayloads)) {
+                $this->processSettingsPayload($settingPayloads);
+            }
+        }
+
+        $exportPayloads = $this->extractSettingExportPayloads($payloads);
+        if (empty($exportPayloads)) {
+            return;
+        }
+
+        $logger->status('Installing bundle settings on the this instance');
+        $logger->setSteps($exportPayloads);
+
+        foreach ($exportPayloads as $payload) {
+            DevLink::import($payload, $options, $logger);
+        }
+    }
+
+    private function extractSettingExportPayloads(array $payloadGroups): array
+    {
+        $exportPayloads = [];
+
+        foreach ($payloadGroups as $payloadGroup) {
+            foreach ($payloadGroup as $payload) {
+                if (is_array($payload) && isset($payload['export'])) {
+                    $exportPayloads[] = $payload;
                 }
             }
         }
+
+        return $exportPayloads;
     }
 
     // Auxiliary method to process the settings
@@ -463,7 +593,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
         $options = new Options([
             'mode' => $mode,
-        ]);
+        ], $logger->userId);
         $assets = [];
         foreach ($payloads as $payload) {
             $assets[] = DevLink::import($payload, $options, $logger);

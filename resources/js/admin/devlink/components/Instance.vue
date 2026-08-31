@@ -4,6 +4,7 @@ import debounce from 'lodash/debounce';
 import { useRouter, useRoute } from 'vue-router/composables';
 import InstanceTabs from './InstanceTabs.vue';
 import InstallProgress from './InstallProgress.vue';
+import createOperationId from '../createOperationId';
 
 const vue = getCurrentInstance().proxy;
 const router = useRouter();
@@ -16,6 +17,7 @@ const warnings = ref([]);
 const showInstallModal = ref(false);
 const confirmUpdateVersion = ref(null);
 const selectedOption = ref('update');
+const operationId = ref('');
 const bundleAttributes = {
   id: null,
   name: '',
@@ -88,9 +90,12 @@ const install = (bundle) => {
     cancelTitle: vue.$t('Cancel')
   }).then((confirm) => {
     if (confirm) {
+      operationId.value = createOperationId();
       showInstallModal.value = true;
       ProcessMaker.apiClient
-        .post(`/devlink/${route.params.id}/remote-bundles/${bundle.id}/install`)
+        .post(`/devlink/${route.params.id}/remote-bundles/${bundle.id}/install`, {
+          operation_id: operationId.value,
+        })
         .then((response) => {
           // Handle the response as needed
         });
@@ -98,10 +103,12 @@ const install = (bundle) => {
   });
 };
 const executeUpdate = (updateType) => {
+  operationId.value = createOperationId();
   showInstallModal.value = true;
   ProcessMaker.apiClient
     .post(`/devlink/${route.params.id}/remote-bundles/${selected.value.id}/install`, {
       updateType,
+      operation_id: operationId.value,
     })
     .then((response) => {
       // Handle the response as needed
@@ -163,6 +170,9 @@ const executeUpdate = (updateType) => {
     </div>
     <b-modal id="install-progress" size="lg" v-model="showInstallModal" :title="$t('Installation Progress')" hide-footer>
       <install-progress
+        v-if="operationId"
+        :key="operationId"
+        :operation-id="operationId"
         @installation-complete="load"
       />
     </b-modal>

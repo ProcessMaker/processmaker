@@ -7,7 +7,10 @@
          extensionsDirectory="tests/Extensions"
          displayDetailsOnAllIssues="true"
 >
-  <testsuites>
+    <extensions>
+        <bootstrap class="Tests\Extensions\RealTimeOutputExtension" />
+    </extensions>
+    <testsuites>
       <testsuite name="Features">
         <directory>tests/Feature</directory>
         <directory>tests/Managers</directory>
@@ -24,6 +27,9 @@
         </include>
     </source>
     <php>
+      <!-- Prevent Redis/DNS/TCP from hanging the suite for hours -->
+      <ini name="default_socket_timeout" value="15"/>
+
       <env name="APP_DEBUG" value="true" />
       <env name="APP_ENV" value="testing" />
       <env name="APP_URL" value="http://localhost" />
