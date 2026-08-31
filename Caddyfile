@@ -2,8 +2,13 @@
 	{$CADDY_GLOBAL_OPTIONS}
 
 	frankenphp {
-		# FrankenPHP workers ignore CLI php.ini / PHPRC. Set memory here.
-		php_ini memory_limit {$FRANKENPHP_MEMORY_LIMIT:3072M}
+			# FrankenPHP workers ignore CLI php.ini / PHPRC. Set PHP limits here.
+			php_ini memory_limit {$OCTANE_MEMORY_LIMIT:3072M}
+			php_ini max_execution_time {$OCTANE_MAX_EXECUTION_TIME:90}
+			php_ini post_max_size {$OCTANE_POST_MAX_SIZE:200M}
+			php_ini upload_max_filesize {$OCTANE_UPLOAD_MAX_FILESIZE:200M}
+			php_ini max_input_vars {$OCTANE_MAX_INPUT_VARS:9000}
+			php_ini max_input_time {$OCTANE_MAX_INPUT_TIME:90}
 
 		worker {
 			file "{$APP_PUBLIC_PATH}/frankenphp-worker.php"
