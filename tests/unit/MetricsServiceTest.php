@@ -14,7 +14,6 @@ use Prometheus\Storage\InMemory;
 use ReflectionClass;
 use Tests\TestCase;
 
-
 class MetricsServiceTest extends TestCase
 {
     /**
@@ -44,7 +43,7 @@ class MetricsServiceTest extends TestCase
         $counter = $this->metricsService->counter('test_counter', 'Test Counter', ['label1']);
 
         // Assert the counter is registered
-        $this->assertInstanceOf(\Prometheus\Counter::class, $counter);
+        $this->assertInstanceOf(Counter::class, $counter);
 
         // Increment the counter and assert the value
         $counter->inc(['value1']);
@@ -83,7 +82,7 @@ class MetricsServiceTest extends TestCase
         );
 
         // Assert the histogram is registered
-        $this->assertInstanceOf(\Prometheus\Histogram::class, $histogram);
+        $this->assertInstanceOf(Histogram::class, $histogram);
 
         // Observe a value and assert it is recorded
         $histogram->observe(0.5, ['value1']);
@@ -112,7 +111,7 @@ class MetricsServiceTest extends TestCase
         $counter = $this->metricsService->counter('namespace_test');
 
         // Assert default namespace is applied
-        $this->assertInstanceOf(\Prometheus\Counter::class, $counter);
+        $this->assertInstanceOf(Counter::class, $counter);
         $counter->inc();
 
         $samples = $this->metricsService->renderMetrics();
@@ -131,6 +130,7 @@ class MetricsServiceTest extends TestCase
         $this->assertStringContainsString('test_set_gauge', $samples);
         $this->assertStringContainsString('5', $samples);
     }
+
     /**
      * Test that counterInc calls Metrics::counter() and then inc() with the correct labels.
      */
@@ -138,7 +138,6 @@ class MetricsServiceTest extends TestCase
     {
         // Set configuration values used by addSystemLabels()
         Config::set('app.name', 'TestApp');
-        Config::set('app.prometheus_custom_label', 'customValue');
 
         // Create an instance of MetricsService.
         $service = new MetricsService();
@@ -152,9 +151,8 @@ class MetricsServiceTest extends TestCase
         $systemLabels = $service->addSystemLabels([]);
         // Merge the initial labels with system labels.
         $expectedLabels = array_merge($initialLabels, [
-            'app_version'       => $systemLabels['app_version'],
-            'app_name'          => 'TestApp',
-            'app_custom_label'  => 'customValue',
+            'app_version' => $systemLabels['app_version'],
+            'app_name' => 'TestApp',
         ]);
         $expectedLabelKeys = array_keys($expectedLabels);
 
@@ -182,7 +180,6 @@ class MetricsServiceTest extends TestCase
     {
         // Set configuration values used by addSystemLabels()
         Config::set('app.name', 'TestApp');
-        Config::set('app.prometheus_custom_label', 'customValue');
 
         $service = new MetricsService();
 
@@ -195,9 +192,8 @@ class MetricsServiceTest extends TestCase
         // Determine what system labels will be added.
         $systemLabels = $service->addSystemLabels([]);
         $expectedLabels = array_merge($initialLabels, [
-            'app_version'       => $systemLabels['app_version'],
-            'app_name'          => 'TestApp',
-            'app_custom_label'  => 'customValue',
+            'app_version' => $systemLabels['app_version'],
+            'app_name' => 'TestApp',
         ]);
         $expectedLabelKeys = array_keys($expectedLabels);
 
@@ -225,7 +221,6 @@ class MetricsServiceTest extends TestCase
     {
         // Set configuration values used by addSystemLabels()
         Config::set('app.name', 'TestApp');
-        Config::set('app.prometheus_custom_label', 'customValue');
 
         $service = new MetricsService();
 
@@ -238,9 +233,8 @@ class MetricsServiceTest extends TestCase
         // Assert that the system labels were added.
         $this->assertArrayHasKey('app_version', $result);
         $this->assertArrayHasKey('app_name', $result);
-        $this->assertArrayHasKey('app_custom_label', $result);
+        $this->assertArrayNotHasKey('app_custom_label', $result);
         $this->assertEquals('TestApp', $result['app_name']);
-        $this->assertEquals('customValue', $result['app_custom_label']);
         $this->assertNotEmpty($result['app_version']); // Assuming composer.json defines a version.
     }
 

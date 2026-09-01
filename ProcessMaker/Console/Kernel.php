@@ -4,6 +4,7 @@ namespace ProcessMaker\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use ProcessMaker\Console\Scheduling\FastSchedule;
 
 class Kernel extends ConsoleKernel
 {
@@ -15,6 +16,18 @@ class Kernel extends ConsoleKernel
     protected $commands = [];
 
     /**
+     * Resolve a console schedule instance that runs Artisan commands in-process.
+     *
+     * @return Schedule
+     */
+    public function resolveConsoleSchedule()
+    {
+        return tap(new FastSchedule($this->scheduleTimezone()), function ($schedule) {
+            $this->schedule($schedule->useCache($this->scheduleCache()));
+        });
+    }
+
+    /**
      * Define the application's command schedule.
      *
      * @param  Schedule  $schedule
@@ -24,6 +37,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('bpmn:timer')
                  ->everyMinute()
+                 ->name('bpmn:timer')
                  ->onOneServer()
                  ->withoutOverlapping(config('app.scheduler.bpmn_timer_overlap_minutes', 5));
 

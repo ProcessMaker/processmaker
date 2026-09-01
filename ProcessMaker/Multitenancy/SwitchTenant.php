@@ -3,11 +3,14 @@
 namespace ProcessMaker\Multitenancy;
 
 use Illuminate\Broadcasting\BroadcastManager;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
+use Illuminate\Support\Facades\Log;
 use Monolog\Handler\RotatingFileHandler;
 use ProcessMaker\Application;
+use ProcessMaker\Console\Scheduling\FastSchedule;
 use ProcessMaker\Multitenancy\Broadcasting\TenantAwareBroadcastManager;
 use Spatie\Multitenancy\Concerns\UsesMultitenancyConfig;
 use Spatie\Multitenancy\Contracts\IsTenant;
@@ -30,6 +33,15 @@ class SwitchTenant implements SwitchTenantTask
         $app = app();
 
         \Log::debug('SwitchTenant: ' . $tenant->id, ['domain' => request()->getHost()]);
+
+        // Keep track of tenant-specific schedule registrations so we can clear them when the tenant is forgotten.
+        if ($app->resolved(Schedule::class)) {
+            $schedule = $app->make(Schedule::class);
+
+            if ($schedule instanceof FastSchedule) {
+                $schedule->beginTenantEventRegistration();
+            }
+        }
 
         // Save the landlord values for later use
         if (!self::$landlordValues) {
@@ -55,6 +67,15 @@ class SwitchTenant implements SwitchTenantTask
     public function forgetCurrent(): void
     {
         $app = app();
+
+        if ($app->resolved(Schedule::class)) {
+            $schedule = $app->make(Schedule::class);
+
+            if ($schedule instanceof FastSchedule) {
+                $schedule->clearTenantEvents();
+            }
+        }
+
         $app->useStoragePath(base_path('storage'));
 
         $this->setConfig('logging.channels.daily.path', storage_path('logs/processmaker.log'));
@@ -140,7 +161,7 @@ class SwitchTenant implements SwitchTenantTask
         // url() helper
         app(UrlGenerator::class)->useOrigin($tenant->config['app.url']);
 
-        // NOTE: Cache prefix and cache settings prefix are handled in PrefixCacheTask
+        // NOTE: Cache, cache settings, and Prometheus prefixes are handled in PrefixCacheTask
 
         if (!isset($tenant->config['app.docker_host_url'])) {
             // There is no specific override in the tenant's config so set it to the app url
