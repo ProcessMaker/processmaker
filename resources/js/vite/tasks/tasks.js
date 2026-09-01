@@ -1,11 +1,12 @@
-import TasksList from "./components/TasksList.vue";
-import TasksListCounter from "./components/TasksListCounter.vue";
-import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
-import ParticipantHomeScreen from './components/ParticipantHomeScreen.vue';
-import PmqlInput from "../components/shared/PmqlInput.vue";
+import Vue from "vue";
+import TasksList from "../../tasks/components/TasksList.vue";
+import TasksListCounter from "../../tasks/components/TasksListCounter.vue";
+import setDefaultAdvancedFilterStatus from "../../common/setDefaultAdvancedFilterStatus";
+import ParticipantHomeScreen from "../../tasks/components/ParticipantHomeScreen.vue";
+import PmqlInput from "../../components/shared/PmqlInput.vue";
 
 Vue.component("TasksList", TasksList);
-Vue.component('participant-home-screen', ParticipantHomeScreen);
+Vue.component("participant-home-screen", ParticipantHomeScreen);
 
 // Component used in the tasks list
 Vue.component("PmqlInput", PmqlInput);
@@ -21,7 +22,8 @@ const main = new Vue({
     userConfiguration: window.ProcessMaker.userConfiguration,
     urlConfiguration: "users/configuration",
     showMenu: true,
-    columns: window.Processmaker.defaultColumns || null,
+    // Legacy Mix spelling used by TasksMixin / ParticipantHomeScreen
+    columns: window.Processmaker?.defaultColumns || window.ProcessMaker?.defaultColumns || null,
     filter: "",
     pmql: "",
     urlPmql: "",
@@ -68,19 +70,6 @@ const main = new Vue({
     ],
     taskDraftsEnabled: window.ProcessMaker.taskDraftsEnabled,
   },
-  mounted() {
-    ProcessMaker.EventBus.$on("advanced-search-addition", (component) => {
-      this.additions.push(component);
-    });
-
-    if (!window.location.search.includes("filter_user_recommendation")) {
-      this.$nextTick(() => {
-        if (this.$refs.taskList) {
-          this.$refs.taskList.fetch();
-        }
-      });
-    }
-  },
   created() {
     const params = new URL(document.location).searchParams;
     const statusParam = params.get("status");
@@ -103,6 +92,20 @@ const main = new Vue({
 
     if (this.urlPmql && this.urlPmql !== "") {
       this.onSearch();
+    }
+  },
+  mounted() {
+    window.ProcessMaker.EventBus.$on("advanced-search-addition", (component) => {
+      this.additions.push(component);
+    });
+
+    // Blade uses :fetch-on-created="false"; list only loads when we fetch here.
+    if (!window.location.search.includes("filter_user_recommendation")) {
+      this.$nextTick(() => {
+        if (this.$refs.taskList) {
+          this.$refs.taskList.fetch();
+        }
+      });
     }
   },
   methods: {
