@@ -275,7 +275,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         // Log execution
         Log::info('Dispatch a service task: ' . $serviceTask->getId());
 
-        RunNayraServiceTask::dispatch($token)->onQueue('bpmn');
+        RunNayraServiceTask::dispatch($token);
     }
 
     /**

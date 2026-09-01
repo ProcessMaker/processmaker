@@ -152,7 +152,7 @@ class PersistenceHandler
                     $token = $this->deserializer->unserializeToken($transaction['token']);
 
                     // Trigger script task executor
-                    RunNayraScriptTask::dispatch($token)->onQueue('bpmn');
+                    RunNayraScriptTask::dispatch($token);
                     break;
                 default:
                     throw new Exception('Unknown transaction type ' . $transaction['type']);
