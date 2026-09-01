@@ -76,4 +76,18 @@ class UserTest extends TestCase
         $response->assertViewIs('profile.edit');
         $response->assertDontSee('Additional Information');
     }
+
+    public function testJobTitleValidationFeedbackIsRenderedInUserEditForms(): void
+    {
+        $userId = User::factory()->create()->id;
+
+        foreach (["/admin/users/{$userId}/edit", '/profile/edit'] as $url) {
+            $response = $this->webCall('GET', $url);
+
+            $response->assertStatus(200);
+            $response->assertSee(':state="errors.title ? false : null"', false);
+            $response->assertSee('v-if="errors.title"', false);
+            $response->assertSee('@{{errors.title[0]}}', false);
+        }
+    }
 }
