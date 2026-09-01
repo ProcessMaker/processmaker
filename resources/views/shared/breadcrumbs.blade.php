@@ -19,10 +19,10 @@
 
                     @if ($link != null)
                         <a href="{{ $link }}">
-                            {{ $title }}
+                            {{ __($title) }}
                         </a>
                     @else
-                        {{ $title }}
+                        {{ __($title) }}
                     @endif
 
                     </li>

@@ -46,9 +46,9 @@ export default {
       isDisabled: false,
       selectedType: {
         type: "FORM",
-        typeHuman: "Form",
+        typeHuman: this.$t("Form"),
         icon: "fas fa-file",
-        description: "Design interactive and complex multi-page forms.",
+        description: this.$t("Design interactive and complex multi-page forms."),
       },
     };
   },
@@ -89,25 +89,25 @@ export default {
       switch (screenType) {
         case "FORM":
           type = "FORM";
-          typeHuman = "Form";
+          typeHuman = this.$t("Form");
           icon = "fas fa-file";
           description = this.$t("Design interactive and complex multi-page forms.");
           break;
         case "EMAIL":
           type = "EMAIL";
-          typeHuman = "E-mail";
+          typeHuman = this.$t("E-mail");
           icon = "fas fa-envelope";
           description = this.$t("Compose the email body for email messages.");
           break;
         case "DISPLAY":
           type = "DISPLAY";
-          typeHuman = "Display";
+          typeHuman = this.$t("Display");
           icon = "fas fa-desktop";
           description = this.$t("Display information or allow Request participants to download files.");
           break;
         case "CONVERSATIONAL":
           type = "CONVERSATIONAL";
-          typeHuman = "Conversational";
+          typeHuman = this.$t("Conversational");
           icon = "fas fa-comment";
           description = this.$t("Design functional rule-based modern chat style experiences.");
           break;
