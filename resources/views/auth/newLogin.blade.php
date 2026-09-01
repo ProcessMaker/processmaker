@@ -18,6 +18,13 @@
     @include('package-accessibility::userway')
   @endif
 
+  {{-- Prefetch inbox JS while the user is on login (Mix ?id= invalidates on deploy). --}}
+  <link rel="prefetch" href="{{ mix('js/manifest.js') }}" as="script">
+  <link rel="prefetch" href="{{ mix('js/vue-vendor.js') }}" as="script">
+  <link rel="prefetch" href="{{ mix('js/bootstrap-vendor.js') }}" as="script">
+  <link rel="prefetch" href="{{ mix('js/fortawesome-vendor.js') }}" as="script">
+  <link rel="prefetch" href="{{ mix('js/app.js') }}" as="script">
+  <link rel="prefetch" href="{{ mix('js/app-layout.js') }}" as="script">
 </head>
 <body>
   <div class="background-cover">
