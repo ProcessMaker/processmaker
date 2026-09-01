@@ -1,5 +1,6 @@
 import axios from "axios";
 import { setGlobalPMVariables, getGlobalPMVariable } from "../globalVariables";
+import { installApiClientCache } from "../../apiClientCache";
 import {
   applyCsrfToken,
   attachCsrfRequestInterceptor,
@@ -26,6 +27,7 @@ export default () => {
    */
 
   const apiClient = axios;
+  installApiClientCache(apiClient);
 
   // Laravel web sessions / CSRF with cookie requires axios to send cookies.
   apiClient.defaults.withCredentials = true;
