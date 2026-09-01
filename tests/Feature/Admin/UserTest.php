@@ -87,7 +87,7 @@ class UserTest extends TestCase
             $response->assertStatus(200);
             $response->assertSee(':state="errors.title ? false : null"', false);
             $response->assertSee('v-if="errors.title"', false);
-            $response->assertSee('@{{errors.title[0]}}', false);
+            $response->assertSee('{{errors.title[0]}}', false);
         }
     }
 }
