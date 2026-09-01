@@ -2,6 +2,11 @@ import Vue from "vue";
 import Process from "./components/Process";
 import ProcessesCatalogue from "./components/ProcessesCatalogue";
 import ProcessListing from "./components/ProcessListing";
+import VueApexCharts from 'vue-apexcharts';
+
+Vue.use(VueApexCharts);
+
+Vue.component('apexchart', VueApexCharts);
 
 export const EventBus = new Vue();
 Vue.use(VueRouter);
