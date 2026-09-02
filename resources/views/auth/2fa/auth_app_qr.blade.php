@@ -52,6 +52,13 @@
                             </div>
                             <img src="data:image/svg+xml;base64,{{$qrCode}}" alt="QR" />
                         </div>
+                        <div class="row justify-content-end mb-3">
+                            <div class="form-group text-right">
+                                <a href="{{ route('logout') }}" dusk="login-as-another-user">
+                                    {{ __('Log in as another user') }}
+                                </a>
+                            </div>
+                        </div>
                         <div class="row justify-content-between mb-3">
                             <button type="button" name="next" class="btn btn-primary btn-block text-capitalize"
                                     dusk="next" onclick="next()">{{ __('Next') }}</button>
