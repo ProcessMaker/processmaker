@@ -850,8 +850,13 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     public function mergeLatestStoredData()
     {
         $store = $this->getDataStore();
-        $latest = self::select('data')->find($this->getId());
-        $this->data = $store->updateArray($latest->data);
+        // Load only the data column (Eloquent cast applies) without hydrating the full row.
+        $latest = static::query()->whereKey($this->getKey())->first(['data']);
+        $latestData = $latest?->data ?? [];
+        if (!is_array($latestData)) {
+            $latestData = [];
+        }
+        $this->data = $store->updateArray($latestData);
 
         return $this->data;
     }

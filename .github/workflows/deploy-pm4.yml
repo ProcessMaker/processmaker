@@ -6,6 +6,12 @@ on:
     - cron: '30 2 * * *'  # run daily
   workflow_dispatch:
   workflow_call:
+
+# Cancel superseded PR runs (including nested deploy-pm4). Do not cancel a close/delete.
+concurrency:
+  group: deploy-pm4-${{ github.repository }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
+
 jobs:
   run:
     name: Run PM4-workflow

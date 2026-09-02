@@ -44,6 +44,8 @@ class TokenRepository implements TokenRepositoryInterface
      */
     private $instanceRepository;
 
+    private ?ProcessExecutionRawRepository $processExecutionRaw = null;
+
     /**
      * Initialize the Token Repository.
      *
@@ -52,6 +54,11 @@ class TokenRepository implements TokenRepositoryInterface
     public function __construct(ExecutionInstanceRepository $instanceRepository)
     {
         $this->instanceRepository = $instanceRepository;
+    }
+
+    private function processExecutionRaw(): ProcessExecutionRawRepository
+    {
+        return $this->processExecutionRaw ??= app(ProcessExecutionRawRepository::class);
     }
 
     /**
@@ -100,7 +107,8 @@ class TokenRepository implements TokenRepositoryInterface
         if ($isScriptOrServiceTask) {
             $user = null;
         } else {
-            $user = $this->resolveNextUser($activity, $token);
+            $processModel = $token->getInstance()->getProcess()->getOwnerDocument()->getModel();
+            $user = $this->processExecutionRaw()->getNextUserRaw($processModel, $activity, $token);
         }
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
@@ -715,17 +723,6 @@ class TokenRepository implements TokenRepositoryInterface
     private function tokenPersistenceUsesRawSql(): bool
     {
         return (bool) config('app.token_persistence_raw_enabled', false);
-    }
-
-    private function resolveNextUser(ActivityInterface $activity, TokenInterface $token): ?User
-    {
-        $processModel = $token->getInstance()->getProcess()->getOwnerDocument()->getModel();
-
-        if ($this->tokenPersistenceUsesRawSql()) {
-            return app(ProcessExecutionRawRepository::class)->getNextUserRaw($processModel, $activity, $token);
-        }
-
-        return $processModel->getNextUser($activity, $token);
     }
 
     private function saveToken(TokenInterface $token, string $context = 'activated'): void

@@ -17,6 +17,7 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\Models\Activity;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -135,12 +136,121 @@ class ProcessExecutionRawRepository
         );
     }
 
+    /**
+     * Analog to $task->processRequest for completeTask (without loading data JSON).
+     */
+    public function getProcessRequestForCompleteRaw(int $processRequestId): ProcessRequest
+    {
+        return ProcessRequest::query()
+            ->select(['do_not_sanitize', 'id', 'process_id', 'process_version_id', 'collaboration_uuid'])
+            ->findOrFail($processRequestId);
+    }
+
+    /**
+     * Analog to $task->process for authorize('update') (properties only; manager_id is inside JSON).
+     */
+    public function getProcessForAuthorizeRaw(int $processId): Process
+    {
+        return Process::query()
+            ->select(['id', 'properties'])
+            ->findOrFail($processId);
+    }
+
+    /**
+     * Analog to $task->process for completeTask (BPMN + name; required by getDefinition/validateData).
+     */
+    public function getProcessForCompleteRaw(int $processId): Process
+    {
+        return Process::query()
+            ->select(['id', 'name', 'bpmn'])
+            ->findOrFail($processId);
+    }
+
+    /**
+     * Analog to $task->processRequest->processVersion when a version is pinned on the request.
+     */
+    public function getProcessVersionForCompleteRaw(?int $processVersionId): ?ProcessVersion
+    {
+        if (!$processVersionId) {
+            return null;
+        }
+
+        return ProcessVersion::query()
+            ->select(['id', 'process_id', 'bpmn'])
+            ->findOrFail($processVersionId);
+    }
+
+    /**
+     * Analog to ProcessRequest::find columns needed for the task update response.
+     */
+    public function getProcessRequestForResponseRaw(int $processRequestId): ProcessRequest
+    {
+        return ProcessRequest::query()
+            ->select([
+                'id',
+                'process_id',
+                'process_version_id',
+                'collaboration_uuid',
+                'do_not_sanitize',
+                'data',
+                'name',
+                'status',
+                'case_number',
+                'case_title',
+                'parent_request_id',
+                'user_id',
+                'uuid',
+                'process_collaboration_id',
+                'callable_id',
+                'initiated_at',
+                'completed_at',
+                'created_at',
+                'updated_at',
+            ])
+            ->findOrFail($processRequestId);
+    }
+
+    /**
+     * Analog to $task->process / Process::find for reassign (without loading bpmn).
+     */
+    public function getProcessForReassignRaw(int $processId): Process
+    {
+        return Process::query()
+            ->select(['id', 'properties', 'stages', 'case_title'])
+            ->findOrFail($processId);
+    }
+
+    /**
+     * Analog to $task->draft()->exists() (Eloquent).
+     */
     public function taskHasDraftRaw(int $taskId): bool
     {
         return (bool) DB::selectOne(
             'SELECT 1 AS found FROM task_drafts WHERE task_id = ? LIMIT 1',
             [$taskId]
         );
+    }
+
+    /**
+     * Analog to $task->refresh() (Eloquent), keeping preloaded relations for the response.
+     */
+    public function refreshTaskRaw(
+        ProcessRequestToken $task,
+        Process $process,
+        ProcessRequest $instance
+    ): ProcessRequestToken {
+        $row = DB::selectOne(
+            'SELECT * FROM process_request_tokens WHERE id = ? LIMIT 1',
+            [$task->id]
+        );
+        if ($row) {
+            $task->setRawAttributes((array) $row, true);
+            $task->syncOriginal();
+        }
+        $task->setRelation('process', $process);
+        $task->setRelation('processRequest', $instance);
+
+        return $task;
     }
 
     /**
@@ -234,7 +344,7 @@ class ProcessExecutionRawRepository
     /**
      * Analog to User::find() — single flat query, no eager loads.
      */
-    private function getUserByIdRaw(?int $userId): ?User
+    public function getUserByIdRaw(?int $userId): ?User
     {
         if (!$userId) {
             return null;

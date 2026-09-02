@@ -239,7 +239,7 @@ return [
     |
     */
 
-    'max_execution_time' => env('OCTANE_MAX_EXECUTION_TIME', 30),
+    'max_execution_time' => env('OCTANE_MAX_EXECUTION_TIME', 90),
 
     /*
     |--------------------------------------------------------------------------
@@ -247,14 +247,19 @@ return [
     |--------------------------------------------------------------------------
     |
     | Extra env vars for the FrankenPHP process. Start Octane with
-    | `--caddyfile=Caddyfile` so php_ini memory_limit is applied.
+    | `--caddyfile=Caddyfile` so php_ini settings are applied.
     | PHPRC / PHP_INI does not change FrankenPHP worker memory (stays 128M).
     |
     */
 
     'caddy' => [
         'env' => [
-            'FRANKENPHP_MEMORY_LIMIT' => env('FRANKENPHP_MEMORY_LIMIT', '3072M'),
+            'OCTANE_MEMORY_LIMIT' => env('OCTANE_MEMORY_LIMIT', '3072M'),
+            'OCTANE_MAX_EXECUTION_TIME' => env('OCTANE_MAX_EXECUTION_TIME', 90),
+            'OCTANE_POST_MAX_SIZE' => env('OCTANE_POST_MAX_SIZE', '200M'),
+            'OCTANE_UPLOAD_MAX_FILESIZE' => env('OCTANE_UPLOAD_MAX_FILESIZE', '200M'),
+            'OCTANE_MAX_INPUT_VARS' => env('OCTANE_MAX_INPUT_VARS', 9000),
+            'OCTANE_MAX_INPUT_TIME' => env('OCTANE_MAX_INPUT_TIME', 90),
         ],
     ],
 

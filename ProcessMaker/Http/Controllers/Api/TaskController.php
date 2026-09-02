@@ -34,12 +34,20 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\Query\SyntaxError;
+use ProcessMaker\Repositories\ProcessExecutionRawRepository;
 use ProcessMaker\SanitizeHelper;
 use ProcessMaker\Traits\TaskControllerIndexMethods;
 
 class TaskController extends Controller
 {
     use TaskControllerIndexMethods;
+
+    private ?ProcessExecutionRawRepository $processExecutionRaw = null;
+
+    private function processExecutionRaw(): ProcessExecutionRawRepository
+    {
+        return $this->processExecutionRaw ??= app(ProcessExecutionRawRepository::class);
+    }
 
     /**
      * A whitelist of attributes that should not be
@@ -354,6 +362,9 @@ class TaskController extends Controller
      */
     public function update(Request $request, ProcessRequestToken $task)
     {
+        if (!$task->relationLoaded('process')) {
+            $task->setRelation('process', $this->processExecutionRaw()->getProcessForAuthorizeRaw($task->process_id));
+        }
         $this->authorize('update', $task);
         if ($request->input('status') === 'COMPLETED') {
             if ($task->status === 'CLOSED') {
@@ -361,21 +372,38 @@ class TaskController extends Controller
             }
             // Skip ConvertEmptyStringsToNull and TrimStrings middlewares
             $data = json_optimize_decode($request->getContent(), true);
-            $data = SanitizeHelper::sanitizeData($data['data'], null, $task->processRequest->do_not_sanitize ?? []);
+            $instance = $this->processExecutionRaw()->getProcessRequestForCompleteRaw($task->process_request_id);
+            $data = SanitizeHelper::sanitizeData($data['data'], null, $instance->do_not_sanitize ?? []);
+
             //Call the manager to trigger the start event
-            $process = $task->process;
-            $instance = $task->processRequest;
-            TaskDraft::moveDraftFiles($task);
+            $process = $this->processExecutionRaw()->getProcessForCompleteRaw($task->process_id);
+            $instance->setRelation('process', $process);
+            if ($processVersion = $this->processExecutionRaw()->getProcessVersionForCompleteRaw($instance->process_version_id)) {
+                $instance->setRelation('processVersion', $processVersion);
+            }
+            $task->setRelation('processRequest', $instance);
+            $task->setRelation('process', $process);
+
+            if ($this->processExecutionRaw()->taskHasDraftRaw($task->id)) {
+                TaskDraft::moveDraftFiles($task);
+            }
+
             WorkflowManager::completeTask($process, $instance, $task, $data);
 
-            return new Resource($task->refresh());
+            $responseInstance = $this->processExecutionRaw()->getProcessRequestForResponseRaw($task->process_request_id);
+            $responseInstance->setRelation('process', $process);
+            $taskRefreshed = $this->processExecutionRaw()->refreshTaskRaw($task, $process, $responseInstance);
+
+            return new Resource($taskRefreshed);
         } elseif (!empty($request->input('user_id'))) {
+            $process = $this->processExecutionRaw()->getProcessForReassignRaw($task->process_id);
+            $task->setRelation('process', $process);
+
             $userToAssign = $request->input('user_id');
             $comments = $request->input('comments');
             $task->reassign($userToAssign, $request->user(), $comments);
 
-            $taskRefreshed = $task->refresh();
-
+            $taskRefreshed = $this->processExecutionRaw()->refreshTaskRaw($task, $process, $task->processRequest);
             CaseUpdate::dispatchSync($task->processRequest, $taskRefreshed);
 
             return new Resource($taskRefreshed);
