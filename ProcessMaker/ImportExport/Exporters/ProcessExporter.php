@@ -290,6 +290,7 @@ class ProcessExporter extends ExporterBase
             self::BPMN_TASK,
             self::BPMN_MANUAL_TASK,
             'bpmn:callActivity',
+            'bpmn:startEvent',
         ];
 
         foreach (Utils::getAssignments($this->model, $tags) as $path => $assignments) {
