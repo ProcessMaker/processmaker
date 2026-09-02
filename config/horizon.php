@@ -163,6 +163,17 @@ return [
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MAX_PROCESSES', 1),
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
             ],
+            'supervisor-savedsearch' => [
+                'connection' => 'redis',
+                'queue' => ['saved-search'],
+                'balance' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_BALANCE', 'simple'),
+                'tries' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_TRIES', 3),
+                'timeout' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_TIMEOUT', 600),
+                'minProcesses' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_MIN_PROCESSES', 1),
+                'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_MAX_PROCESSES', 1),
+                'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
+                'maxJobs' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_MAX_JOBS', 3),
+            ],
         ],
 
         'local' => [
@@ -187,6 +198,17 @@ return [
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MAX_PROCESSES', 1),
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
             ],
+            'supervisor-savedsearch' => [
+                'connection' => 'redis',
+                'queue' => ['saved-search'],
+                'balance' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_BALANCE', 'simple'),
+                'tries' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_TRIES', 3),
+                'timeout' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_TIMEOUT', 600),
+                'minProcesses' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_MIN_PROCESSES', 1),
+                'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_MAX_PROCESSES', 1),
+                'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
+                'maxJobs' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_MAX_JOBS', 2),
+            ],
         ],
 
         'staging' => [
@@ -210,6 +232,17 @@ return [
                 'minProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MIN_PROCESSES', 1),
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MAX_PROCESSES', 1),
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
+            ],
+            'supervisor-savedsearch' => [
+                'connection' => 'redis',
+                'queue' => ['saved-search'],
+                'balance' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_BALANCE', 'simple'),
+                'tries' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_TRIES', 3),
+                'timeout' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_TIMEOUT', 600),
+                'minProcesses' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_MIN_PROCESSES', 1),
+                'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_MAX_PROCESSES', 1),
+                'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
+                'maxJobs' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_MAX_JOBS', 2),
             ],
         ],
     ],
