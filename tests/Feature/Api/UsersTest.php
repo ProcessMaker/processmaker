@@ -459,6 +459,51 @@ class UsersTest extends TestCase
         $this->assertNotEquals($verify, $verify_new);
     }
 
+    public function testAdministratorCanUpdateNewNonSsoUserMoreThanOnce(): void
+    {
+        $response = $this->apiCall('POST', self::API_TEST_URL, [
+            'username' => 'new-non-sso-user',
+            'firstname' => 'New',
+            'lastname' => 'User',
+            'email' => Faker::create()->email(),
+            'status' => 'ACTIVE',
+            'password' => $this->makePassword(),
+        ]);
+
+        $response->assertStatus(201);
+        $user = User::findOrFail($response->json('id'));
+        $this->assertNull($user->meta);
+        $url = self::API_TEST_URL . '/' . $user->id;
+        $metadata = ['customProfileProperty' => null];
+
+        $response = $this->apiCall(
+            'PUT',
+            $url,
+            $this->getSelfServiceUpdateData($user, ['meta' => $metadata])
+        );
+
+        $response->assertStatus(204);
+        $user->refresh();
+        $this->assertNotNull($user->meta);
+        $this->assertTrue(property_exists($user->meta, 'customProfileProperty'));
+        $this->assertFalse(property_exists($user->meta, 'authenticationType'));
+
+        $response = $this->apiCall(
+            'PUT',
+            $url,
+            $this->getSelfServiceUpdateData($user, [
+                'title' => 'Updated Twice',
+                'meta' => $metadata,
+            ])
+        );
+
+        $response->assertStatus(204);
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'title' => 'Updated Twice',
+        ]);
+    }
+
     /**
      * Update user in process
      */
