@@ -415,7 +415,7 @@ class LoginController extends Controller
     protected function throwLockedLoginResponse()
     {
         throw ValidationException::withMessages([
-            $this->username() => [_('Account locked after too many failed attempts. Contact administrator.')],
+            $this->username() => [__('Account locked after too many failed attempts. Contact administrator.')],
         ]);
     }
 
