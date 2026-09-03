@@ -189,6 +189,11 @@ class BpmnEngine implements EngineInterface
 
     public function scheduleInlineJob(array $job): void
     {
+        // This is a single pending-job slot; replacing it would silently skip a task.
+        if ($this->nextInlineJob !== null) {
+            throw new \LogicException('An inline BPMN job is already scheduled.');
+        }
+
         $this->nextInlineJob = $job;
     }
 
