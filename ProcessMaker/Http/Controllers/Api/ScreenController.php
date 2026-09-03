@@ -20,6 +20,8 @@ use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
 use ProcessMaker\Query\SyntaxError;
+use ProcessMaker\Screens\ScreenInlineImageNormalizationResult;
+use ProcessMaker\Screens\ScreenInlineImageNormalizer;
 use ProcessMaker\Traits\ProjectAssetTrait;
 
 class ScreenController extends Controller
@@ -301,6 +303,8 @@ class ScreenController extends Controller
         $screen->fill($request->input());
         $original = $screen->getOriginal();
 
+        $normalization = $this->normalizeInlineImages($screen);
+
         $this->updateScreenDetails($request, $screen, $original, $lastVersion);
 
         $screen->saveOrFail();
@@ -319,7 +323,7 @@ class ScreenController extends Controller
         $screenCache = ScreenCacheFactory::getScreenCache();
         $screenCache->clearCompiledAssets();
 
-        return response([], 204);
+        return $this->screenSaveResponse($normalization);
     }
 
     public function updateScreenDetails($request, $screen, $original, $lastVersion)
@@ -392,9 +396,38 @@ class ScreenController extends Controller
     {
         $request->validate(Screen::rules($screen));
         $screen->fill($request->input());
+        $normalization = $this->normalizeInlineImages($screen);
         $screen->saveDraft();
 
-        return response([], 204);
+        return $this->screenSaveResponse($normalization);
+    }
+
+    private function normalizeInlineImages(Screen $screen): ScreenInlineImageNormalizationResult
+    {
+        $config = $screen->config;
+        if (!is_array($config)) {
+            return new ScreenInlineImageNormalizationResult([], 0, 0);
+        }
+
+        $result = app(ScreenInlineImageNormalizer::class)->normalize($screen, $config);
+        if ($result->wasModified()) {
+            $screen->config = $result->config();
+        }
+
+        return $result;
+    }
+
+    private function screenSaveResponse(ScreenInlineImageNormalizationResult $normalization)
+    {
+        if (!$normalization->wasModified()) {
+            return response([], 204);
+        }
+
+        return response([
+            'converted_images' => $normalization->convertedCount(),
+            'replaced_images' => $normalization->replacedCount(),
+            'config' => $normalization->config(),
+        ], 200);
     }
 
     public function close(Screen $screen)

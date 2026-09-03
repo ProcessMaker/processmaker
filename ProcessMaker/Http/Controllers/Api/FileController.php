@@ -226,6 +226,7 @@ class FileController extends Controller
             'model_id' => $addedMedia->model_id,
             'file_name' => $addedMedia->file_name,
             'mime_type' => $addedMedia->mime_type,
+            'url' => $addedMedia->getUrl(),
         ], 200);
     }
 

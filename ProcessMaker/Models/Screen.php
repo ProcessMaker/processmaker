@@ -18,6 +18,8 @@ use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\ProjectAssetTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Validation\CategoryRule;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
  * Class Screen
@@ -64,7 +66,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   @OA\Property(property="url", type="string"),
  * )
  */
-class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMetricInterface
+class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMetricInterface, HasMedia
 {
     use SerializeToIso8601;
     use HideSystemResources;
@@ -74,8 +76,11 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
     use ExtendedPMQL;
     use Exportable;
     use ProjectAssetTrait;
+    use InteractsWithMedia;
 
     const categoryClass = ScreenCategory::class;
+
+    public const INLINE_IMAGES_COLLECTION = 'inline_images';
 
     protected $connection = 'processmaker';
 
@@ -117,6 +122,11 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
 
         static::updating($clearCacheCallback);
         static::deleting($clearCacheCallback);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection(self::INLINE_IMAGES_COLLECTION);
     }
 
     /**
