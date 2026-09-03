@@ -60,6 +60,7 @@ class CaseUtilsTest extends TestCase
             'process_id' => 1001,
             'element_type' => 'task',
             'status' => 'ACTIVE',
+            'user_id' => 42,
         ];
         $result = CaseUtils::storeTasks($tasks, $taskData);
         $this->assertEquals(1, $result->count());
@@ -69,7 +70,22 @@ class CaseUtilsTest extends TestCase
             'name' => 'Task 1',
             'process_id' => 1001,
             'status' => 'ACTIVE',
+            'user_id' => 42,
         ], $result->first());
+    }
+
+    public function test_filter_tasks_by_user()
+    {
+        $tasks = new Collection([
+            ['id' => '1', 'name' => 'Task A', 'user_id' => 10, 'status' => 'ACTIVE'],
+            ['id' => '2', 'name' => 'Task B', 'user_id' => 20, 'status' => 'ACTIVE'],
+            ['id' => '3', 'name' => 'Task C', 'user_id' => 10, 'status' => 'CLOSED'],
+        ]);
+
+        $result = CaseUtils::filterTasksByUser($tasks, 10);
+
+        $this->assertEquals(2, $result->count());
+        $this->assertEquals(['1', '3'], $result->pluck('id')->all());
     }
 
     public function test_store_participants()
@@ -123,8 +139,8 @@ class CaseUtilsTest extends TestCase
 
     public function test_extract_data_process()
     {
-        $object = (object)[
-            'process' => (object)[
+        $object = (object) [
+            'process' => (object) [
                 'id' => 1,
                 'name' => 'Process 1',
             ],
@@ -138,11 +154,11 @@ class CaseUtilsTest extends TestCase
 
     public function test_extract_data_request()
     {
-        $object = (object)[
-            'processRequest' => (object)[
+        $object = (object) [
+            'processRequest' => (object) [
                 'id' => 1,
                 'name' => 'Request 1',
-                'parentRequest' => (object)[
+                'parentRequest' => (object) [
                     'id' => 2,
                 ],
             ],
@@ -157,13 +173,14 @@ class CaseUtilsTest extends TestCase
 
     public function test_extract_data_task()
     {
-        $object = (object)[
+        $object = (object) [
             'id' => 1,
             'element_id' => 101,
             'element_name' => 'Task 1',
             'process_id' => 1001,
             'element_type' => 'task',
             'status' => 'ACTIVE',
+            'user_id' => 42,
         ];
         $expected = [
             'id' => 1,
@@ -172,6 +189,7 @@ class CaseUtilsTest extends TestCase
             'process_id' => 1001,
             'element_type' => 'task',
             'status' => 'ACTIVE',
+            'user_id' => 42,
         ];
         $this->assertEquals($expected, CaseUtils::extractData($object, 'TASK'));
     }

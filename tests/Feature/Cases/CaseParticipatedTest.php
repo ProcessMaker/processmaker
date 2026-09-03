@@ -186,23 +186,32 @@ class CaseParticipatedTest extends TestCase
 
         $this->assertDatabaseCount('cases_participated', 2);
         $this->assertDatabaseHas('cases_participated', [
+            'user_id' => $user->id,
+            'case_number' => $instance->case_number,
+            'case_status' => 'IN_PROGRESS',
+            'tasks->[0]->id' => $token->id,
+            'tasks->[0]->element_id' => $token->element_id,
+            'tasks->[0]->name' => $token->element_name,
+            'tasks->[0]->process_id' => $token->process_id,
+            'tasks->[0]->status' => $token->status,
+            'tasks->[0]->user_id' => $user->id,
+            'tasks->[1]->id' => null,
+        ]);
+        $this->assertDatabaseHas('cases_participated', [
             'user_id' => $user2->id,
             'case_number' => $instance->case_number,
             'case_title' => $instance->case_title,
             'case_title_formatted' => $instance->case_title_formatted,
             'case_status' => 'IN_PROGRESS',
             'request_tokens->[0]' => $token->id,
+            'request_tokens->[1]' => $token2->id,
             'tasks->[0]->id' => $token2->id,
             'tasks->[0]->element_id' => $token2->element_id,
             'tasks->[0]->name' => $token2->element_name,
             'tasks->[0]->process_id' => $token2->process_id,
             'tasks->[0]->status' => $token2->status,
-            'request_tokens->[1]' => $token2->id,
-            'tasks->[1]->id' => $token->id,
-            'tasks->[1]->element_id' => $token->element_id,
-            'tasks->[1]->name' => $token->element_name,
-            'tasks->[1]->process_id' => $token->process_id,
-            'tasks->[1]->status' => $token->status,
+            'tasks->[0]->user_id' => $user2->id,
+            'tasks->[1]->id' => null,
         ]);
     }
 
@@ -253,17 +262,21 @@ class CaseParticipatedTest extends TestCase
             'user_id' => $user2->id,
             'case_number' => $instance->case_number,
             'request_tokens->[0]' => $token->id,
+            'request_tokens->[1]' => $token2->id,
             'tasks->[0]->id' => $token2->id,
             'tasks->[0]->element_id' => $token2->element_id,
             'tasks->[0]->name' => $token2->element_name,
             'tasks->[0]->process_id' => $token2->process_id,
             'tasks->[0]->status' => $token2->status,
-            'request_tokens->[1]' => $token2->id,
-            'tasks->[1]->id' => $token->id,
-            'tasks->[1]->element_id' => $token->element_id,
-            'tasks->[1]->name' => $token->element_name,
-            'tasks->[1]->process_id' => $token->process_id,
-            'tasks->[1]->status' => $token->status,
+            'tasks->[0]->user_id' => $user2->id,
+            'tasks->[1]->id' => null,
+        ]);
+        $this->assertDatabaseHas('cases_participated', [
+            'user_id' => $user->id,
+            'case_number' => $instance->case_number,
+            'tasks->[0]->id' => $token->id,
+            'tasks->[0]->user_id' => $user->id,
+            'tasks->[1]->id' => null,
         ]);
 
         $token3 = ProcessRequestToken::factory()->create([
@@ -286,16 +299,21 @@ class CaseParticipatedTest extends TestCase
             'tasks->[0]->name' => $token3->element_name,
             'tasks->[0]->process_id' => $token3->process_id,
             'tasks->[0]->status' => $token3->status,
-            'tasks->[1]->id' => $token2->id,
-            'tasks->[1]->element_id' => $token2->element_id,
-            'tasks->[1]->name' => $token2->element_name,
-            'tasks->[1]->process_id' => $token2->process_id,
-            'tasks->[1]->status' => $token2->status,
-            'tasks->[2]->id' => $token->id,
-            'tasks->[2]->element_id' => $token->element_id,
-            'tasks->[2]->name' => $token->element_name,
-            'tasks->[2]->process_id' => $token->process_id,
-            'tasks->[2]->status' => $token->status,
+            'tasks->[0]->user_id' => $user->id,
+            'tasks->[1]->id' => $token->id,
+            'tasks->[1]->element_id' => $token->element_id,
+            'tasks->[1]->name' => $token->element_name,
+            'tasks->[1]->process_id' => $token->process_id,
+            'tasks->[1]->status' => $token->status,
+            'tasks->[1]->user_id' => $user->id,
+            'tasks->[2]->id' => null,
+        ]);
+        $this->assertDatabaseHas('cases_participated', [
+            'user_id' => $user2->id,
+            'case_number' => $instance->case_number,
+            'tasks->[0]->id' => $token2->id,
+            'tasks->[0]->user_id' => $user2->id,
+            'tasks->[1]->id' => null,
         ]);
     }
 
@@ -354,11 +372,8 @@ class CaseParticipatedTest extends TestCase
             'tasks->[0]->name' => $token2->element_name,
             'tasks->[0]->process_id' => $token2->process_id,
             'tasks->[0]->status' => $token2->status,
-            'tasks->[1]->id' => $token->id,
-            'tasks->[1]->element_id' => $token->element_id,
-            'tasks->[1]->name' => $token->element_name,
-            'tasks->[1]->process_id' => $token->process_id,
-            'tasks->[1]->status' => $token->status,
+            'tasks->[0]->user_id' => $user2->id,
+            'tasks->[1]->id' => null,
         ]);
 
         $token3 = ProcessRequestToken::factory()->create([
@@ -382,16 +397,14 @@ class CaseParticipatedTest extends TestCase
             'tasks->[0]->name' => $token3->element_name,
             'tasks->[0]->process_id' => $token3->process_id,
             'tasks->[0]->status' => $token3->status,
-            'tasks->[1]->id' => $token2->id,
-            'tasks->[1]->element_id' => $token2->element_id,
-            'tasks->[1]->name' => $token2->element_name,
-            'tasks->[1]->process_id' => $token2->process_id,
-            'tasks->[1]->status' => $token2->status,
-            'tasks->[2]->id' => $token->id,
-            'tasks->[2]->element_id' => $token->element_id,
-            'tasks->[2]->name' => $token->element_name,
-            'tasks->[2]->process_id' => $token->process_id,
-            'tasks->[2]->status' => $token->status,
+            'tasks->[0]->user_id' => $user->id,
+            'tasks->[1]->id' => $token->id,
+            'tasks->[1]->element_id' => $token->element_id,
+            'tasks->[1]->name' => $token->element_name,
+            'tasks->[1]->process_id' => $token->process_id,
+            'tasks->[1]->status' => $token->status,
+            'tasks->[1]->user_id' => $user->id,
+            'tasks->[2]->id' => null,
         ]);
 
         $instance->status = 'COMPLETED';
