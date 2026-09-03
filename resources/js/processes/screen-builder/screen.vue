@@ -688,9 +688,10 @@ export default {
             custom_css: this.customCSS,
             watchers: this.watchers,
           })
-          .then(() => {
+          .then((response) => {
             // Set draft status.
             this.setVersionIndicator(true);
+            this.applyInlineImageSaveResponse(response);
             ProcessMaker.EventBus.$emit("save-changes");
           })
           .catch((error) => {
@@ -1067,6 +1068,33 @@ export default {
       // Recount number of elements
       this.countElements();
     },
+    applyInlineImageSaveResponse(response) {
+      const payload = response?.data;
+      if (!payload || typeof payload !== "object") {
+        return;
+      }
+      if (Array.isArray(payload.config)) {
+        this.syncNormalizedScreenConfig(payload.config);
+      }
+      if (payload.replaced_images > 0 || payload.converted_images > 0) {
+        ProcessMaker.alert(
+          this.$t(
+            "Inline images were stored as media files to keep this screen lightweight.",
+          ),
+          "success",
+        );
+      }
+    },
+    syncNormalizedScreenConfig(normalizedConfig) {
+      const builder = this.$refs.builder;
+      if (builder && Array.isArray(builder.config)) {
+        builder.config.splice(0, builder.config.length, ...normalizedConfig);
+        this.config = builder.config;
+      } else {
+        this.config = normalizedConfig;
+      }
+      this.screen.config = this.config;
+    },
     previewSubmit() {
       // eslint-disable-next-line no-alert
       alert("Preview Form was Submitted");
@@ -1172,6 +1200,7 @@ export default {
             if (exportScreen) {
               this.exportScreen();
             }
+            this.applyInlineImageSaveResponse(response);
             ProcessMaker.alert(this.$t("Successfully saved"), "success");
             // Set published status.
             this.setVersionIndicator(false);
