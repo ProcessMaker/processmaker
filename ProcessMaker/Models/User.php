@@ -269,7 +269,7 @@ class User extends Authenticatable implements HasMedia
     public function hasPermissionsFor(...$resources)
     {
         if ($this->is_administrator) {
-            $perms = Permission::all(['name'])->pluck('name');
+            $perms = collect(Permission::cachedNames());
         } else {
             $perms = collect(session('permissions'));
         }
