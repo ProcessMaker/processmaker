@@ -49,9 +49,29 @@ abstract class Base
      */
     private $scriptExecutor;
 
-    public function __construct(ScriptExecutor $scriptExecutor)
+    /**
+     * Key of the script being executed.
+     */
+    private ?string $scriptKey;
+
+    public function __construct(ScriptExecutor $scriptExecutor, ?string $scriptKey = null)
     {
         $this->scriptExecutor = $scriptExecutor;
+        $this->scriptKey = $scriptKey;
+    }
+
+    /**
+     * Build the executor-level failure log without exposing Smart Extract diagnostics.
+     */
+    protected function dockerFailureLogMessage($returnCode, array $output): string
+    {
+        $message = 'Script threw return code ' . $returnCode;
+
+        if ($this->scriptKey !== SmartExtractConfiguration::SEND_DOCUMENT_SCRIPT_KEY) {
+            $message .= ' Message: ' . implode("\n", $output);
+        }
+
+        return $message;
     }
 
     /**
