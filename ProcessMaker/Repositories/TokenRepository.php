@@ -174,7 +174,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
         $token->updateTokenProperties();
         $token->getInstance()->updateCatchEvents();
-        $token->saveOrFail();
+        $this->saveToken($token);
         $token->setId($token->getKey());
         $request = $token->getInstance();
         $request->last_stage_id = $token->stage_id;
@@ -357,7 +357,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->process_request_id = $token->getInstance()->getKey();
         $token->completed_at = Carbon::now();
         $token->updateTokenProperties();
-        $token->save();
+        $this->saveToken($token, 'completed');
         $token->setId($token->getKey());
 
         $this->updateCaseStartedTask($token);
@@ -391,7 +391,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->process_request_id = $token->getInstance()->getKey();
         $token->data = $token->getInstance()->getDataStore()->getData();
         $token->updateTokenProperties();
-        $token->save();
+        $this->saveToken($token, 'closed');
         $token->setId($token->getKey());
     }
 
@@ -718,5 +718,27 @@ class TokenRepository implements TokenRepositoryInterface
         $caseTaskRepo = new CaseTaskRepository($token->getInstance()->case_number, $token);
         $caseTaskRepo->updateCaseStartedTaskStatus();
         $caseTaskRepo->updateCaseParticipatedTaskStatus();
+    }
+
+    private function tokenPersistenceUsesRawSql(): bool
+    {
+        return (bool) config('app.token_persistence_raw_enabled', false);
+    }
+
+    private function saveToken(TokenInterface $token, string $context = 'activated'): void
+    {
+        if (!$this->tokenPersistenceUsesRawSql() || !$token instanceof ProcessRequestToken) {
+            $context === 'activated' ? $token->saveOrFail() : $token->save();
+
+            return;
+        }
+
+        $repository = app(TokenPersistenceRawRepository::class);
+
+        match ($context) {
+            'completed' => $repository->saveCompletedToken($token),
+            'closed' => $repository->saveClosedToken($token),
+            default => $repository->saveActivatedToken($token),
+        };
     }
 }

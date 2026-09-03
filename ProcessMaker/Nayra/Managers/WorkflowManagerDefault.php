@@ -265,6 +265,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
 
         if ($this->canRunInlineTask($token, $scriptTask)) {
             $this->runInlineTask($token, RunScriptTask::class);
+
             return;
         }
 
@@ -285,6 +286,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
 
         if ($this->canRunInlineTask($token, $serviceTask)) {
             $this->runInlineTask($token, RunServiceTask::class);
+
             return;
         }
 

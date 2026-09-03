@@ -14,6 +14,7 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\ExecutionInstanceRepositoryInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\StorageInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
+use ProcessMaker\Repositories\TokenPersistenceRawRepository;
 use ProcessMaker\SanitizeHelper;
 
 /**
@@ -233,6 +234,16 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
 
         // Do nothing if is not persistent
         if ($process->isNonPersistent()) {
+            return;
+        }
+
+        if (
+            config('app.token_persistence_raw_enabled', false)
+            && $instance instanceof ProcessRequest
+        ) {
+            app(TokenPersistenceRawRepository::class)->persistInstanceUpdated($instance);
+            CaseUpdateStatus::dispatchSync($instance);
+
             return;
         }
 
