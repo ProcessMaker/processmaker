@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Str;
 
+$iframeEmbedding = filter_var(env('IFRAME_EMBEDDING_ENABLED', false), FILTER_VALIDATE_BOOLEAN)
+    && trim((string) env('IFRAME_EMBEDDING_ALLOWED_ORIGINS', '')) !== '';
+
 return [
 
     /*
@@ -170,7 +173,11 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE', false),
+    'secure' => $iframeEmbedding
+        ? (env('SESSION_SECURE_COOKIE') !== null
+            ? filter_var(env('SESSION_SECURE_COOKIE'), FILTER_VALIDATE_BOOLEAN)
+            : true)
+        : env('SESSION_SECURE_COOKIE', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -198,6 +205,8 @@ return [
     |
     */
 
-    'same_site' => env('SESSION_SAME_SITE', 'lax'),
+    'same_site' => $iframeEmbedding ? 'none' : env('SESSION_SAME_SITE', 'lax'),
+
+    'partitioned' => $iframeEmbedding,
 
 ];
