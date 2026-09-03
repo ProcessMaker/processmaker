@@ -16,6 +16,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\Query\SyntaxError;
+use ProcessMaker\Services\SmartExtractConfiguration;
 
 trait TaskControllerIndexMethods
 {
@@ -161,7 +162,7 @@ trait TaskControllerIndexMethods
     {
         $nonSystem = filter_var($request->input('non_system'), FILTER_VALIDATE_BOOLEAN);
         $allTasks = filter_var($request->input('all_tasks'), FILTER_VALIDATE_BOOLEAN);
-        $hitlEnabled = filter_var(config('smart-extract.hitl_enabled'), FILTER_VALIDATE_BOOLEAN);
+        $hitlEnabled = app(SmartExtractConfiguration::class)->hitlEnabled();
         $includeScreen = filter_var($request->input('includeScreen'), FILTER_VALIDATE_BOOLEAN);
         $query->when(!$allTasks, function ($query) use ($includeScreen) {
             $query->where(function ($query) use ($includeScreen) {

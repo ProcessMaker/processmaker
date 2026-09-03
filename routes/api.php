@@ -43,7 +43,6 @@ use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Api\UserConfigurationController;
 use ProcessMaker\Http\Controllers\Api\UserController;
 use ProcessMaker\Http\Controllers\Api\UserTokenController;
-use ProcessMaker\Http\Controllers\Api\WizardTemplateController;
 use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 
@@ -378,10 +377,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->p
     Route::post('template/{type}/{id}/apply', [TemplateController::class, 'applyTemplate'])->name('template.applyTemplate')->middleware('template-authorization');
     Route::get('screen-builder/{type}/{id}', [TemplateController::class, 'show'])->name('screenBuilder.template.show')->middleware('template-authorization');
 
-    // Wizard Templates
-    Route::get('wizard-templates', [WizardTemplateController::class, 'index'])->name('wizard-templates.index');
-    Route::get('wizard-templates/{template_uuid}/get-helper-process', [WizardTemplateController::class, 'getHelperProcess'])->name('wizard-templates.getHelperProcess');
-
     // debugging javascript errors
     Route::post('debug', [DebugController::class, 'store'])->name('debug.store')->middleware('throttle');
 
@@ -423,6 +418,10 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->p
         Route::get('devlink/local-bundles', [DevLinkController::class, 'localBundles'])->name('devlink.local-bundles');
         Route::get('devlink/local-bundles/{bundle}', [DevLinkController::class, 'showBundle'])->name('devlink.local-bundle');
         Route::get('devlink/local-bundles/{bundle}/setting/{settingKey}', [DevLinkController::class, 'getBundleSetting'])->name('devlink.local-bundle-setting');
+        Route::get(
+            'devlink/local-bundles/{bundle}/setting-preview/{settingKey}',
+            [DevLinkController::class, 'getBundleSettingPreview']
+        )->name('devlink.local-bundle-setting-preview');
         Route::get('devlink/local-bundles/all-settings/{settingKey}', [DevLinkController::class, 'getBundleAllSettings'])->name('devlink.local-bundle-all-settings');
         Route::post('devlink/local-bundles/setting/refresh-ui', [DevLinkController::class, 'refreshUi'])->name('devlink.local-bundle-setting-refresh-ui');
         Route::post('devlink/local-bundles', [DevLinkController::class, 'createBundle'])->name('devlink.create-bundle');

@@ -417,6 +417,7 @@ export default {
      */
     showModal() {
       this.$refs.duplicateScriptModalRef.show();
+      this.errors = {};
     },
     hideDuplicateScriptModal() {
       this.$refs.duplicateScriptModalRef.hide();

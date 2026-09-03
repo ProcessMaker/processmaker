@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Adapted from tests/Feature/Api/processes/ParentCallActivity.bpmn for EXC-04. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" targetNamespace="http://processmaker.com/tests/inline-task-execution">
+  <bpmn:process id="inline_call_activity_parent" name="EXC-04 Call Activity Chain" isExecutable="true">
+    <bpmn:startEvent id="start" name="Start">
+      <bpmn:outgoing>flow_start_a</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="script_a" name="Script A" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_start_a</bpmn:incoming>
+      <bpmn:outgoing>flow_a_call</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['call_parent_script_a' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:callActivity id="call_child" name="Call Inline Test Child" calledElement="ProcessId-[child_process_id]" pm:config="{&quot;calledElement&quot;:&quot;ProcessId-[child_process_id]&quot;,&quot;processId&quot;:[child_process_id],&quot;startEvent&quot;:&quot;child_start&quot;,&quot;name&quot;:&quot;Inline Call Activity Child&quot;}">
+      <bpmn:incoming>flow_a_call</bpmn:incoming>
+      <bpmn:outgoing>flow_call_b</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:scriptTask id="script_b" name="Script B" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_call_b</bpmn:incoming>
+      <bpmn:outgoing>flow_b_end</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['call_parent_script_b' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="end" name="End">
+      <bpmn:incoming>flow_b_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_start_a" sourceRef="start" targetRef="script_a" />
+    <bpmn:sequenceFlow id="flow_a_call" sourceRef="script_a" targetRef="call_child" />
+    <bpmn:sequenceFlow id="flow_call_b" sourceRef="call_child" targetRef="script_b" />
+    <bpmn:sequenceFlow id="flow_b_end" sourceRef="script_b" targetRef="end" />
+  </bpmn:process>
+</bpmn:definitions>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Adapted from tests/Feature/Api/processes/Error_BoundaryEvent_ScriptTask.bpmn and Error_BoundaryEvent_ScriptTask_NonInterrupting.bpmn for EXC-01. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" targetNamespace="http://processmaker.com/tests/inline-task-execution">
+  <bpmn:process id="inline_boundary_script" name="EXC-01 Boundary Event Script Tasks" isExecutable="true">
+    <bpmn:startEvent id="start_interrupting" name="Start Interrupting Path">
+      <bpmn:outgoing>flow_start_interrupting_setup</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="interrupting_setup" name="Interrupting Path Setup" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_start_interrupting_setup</bpmn:incoming>
+      <bpmn:outgoing>flow_setup_interrupting</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['interrupting_setup' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="script_interrupting" name="Interrupting Boundary Script" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_setup_interrupting</bpmn:incoming>
+      <bpmn:outgoing>flow_interrupting_success</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php throw new Exception('interrupting-boundary-error');]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:boundaryEvent id="boundary_interrupting" name="Interrupting Error" attachedToRef="script_interrupting" cancelActivity="true">
+      <bpmn:outgoing>flow_interrupting_boundary</bpmn:outgoing>
+      <bpmn:errorEventDefinition />
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="end_interrupting_success" name="Unexpected Interrupting Success">
+      <bpmn:incoming>flow_interrupting_success</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="end_interrupting_boundary" name="Interrupting Boundary End">
+      <bpmn:incoming>flow_interrupting_boundary</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:startEvent id="start_non_interrupting" name="Start Non-Interrupting Path">
+      <bpmn:outgoing>flow_start_non_interrupting_setup</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="non_interrupting_setup" name="Non-Interrupting Path Setup" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_start_non_interrupting_setup</bpmn:incoming>
+      <bpmn:outgoing>flow_setup_non_interrupting</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['non_interrupting_setup' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="script_non_interrupting" name="Non-Interrupting Boundary Script" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_setup_non_interrupting</bpmn:incoming>
+      <bpmn:outgoing>flow_non_interrupting_main</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php throw new Exception('non-interrupting-boundary-error');]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:boundaryEvent id="boundary_non_interrupting" name="Non-Interrupting Error" attachedToRef="script_non_interrupting" cancelActivity="false">
+      <bpmn:outgoing>flow_non_interrupting_boundary</bpmn:outgoing>
+      <bpmn:errorEventDefinition />
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="end_non_interrupting_main" name="Non-Interrupting Main End">
+      <bpmn:incoming>flow_non_interrupting_main</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="end_non_interrupting_boundary" name="Non-Interrupting Boundary End">
+      <bpmn:incoming>flow_non_interrupting_boundary</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="flow_start_interrupting_setup" sourceRef="start_interrupting" targetRef="interrupting_setup" />
+    <bpmn:sequenceFlow id="flow_setup_interrupting" sourceRef="interrupting_setup" targetRef="script_interrupting" />
+    <bpmn:sequenceFlow id="flow_interrupting_success" sourceRef="script_interrupting" targetRef="end_interrupting_success" />
+    <bpmn:sequenceFlow id="flow_interrupting_boundary" sourceRef="boundary_interrupting" targetRef="end_interrupting_boundary" />
+    <bpmn:sequenceFlow id="flow_start_non_interrupting_setup" sourceRef="start_non_interrupting" targetRef="non_interrupting_setup" />
+    <bpmn:sequenceFlow id="flow_setup_non_interrupting" sourceRef="non_interrupting_setup" targetRef="script_non_interrupting" />
+    <bpmn:sequenceFlow id="flow_non_interrupting_main" sourceRef="script_non_interrupting" targetRef="end_non_interrupting_main" />
+    <bpmn:sequenceFlow id="flow_non_interrupting_boundary" sourceRef="boundary_non_interrupting" targetRef="end_non_interrupting_boundary" />
+  </bpmn:process>
+</bpmn:definitions>
