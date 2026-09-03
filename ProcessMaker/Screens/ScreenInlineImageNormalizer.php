@@ -34,7 +34,71 @@ class ScreenInlineImageNormalizer
 
     public function configContainsInlineImages(array $config): bool
     {
-        return (bool) preg_match(self::DATA_IMAGE_PATTERN, json_encode($config) ?: '');
+        return $this->containsInlineImagesInPages($config);
+    }
+
+    private function containsInlineImagesInPages(array $config): bool
+    {
+        foreach ($config as $page) {
+            if (!is_array($page) || empty($page['items']) || !is_array($page['items'])) {
+                continue;
+            }
+            if ($this->containsInlineImagesInItems($page['items'])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function containsInlineImagesInItems(array $items): bool
+    {
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $component = Arr::get($item, 'component');
+            if ($component === 'FormMultiColumn') {
+                if ($this->containsInlineImagesInMultiColumn(Arr::get($item, 'items', []))) {
+                    return true;
+                }
+                continue;
+            }
+
+            if (!empty($item['items']) && is_array($item['items'])) {
+                if ($this->containsInlineImagesInItems($item['items'])) {
+                    return true;
+                }
+            }
+
+            if ($component === 'FormHtmlViewer' && $this->contentHasInlineImage(Arr::get($item, 'config.content'))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function containsInlineImagesInMultiColumn(array $columns): bool
+    {
+        foreach ($columns as $columnItems) {
+            if (!is_array($columnItems)) {
+                continue;
+            }
+            if ($this->containsInlineImagesInItems($columnItems)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function contentHasInlineImage(mixed $content): bool
+    {
+        return is_string($content)
+            && $content !== ''
+            && (bool) preg_match(self::DATA_IMAGE_PATTERN, $content);
     }
 
     private function walkPages(Screen $screen, array $config): array

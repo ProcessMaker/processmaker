@@ -16,6 +16,43 @@ class ScreenInlineImageNormalizerTest extends TestCase
         Storage::fake(config('media-library.disk_name'));
     }
 
+    public function testConfigContainsInlineImagesDetectsDataUris(): void
+    {
+        $dataUri = 'data:image/png;base64,' . self::TINY_PNG;
+        $config = [[
+            'name' => 'Default',
+            'items' => [[
+                'component' => 'FormHtmlViewer',
+                'config' => [
+                    'content' => '<img src="' . $dataUri . '" alt="logo" />',
+                ],
+            ]],
+        ]];
+
+        $result = app(ScreenInlineImageNormalizer::class)->configContainsInlineImages($config);
+
+        $this->assertTrue($result);
+    }
+
+    public function testConfigContainsInlineImagesIgnoresFormImage(): void
+    {
+        $dataUri = 'data:image/png;base64,' . self::TINY_PNG;
+        $config = [[
+            'name' => 'Default',
+            'items' => [[
+                'component' => 'FormImage',
+                'config' => [
+                    'image' => $dataUri,
+                    'name' => 'logo',
+                ],
+            ]],
+        ]];
+
+        $result = app(ScreenInlineImageNormalizer::class)->configContainsInlineImages($config);
+
+        $this->assertFalse($result);
+    }
+
     public function testReplacesBase64InRichTextContent()
     {
         $screen = Screen::factory()->create();
