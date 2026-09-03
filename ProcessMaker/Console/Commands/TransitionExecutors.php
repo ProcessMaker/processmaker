@@ -80,6 +80,12 @@ class TransitionExecutors extends Command
                 $this->info("Transitioning executor {$executors[$index]->uuid} ({$executors[$index]->language}) to the microservice...");
 
                 try {
+                    // Check if the executor type is null, and if so, set it to Custom and save it
+                    if ($executors[$index]->type === null) {
+                        $executors[$index]->type = ScriptExecutorType::Custom;
+                        $executors[$index]->save();
+                    }
+
                     $response = $this->scriptMicroserviceService->updateCustomExecutor($executors[$index]);
                     Log::debug('Response', ['response' => $response]);
                     $status = strtolower((string)($response['status'] ?? ''));
