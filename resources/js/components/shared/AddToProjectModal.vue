@@ -91,6 +91,7 @@ export default {
       formData.append("asset_type", this.assetType);
       formData.append("asset_id", this.assetId);
       formData.append("projects", this.projects);
+      formData.append("copy_asset", this.copyAsset ? "1" : "0");
       this.customModalButtons[1].disabled = true;
       // Verify if the asset was assigned
       ProcessMaker.apiClient.post("projects/assets/verify-assign", formData)
