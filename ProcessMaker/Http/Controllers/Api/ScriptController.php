@@ -173,6 +173,11 @@ class ScriptController extends Controller
      *                 property="nonce",
      *                 type="string",
      *             ),
+     *             @OA\Property(
+     *                 property="run_in_process",
+     *                 type="boolean",
+     *                 description="When true (and Core Service Task enabled), preview via in-process PHP runner instead of Docker/microservice. Also auto-enabled when the script has allow_in_process=true.",
+     *             ),
      *           ),
      *         ),
      *
@@ -189,10 +194,31 @@ class ScriptController extends Controller
         $config = $this->getRequestArray($request->get('config'));
         $code = $request->get('code');
         $nonce = $request->get('nonce');
+        $runInProcess = $this->shouldPreviewInProcess($request, $script);
 
-        TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce)->onQueue('bpmn');
+        TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce, $runInProcess)->onQueue('bpmn');
 
-        return ['status' => 'success'];
+        return ['status' => 'success', 'run_in_process' => $runInProcess];
+    }
+
+    /**
+     * Decide if script preview should use Core Service Task in-process runner.
+     */
+    private function shouldPreviewInProcess(Request $request, Script $script): bool
+    {
+        if (!config('core-service-task.enabled')) {
+            return false;
+        }
+
+        if (strtolower((string) $script->language) !== 'php') {
+            return false;
+        }
+
+        if ($request->boolean('run_in_process')) {
+            return true;
+        }
+
+        return (bool) $script->allow_in_process;
     }
 
     /**
