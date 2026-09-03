@@ -72,7 +72,42 @@ class HideServerHeaders
             $response->headers->set('Server', 'ProcessMaker Server');
         }
 
+        $this->allowIframeEmbedding($response);
+
         return $response;
+    }
+
+    private function allowIframeEmbedding(Response $response): void
+    {
+        $origins = trim((string) env('IFRAME_EMBEDDING_ALLOWED_ORIGINS', ''));
+        if (!filter_var(env('IFRAME_EMBEDDING_ENABLED', false), FILTER_VALIDATE_BOOLEAN) || $origins === '') {
+            return;
+        }
+
+        $response->headers->remove('X-Frame-Options');
+
+        $ancestors = "'self'";
+        foreach (explode(',', $origins) as $origin) {
+            $origin = rtrim(trim($origin), '/');
+            if ($origin === '' || !preg_match('#^https?://[^\s/]+$#i', $origin)) {
+                continue;
+            }
+            if (app()->environment('production') && str_starts_with(strtolower($origin), 'http://')) {
+                continue;
+            }
+            $ancestors .= ' ' . $origin;
+        }
+
+        $csp = $response->headers->get('Content-Security-Policy', '');
+        if ($csp !== '' && str_contains(strtolower($csp), 'frame-ancestors')) {
+            return;
+        }
+
+        $directive = 'frame-ancestors ' . $ancestors;
+        $response->headers->set(
+            'Content-Security-Policy',
+            $csp === '' ? $directive : trim($csp) . '; ' . $directive
+        );
     }
 
     /**
