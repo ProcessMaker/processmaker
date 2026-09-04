@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c997e22562116936e09802acf25e699a",
+    "content-hash": "0c4d74e8a304849a61dfcf6871a36457",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -4184,16 +4184,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.9.0",
+            "version": "2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "5703d83ba3da3b2e356a5fedc848ed6d8ffb6529"
+                "reference": "d2d1aa8b35e072966c89bc0c66cf926e56767dc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/5703d83ba3da3b2e356a5fedc848ed6d8ffb6529",
-                "reference": "5703d83ba3da3b2e356a5fedc848ed6d8ffb6529",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/d2d1aa8b35e072966c89bc0c66cf926e56767dc4",
+                "reference": "d2d1aa8b35e072966c89bc0c66cf926e56767dc4",
                 "shasum": ""
             },
             "require": {
@@ -4230,7 +4230,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "2.10-dev"
+                    "dev-main": "2.11-dev"
                 }
             },
             "autoload": {
@@ -4287,7 +4287,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-03T13:42:31+00:00"
+            "time": "2026-08-11T16:06:25+00:00"
         },
         {
             "name": "league/config",
@@ -6495,16 +6495,16 @@
         },
         {
             "name": "open-telemetry/opentelemetry-auto-laravel",
-            "version": "dev-main",
+            "version": "1.9.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/ProcessMaker/contrib-auto-laravel.git",
-                "reference": "890ccd089c03168cfc62bd0e449d1f5611add486"
+                "url": "https://github.com/opentelemetry-php/contrib-auto-laravel.git",
+                "reference": "ec649e8bc7a938467b74db9876b856179a856bbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/contrib-auto-laravel/zipball/890ccd089c03168cfc62bd0e449d1f5611add486",
-                "reference": "890ccd089c03168cfc62bd0e449d1f5611add486",
+                "url": "https://api.github.com/repos/opentelemetry-php/contrib-auto-laravel/zipball/ec649e8bc7a938467b74db9876b856179a856bbc",
+                "reference": "ec649e8bc7a938467b74db9876b856179a856bbc",
                 "shasum": ""
             },
             "require": {
@@ -6512,7 +6512,7 @@
                 "ext-opentelemetry": "*",
                 "laravel/framework": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0",
                 "open-telemetry/api": "^1.8",
-                "open-telemetry/sem-conv": "^1.32",
+                "open-telemetry/sem-conv": "^1.38",
                 "php": "^8.1"
             },
             "require-dev": {
@@ -6521,11 +6521,11 @@
                 "nunomaduro/collision": "*",
                 "open-telemetry/sdk": "^1.8",
                 "orchestra/testbench": ">=7.41.3",
-                "phan/phan": "^5.0",
+                "phan/phan": "^6.0",
                 "php-http/mock-client": "*",
                 "phpstan/phpstan": "^1.1",
                 "phpstan/phpstan-phpunit": "^1.0",
-                "phpunit/phpunit": "^9.5",
+                "phpunit/phpunit": "^9.5 || ^10 || ^11 || ^12 || ^13",
                 "psalm/plugin-phpunit": "^0.19.2",
                 "spatie/laravel-ignition": "*",
                 "vimeo/psalm": "6.4.0"
@@ -6534,21 +6534,16 @@
                 "open-telemetry/opentelemetry-propagation-server-timing": "Automatically propagate the context to the client through server-timing headers.",
                 "open-telemetry/opentelemetry-propagation-traceresponse": "Automatically propagate the context to the client through trace-response headers."
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "OpenTelemetry\\Contrib\\Instrumentation\\Laravel\\": "src/"
-                },
                 "files": [
                     "_register.php"
-                ]
-            },
-            "autoload-dev": {
+                ],
                 "psr-4": {
-                    "OpenTelemetry\\Tests\\Contrib\\Instrumentation\\Laravel\\": "tests/"
+                    "OpenTelemetry\\Contrib\\Instrumentation\\Laravel\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "Apache-2.0"
             ],
@@ -6563,9 +6558,9 @@
                 "tracing"
             ],
             "support": {
-                "source": "https://github.com/ProcessMaker/contrib-auto-laravel/tree/main"
+                "source": "https://github.com/opentelemetry-php/contrib-auto-laravel/tree/1.9.0"
             },
-            "time": "2026-04-08T12:06:23+00:00"
+            "time": "2026-09-02T12:13:51+00:00"
         },
         {
             "name": "open-telemetry/sdk",
@@ -16652,7 +16647,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "open-telemetry/opentelemetry-auto-laravel": 20,
         "pion/laravel-chunk-upload": 20,
         "processmaker/laravel-i18next": 20
     },
