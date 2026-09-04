@@ -544,4 +544,131 @@ class ProcessVariableControllerTest extends TestCase
         $this->assertFalse($filteredFields->contains('initiated_at'));
         $this->assertFalse($filteredFields->contains('completed_at'));
     }
+
+    public function test_only_available_with_empty_process_ids_returns_defaults_and_variables(): void
+    {
+        $this->setupCreateUser();
+
+        if (!$this->isVariablesFinderEnabled) {
+            $this->markTestSkipped('VariableFinder is required for this test.');
+        }
+
+        $savedSearch = SavedSearch::factory()->create([
+            'type' => 'request',
+            'meta' => [
+                'icon' => 'bath',
+                'file' => null,
+                'collection_id' => null,
+                'columns' => [],
+            ],
+            'pmql' => '',
+        ]);
+
+        $response = $this->apiCall(
+            'GET',
+            '/api/1.1/processes/variables?processIds=&savedSearchId=' . $savedSearch->id . '&onlyAvailable='
+        );
+
+        $response->assertStatus(200);
+
+        $fields = collect($response->json('data'))->pluck('field');
+
+        $this->assertTrue($fields->contains('case_number'));
+        $this->assertTrue($fields->contains('name'));
+        $this->assertGreaterThan(10, $fields->count());
+    }
+
+    public function test_only_available_first_page_includes_defaults_and_paginated_variables(): void
+    {
+        $this->setupCreateUser();
+
+        if (!$this->isVariablesFinderEnabled) {
+            $this->markTestSkipped('VariableFinder is required for this test.');
+        }
+
+        $savedSearch = SavedSearch::factory()->create([
+            'type' => 'request',
+            'meta' => [
+                'icon' => 'bath',
+                'file' => null,
+                'collection_id' => null,
+                'columns' => [],
+            ],
+            'pmql' => '',
+        ]);
+
+        $response = $this->apiCall(
+            'GET',
+            '/api/1.1/processes/variables?processIds=1&savedSearchId=' . $savedSearch->id . '&onlyAvailable=&page=1&per_page=5'
+        );
+
+        $response->assertStatus(200);
+
+        $fields = collect($response->json('data'))->pluck('field');
+
+        $this->assertTrue($fields->contains('case_number'));
+        $this->assertGreaterThan(5, $fields->count());
+    }
+
+    public function test_second_page_without_only_available_omits_saved_search_defaults(): void
+    {
+        $this->setupCreateUser();
+
+        if (!$this->isVariablesFinderEnabled) {
+            $this->markTestSkipped('VariableFinder is required for this test.');
+        }
+
+        $savedSearch = SavedSearch::factory()->create([
+            'type' => 'request',
+            'meta' => [
+                'icon' => 'bath',
+                'file' => null,
+                'collection_id' => null,
+                'columns' => [],
+            ],
+            'pmql' => '',
+        ]);
+
+        $response = $this->apiCall(
+            'GET',
+            '/api/1.1/processes/variables?processIds=1&savedSearchId=' . $savedSearch->id . '&page=2&per_page=5'
+        );
+
+        $response->assertStatus(200);
+
+        $fields = collect($response->json('data'))->pluck('field');
+
+        $this->assertFalse($fields->contains('case_number'));
+        $this->assertFalse($fields->contains('case_title'));
+        $this->assertGreaterThan(0, $fields->count());
+    }
+
+    public function test_empty_process_ids_returns_variable_finder_rows(): void
+    {
+        $this->setupCreateUser();
+
+        if (!$this->isVariablesFinderEnabled) {
+            $this->markTestSkipped('VariableFinder is required for this test.');
+        }
+
+        $response = $this->apiCall('GET', '/api/1.1/processes/variables?processIds=&page=1&per_page=100');
+
+        $response->assertStatus(200);
+        $this->assertEquals(30, $response->json('meta.total'));
+    }
+
+    public function test_non_only_available_request_returns_single_paginated_page(): void
+    {
+        $this->setupCreateUser();
+
+        if (!$this->isVariablesFinderEnabled) {
+            $this->markTestSkipped('VariableFinder is required for this test.');
+        }
+
+        $response = $this->apiCall('GET', '/api/1.1/processes/variables?processIds=1&page=1&per_page=5');
+
+        $response->assertStatus(200);
+        $this->assertCount(5, $response->json('data'));
+        $this->assertEquals(10, $response->json('meta.total'));
+    }
 }

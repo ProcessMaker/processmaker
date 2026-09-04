@@ -236,7 +236,9 @@ class ProcessVariableController extends Controller
         // and applies filtering for excluded fields.
         $query = DB::table('asset_variables as av')
             ->join('var_finder_variables as vfv', 'av.id', '=', 'vfv.asset_variable_id')
-            ->whereIn('av.process_id', $processIds)
+            ->when($processIds !== [], function ($query) use ($processIds) {
+                $query->whereIn('av.process_id', $processIds);
+            })
             ->groupBy('vfv.field', 'vfv.label')
             ->select([
                 DB::raw('MAX(vfv.id) as id'),
@@ -256,7 +258,7 @@ class ProcessVariableController extends Controller
             return $this->mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns);
         }
 
-        return $query->paginate($perPage, ['*'], 'page', $page);
+        return $paginator;
     }
 
     /**
@@ -288,9 +290,23 @@ class ProcessVariableController extends Controller
         $availableColumns = collect();
 
         if ($savedSearch?->available_columns) {
-            $availableColumns = $savedSearch->available_columns->merge(
-                $savedSearch->getDataColumnsAttribute() ?? collect()
-            );
+            $availableColumns = $savedSearch->available_columns;
+
+            if (
+                $savedSearch->type === SavedSearch::TYPE_COLLECTION
+                || !class_exists(ProcessVariable::class)
+                || !Schema::hasTable('process_variables')
+                || !self::$useVarFinder
+            ) {
+                $availableColumns = $availableColumns->merge(
+                    $savedSearch->getDataColumnsAttribute() ?? collect()
+                );
+            } else {
+                $availableColumns = $availableColumns
+                    ->merge($savedSearch->process_columns)
+                    ->unique('field')
+                    ->values();
+            }
         }
 
         return $availableColumns;
