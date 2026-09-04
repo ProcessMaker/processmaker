@@ -6,6 +6,7 @@ use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Managers\DataManager;
@@ -1303,5 +1304,56 @@ class ProcessRequestsTest extends TestCase
         // Check if the response is successful and contains the expected tasks
         $response = $this->apiCall('GET', $url);
         $this->assertCount(2, $response->json('data'));
+    }
+
+    public function testIndexListingUsesBoundedQueryCountWithIncludes(): void
+    {
+        ProcessRequest::query()->delete();
+        $this->user->is_administrator = true;
+        $this->user->save();
+
+        $process = Process::factory()->create();
+        $version = $process->getLatestVersion();
+
+        $requests = ProcessRequest::factory()->count(15)->create([
+            'process_id' => $process->id,
+            'process_version_id' => $version->id,
+            'user_id' => $this->user->id,
+            'data' => ['foo' => 'bar'],
+        ]);
+
+        foreach ($requests as $request) {
+            ProcessRequestToken::factory()->create([
+                'process_request_id' => $request->id,
+                'process_id' => $process->id,
+                'status' => 'ACTIVE',
+                'element_type' => 'task',
+                'element_name' => 'Review Task',
+            ]);
+        }
+
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $response = $this->apiCall(
+            'GET',
+            self::API_TEST_URL . '?include=process,participants,activeTasks,data&per_page=15'
+        );
+
+        $queryCount = count(DB::getQueryLog());
+
+        $response->assertStatus(200);
+        $this->assertCount(15, $response->json('data'));
+        $this->assertLessThanOrEqual(
+            12,
+            $queryCount,
+            'Listing with includes should not scale linearly with page size. Query count: ' . $queryCount
+        );
+
+        $first = $response->json('data.0');
+        $this->assertSame($process->id, $first['process']['id']);
+        $this->assertNotEmpty($first['active_tasks']);
+        $this->assertSame('bar', $first['data']['foo']);
+        $this->assertArrayHasKey('process_version_alternative', $first);
     }
 }
