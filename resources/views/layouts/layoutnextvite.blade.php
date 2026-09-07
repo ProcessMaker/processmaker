@@ -41,9 +41,12 @@
     @endif
     <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
     <link rel="icon" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-    <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
-    <link href="{{ mix('css/tailwind.css') }}" rel="stylesheet">
+    @vite([
+        'resources/sass/app.scss',
+        'resources/sass/sidebar/sidebar.scss',
+        'resources/sass/collapseDetails.scss',
+        'resources/sass/tailwind.css',
+    ])
     <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
     @yield('css')
     <script type="text/javascript">

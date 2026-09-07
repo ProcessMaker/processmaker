@@ -20,7 +20,7 @@
           <p class="text-center">
             <img
               class="image"
-              src="/img/welcome_mobile.svg"
+              :src="welcomeMobileImage"
               alt="recent projects"
             >
           </p>
@@ -45,7 +45,9 @@
 export default {
   props: ["username"],
   data() {
-    return {};
+    return {
+      welcomeMobileImage: '/img/welcome_mobile.svg',
+    };
   },
   methods: {
     hideModal() {

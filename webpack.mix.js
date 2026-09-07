@@ -30,6 +30,14 @@ mix.webpackConfig({
       styles: path.resolve(__dirname, "resources/sass"),
     },
   },
+  module: {
+    rules: [
+      {
+        test: /\.ya?ml$/,
+        use: "js-yaml-loader",
+      },
+    ],
+  },
 });
 
 mix.options({
@@ -145,7 +153,6 @@ mix
 
   .js("resources/js/processes-catalogue/index.js", "public/js/processes-catalogue/index.js")
 
-  .js("resources/js/tasks/index.js", "public/js/tasks/index.js")
   .js("resources/js/tasks/mobile.js", "public/js/tasks/mobile.js")
   .js("resources/js/tasks/show.js", "public/js/tasks/show.js")
   .js("resources/js/tasks/router.js", "public/js/tasks/router.js")
