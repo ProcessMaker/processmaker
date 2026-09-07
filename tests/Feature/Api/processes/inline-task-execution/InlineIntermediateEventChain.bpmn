@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- New minimal EXC-02 fixture; shared signal fixtures contain unrelated paths. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" targetNamespace="http://processmaker.com/tests/inline-task-execution">
+  <bpmn:signal id="INLINE_CONTINUE_SIGNAL" name="Inline Continue Signal" />
+  <bpmn:process id="inline_intermediate_event_chain" name="EXC-02 Intermediate Event Chain" isExecutable="true">
+    <bpmn:startEvent id="start" name="Start">
+      <bpmn:outgoing>flow_start_a</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="script_a" name="Script A" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_start_a</bpmn:incoming>
+      <bpmn:outgoing>flow_a_catch</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['intermediate_script_a' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:intermediateCatchEvent id="wait_for_signal" name="Wait for Signal">
+      <bpmn:incoming>flow_a_catch</bpmn:incoming>
+      <bpmn:outgoing>flow_catch_b</bpmn:outgoing>
+      <bpmn:signalEventDefinition signalRef="INLINE_CONTINUE_SIGNAL" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:scriptTask id="script_b" name="Script B" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_catch_b</bpmn:incoming>
+      <bpmn:outgoing>flow_b_end</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['intermediate_script_b' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="end" name="End">
+      <bpmn:incoming>flow_b_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_start_a" sourceRef="start" targetRef="script_a" />
+    <bpmn:sequenceFlow id="flow_a_catch" sourceRef="script_a" targetRef="wait_for_signal" />
+    <bpmn:sequenceFlow id="flow_catch_b" sourceRef="wait_for_signal" targetRef="script_b" />
+    <bpmn:sequenceFlow id="flow_b_end" sourceRef="script_b" targetRef="end" />
+  </bpmn:process>
+</bpmn:definitions>

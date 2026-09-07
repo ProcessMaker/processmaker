@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Adapted from tests/Feature/Api/processes/ServiceTaskCustomQueue.bpmn for EXC-06. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" targetNamespace="http://processmaker.com/tests/inline-task-execution">
+  <bpmn:process id="inline_custom_queue_service" name="EXC-06 Custom Queue Service Task" isExecutable="true">
+    <bpmn:startEvent id="start" name="Start">
+      <bpmn:outgoing>flow_start_script</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="script_a" name="Script A" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_start_script</bpmn:incoming>
+      <bpmn:outgoing>flow_script_service</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['custom_queue_script_a' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:serviceTask id="service_custom" name="Custom Queue Service" implementation="inline-test-custom-queue-service" pm:config="{&quot;queue&quot;:&quot;inline-custom-queue&quot;}">
+      <bpmn:incoming>flow_script_service</bpmn:incoming>
+      <bpmn:outgoing>flow_service_end</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="end" name="End">
+      <bpmn:incoming>flow_service_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_start_script" sourceRef="start" targetRef="script_a" />
+    <bpmn:sequenceFlow id="flow_script_service" sourceRef="script_a" targetRef="service_custom" />
+    <bpmn:sequenceFlow id="flow_service_end" sourceRef="service_custom" targetRef="end" />
+  </bpmn:process>
+</bpmn:definitions>

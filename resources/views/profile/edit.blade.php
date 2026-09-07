@@ -115,192 +115,230 @@
 	@vite('resources/js/admin/profile/edit.js')
 
 <script>
-  window.addEventListener('load', () => {
-    const DEFAULT_ACCOUNTS = {
-        connectorSlack: {
-            name: 'Slack',
-            description: 'Send ProcessMaker notifications to Slack',
-            icon: 'slack-color-logo',
-            enabled: false,
-            channel_id: null,
-            enabled_at: null,
-            ui_options: {
-                show_toggle: true,
-                show_edit_modal: false
+      window.addEventListener('load', () => {
+        const DEFAULT_ACCOUNTS = {
+            connectorSlack: {
+                name: 'Slack',
+                description: 'Send ProcessMaker notifications to Slack',
+                icon: 'slack-color-logo',
+                enabled: false,
+                channel_id: null,
+                enabled_at: null,
+                ui_options: {
+                    show_toggle: true,
+                    show_edit_modal: false
+                }
             }
-        }
-    };
-    let formVueInstance = new Vue({
-        el: '#editProfile',
-        mixins:addons,
-        data: {
-            meta: @json(config('users.properties')),
-            formData: @json($currentUser),
-            timezones: @json($timezones),
-            datetimeFormats: @json($datetimeFormats),
-            countries: @json($countries),
-            states: @json($states),
-            status: @json($status),
-            global2FAEnabled: @json($global2FAEnabled),
-            ssoUser:@json($ssoUser),
-            errors: {
-                username: null,
-                firstname: null,
-                lastname: null,
-                email: null,
-                password: null,
-                status: null
-            },
-            confPassword: '',
-            image: '',
-            originalEmail: '',
-            emailHasChanged: false,
-            options: [
-                {
-                    src: @json($currentUser['avatar']),
-                    title: @json($currentUser['fullname']),
-                    initials: "{{mb_substr($currentUser['firstname'],0,1, "utf-8")}}" + "{{mb_substr($currentUser['lastname'],0,1, "utf-8")}}"
-                }
-            ],
-            focusErrors: 'errors',
-            slackConfigurationError: false,
-        },
-        created() {
-          if (this.meta) {
-            let keys = Object.keys(this.meta);
-            if (!this.formData.meta) {
-                this.formData.meta = {};
-            }
-            keys.forEach(key => {
-                if (!this.formData.meta[key]) {
-                    this.formData.meta[key] = null;
-                }
-            });
-          }
-        },
-        mounted() {
-          this.originalEmail = this.formData.email;
-          const togglePassword = document.querySelector('#togglePassword');
-          const password = document.querySelector('#valpassword');
-
-          togglePassword.addEventListener('click', function (e) {
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
-            this.classList.toggle('fa-eye-slash');
-          });
-        },
-        methods: {
-            openAvatarModal() {
-              modalVueInstance.$refs.updateAvatarModal.show();
-            },
-            profileUpdate() {
-              if(this.emailHasChanged) {
-                if (this.ssoUser) {
-                  let message = 'Email address for users created via SAML synchronization cannot be edited manually.';
-                  ProcessMaker.alert(this.$t(message), 'warning');
-                  return;
-                } else {
-                  $('#validateModal').modal('show');
-                }
-              } else {
-                this.saveProfileChanges();
-              }
-            },
-            deleteAvatar() {
-                let optionValues = formVueInstance.$data.options[0];
-                optionValues.src = null;
-                formVueInstance.$data.options.splice(0, 1, optionValues)
-                formVueInstance.$data.image = false;
-                formVueInstance.$data.formData.avatar = false;
-                window.ProcessMaker.events.$emit('update-profile-avatar');
-            },
-            resetErrors() {
-                this.errors = Object.assign({}, {
+        };
+        const SELF_SERVICE_PROFILE_FIELDS = [
+            'username',
+            'password',
+            'firstname',
+            'lastname',
+            'title',
+            'email',
+            'address',
+            'city',
+            'state',
+            'postal',
+            'country',
+            'phone',
+            'fax',
+            'cell',
+            'timezone',
+            'datetime_format',
+            'status',
+            'avatar',
+            'preferences_2fa',
+            'connected_accounts',
+            'valpassword',
+        ];
+        let formVueInstance = new Vue({
+            el: '#editProfile',
+            mixins:addons,
+            data: {
+                meta: @json(config('users.properties')),
+                formData: @json($currentUser),
+                timezones: @json($timezones),
+                datetimeFormats: @json($datetimeFormats),
+                countries: @json($countries),
+                states: @json($states),
+                status: @json($status),
+                global2FAEnabled: @json($global2FAEnabled),
+                ssoUser:@json($ssoUser),
+                errors: {
                     username: null,
                     firstname: null,
                     lastname: null,
                     email: null,
                     password: null,
                     status: null
+                },
+				        confPassword: '',
+                image: '',
+                originalEmail: '',
+                emailHasChanged: false,
+                options: [
+                    {
+                        src: @json($currentUser['avatar']),
+                        title: @json($currentUser['fullname']),
+                        initials: "{{mb_substr($currentUser['firstname'],0,1, "utf-8")}}" + "{{mb_substr($currentUser['lastname'],0,1, "utf-8")}}"
+                    }
+                ],
+                focusErrors: 'errors',
+                slackConfigurationError: false,
+            },
+            created() {
+              if (this.meta) {
+                let keys = Object.keys(this.meta);
+                if (!this.formData.meta) {
+                    this.formData.meta = {};
+                }
+                keys.forEach(key => {
+                   if (!this.formData.meta[key]) {
+                       this.formData.meta[key] = null;
+                   }
                 });
+              }
             },
-            validatePassword() {
-                if (!this.formData.password && !this.formData.confPassword) {
-                    delete this.formData.password;
-                    return true;
-                }
-                if (this.formData.password.trim() === '' && this.formData.confPassword.trim() === '') {
-                    delete this.formData.password;
-                    return true
-                }
-                if (this.formData.password !== this.formData.confPassword) {
-                    this.errors.password = ['Passwords must match']
-                    this.password = ''
-                    this.submitted = false
-                    return false
-                }
-                return true
+            mounted() {
+              this.originalEmail = this.formData.email;
+              const togglePassword = document.querySelector('#togglePassword');
+              const password = document.querySelector('#valpassword');
+
+              togglePassword.addEventListener('click', function (e) {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                this.classList.toggle('fa-eye-slash');
+              });
             },
-            showAccountsModal() {
-              accountsModalInstance.$refs.editConnectionModal.show();
-            },
-            onClose() {
-              window.location.href = '/admin/users';
-            },
-            showModal() {
-              $('#validateModal').modal('show');
-            },
-            closeModal() {
-              $('#validateModal').modal('hide');
-            },
-            saveProfileChanges() {
-              this.resetErrors();
-                if (@json($enabled2FA) &&  this.global2FAEnabled.length === 0) {
-                  let message = 'The Two Step Authentication Method has not been set. ' +
-                  'Please contact your administrator.';
-                  // User has not enabled two-factor authentication correctly
-                  ProcessMaker.alert(this.$t($message), 'warning');
-                  return false;
-                }
-                if (!this.validatePassword()) return false;
-                if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
-                    this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1)
-                      return false;
-                if (this.image) {
-                    this.formData.avatar = this.image;
-                }
-                if (this.image === false) {
-                    this.formData.avatar = false;
-                }
-                ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
-                    .then((response) => {
-                        // reset the slack configuration error
-                        this.slackConfigurationError = false;
-                        
-                        ProcessMaker.alert(this.$t('Your profile was saved.'), 'success')
-                        window.ProcessMaker.events.$emit('update-profile-avatar');
-                        this.originalEmail = this.formData.email;
-                        this.emailHasChanged = false;
-                        this.formData.valpassword = "";
-                        // Update the data to reflect the updated connected accounts
-                        if (document.querySelector('#nav-accounts-tab').classList.contains('active')) {
-                          window.location.reload();
-                        }
-                    })
-                    .catch(error => {
-                        if (error.response?.data?.errors) {
-                            this.errors = error.response.data.errors;
-                        }
-                        
-                        // Handle Slack notification errors
-                        if (error.response?.data?.message?.includes('Slack')) {
-                            ProcessMaker.alert(this.$t(error.response.data.message), 'danger');
-                            // Mark the configuration error state
-                            this.slackConfigurationError = true;
-                            // Need to ensure the slack toggle is now disabled in the ui
-                            this.handleConnectedAccountToggle(DEFAULT_ACCOUNTS.connectorSlack, false, true);
-                        }
+            methods: {
+                openAvatarModal() {
+                  modalVueInstance.$refs.updateAvatarModal.show();
+                },
+                profileUpdate() {
+                  if(this.emailHasChanged) {
+                    if (this.ssoUser) {
+                      let message = 'Email address for users created via SAML synchronization cannot be edited manually.';
+                      ProcessMaker.alert(this.$t(message), 'warning');
+                      return;
+                    } else {
+                      $('#validateModal').modal('show');
+                    }
+                  } else {
+                    this.saveProfileChanges();
+                  }
+                },
+                deleteAvatar() {
+                    let optionValues = formVueInstance.$data.options[0];
+                    optionValues.src = null;
+                    formVueInstance.$data.options.splice(0, 1, optionValues)
+                    formVueInstance.$data.image = false;
+                    formVueInstance.$data.formData.avatar = false;
+                    window.ProcessMaker.events.$emit('update-profile-avatar');
+                },
+                resetErrors() {
+                    this.errors = Object.assign({}, {
+                        username: null,
+                        firstname: null,
+                        lastname: null,
+                        email: null,
+                        password: null,
+                        status: null
                     });
+                },
+                validatePassword() {
+                    if (!this.formData.password && !this.formData.confPassword) {
+                        delete this.formData.password;
+                        return true;
+                    }
+                    if (this.formData.password.trim() === '' && this.formData.confPassword.trim() === '') {
+                        delete this.formData.password;
+                        return true
+                    }
+                    if (this.formData.password !== this.formData.confPassword) {
+                        this.errors.password = ['Passwords must match']
+                        this.password = ''
+                        this.submitted = false
+                        return false
+                    }
+                    return true
+                },
+                showAccountsModal() {
+                  accountsModalInstance.$refs.editConnectionModal.show();
+                },
+                onClose() {
+                  window.location.href = '/admin/users';
+                },
+                showModal() {
+                  $('#validateModal').modal('show');
+                },
+                closeModal() {
+                  $('#validateModal').modal('hide');
+                },
+                profilePayload() {
+                    const payload = SELF_SERVICE_PROFILE_FIELDS.reduce((payload, field) => {
+                        if (Object.prototype.hasOwnProperty.call(this.formData, field)) {
+                            payload[field] = this.formData[field];
+                        }
+
+                        return payload;
+                    }, {});
+
+                    payload.meta = {
+                        disableRecommendations: Boolean(this.disableRecommendations),
+                    };
+
+                    return payload;
+                },
+                saveProfileChanges() {
+                  this.resetErrors();
+                    if (@json($enabled2FA) &&  this.global2FAEnabled.length === 0) {
+                      let message = 'The Two Step Authentication Method has not been set. ' +
+                      'Please contact your administrator.';
+                      // User has not enabled two-factor authentication correctly
+                      ProcessMaker.alert(this.$t($message), 'warning');
+                      return false;
+                    }
+                    if (!this.validatePassword()) return false;
+                    if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
+                        this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1)
+                          return false;
+                    if (this.image) {
+                        this.formData.avatar = this.image;
+                    }
+                    if (this.image === false) {
+                        this.formData.avatar = false;
+                    }
+                    ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
+                        .then((response) => {
+                            // reset the slack configuration error
+                            this.slackConfigurationError = false;
+                            
+                            ProcessMaker.alert(this.$t('Your profile was saved.'), 'success')
+                            window.ProcessMaker.events.$emit('update-profile-avatar');
+                            this.originalEmail = this.formData.email;
+                            this.emailHasChanged = false;
+                            this.formData.valpassword = "";
+                            // Update the data to reflect the updated connected accounts
+                            if (document.querySelector('#nav-accounts-tab').classList.contains('active')) {
+                              window.location.reload();
+                            }
+                        })
+                        .catch(error => {
+                            if (error.response?.data?.errors) {
+                                this.errors = error.response.data.errors;
+                            }
+                            
+                            // Handle Slack notification errors
+                            if (error.response?.data?.message?.includes('Slack')) {
+                                ProcessMaker.alert(this.$t(error.response.data.message), 'danger');
+                                // Mark the configuration error state
+                                this.slackConfigurationError = true;
+                                // Need to ensure the slack toggle is now disabled in the ui
+                                this.handleConnectedAccountToggle(DEFAULT_ACCOUNTS.connectorSlack, false, true);
+                            }
+                        });
 
               this.closeModal();
             },
