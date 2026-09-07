@@ -115,7 +115,7 @@
 	@vite('resources/js/admin/profile/edit.js')
 
 <script>
-      window.addEventListener('load', () => {
+  window.addEventListener('load', () => {
         const DEFAULT_ACCOUNTS = {
             connectorSlack: {
                 name: 'Slack',
