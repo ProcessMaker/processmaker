@@ -1199,6 +1199,79 @@ class ProcessRequestsTest extends TestCase
     }
 
     /**
+     * Bug #41926: boundary timer tokens must not inflate Forms tab pagination.
+     *
+     * @group process_requests
+     */
+    public function testScreenRequestedPaginatesOnlyTaskTokens()
+    {
+        $screen = Screen::factory()->create();
+        $bpmn = '<?xml version="1.0"?>'
+            . '<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"'
+            . ' xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd">'
+            . '<bpmn:process id="ProcessId">'
+            . '<bpmn:task id="node_task" pm:screenRef="' . $screen->id . '" name="Form Task"/>'
+            . '<bpmn:boundaryEvent id="node_event" attachedToRef="node_task"/>'
+            . '</bpmn:process></bpmn:definitions>';
+
+        $process = Process::factory()->create([
+            'bpmn' => $bpmn,
+            'user_id' => $this->user->id,
+        ]);
+
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'process_version_id' => $process->getLatestVersion()->id,
+        ]);
+
+        $baseTime = now()->subHours(3);
+        $iterations = 120;
+
+        for ($i = 0; $i < $iterations; $i++) {
+            ProcessRequestToken::factory()->create([
+                'process_id' => $process->id,
+                'process_request_id' => $request->id,
+                'element_id' => 'node_task',
+                'element_type' => 'task',
+                'status' => 'CLOSED',
+                'completed_at' => $baseTime->copy()->addMinutes($i),
+            ]);
+            ProcessRequestToken::factory()->create([
+                'process_id' => $process->id,
+                'process_request_id' => $request->id,
+                'element_id' => 'node_event',
+                'element_type' => 'event',
+                'status' => 'CLOSED',
+                'completed_at' => $baseTime->copy()->addMinutes($iterations + $i),
+            ]);
+        }
+
+        $route = route('api.requests.detail.screen', ['request' => $request->id]);
+        $params = [
+            'page' => 1,
+            'per_page' => 15,
+            'order_by' => 'completed_at',
+            'order_direction' => 'asc',
+        ];
+
+        $response = $this->apiCall('GET', $route, $params);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('meta.total', $iterations);
+        $response->assertJsonPath('meta.total_pages', 8);
+        $this->assertCount(15, $response->json('data'));
+
+        $lastPage = $this->apiCall('GET', $route, array_merge($params, ['page' => 8]));
+        $lastPage->assertStatus(200);
+        $this->assertCount(15, $lastPage->json('data'));
+
+        $beyondLastPage = $this->apiCall('GET', $route, array_merge($params, ['page' => 9]));
+        $beyondLastPage->assertStatus(200);
+        $this->assertCount(0, $beyondLastPage->json('data'));
+        $beyondLastPage->assertJsonPath('meta.total_pages', 8);
+    }
+
+    /**
      * Get a list of Requests by Cases.
      */
     public function testRequestByCase()
