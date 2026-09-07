@@ -783,6 +783,21 @@ class TasksTest extends TestCase
         $this->assertEquals($hitTask->id, $json['data'][0]['id']);
     }
 
+    public function testAdvancedFilterRejectsUntrustedRawExpression()
+    {
+        $filter = json_encode([
+            [
+                'subject' => ['type' => 'Field', 'value' => 'due_at'],
+                'operator' => '=',
+                'value' => 'raw((SELECT password FROM users LIMIT 1))',
+            ],
+        ]);
+
+        $response = $this->apiCall('GET', '/tasks', ['advanced_filter' => $filter]);
+
+        $response->assertStatus(422);
+    }
+
     public function testAdvancedFilterByProcessRequestName()
     {
         $hitProcess = Process::factory()->create(['name' => 'foo']);
