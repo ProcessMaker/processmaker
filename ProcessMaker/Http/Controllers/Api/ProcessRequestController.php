@@ -791,7 +791,7 @@ class ProcessRequestController extends Controller
      */
     public function screenRequested(Request $httpRequest, ProcessRequest $request)
     {
-        $elementTypes = ['task', 'userTask', 'startEvent', 'callActivity'];
+        $elementTypes = ['task', 'userTask', 'startEvent'];
         $query = ProcessRequestToken::query();
         $query->select('id', 'element_id', 'process_id', 'process_request_id', 'data', 'token_properties')
             ->where('process_request_id', $request->id)
