@@ -56,7 +56,7 @@
           #[`filter-${column.field}`]
         >
           <PMColumnFilterPopover
-            v-if="column.sortable"
+            v-if="column.sortable && column.filterable !== false"
             :id="'pm-table-column-' + index"
             :key="index"
             type="Field"

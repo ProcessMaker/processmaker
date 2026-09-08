@@ -128,6 +128,29 @@
                 }
             }
         };
+        const SELF_SERVICE_PROFILE_FIELDS = [
+            'username',
+            'password',
+            'firstname',
+            'lastname',
+            'title',
+            'email',
+            'address',
+            'city',
+            'state',
+            'postal',
+            'country',
+            'phone',
+            'fax',
+            'cell',
+            'timezone',
+            'datetime_format',
+            'status',
+            'avatar',
+            'preferences_2fa',
+            'connected_accounts',
+            'valpassword',
+        ];
         let formVueInstance = new Vue({
             el: '#editProfile',
             mixins:addons,
@@ -251,6 +274,21 @@
                 closeModal() {
                   $('#validateModal').modal('hide');
                 },
+                profilePayload() {
+                    const payload = SELF_SERVICE_PROFILE_FIELDS.reduce((payload, field) => {
+                        if (Object.prototype.hasOwnProperty.call(this.formData, field)) {
+                            payload[field] = this.formData[field];
+                        }
+
+                        return payload;
+                    }, {});
+
+                    payload.meta = {
+                        disableRecommendations: Boolean(this.disableRecommendations),
+                    };
+
+                    return payload;
+                },
                 saveProfileChanges() {
                   this.resetErrors();
                     if (@json($enabled2FA) &&  this.global2FAEnabled.length === 0) {
@@ -270,7 +308,7 @@
                     if (this.image === false) {
                         this.formData.avatar = false;
                     }
-                    ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
+                    ProcessMaker.apiClient.put('users/' + this.formData.id, this.profilePayload())
                         .then((response) => {
                             // reset the slack configuration error
                             this.slackConfigurationError = false;

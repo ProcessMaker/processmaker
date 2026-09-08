@@ -218,6 +218,37 @@ class ExportProcess implements ShouldQueue
     }
 
     /**
+     * Package any data sources referred to in our screen or process.
+     *
+     * @return void
+     */
+    public function packageDataSources()
+    {
+        $this->package['data_sources'] = [];
+        $dataSourceClass = 'ProcessMaker\Packages\Connectors\DataSources\Models\DataSource';
+
+        if (!class_exists($dataSourceClass)) {
+            return;
+        }
+
+        if (!isset($this->screen)) {
+            $dataSourceIds = $this->manager->getDependenciesOfType($dataSourceClass, $this->process, []);
+        } else {
+            $dataSourceIds = $this->manager->getDependenciesOfType($dataSourceClass, $this->screen, []);
+        }
+
+        if (count($dataSourceIds)) {
+            $dataSources = $dataSourceClass::whereIn('id', $dataSourceIds)->get();
+
+            $dataSources->each(function ($dataSource) {
+                $dataSourceArray = $dataSource->toArray();
+                $dataSourceArray['categories'] = $dataSource->categories->toArray();
+                $this->package['data_sources'][] = $dataSourceArray;
+            });
+        }
+    }
+
+    /**
      * Package the metadata (NOT THE VALUE) of any environment variables
      * referred to in our scripts.
      *
@@ -253,6 +284,7 @@ class ExportProcess implements ShouldQueue
         $this->packageProcessCategory();
         $this->packageScreens();
         $this->packageScripts();
+        $this->packageDataSources();
         $this->packageEnvironmentVariables();
     }
 

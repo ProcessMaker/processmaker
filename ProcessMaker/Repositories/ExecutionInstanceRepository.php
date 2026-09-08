@@ -183,6 +183,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->initiated_at = Carbon::now();
         $instance->do_not_sanitize = SanitizeHelper::getDoNotSanitizeFields($definition);
         $instance->data = $data;
+        $this->advanceExecutionRevision($instance);
         $instance->saveOrFail();
 
         // Set id
@@ -213,6 +214,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         // Save instance with error
         $instance->status = 'ERROR';
         $instance->mergeLatestStoredData();
+        $this->advanceExecutionRevision($instance);
         $instance->saveOrFail();
 
         CaseUpdateStatus::dispatchSync($instance);
@@ -239,6 +241,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
             $instance->status = 'ACTIVE';
         }
         $instance->mergeLatestStoredData();
+        $this->advanceExecutionRevision($instance);
         $instance->saveOrFail();
 
         CaseUpdateStatus::dispatchSync($instance);
@@ -264,6 +267,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->status = 'COMPLETED';
         $instance->completed_at = Carbon::now();
         $instance->mergeLatestStoredData();
+        $this->advanceExecutionRevision($instance);
         $instance->saveOrFail();
 
         CaseUpdateStatus::dispatchSync($instance);
@@ -293,13 +297,40 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
             $collaboration->process_id = $instance->process->getKey();
             $collaboration->saveOrFail();
             $source->process_collaboration_id = $collaboration->getKey();
+            $this->advanceExecutionRevision($source);
             $source->saveOrFail();
         }
 
         // Save collaboration
         $instance->process_collaboration_id = $source->process_collaboration_id;
         $instance->participant_id = $participant ? $participant->getId() : null;
+        $this->advanceExecutionRevision($instance);
         $instance->saveOrFail();
+    }
+
+    /**
+     * Include the revision in the instance's next insert or update.
+     */
+    private function advanceExecutionRevision(ExecutionInstanceInterface $instance): void
+    {
+        $instance->execution_revision = (int) $instance->execution_revision + 1;
+    }
+
+    /**
+     * Mark a persisted execution-state change without inspecting request JSON.
+     */
+    public function incrementExecutionRevision(ExecutionInstanceInterface $instance): void
+    {
+        if (!$instance->getKey()) {
+            return;
+        }
+
+        ProcessRequest::query()
+            ->whereKey($instance->getKey())
+            ->increment('execution_revision');
+
+        $instance->execution_revision = (int) $instance->execution_revision + 1;
+        $instance->syncOriginalAttribute('execution_revision');
     }
 
     /**

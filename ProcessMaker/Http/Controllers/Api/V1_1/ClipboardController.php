@@ -30,7 +30,12 @@ class ClipboardController extends Controller
     public function showByUserId(): Resource
     {
         $userId = Auth::id();
-        $clipboard = Clipboard::where('user_id', $userId)->firstOrFail();
+        $clipboard = Clipboard::firstOrCreate(
+            ['user_id' => $userId],
+            ['config' => [], 'type' => 'FORM']
+        );
+        // JsonResource responds with 201 for new models, but this GET should remain 200.
+        $clipboard->wasRecentlyCreated = false;
 
         return new Resource($clipboard);
     }
