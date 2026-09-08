@@ -264,6 +264,12 @@ return [
 
     'task_drafts_enabled' => env('TASK_DRAFTS_ENABLED', true),
 
+    // Raw-query PUT /api/1.1/tasks/{id} for optimized task completion (FOUR-32800).
+    'task_update_v1_1_enabled' => env('TASK_UPDATE_V1_1_ENABLED', false),
+
+    // Raw SQL for TokenRepository persistActivity* and getNextUser (FOUR-32800 option 3).
+    'token_persistence_raw_enabled' => env('TOKEN_PERSISTENCE_RAW_ENABLED', false),
+
     'force_https' => env('FORCE_HTTPS', true),
 
     'nayra_docker_network' => env('NAYRA_DOCKER_NETWORK', 'host'),
