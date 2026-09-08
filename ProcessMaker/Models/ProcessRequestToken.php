@@ -1074,21 +1074,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $language = new ExpressionLanguage();
 
         foreach ($assignments as $assignment) {
-            $isTrue = false;
-
-            if (!empty($assignment['expression'])) {
-                try {
-                    $isTrue = $language->evaluate($assignment['expression'], $variables);
-                } catch (Throwable $e) {
-                    $isTrue = false;
-                }
-            }
-
-            if ($isTrue) {
-                $result[] = $assignment['assignee'];
-            }
-
-            if (isset($assignment['default']) && $assignment['default'] === true) {
+            if ($this->isAssignmentRuleMatch($assignment, $variables, $language)) {
                 $result[] = $assignment['assignee'];
             }
         }
@@ -1110,16 +1096,21 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $assignmentRules = $activity->getProperty('assignmentRules', null);
         $assignments = json_decode($assignmentRules, true) ?? [];
 
-        $assigneeIds = $this->getAssignees($assignments, $formData);
         $userIds = [];
-
+        $language = new ExpressionLanguage();
         foreach ($assignments as $assignment) {
-            if (!in_array($assignment['assignee'], $assigneeIds, true)) {
+            if (!$this->isAssignmentRuleMatch($assignment, $formData, $language)) {
                 continue;
             }
 
             if (($assignment['type'] ?? 'user') === 'group') {
-                $this->process->getConsolidatedUsers($assignment['assignee'], $userIds);
+                $groupUsers = [];
+                $this->process->getConsolidatedUsers($assignment['assignee'], $groupUsers);
+                foreach ($groupUsers as $userId) {
+                    if (!empty($userId) && is_numeric($userId)) {
+                        $userIds[$userId] = $userId;
+                    }
+                }
             } else {
                 $userIds[$assignment['assignee']] = $assignment['assignee'];
             }
@@ -1132,6 +1123,23 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         }
 
         return array_values($userIds);
+    }
+
+    private function isAssignmentRuleMatch(array $assignment, array $variables, ExpressionLanguage $language): bool
+    {
+        if (isset($assignment['default']) && $assignment['default'] === true) {
+            return true;
+        }
+
+        if (empty($assignment['expression'])) {
+            return false;
+        }
+
+        try {
+            return $language->evaluate($assignment['expression'], $variables);
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
     /**
