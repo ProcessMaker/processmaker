@@ -1108,17 +1108,30 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
         $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
         $assignmentRules = $activity->getProperty('assignmentRules', null);
-        $assignments = json_decode($assignmentRules, true);
+        $assignments = json_decode($assignmentRules, true) ?? [];
 
-        $include_ids = $this->getAssignees($assignments, $formData);
+        $assigneeIds = $this->getAssignees($assignments, $formData);
+        $userIds = [];
 
-        // we add the manager to the list of assignees
-        $manager_id = $this->process->manager_id;
-        if ($manager_id) {
-            $include_ids[] = $manager_id;
+        foreach ($assignments as $assignment) {
+            if (!in_array($assignment['assignee'], $assigneeIds, true)) {
+                continue;
+            }
+
+            if (($assignment['type'] ?? 'user') === 'group') {
+                $this->process->getConsolidatedUsers($assignment['assignee'], $userIds);
+            } else {
+                $userIds[$assignment['assignee']] = $assignment['assignee'];
+            }
         }
 
-        return $include_ids;
+        foreach ((array) ($this->process->manager_id ?? []) as $managerId) {
+            if (!empty($managerId) && is_numeric($managerId)) {
+                $userIds[$managerId] = $managerId;
+            }
+        }
+
+        return array_values($userIds);
     }
 
     /**
