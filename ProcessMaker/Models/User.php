@@ -16,6 +16,7 @@ use Laravel\Passport\HasApiTokens;
 use ProcessMaker\Models\EmptyModel;
 use ProcessMaker\Notifications\ResetPassword as ResetPasswordNotification;
 use ProcessMaker\Query\Traits\PMQL;
+use ProcessMaker\Rules\PlainText;
 use ProcessMaker\Rules\StringHasAtLeastOneUpperCaseCharacter;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasAuthorization;
@@ -184,9 +185,10 @@ class User extends Authenticatable implements HasMedia
         return [
             // The following characters where not included in the regexp: & %  ' " ? /
             'username' /****/ => ['required', 'regex:/^[a-zA-Z0-9.!#$*+=^_`|~\-@]+$/', 'min:2', 'max:255', $unique],
-            'firstname' /***/ => ['required', 'max:50'],
-            'lastname' /****/ => ['required', 'max:50'],
+            'firstname' /***/ => ['required', 'max:50', new PlainText()],
+            'lastname' /****/ => ['required', 'max:50', new PlainText()],
             'email' /*******/ => ['required', 'email'],
+            'title' /*******/ => ['nullable', 'max:255', new PlainText()],
             'birthdate' /***/ => ['nullable', 'date'],
             'phone' /*******/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
             'fax' /*********/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],

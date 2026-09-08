@@ -338,7 +338,8 @@ abstract class BpmnAction implements ShouldQueue
     }
 
     /**
-     * Load only lock and revision metadata when validating the fast path.
+     * Load ProcessRequest for BPMN actions. In lightweight mode, only lock and
+     * revision metadata are loaded when validating the fast path.
      */
     private function findInstance($instanceId, bool $lightweight): ProcessRequest
     {
@@ -348,6 +349,12 @@ abstract class BpmnAction implements ShouldQueue
                 'id',
                 'process_collaboration_id',
                 'execution_revision',
+            ]);
+        } else {
+            $query->with([
+                'process',
+                'processVersion',
+                'collaboration',
             ]);
         }
 
