@@ -114,7 +114,7 @@ class TaskControllerUpdateTest extends TestCase
             Config::set('app.task_update_v1_1_enabled', $taskUpdateEnabled);
             Config::set('app.token_persistence_raw_enabled', $rawPersistenceEnabled);
 
-            $startedAt = microtime(true);
+            $totalTime = 0;
 
             for ($iteration = 0; $iteration < $iterations; $iteration++) {
                 $process = Process::factory()->create([
@@ -143,16 +143,18 @@ class TaskControllerUpdateTest extends TestCase
                     ->where('status', 'ACTIVE')
                     ->firstOrFail();
 
+                $startedAt = microtime(true);
                 $response = $this->apiCall(
                     'PUT',
                     route($routeName, $task->id),
                     $payload
                 );
+                $totalTime += microtime(true) - $startedAt;
 
                 $response->assertStatus(200);
             }
 
-            return microtime(true) - $startedAt;
+            return $totalTime;
         };
 
         $legacyTime = $measure(false, false, 'api.tasks.update');
