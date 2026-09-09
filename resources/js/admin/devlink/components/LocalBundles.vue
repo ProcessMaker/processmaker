@@ -20,6 +20,7 @@ const perPage = ref(15);
 const editModal = ref(null);
 const confirmDeleteModal = ref(null);
 const confirmPublishNewVersion = ref(null);
+const publishing = ref(false);
 const confirmUpdateVersion = ref(null);
 const filter = ref("");
 const bundleModal = ref(null);
@@ -194,11 +195,23 @@ const increaseVersionBundle = (bundle) => {
 };
 
 const executeIncrease = () => {
+  if (publishing.value) {
+    return;
+  }
+
+  publishing.value = true;
   ProcessMaker.apiClient
     .post(`devlink/local-bundles/${selected.value.id}/increase-version`)
-    .then((result) => {
+    .then(() => {
       confirmPublishNewVersion.value.hide();
       load();
+    })
+    .catch((error) => {
+      const message = error.response?.data?.error?.message || error.message;
+      window.ProcessMaker.alert(vue.$t(message), "warning");
+    })
+    .finally(() => {
+      publishing.value = false;
     });
 };
 
@@ -244,9 +257,10 @@ const deleteWarning = computed(() => {
   return vue.$t('Are you sure you want to delete <strong>{{name}}</strong>? The action is irreversible.', { name });
 });
 
-const confirmPublishNewVersionText = computed(() => {
-  return vue.$t('Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?', { selectedBundleName: selected.value?.name });
-});
+const confirmPublishNewVersionText = computed(() => vue.$t(
+  "Are you sure you want to increase the version of <strong>{{ selectedBundleName }}</strong>?",
+  { selectedBundleName: selected.value?.name },
+));
 
 const handleInstallationComplete = () => {
   load();
@@ -281,7 +295,8 @@ const handleInstallationComplete = () => {
       centered
       content-class="modal-style"
       title="Publish New Version"
-      @ok="executeIncrease"
+      :ok-disabled="publishing"
+      @ok.prevent="executeIncrease"
     >
       <p v-html="confirmPublishNewVersionText"></p>
     </b-modal>

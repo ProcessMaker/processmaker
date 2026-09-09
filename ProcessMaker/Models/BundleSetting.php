@@ -36,9 +36,24 @@ class BundleSetting extends ProcessMakerModel
         return $this->belongsTo(Bundle::class);
     }
 
+    public function configAsArray(): array
+    {
+        if (is_array($this->config)) {
+            return $this->config;
+        }
+
+        if (!is_string($this->config)) {
+            return [];
+        }
+
+        $config = json_decode($this->config, true);
+
+        return is_array($config) ? $config : [];
+    }
+
     public function export()
     {
-        $configData = json_decode($this->config, true);
+        $configData = $this->configAsArray();
         $ids = $configData['id'] ?? [];
 
         switch ($this->setting) {
