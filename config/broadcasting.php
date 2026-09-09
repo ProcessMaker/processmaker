@@ -15,6 +15,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Broadcast Auth Debug
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, the BroadcastAuthDebug middleware logs failed broadcast auth
+    | requests (403, 401, 500) for debugging intermittent issues.
+    |
+    */
+
+    'auth_debug' => env('BROADCAST_AUTH_DEBUG', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Default Broadcaster
     |--------------------------------------------------------------------------
     |
