@@ -24,7 +24,7 @@ use ProcessMaker\Bpmn\Process;
  * @method static array runProcess(Process $process, $startEventId, array $data)
  * @method static bool registerServiceImplementation($implementation, $class)
  * @method static bool existsServiceImplementation($implementation)
- * @method static bool runServiceImplementation($implementation, array $data, array $config, $tokenId = '')
+ * @method static mixed runServiceImplementation($implementation, array $data, array $config, $tokenId = '', $timeout = 0)
  */
 class WorkflowManager extends Facade
 {

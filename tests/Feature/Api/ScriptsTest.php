@@ -423,6 +423,69 @@ class ScriptsTest extends TestCase
     }
 
     /**
+     * Preview via Core Service Task in-process runner when allow_in_process is set.
+     */
+    public function testPreviewScriptInProcess()
+    {
+        config(['core-service-task.enabled' => true]);
+        $this->withPersonalAccessClient();
+
+        Event::fake([
+            ScriptResponseEvent::class,
+        ]);
+
+        $script = $this->getScript('php');
+        $script->allow_in_process = true;
+        $script->saveOrFail();
+
+        $url = route('api.scripts.preview', $script->id);
+        $response = $this->apiCall('POST', $url, [
+            'data' => '{"ping":"1"}',
+            'code' => '<?php return ["pong" => $data["ping"]];',
+            'nonce' => 'in-process-nonce',
+        ]);
+        $response->assertStatus(200);
+        $response->assertJson(['status' => 'success', 'run_in_process' => true]);
+
+        Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
+            return ($event->response['output']['pong'] ?? null) === '1'
+                && $event->nonce === 'in-process-nonce';
+        });
+    }
+
+    /**
+     * Explicit run_in_process request flag for preview (before saving allow_in_process).
+     */
+    public function testPreviewScriptInProcessWithRequestFlag()
+    {
+        config(['core-service-task.enabled' => true]);
+        $this->withPersonalAccessClient();
+
+        Event::fake([
+            ScriptResponseEvent::class,
+        ]);
+
+        $script = $this->getScript('php');
+        $script->allow_in_process = false;
+        $script->saveOrFail();
+
+        $url = route('api.scripts.preview', $script->id);
+        $response = $this->apiCall('POST', $url, [
+            'data' => '{}',
+            'code' => '<?php return ["via" => "flag"];',
+            'nonce' => 'flag-nonce',
+            'run_in_process' => true,
+        ]);
+        $response->assertStatus(200);
+        $response->assertJson(['run_in_process' => true]);
+
+        Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
+            return ($event->response['output']['via'] ?? null) === 'flag'
+                && $event->nonce === 'flag-nonce';
+        });
+    }
+
+    /**
      * Delete script in process
      */
     public function testDeleteScript()
