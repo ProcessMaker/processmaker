@@ -75,7 +75,7 @@ export default [
     type: 'service_task_resource',
     name: 'Service Task Resources',
     url: 'package.service-task.resources.fetch',
-    listingUrl: '/designer/service-tasks',
+    listingUrl: '/service-task',
     class: 'ProcessMaker\\Package\\PackageServiceTask\\Models\\ServiceTaskResource',
     icon: 'fp-script-outline',
     nameField: 'name',
