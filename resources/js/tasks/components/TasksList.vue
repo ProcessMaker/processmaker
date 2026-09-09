@@ -348,7 +348,7 @@ export default {
           click: this.previewTasks,
           icon: "fas fa-eye",
           title: this.$t("Preview"),
-          show: !this.verifyURL("saved-searches") || false,
+          show: (row) => this.shouldShowPreviewButton(row),
         },
         {
           id: "openCaseButton",
@@ -444,6 +444,7 @@ export default {
             record.process_request,
             record,
           );
+          record.task_status = record.status;
           record.status = this.formatStatus(record);
           record.assignee = this.formatAvatar(record.user);
           record.request = this.formatRequest(record);
@@ -758,6 +759,16 @@ export default {
         isInUrl = false;
       }
       return isInUrl;
+    },
+    /**
+     * Hide Preview for completed tasks (API status CLOSED) and on normal saved searches.
+     * Use task_status because status is replaced with badge HTML in the data watcher.
+     */
+    shouldShowPreviewButton(row) {
+      if (this.verifyURL("saved-searches") && !this.processesIManage) {
+        return false;
+      }
+      return row?.task_status !== "CLOSED";
     },
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
