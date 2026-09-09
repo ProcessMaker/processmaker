@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Adapted from tests/Feature/Api/processes/Timer_BoundaryEvent_MultiInstance.bpmn for EXC-05; unrelated timer and user tasks were removed. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" targetNamespace="http://processmaker.com/tests/inline-task-execution">
+  <bpmn:process id="inline_multi_instance_automated" name="EXC-05 Multi-Instance Automated Tasks" isExecutable="true">
+    <bpmn:startEvent id="start_sequential" name="Start Sequential Instances">
+      <bpmn:outgoing>flow_start_sequential_setup</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="sequential_setup" name="Sequential Path Setup" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_start_sequential_setup</bpmn:incoming>
+      <bpmn:outgoing>flow_setup_sequential</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['sequential_setup' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:serviceTask id="sequential_service" name="Sequential Multi-Instance Service" implementation="inline-test-mi-service">
+      <bpmn:incoming>flow_setup_sequential</bpmn:incoming>
+      <bpmn:outgoing>flow_sequential_end</bpmn:outgoing>
+      <bpmn:ioSpecification id="sequential_io">
+        <bpmn:dataInput id="sequential_items_input" name="sequential_items" isCollection="true" />
+        <bpmn:inputSet id="sequential_input_set">
+          <bpmn:dataInputRefs>sequential_items_input</bpmn:dataInputRefs>
+        </bpmn:inputSet>
+        <bpmn:outputSet id="sequential_output_set" />
+      </bpmn:ioSpecification>
+      <bpmn:multiInstanceLoopCharacteristics id="sequential_loop" isSequential="true">
+        <bpmn:loopDataInputRef>sequential_items_input</bpmn:loopDataInputRef>
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="end_sequential" name="End Sequential Instances">
+      <bpmn:incoming>flow_sequential_end</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:startEvent id="start_parallel" name="Start Parallel Instances">
+      <bpmn:outgoing>flow_start_parallel_setup</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="parallel_setup" name="Parallel Path Setup" implementation="inline-test-mi-setup-service">
+      <bpmn:incoming>flow_start_parallel_setup</bpmn:incoming>
+      <bpmn:outgoing>flow_setup_parallel</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:scriptTask id="parallel_script" name="Parallel Multi-Instance Script" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_setup_parallel</bpmn:incoming>
+      <bpmn:outgoing>flow_parallel_end</bpmn:outgoing>
+      <bpmn:ioSpecification id="parallel_io">
+        <bpmn:dataInput id="parallel_items_input" name="parallel_items" isCollection="true" />
+        <bpmn:inputSet id="parallel_input_set">
+          <bpmn:dataInputRefs>parallel_items_input</bpmn:dataInputRefs>
+        </bpmn:inputSet>
+        <bpmn:outputSet id="parallel_output_set" />
+      </bpmn:ioSpecification>
+      <bpmn:multiInstanceLoopCharacteristics id="parallel_loop" isSequential="false">
+        <bpmn:loopDataInputRef>parallel_items_input</bpmn:loopDataInputRef>
+      </bpmn:multiInstanceLoopCharacteristics>
+      <bpmn:script><![CDATA[<?php return ['parallel_instance_ran' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="end_parallel" name="End Parallel Instances">
+      <bpmn:incoming>flow_parallel_end</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="flow_start_sequential_setup" sourceRef="start_sequential" targetRef="sequential_setup" />
+    <bpmn:sequenceFlow id="flow_setup_sequential" sourceRef="sequential_setup" targetRef="sequential_service" />
+    <bpmn:sequenceFlow id="flow_sequential_end" sourceRef="sequential_service" targetRef="end_sequential" />
+    <bpmn:sequenceFlow id="flow_start_parallel_setup" sourceRef="start_parallel" targetRef="parallel_setup" />
+    <bpmn:sequenceFlow id="flow_setup_parallel" sourceRef="parallel_setup" targetRef="parallel_script" />
+    <bpmn:sequenceFlow id="flow_parallel_end" sourceRef="parallel_script" targetRef="end_parallel" />
+  </bpmn:process>
+</bpmn:definitions>

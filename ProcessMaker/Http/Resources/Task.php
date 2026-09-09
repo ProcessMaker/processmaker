@@ -11,6 +11,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Services\SmartExtractConfiguration;
 use ProcessMaker\Traits\TaskResourceIncludes;
 
 class Task extends ApiResource
@@ -118,7 +119,7 @@ class Task extends ApiResource
 
     private function mergeHitlCaseNumber(array &$array): void
     {
-        if (!config('smart-extract.hitl_enabled')) {
+        if (!app(SmartExtractConfiguration::class)->hitlEnabled()) {
             return;
         }
 

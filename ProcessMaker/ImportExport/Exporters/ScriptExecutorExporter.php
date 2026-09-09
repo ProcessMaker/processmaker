@@ -5,6 +5,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\ScriptExecutorUpdated;
 use ProcessMaker\Jobs\BuildScriptExecutor;
+use ProcessMaker\Jobs\MoveScriptExecutorToMicroservice;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 
@@ -28,7 +29,11 @@ class ScriptExecutorExporter extends ExporterBase
             case 'copy':
             case 'new':
                 // afterCommit is needed because we are in a db transaction
-                BuildScriptExecutor::dispatch($this->model->id, $userId)->afterCommit();
+                if (!config('script-runner-microservice.enabled')) {
+                    BuildScriptExecutor::dispatch($this->model->id, $userId)->afterCommit();
+                } else {
+                    MoveScriptExecutorToMicroservice::dispatch($this->model->uuid)->afterCommit();
+                }
                 break;
             case 'update':
                 if (!empty($this->model->getChanges())) {
@@ -40,7 +45,11 @@ class ScriptExecutorExporter extends ExporterBase
                         $user = User::where('is_administrator', 1)->first();
                     }
                     // afterCommit is needed because we are in a db transaction
-                    BuildScriptExecutor::dispatch($this->model->id, $user->id)->afterCommit();
+                    if (!config('script-runner-microservice.enabled')) {
+                        BuildScriptExecutor::dispatch($this->model->id, $userId)->afterCommit();
+                    } else {
+                        MoveScriptExecutorToMicroservice::dispatch($this->model->uuid)->afterCommit();
+                    }
                 }
                 break;
 

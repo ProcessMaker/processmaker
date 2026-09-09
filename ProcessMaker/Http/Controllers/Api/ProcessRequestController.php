@@ -792,7 +792,7 @@ class ProcessRequestController extends Controller
     public function screenRequested(Request $httpRequest, ProcessRequest $request)
     {
         $query = ProcessRequestToken::query();
-        $query->select('id', 'element_id', 'process_id', 'process_request_id', 'data')
+        $query->select('id', 'element_id', 'process_id', 'process_request_id', 'data', 'token_properties')
             ->where('process_request_id', $request->id)
             ->whereNotIn('element_type', ['end_event', 'scriptTask'])
             ->whereIn('status', ['CLOSED', 'TRIGGERED'])

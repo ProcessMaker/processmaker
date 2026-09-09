@@ -38,7 +38,7 @@
         <button
           v-if="bundle.dev_link_id !== null"
           class="btn btn-outline-secondary mr-2 dropdown-toggle"
-          :disabled="remoteAvailable !== true"
+          :disabled="remoteAvailable !== true || invalidAssets.length > 0"
           data-toggle="dropdown"
           data-offset="5, 5"
           aria-haspopup="true"
@@ -82,12 +82,41 @@
           v-if="bundle.dev_link_id === null"
           variant="primary"
           class="btn-publish"
+          :disabled="invalidAssets.length > 0"
           @click="publishBundle"
         >
           {{ $t('Publish') }}
         </b-button>
       </div>
     </div>
+
+    <b-alert
+      v-if="invalidAssets.length > 0"
+      show
+      variant="warning"
+      class="integrity-alert"
+    >
+      <strong>{{ $t('This bundle contains unavailable assets and cannot be exported.') }}</strong>
+      <p class="mb-2">
+        {{ $t('Remove the unavailable associations from the bundle before trying again. The underlying assets will not be deleted.') }}
+      </p>
+      <ul class="mb-0 pl-3">
+        <li
+          v-for="asset in invalidAssets"
+          :key="asset.id"
+          class="integrity-asset"
+        >
+          <span>{{ asset.name }}</span>
+          <b-button
+            size="sm"
+            variant="outline-danger"
+            @click.prevent="removeInvalidAsset(asset)"
+          >
+            {{ $t('Remove from bundle') }}
+          </b-button>
+        </li>
+      </ul>
+    </b-alert>
 
     <!-- Description -->
     <div class="description-section">
@@ -218,6 +247,29 @@ const confirmPublishNewVersionText = computed(() => vue.$t(
   { bundleName: bundle.value?.name },
 ));
 
+const invalidAssets = computed(
+  () => bundle.value?.assets?.filter((asset) => asset.integrity_status !== "valid") || [],
+);
+
+const removeInvalidAsset = async (asset) => {
+  const confirm = await vue.$bvModal.msgBoxConfirm(
+    vue.$t("Remove this unavailable association from the bundle? The underlying asset will not be deleted."),
+    {
+      okTitle: vue.$t("Remove from bundle"),
+      okVariant: "danger",
+      cancelTitle: vue.$t("Cancel"),
+    },
+  );
+  if (!confirm) {
+    return;
+  }
+
+  await window.ProcessMaker.apiClient.delete(
+    `/api/1.0/devlink/local-bundles/assets/${asset.id}`,
+  );
+  await loadAssets();
+};
+
 const publishBundle = () => {
   selected.value = bundle.value;
   confirmPublishNewVersion.value.show();
@@ -276,6 +328,15 @@ width: 100%;
 }
 .btn-publish {
   width: 104px;
+}
+.integrity-alert {
+  margin: 16px 24px;
+}
+.integrity-asset {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
 }
 .icon-button {
   background-color: #E9ECF1;

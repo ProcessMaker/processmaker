@@ -269,7 +269,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
   .has-search .form-control {
     padding-left: 2.375rem;
   }
