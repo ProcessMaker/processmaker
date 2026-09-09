@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group as TestGroup;
 use Carbon\Carbon;
 use Database\Seeders\PermissionSeeder;
 use Facades\ProcessMaker\RollbackProcessRequest;
@@ -33,8 +34,8 @@ use Tests\TestCase;
  * the creation, update and deletion are controller by the engine
  * and should not be changed by endpoints
  *
- * @group process_tests
  */
+#[TestGroup('process_tests')]
 class TasksTest extends TestCase
 {
     use WithFaker;
@@ -413,6 +414,61 @@ class TasksTest extends TestCase
         $response->assertStatus(200);
         $firstRow = $response->json('data')[0];
         $this->assertEquals($tasks->last(), $firstRow['process_request_id']);
+    }
+
+    public function testSortByProcessRequestColumnsAndJsonData()
+    {
+        $firstRequest = ProcessRequest::factory()->create([
+            'name' => 'First request',
+            'case_title' => 'First case',
+            'data' => ['priority' => 'low'],
+        ]);
+        $secondRequest = ProcessRequest::factory()->create([
+            'name' => 'Second request',
+            'case_title' => 'Second case',
+            'data' => ['priority' => 'high'],
+        ]);
+
+        ProcessRequestToken::factory()->create([
+            'user_id' => $this->user->id,
+            'process_id' => $firstRequest->process_id,
+            'process_request_id' => $firstRequest->id,
+        ]);
+        ProcessRequestToken::factory()->create([
+            'user_id' => $this->user->id,
+            'process_id' => $secondRequest->process_id,
+            'process_request_id' => $secondRequest->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', [
+            'order_by' => 'process_requests.case_title',
+            'order_direction' => 'desc',
+        ]));
+        $response->assertStatus(200);
+        $this->assertEquals(
+            $secondRequest->id,
+            $response->json('data.0.process_request_id')
+        );
+
+        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', [
+            'order_by' => 'data.priority',
+            'order_direction' => 'asc',
+        ]));
+        $response->assertStatus(200);
+        $this->assertEquals(
+            $secondRequest->id,
+            $response->json('data.0.process_request_id')
+        );
+    }
+
+    public function testInvalidOrderingDoesNotReachSql()
+    {
+        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', [
+            'order_by' => 'process_requests.name) desc, sleep(5) --',
+            'order_direction' => 'invalid',
+        ]));
+
+        $response->assertStatus(200);
     }
 
     /**
