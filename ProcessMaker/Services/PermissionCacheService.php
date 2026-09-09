@@ -18,6 +18,8 @@ class PermissionCacheService implements PermissionCacheInterface
 
     private const LEGACY_USER_PERMISSIONS_KEY = 'user';
 
+    private const USER_PERMISSION_GROUPS_KEY = 'user_permission_groups';
+
     private const TRACKED_PERMISSION_KEYS = 'permission_cache_keys';
 
     private const TRACKED_PERMISSION_KEYS_LOCK = 'permission_cache_keys_lock';
@@ -91,11 +93,42 @@ class PermissionCacheService implements PermissionCacheInterface
     /**
      * Invalidate user permissions cache
      */
+    public function rememberUserPermissionGroups(int $userId, int $ttl, callable $callback): array
+    {
+        $key = $this->getUserPermissionGroupsKey($userId);
+
+        try {
+            $groups = Cache::remember($key, $ttl, $callback);
+            $this->trackPermissionKey($key);
+
+            return is_array($groups) ? $groups : [];
+        } catch (\Exception $e) {
+            Log::warning("Failed to remember user permission groups for user {$userId}: " . $e->getMessage());
+
+            $groups = $callback();
+
+            return is_array($groups) ? $groups : [];
+        }
+    }
+
+    public function forgetUserPermissionGroups(int $userId): void
+    {
+        $key = $this->getUserPermissionGroupsKey($userId);
+
+        try {
+            Cache::forget($key);
+            $this->untrackPermissionKey($key);
+        } catch (\Exception $e) {
+            Log::warning("Failed to forget user permission groups for user {$userId}: " . $e->getMessage());
+        }
+    }
+
     public function invalidateUserPermissions(int $userId): void
     {
         $keys = [
             $this->getUserPermissionsKey($userId),
             $this->getLegacyUserPermissionsKey($userId),
+            $this->getUserPermissionGroupsKey($userId),
         ];
 
         try {
@@ -214,6 +247,11 @@ class PermissionCacheService implements PermissionCacheInterface
     private function getLegacyUserPermissionsKey(int $userId): string
     {
         return self::LEGACY_USER_PERMISSIONS_KEY . "_{$userId}_permissions";
+    }
+
+    private function getUserPermissionGroupsKey(int $userId): string
+    {
+        return self::USER_PERMISSION_GROUPS_KEY . ":{$userId}";
     }
 
     /**

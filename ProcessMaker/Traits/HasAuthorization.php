@@ -44,6 +44,15 @@ trait HasAuthorization
         return $this->addCategoryViewPermissions($permissions);
     }
 
+    public function cachedPermissionGroups(): array
+    {
+        return app(PermissionCacheService::class)->rememberUserPermissionGroups(
+            $this->id,
+            86400,
+            fn () => $this->permissions()->pluck('group')->unique()->values()->toArray()
+        );
+    }
+
     public function loadGroupPermissions()
     {
         $processedGroups = [];
