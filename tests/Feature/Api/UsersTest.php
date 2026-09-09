@@ -657,6 +657,67 @@ class UsersTest extends TestCase
         $response->assertJsonFragment(['id' => $id]);
     }
 
+    public function testRestoreSoftDeletedUserDispatchesOneUpdatedEvent()
+    {
+        $deletedUser = null;
+        User::withoutEvents(function () use (&$deletedUser) {
+            $deletedUser = User::factory()->create([
+                'deleted_at' => now(),
+                'status' => 'INACTIVE',
+            ]);
+        });
+
+        $updatedEventCount = 0;
+        User::updated(function () use (&$updatedEventCount) {
+            $updatedEventCount++;
+        });
+
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/restore', [
+            'id' => $deletedUser->id,
+        ]);
+
+        $response->assertStatus(200);
+
+        $restoredUser = User::find($deletedUser->id);
+        $this->assertSame('ACTIVE', $restoredUser->status);
+        $this->assertNull($restoredUser->deleted_at);
+        $this->assertFalse($restoredUser->trashed());
+        $this->assertSame(1, $updatedEventCount);
+    }
+
+    public function testDeleteUserDispatchesDeletedWithoutUpdatedEvent()
+    {
+        $user = User::factory()->create();
+        $group = Group::factory()->create();
+        $user->groups()->attach($group->id);
+
+        $updatedEventCount = 0;
+        $deletedEventCount = 0;
+        User::updated(function () use (&$updatedEventCount) {
+            $updatedEventCount++;
+        });
+        User::deleted(function () use (&$deletedEventCount) {
+            $deletedEventCount++;
+        });
+
+        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/' . $user->id);
+
+        $response->assertStatus(204);
+
+        $deletedUser = User::withTrashed()->findOrFail($user->id);
+        $this->assertSame('INACTIVE', $deletedUser->status);
+        $this->assertNotNull($deletedUser->deleted_at);
+        $this->assertTrue($deletedUser->trashed());
+        $this->assertSame(0, $updatedEventCount);
+        $this->assertSame(1, $deletedEventCount);
+
+        $this->assertDatabaseMissing('group_members', [
+            'group_id' => $group->id,
+            'member_id' => $user->id,
+            'member_type' => User::class,
+        ]);
+    }
+
     public function testCreateWithoutPassword()
     {
         $payload = [
