@@ -424,4 +424,148 @@ class ProcessRequestTokenTest extends TestCase
         $this->assertNotContains(0, $result);
         $this->assertNotContains(-1, $result);
     }
+
+    public function testGetAssigneesFromExpressionAcceptsArrayFormData()
+    {
+        $assignableUser = User::factory()->create(['status' => 'ACTIVE']);
+
+        $process = Process::factory()->create();
+        $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
+
+        $rules = [
+            ['type' => 'user', 'assignee' => $assignableUser->id, 'default' => true],
+        ];
+
+        $activity = $this->createMock(\ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface::class);
+        $activity->method('getProperty')
+            ->willReturnCallback(function ($key, $default) use ($rules) {
+                if ($key === 'assignmentRules') {
+                    return json_encode($rules);
+                }
+
+                return $default;
+            });
+
+        $bpmnDefinition = $this->createMock(\ProcessMaker\Nayra\Storage\BpmnElement::class);
+        $bpmnDefinition->method('getBpmnElementInstance')
+            ->willReturn($activity);
+
+        $token = $this->getMockBuilder(ProcessRequestToken::class)
+            ->onlyMethods(['getBpmnDefinition'])
+            ->getMock();
+
+        $token->process_id = $process->id;
+        $token->process_request_id = $request->id;
+        $token->process = $process;
+
+        $token->expects($this->atLeastOnce())
+            ->method('getBpmnDefinition')
+            ->willReturn($bpmnDefinition);
+
+        $formData = ['TestVar' => 5];
+
+        $result = $token->getAssigneesFromExpression($formData);
+
+        $this->assertContains($assignableUser->id, $result);
+
+        $resultFromString = $token->getAssigneesFromExpression(json_encode($formData));
+        $this->assertEquals($result, $resultFromString);
+    }
+
+    public function testGetAssigneesFromExpressionDoesNotExpandUnmatchedGroupWithSameAssigneeId()
+    {
+        $assignableUser = User::factory()->create(['status' => 'ACTIVE']);
+        $sharedAssigneeId = $assignableUser->id;
+        $rules = [
+            ['type' => 'user', 'assignee' => $sharedAssigneeId, 'expression' => 'TestVar<10'],
+            ['type' => 'group', 'assignee' => $sharedAssigneeId, 'expression' => 'TestVar>10'],
+        ];
+
+        $activity = $this->createMock(\ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface::class);
+        $activity->method('getProperty')
+            ->willReturnCallback(function ($key, $default) use ($rules) {
+                if ($key === 'assignmentRules') {
+                    return json_encode($rules);
+                }
+
+                return $default;
+            });
+
+        $bpmnDefinition = $this->createMock(\ProcessMaker\Nayra\Storage\BpmnElement::class);
+        $bpmnDefinition->method('getBpmnElementInstance')
+            ->willReturn($activity);
+
+        $process = $this->createMock(Process::class);
+        $process->expects($this->never())->method('getConsolidatedUsers');
+
+        $request = ProcessRequest::factory()->create();
+
+        $token = $this->getMockBuilder(ProcessRequestToken::class)
+            ->onlyMethods(['getBpmnDefinition'])
+            ->getMock();
+
+        $token->process_id = $request->process_id;
+        $token->process_request_id = $request->id;
+        $token->process = $process;
+
+        $token->expects($this->atLeastOnce())
+            ->method('getBpmnDefinition')
+            ->willReturn($bpmnDefinition);
+
+        $result = $token->getAssigneesFromExpression(['TestVar' => 5]);
+
+        $this->assertEquals([$sharedAssigneeId], $result);
+    }
+
+    public function testGetAssigneesFromExpressionPreservesGroupMembersWhenManagerIdCollides()
+    {
+        $groupUsers = User::factory()->count(3)->create(['status' => 'ACTIVE']);
+        $group = Group::factory()->create();
+        foreach ($groupUsers as $groupUser) {
+            GroupMember::factory()->create([
+                'group_id' => $group->id,
+                'member_id' => $groupUser->id,
+                'member_type' => User::class,
+            ]);
+        }
+
+        $process = Process::factory()->create(['manager_id' => $groupUsers[1]->id]);
+        $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
+
+        $rules = [
+            ['type' => 'group', 'assignee' => $group->id, 'expression' => 'TestVar<10'],
+        ];
+
+        $activity = $this->createMock(\ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface::class);
+        $activity->method('getProperty')
+            ->willReturnCallback(function ($key, $default) use ($rules) {
+                if ($key === 'assignmentRules') {
+                    return json_encode($rules);
+                }
+
+                return $default;
+            });
+
+        $bpmnDefinition = $this->createMock(\ProcessMaker\Nayra\Storage\BpmnElement::class);
+        $bpmnDefinition->method('getBpmnElementInstance')
+            ->willReturn($activity);
+
+        $token = $this->getMockBuilder(ProcessRequestToken::class)
+            ->onlyMethods(['getBpmnDefinition'])
+            ->getMock();
+
+        $token->process_id = $process->id;
+        $token->process_request_id = $request->id;
+        $token->process = $process;
+
+        $token->expects($this->atLeastOnce())
+            ->method('getBpmnDefinition')
+            ->willReturn($bpmnDefinition);
+
+        $result = $token->getAssigneesFromExpression(['TestVar' => 5]);
+
+        foreach ($groupUsers as $groupUser) {
+            $this->assertContains($groupUser->id, $result);
+        }
+    }
 }
