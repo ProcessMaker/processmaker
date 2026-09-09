@@ -155,6 +155,17 @@ class TaskController extends Controller
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
         } else {
             if (!empty($preview)) {
+                $currentUser = Auth::user()->only([
+                    'id',
+                    'username',
+                    'fullname',
+                    'firstname',
+                    'lastname',
+                    'avatar',
+                    'timezone',
+                    'datetime_format',
+                ]);
+
                 return view('tasks.preview', [
                     'task' => $task,
                     'dueLabels' => self::$dueLabels,
@@ -165,6 +176,7 @@ class TaskController extends Controller
                     'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
                     'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
                     'screenFields' => $screenFields,
+                    'currentUser' => $currentUser,
                 ]);
             }
 

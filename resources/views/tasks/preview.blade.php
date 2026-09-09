@@ -137,9 +137,16 @@
   const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
   const userIsProcessManager = {{ in_array(Auth::user()->id, $task->process?->manager_id ?? []) ? "true": "false" }};
   const screenFields = @json($screenFields);
+  window.Processmaker.user = @json($currentUser);
 </script>
 <script src="{{ mix('js/tasks/loaderPreview.js')}}"></script>
 <script>
+  window.ProcessMaker.user = Object.assign(
+    {},
+    window.ProcessMaker.user || {},
+    @json($currentUser)
+  );
+
   window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
     if (screen.watchers_config) {
       screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));

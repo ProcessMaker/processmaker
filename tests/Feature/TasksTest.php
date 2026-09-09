@@ -83,4 +83,29 @@ class TasksTest extends TestCase
         $response = $this->webGet(self::TASKS_URL . '/' . $task['id'] . '/edit', []);
         $response->assertStatus(200);
     }
+
+    /**
+     * Manual-task modeler preview must bootstrap the current user so List Table
+     * (cases/requests) can build PMQL and emit a real /cases navigation URL.
+     */
+    public function testPreviewBootstrapsCurrentUserForListTable()
+    {
+        $process = $this->createTestProcess();
+        $route = route('api.process_events.trigger', [$process->id, 'event' => 'StartEventUID']);
+        $response = $this->apiCall('POST', $route, []);
+        $response->assertStatus(201);
+
+        $task = $this->apiCall('GET', route('api.tasks.index'))->json('data')[0];
+
+        $response = $this->webGet(self::TASKS_URL . '/' . $task['id'] . '/edit/preview', []);
+        $response->assertStatus(200);
+        $response->assertViewIs('tasks.preview');
+        $response->assertViewHas('currentUser', function ($currentUser) {
+            return ($currentUser['id'] ?? null) === $this->user->id
+                && ($currentUser['username'] ?? null) === $this->user->username;
+        });
+        $response->assertSee('window.Processmaker.user =', false);
+        $response->assertSee('"username":"' . $this->user->username . '"', false);
+        $response->assertSee('window.ProcessMaker.user = Object.assign', false);
+    }
 }
