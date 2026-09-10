@@ -58,8 +58,10 @@ final class MigrationBpmn
         }
 
         if ($idMap === []) {
+            self::normalizeFlowNodeChildOrder($xpath);
+
             return [
-                'xml' => self::ensureDiagramInterchange($xml),
+                'xml' => self::ensureDiagramInterchange($document->saveXML() ?: $xml),
                 'id_map' => [],
                 'warnings' => [],
             ];
@@ -291,7 +293,11 @@ final class MigrationBpmn
 
     private static function normalizeFlowNodeChildOrder(DOMXPath $xpath): void
     {
-        foreach ($xpath->query('//bpmn:task | //bpmn:userTask | //bpmn:scriptTask') as $node) {
+        $flowNodeQuery = '//bpmn:task | //bpmn:userTask | //bpmn:scriptTask'
+            . ' | //bpmn:exclusiveGateway | //bpmn:parallelGateway | //bpmn:inclusiveGateway'
+            . ' | //bpmn:complexGateway | //bpmn:eventBasedGateway';
+
+        foreach ($xpath->query($flowNodeQuery) as $node) {
             if (!($node instanceof DOMElement)) {
                 continue;
             }
