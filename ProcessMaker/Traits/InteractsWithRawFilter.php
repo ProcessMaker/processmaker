@@ -4,10 +4,10 @@ namespace ProcessMaker\Traits;
 
 use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-
 trait InteractsWithRawFilter
 {
+    private const MAX_INTERVAL = 365;
+
     private bool $usesRawValue = false;
 
     /**
@@ -15,7 +15,7 @@ trait InteractsWithRawFilter
      *
      * @var array
      */
-    private array $validRawFilterOperators = ['=', '!=', '>', '<', '>=', '<='];
+    private array $validRawFilterOperators = ['=', '!=', '>', '<', '>=', '<=', 'between'];
 
     /**
      * Unwrap the raw() and retrieve the string value passed
@@ -24,14 +24,30 @@ trait InteractsWithRawFilter
      */
     public function getRawValue(): Expression
     {
-        // Get the string equivalent of the raw() filter value
-        $value = $this->containsRawValue($this->getValue()) ? $this->getValue() : '';
+        $value = $this->getValue();
+        $matches = [];
+        $pattern = '/^\s*raw\(\s*NOW\(\)\s*(?:(\+|-)\s*INTERVAL\s+([1-9]\d*)\s+'
+            . '(SECOND|MINUTE|HOUR|DAY|WEEK|MONTH))?\s*\)\s*$/iD';
 
-        // Remove the actual row( and ) from the string
-        $unwrappedRawValue = $this->unwrapRawValue($value);
+        if (!is_string($value) || preg_match($pattern, $value, $matches) !== 1) {
+            abort(422, 'Invalid raw filter expression.');
+        }
 
-        // Wrap it in a DB expression and return it
-        return DB::raw($unwrappedRawValue);
+        if (isset($matches[2]) && (int) $matches[2] > self::MAX_INTERVAL) {
+            abort(422, 'Raw filter interval exceeds the maximum allowed value.');
+        }
+
+        $expression = 'NOW()';
+        if (isset($matches[1])) {
+            $expression .= sprintf(
+                ' %s INTERVAL %d %s',
+                $matches[1],
+                (int) $matches[2],
+                strtoupper($matches[3])
+            );
+        }
+
+        return DB::raw($expression);
     }
 
     /**
@@ -43,8 +59,7 @@ trait InteractsWithRawFilter
      */
     public function containsRawValue(string $value): bool
     {
-        return Str::contains($value, 'raw(')
-            && Str::endsWith($value, ')');
+        return preg_match('/^\s*raw\s*\(/i', $value) === 1;
     }
 
     /**
@@ -54,18 +69,19 @@ trait InteractsWithRawFilter
      */
     protected function detectRawValue(): void
     {
-        $value = $this->getValue();
+        $values = is_array($this->getValue()) ? $this->getValue() : [$this->getValue()];
+        $this->usesRawValue = false;
 
-        // Sometimes, the value is an array, which likely means
-        // this filter is set to the use the "between" operator
-        $value = is_string($value) ? $value : '';
+        if ($this->operator === 'between' && (!is_array($this->getValue()) || count($values) !== 2)) {
+            abort(422, 'The between operator requires exactly two values.');
+        }
 
-        // Detect if this particular filter includes a raw() value
-        $this->usesRawValue = $this->containsRawValue($value);
-
-        // If so, validate it is being used with a compatible operator
-        if ($this->usesRawValue) {
-            $this->validateOperator();
+        foreach ($values as $value) {
+            if (is_string($value) && $this->containsRawValue($value)) {
+                $this->usesRawValue = true;
+                $this->validateOperator();
+                $this->validateRawValue($value);
+            }
         }
     }
 
@@ -78,9 +94,7 @@ trait InteractsWithRawFilter
      */
     protected function unwrapRawValue(string $value): string
     {
-        $stripped = Str::after($value, 'raw(');
-
-        return Str::beforeLast($stripped, ')');
+        return substr($value, 4, -1);
     }
 
     /**
@@ -101,6 +115,43 @@ trait InteractsWithRawFilter
     protected function filteringWithRawValue(): bool
     {
         return $this->usesRawValue === true;
+    }
+
+    protected function valueWithRawExpressions(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            return array_map(fn ($item) => $this->valueWithRawExpressions($item), $value);
+        }
+
+        if (is_string($value) && $this->containsRawValue($value)) {
+            return $this->getRawValueFor($value);
+        }
+
+        return $value;
+    }
+
+    private function getRawValueFor(string $value): Expression
+    {
+        $originalValue = $this->value;
+        $this->value = $value;
+
+        try {
+            return $this->getRawValue();
+        } finally {
+            $this->value = $originalValue;
+        }
+    }
+
+    private function validateRawValue(string $value): void
+    {
+        $originalValue = $this->value;
+        $this->value = $value;
+
+        try {
+            $this->getRawValue();
+        } finally {
+            $this->value = $originalValue;
+        }
     }
 
     /**

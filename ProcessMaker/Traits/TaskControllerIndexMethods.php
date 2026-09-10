@@ -3,11 +3,9 @@
 namespace ProcessMaker\Traits;
 
 use Auth;
-use DB;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
 use ProcessMaker\Filters\Filter;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Process;
@@ -197,100 +195,144 @@ trait TaskControllerIndexMethods
 
     private function applyColumnOrdering($query, $request)
     {
-        $direction = $request->input('order_direction', 'asc');
-        $orderColumns = explode(',', $request->input('order_by', 'updated_at'));
-        foreach ($orderColumns as $column) {
-            $parts = explode('.', $column);
-            $table = count($parts) > 1 ? array_shift($parts) : 'process_request_tokens';
-            $columnName = array_pop($parts);
+        $orderColumns = array_map(
+            'trim',
+            explode(',', (string) $request->input('order_by', 'updated_at'))
+        );
+        $orderDirections = array_map(
+            'trim',
+            explode(',', (string) $request->input('order_direction', 'asc'))
+        );
 
-            // Handle ordering by JSON fields
-            if ($table === 'data') {
-                $this->orderByJsonData($query, $column, $direction);
-            } elseif ($column === 'user.name') {
-                $this->orderByUserFullName($query, $direction);
-            } elseif ($column === 'status') {
-                $this->orderByStatusAlias($query, $direction);
-            } elseif (!Str::contains($column, '.')) {
-                // Order on a column in the process_request_tokens table
-                $query->orderBy($column, $direction);
-            } elseif ($table === 'process_requests' || $table === 'process_request' || $table === 'processRequests') {
-                if ($columnName === 'id') {
-                    $query->orderBy(
-                        'process_request_id',
-                        $direction
-                    );
-                } else {
-                    // Raw sort by (select column from process_requests ...)
-                    $query->orderBy(
-                        DB::raw("(select
-                                $columnName
-                            from
-                                process_requests
-                            where
-                                process_requests.id = process_request_tokens.process_request_id
-                        )"),
-                        $direction
-                    );
-                }
+        $processRequestColumns = [
+            'id',
+            'uuid',
+            'process_id',
+            'process_collaboration_id',
+            'user_id',
+            'parent_request_id',
+            'participant_id',
+            'callable_id',
+            'status',
+            'name',
+            'case_number',
+            'case_title',
+            'case_title_formatted',
+            'process_version_id',
+            'collaboration_uuid',
+            'completed_at',
+            'initiated_at',
+            'created_at',
+            'updated_at',
+            'last_stage_id',
+            'last_stage_name',
+            'progress',
+            'execution_revision',
+        ];
+        $tokenColumns = [
+            'id',
+            'element_id',
+            'element_name',
+            'element_type',
+            'status',
+            'due_at',
+            'completed_at',
+            'initiated_at',
+            'riskchanges_at',
+            'user_id',
+            'process_id',
+            'process_request_id',
+            'created_at',
+            'updated_at',
+            'is_priority',
+        ];
+
+        $hasProcessRequestOrdering = false;
+        $hasUserOrdering = false;
+        foreach ($orderColumns as $column) {
+            $normalizedColumn = preg_replace(
+                '/^(process_request|processRequests)\./',
+                'process_requests.',
+                $column
+            );
+
+            if (in_array($normalizedColumn, array_map(
+                fn ($name) => 'process_requests.' . $name,
+                $processRequestColumns
+            ), true) || preg_match('/^data\.[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*$/', $column)) {
+                $hasProcessRequestOrdering = true;
+            }
+            if ($column === 'user.name') {
+                $hasUserOrdering = true;
             }
         }
-    }
 
-    private function orderByJsonData(&$query, $column, $direction)
-    {
-        $pathParts = explode('.', $column);
-        array_shift($pathParts);
-        $path = '$.' . implode('.', $pathParts);
+        if ($hasProcessRequestOrdering) {
+            $query->leftJoin(
+                'process_requests',
+                'process_requests.id',
+                '=',
+                'process_request_tokens.process_request_id'
+            );
+        }
+        if ($hasUserOrdering) {
+            $query->leftJoin(
+                'users',
+                'users.id',
+                '=',
+                'process_request_tokens.user_id'
+            );
+        }
+        if ($hasProcessRequestOrdering || $hasUserOrdering) {
+            if ($query->getQuery()->columns === null) {
+                $query->select('process_request_tokens.*');
+            } else {
+                $query->select(array_map(function ($column) {
+                    if (!is_string($column)) {
+                        return $column;
+                    }
 
-        // Move null values to the bottom
-        $query->orderBy(
-            DB::raw("(
-                select
-                if (
-                    json_unquote(json_extract(process_requests.data, '$path')) = 'null',
-                    NULL,
-                    json_unquote(json_extract(process_requests.data, '$path')) -- could also be null
-                )
-                from process_requests where
-                process_requests.id = process_request_tokens.process_request_id
-            )"),
-            ($direction === 'asc' ? 'desc' : 'asc')
-        );
+                    $column = ltrim($column, '.');
 
-        $query->orderBy(
-            DB::raw("(
-                select
-                json_unquote(json_extract(process_requests.data, '$path'))
-                from process_requests where
-                process_requests.id = process_request_tokens.process_request_id
-            )"),
-            $direction
-        );
-    }
+                    return str_contains($column, '.')
+                        ? $column
+                        : 'process_request_tokens.' . $column;
+                }, $query->getQuery()->columns));
+            }
+        }
 
-    private function orderByStatusAlias(&$query, $direction)
-    {
-        $query->orderBy(
-            DB::raw("CASE status when 'ACTIVE' then 'In Progress' else status end"),
-            $direction
-        );
-    }
+        $hasValidOrdering = false;
+        foreach ($orderColumns as $index => $column) {
+            $direction = strtolower($orderDirections[$index] ?? $orderDirections[0] ?? 'asc');
+            $direction = in_array($direction, ['asc', 'desc'], true) ? $direction : 'asc';
+            $normalizedColumn = preg_replace(
+                '/^(process_request|processRequests)\./',
+                'process_requests.',
+                $column
+            );
 
-    private function orderByUserFullName(&$query, $direction)
-    {
-        $query->orderBy(
-            DB::raw('process_request_tokens.user_id is null'),
-            $direction
-        );
-        $query->orderBy(
-            DB::raw('(select users.firstname from users where users.id = process_request_tokens.user_id)'),
-            $direction
-        );
-        $query->orderBy(
-            DB::raw('(select users.lastname from users where users.id = process_request_tokens.user_id)'),
-            $direction
-        );
+            if ($column === 'user.name') {
+                $query->orderBy('users.firstname', $direction)
+                    ->orderBy('users.lastname', $direction);
+                $hasValidOrdering = true;
+            } elseif (preg_match('/^data\.([A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*)$/', $column, $matches)) {
+                $query->orderBy('process_requests.data->' . str_replace('.', '->', $matches[1]), $direction);
+                $hasValidOrdering = true;
+            } elseif (in_array($normalizedColumn, array_map(
+                fn ($name) => 'process_requests.' . $name,
+                $processRequestColumns
+            ), true)) {
+                $query->orderBy($normalizedColumn, $direction);
+                $hasValidOrdering = true;
+            } elseif (in_array($column, $tokenColumns, true)) {
+                $query->orderBy('process_request_tokens.' . $column, $direction);
+                $hasValidOrdering = true;
+            }
+        }
+
+        if (!$hasValidOrdering) {
+            $query->orderBy('process_request_tokens.updated_at', 'asc');
+        }
     }
 
     private function applyStatusFilter($query, $request)
