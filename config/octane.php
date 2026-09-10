@@ -262,5 +262,11 @@ return [
             'OCTANE_MAX_INPUT_TIME' => env('OCTANE_MAX_INPUT_TIME', 90),
         ],
     ],
+    'health' => [
+        'host' => env('OCTANE_HEALTH_HOST', '127.0.0.1'),
+        'port' => (int) env('OCTANE_HEALTH_PORT', 8001),
+        'endpoint' => env('OCTANE_HEALTH_ENDPOINT', '/health/live'),
+        'timeout' => (float) env('OCTANE_HEALTH_TIMEOUT', 2),
+    ],
 
 ];
