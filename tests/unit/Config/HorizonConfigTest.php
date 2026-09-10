@@ -94,6 +94,7 @@ class HorizonConfigTest extends TestCase
                 '--max-jobs' => $maxJobs,
                 '--stop-when-empty' => true,
                 '--tries' => 1,
+                '--memory' => 1024,
             ]);
 
             $this->assertSame(0, $exitCode);
