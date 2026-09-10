@@ -4,6 +4,8 @@ Agents (Cursor, FlowGenie, etc.) can **migrate PM3→PM4**, **create new process
 
 You do not need PHP or BPMN to get started: write a prompt and the agent invokes tools for you. The **LLM does not write to the database**; all persistence goes through `Reader.php` (PM3) or `Writer.php` / `Designer.php` (PM4).
 
+**Cursor orchestration:** see [`.cursor/skills/processmaker-migration/SKILL.md`](.cursor/skills/processmaker-migration/SKILL.md) for agent workflow rules (this file remains the full technical reference).
+
 ---
 
 ## Table of Contents
@@ -27,6 +29,7 @@ You do not need PHP or BPMN to get started: write a prompt and the agent invokes
 17. [Repository files](#repository-files)
 18. [Tests](#tests)
 19. [Limitations](#limitations)
+20. [Security (dev-only)](#security-dev-only)
 
 ---
 
@@ -95,28 +98,30 @@ The MCP flow is the same: export → apply. The difference is internal in `BpmnX
 
 **Requirements:** PM3 and PM4 running (local or Docker). Chat mode **Agent** (not Ask).
 
-Register **two servers** in `.cursor/mcp.json` (adjust paths):
+Register **two servers** in `.cursor/mcp.json` (replace `<pm3-root>`, `<pm4-root>`, and `<php>` with your local paths):
 
 ```json
 {
   "mcpServers": {
     "pm3-migration-reader": {
-      "command": "/Users/user/srv/http/processmaker3/workflow/engine/bin/mcp-migration-reader.sh",
+      "command": "<pm3-root>/workflow/engine/bin/mcp-migration-reader.sh",
       "args": ["workflow"],
       "env": { "PM_WORKSPACE": "workflow" }
     },
     "processmaker-agent": {
-      "command": "/opt/homebrew/bin/php",
+      "command": "<php>",
       "args": [
-        "/Users/user/srv/http/processmaker4/artisan",
+        "<pm4-root>/artisan",
         "mcp:start",
         "processmaker-agent"
       ],
-      "cwd": "/Users/user/srv/http/processmaker4"
+      "cwd": "<pm4-root>"
     }
   }
 }
 ```
+
+Example: `<pm3-root>` = `/srv/http/processmaker3`, `<pm4-root>` = `/srv/http/processmaker4`, `<php>` = `php` or `/usr/local/bin/php`.
 
 **PM3:** `mcp-migration-reader.sh` → `mcp-migration-reader.php` (stdio JSON-RPC, no HTTP).
 
@@ -654,3 +659,46 @@ PM4: ~43 tests — migration, resume, agent, core compatibility (`McpSupportTest
 - Log is local disk; not shared across PM4 nodes.
 - `fresh: true` may leave orphaned artifacts from the previous attempt.
 - Resume requires the same `pro_uid` and a bundle consistent with the export.
+
+---
+
+## Security (dev-only)
+
+The MCP stack is intended for **local development and controlled migration workflows**, not as a public production API.
+
+### Intended use
+
+| OK | Avoid |
+|----|-------|
+| Cursor stdio MCP on a developer machine | Exposing MCP HTTP endpoints on the public internet |
+| PM3/PM4 dev or staging databases | Running against production without access controls |
+| One process at a time with user confirmation | Unattended bulk migration on prod |
+
+### Risks
+
+| Risk | What happens | Mitigation |
+|------|----------------|------------|
+| **PM4 HTTP MCP** | `routes/ai.php` registers `Mcp::web("/mcp/{name}")` without app auth middleware | Use **stdio only** (`php artisan mcp:start processmaker-agent`). Block or protect HTTP routes in production (firewall, reverse-proxy auth, or remove `Mcp::web` registration). |
+| **PM4 acting user** | When no session exists, MCP uses `User::firstOrFail()` (or the process owner) via `McpSupport::ensureActingUser()` | Acceptable on local dev; do not treat this as authenticated multi-user access. |
+| **PM3 reader** | `pm3-migration-reader` reads the PM3 database with **no MCP-level authentication** | Run only on trusted hosts; restrict DB credentials; do not point at production PM3 from an open network. |
+| **Migrated scripts** | PM3 triggers become PM4 scripts (`TriggerTranslator`); content is executed by ProcessMaker like any other script | Review migrated scripts; migrate only trusted processes. |
+| **`fresh: true`** | Creates a new PM4 process without deleting artifacts from a prior attempt | Manual cleanup of orphaned processes/screens if retrying often. |
+| **Migration logs** | Stored at `storage/app/migration-logs/{pro_uid}.json` on the PM4 app server | Protect app filesystem; logs may contain process metadata and artifact IDs. |
+
+### Cursor skill safeguards
+
+Project skill [`.cursor/skills/processmaker-migration/SKILL.md`](.cursor/skills/processmaker-migration/SKILL.md) instructs the agent to:
+
+- Use MCP tools only (not direct DB/API bypass).
+- Ask for confirmation before any write tool.
+- Report validation and gap_report after migration.
+
+These reduce accidental writes; they **do not** replace server-side access control.
+
+### Production checklist
+
+1. Do **not** expose `/mcp/processmaker-agent` or `/mcp/migration-writer` without authentication.
+2. Prefer stdio MCP from Cursor or an internal automation host.
+3. Restrict PM3 DB access for the migration reader script.
+4. Treat MCP as **migration/design tooling**, not an end-user feature.
+5. Review `gap_report` and migrated scripts before go-live.
