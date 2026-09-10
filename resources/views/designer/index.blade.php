@@ -61,6 +61,6 @@
     window.packages = window.temporal.packages;
     window.Processmaker.user = @json($currentUser);
 </script>
-@vite(['resources/js/processes/loaderProcesses.js'])
+@vite(['resources/js/loader/loaderMinimal.js'])
 @vite(['resources/js/processes/newDesigner.js'])
 @endsection

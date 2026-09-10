@@ -125,7 +125,6 @@
 </script>
 @vite('resources/js/processes/screens/loaderScreenPreview.js')
 @include('shared.monaco')
-KIKO
 @foreach(GlobalScripts::getScripts() as $script)
     <script src="{{$script}}" defer></script>
 @endforeach

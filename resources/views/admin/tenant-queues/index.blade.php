@@ -16,7 +16,7 @@
 @endsection
 
 @section('content')
-    @vite(['resources/js/admin/loaderAdmin.js'])
+    @vite('resources/js/loader/loaderMinimal.js')
     <div id="tenant-queues-dashboard">
         <router-view></router-view>
     </div>

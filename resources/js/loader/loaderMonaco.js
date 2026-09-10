@@ -1,5 +1,5 @@
-import { setupMain } from "../../next/setupMain";
-import monaco from "../../next/monaco";
+import { setupMain } from "../next/setupMain";
+import monaco from "../next/monaco";
 
 setupMain();
 monaco();

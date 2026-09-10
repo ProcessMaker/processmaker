@@ -123,9 +123,8 @@
     packages: @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages())
   };
 </script>
-@vite('resources/js/processes/scripts/loaderScriptsPreview.js')
+@vite(['resources/js/loader/loaderMonaco.js'])
 @include('shared.monaco')
-KIKO
 @foreach(GlobalScripts::getScripts() as $script)
     <script src="{{$script}}" defer></script>
 @endforeach

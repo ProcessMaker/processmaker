@@ -20,7 +20,7 @@
         window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
         window.packages = window.temporal.packages;
     </script>
-    @vite(['resources/js/processes/scripts/loaderScripts.js'])
+    @vite(['resources/js/loader/loaderMinimal.js'])
     @component('components.categorized_resource', [
             'tabs' => [
             __('Scripts'),

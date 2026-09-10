@@ -63,7 +63,7 @@
     </div>
   </div>
 </div>
-@vite('resources/js/admin/loaderAdmin.js')
+@vite('resources/js/loader/loaderMinimal.js')
 <script>
 async function refreshMs() {
   const update = await (await fetch('?partial=ms')).text();

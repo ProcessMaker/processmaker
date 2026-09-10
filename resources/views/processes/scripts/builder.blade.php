@@ -54,7 +54,7 @@
 
 @section('js')
   @include('shared.monaco')
-  @vite(['resources/js/processes/scripts/loaderScripts.js'])
+  @vite(['resources/js/loader/loaderMonaco.js'])
   @foreach ($manager->getScripts() as $script)
     <script defer src="{{ $script }}"></script>
   @endforeach

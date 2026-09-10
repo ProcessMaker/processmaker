@@ -15,7 +15,7 @@
     ]])
 @endsection
 @section('content')
-    @vite(['resources/js/admin/loaderAdmin.js'])
+    @vite('resources/js/loader/loaderMinimal.js')
     <div class="px-3" id="devlink">
         <dev-link></dev-link>
     </div>

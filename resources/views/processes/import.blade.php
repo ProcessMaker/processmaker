@@ -29,6 +29,6 @@
     window.temporal.importIsRunning = @json((bool) $importIsRunning);
     window.temporal.queueImports = @json((bool) config('app.queue_imports'));
   </script>
-  @vite(['resources/js/processes/loaderProcesses.js'])
+  @vite(['resources/js/loader/loaderMinimal.js'])
   @vite(['resources/js/processes/import/index.js'])
 @endsection

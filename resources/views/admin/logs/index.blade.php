@@ -26,7 +26,7 @@
         window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
         const permission = @json(\Auth::user()->hasPermissionsFor('settings'));
     </script>
-    @vite(['resources/js/admin/loaderAdmin.js'])
+    @vite('resources/js/loader/loaderMinimal.js')
     @vite(['resources/js/admin/logs/index.js'])
 @endsection
 

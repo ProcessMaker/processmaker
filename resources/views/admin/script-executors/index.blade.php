@@ -15,7 +15,7 @@
     ]])
 @endsection
 @section('content')
-    @vite(['resources/js/admin/loaderAdmin.js'])
+    @vite('resources/js/loader/loaderMinimal.js')
     <div id="script-executors" class="px-3">
         <div class="card card-body">
             <script-executors

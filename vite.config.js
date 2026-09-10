@@ -159,6 +159,9 @@ export default defineConfig(({ mode }) => {
         // does not rewrite Mix assets (typeForm.js, etc.) to the Vite origin.
         hotFile: "storage/vite.hot",
         input: [
+          "resources/js/loader/loaderMinimal.js",
+          "resources/js/loader/loaderMonaco.js",
+
           "resources/js/vite/auth/login.js",
           "resources/js/translations/index.js",
           "resources/js/vite/tasks/loaderTasks.js",
@@ -186,8 +189,6 @@ export default defineConfig(({ mode }) => {
           "resources/js/tasks/show.js",
           "resources/js/inbox-rules/index.js",
 
-          "resources/js/processes/loaderProcesses.js",
-
           "resources/js/leave-warning.js",
           "resources/js/processes/processes.js",
           "resources/js/processes/edit.js",
@@ -197,7 +198,6 @@ export default defineConfig(({ mode }) => {
           "resources/js/templates/index.js",
           "resources/js/processes/categories/index.js",
           "resources/js/processes/archived.js",
-          "resources/js/admin/loaderAdmin.js",
           "resources/js/admin/users/loaderUsers.js",
           "resources/js/admin/users/index.js",
           "resources/js/admin/users/edit.js",
@@ -232,7 +232,6 @@ export default defineConfig(({ mode }) => {
           "resources/js/processes/screen-templates/myTemplates.js",
           "resources/js/processes/screen-templates/publicTemplates.js",
           "resources/js/processes/screens/edit.js",
-          "resources/js/processes/scripts/loaderScripts.js",
           "resources/js/processes/scripts/index.js",
           "resources/js/processes/scripts/editConfig.js",
           "resources/js/processes/scripts/edit.js",

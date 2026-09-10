@@ -35,6 +35,6 @@
         window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
         window.packages = window.temporal.packages;
     </script>
-    @vite(['resources/js/processes/loaderProcesses.js'])
+    @vite(['resources/js/loader/loaderMinimal.js'])
     @vite(['resources/js/processes/export/index.js'])
 @endsection
