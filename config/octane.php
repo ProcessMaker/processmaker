@@ -155,6 +155,7 @@ return [
         // Services with mutable state that must be recreated per request
         ProcessMaker\Managers\LoginManager::class,
         ProcessMaker\Managers\ModelerManager::class,
+        ProcessMaker\Managers\ScreenBuilderManager::class,
         Lavary\Menu\Menu::class,
     ],
 
