@@ -64,6 +64,10 @@ const main = new Vue({
     userConfiguration,
     urlConfiguration: "users/configuration",
     showTabs: true,
+    loadedTabs: {
+      form: true,
+      data: false,
+    },
   },
   computed: {
     taskDefinitionConfig() {
@@ -172,6 +176,14 @@ const main = new Vue({
     this.setAllowReassignment();
   },
   methods: {
+    openDataTab() {
+      if (!this.loadedTabs.data) {
+        this.loadedTabs.data = true;
+      }
+      this.$nextTick(() => {
+        this.resizeMonaco();
+      });
+    },
     defineUserConfiguration() {
       this.userConfiguration = JSON.parse(this.userConfiguration.ui_configuration);
       this.showMenu = this.userConfiguration.tasks.isMenuCollapse;
@@ -288,8 +300,13 @@ const main = new Vue({
     },
     resizeMonaco() {
       this.showTree = false;
-      const editor = this.$refs.monaco.getMonaco();
-      editor.layout({ height: window.innerHeight * 0.65 });
+      const editor = this.$refs.monaco?.getMonaco?.();
+      if (!editor) {
+        return;
+      }
+      editor.layout({
+        height: window.innerHeight * 0.65,
+      });
     },
     prepareData() {
       this.updateRequestData = debounce(this.updateRequestData, 1000);

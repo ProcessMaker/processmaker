@@ -23,6 +23,10 @@ class BrowserCache
                 return $response;
             }
 
+            if ($response->headers->has('ETag')) {
+                return $response;
+            }
+
             $response->header('pragma', 'no-cache');
             $response->header('Cache-Control', 'no-store');
 
