@@ -19,7 +19,7 @@ test status
 @endsection
 
 @section('js')
-  @vite('resources/js/templates/loaderTemplates.js')  
+  @vite('resources/js/loader/loaderMinimal.js')  
 <script>
 window.addEventListener('load', () => {    
   new Vue({

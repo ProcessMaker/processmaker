@@ -45,7 +45,7 @@ Entries may live under:
 
 Prefer co-locating the Vite entry with the feature source when that tree already owns the page.
 
-Shared admin chrome: `resources/js/admin/loaderAdmin.js` (`setupMain` + packages) is used by Script Executors, Tenant Queues, DevLink, Cases Retention, and Logs.
+Shared admin chrome: `resources/js/loader/loaderMinimal.js` (`setupMain` + packages) is used by Script Executors, Tenant Queues, DevLink, Cases Retention, and Logs.
 
 ## Folder layout
 
@@ -83,7 +83,7 @@ resources/views/requests/showMobile.blade.php           ← Vite (mobile request
 resources/views/requests/preview.blade.php              ← Vite (request screen preview)
 resources/js/vite/tasks/                              ← Tasks entries
 resources/js/vite/auth/login.js                       ← Login / auth layout entry
-resources/js/admin/loaderAdmin.js                     ← shared admin setupMain loader
+resources/js/loader/loaderMinimal.js                     ← shared admin setupMain loader
 resources/js/processes/environment-variables/loaderEnvironment.js ← env vars setupMain loader
 resources/js/processes/screens/loaderScreens.js       ← screens setupMain loader
 resources/js/processes-catalogue/loaderProcessesCatalogue.js
@@ -109,30 +109,30 @@ vite.config.js
 | Request detail | **Vite** | `requests.show` + `layoutnextvite` | `requests/loaderRequestsShow.js` → modeler `initialLoad.js` + `requests/show.js` → inline Vue mount on `window` `load` |
 | Mobile request detail | **Vite** | `requests.showMobile` + `mobilenextvite` | `requests/loaderRequestsShow.js` + `requests/show.js` → inline Vue mount on `window` `load` |
 | Request screen preview | **Vite** | `requests.preview` + `layoutnextvite` | `requests/loaderRequestsPreview.js` (`setupMain` + ScreenBuilder) → `requests/preview.js` → inline Vue mount on `window` `load` |
-| Notifications | **Vite** | `notifications.index` + `layoutnextvite` | `notifications/loaderNotifications.js` → `notifications/index.js` |
-| Template Import | **Vite** | `templates.import` + `layoutnextvite` | `templates/loaderTemplates.js` → `templates/import/index.js` (Vue Router) |
-| Template Configure | **Vite** | `templates.configure` + `layoutnextvite` | boot `window.temporal.templateConfigurations` → `templates/loaderTemplates.js` → `templates/configure.js` + `mixins: addons` |
-| Template Assets | **Vite** | `templates.assets` + `layoutnextvite` | `templates/loaderTemplates.js` → `templates/assets.js` (state from `localStorage`) |
-| Processes (Designer) | **Vite** | `processes.index` + `layoutnextvite`; apps via child `@append` | `processes/loaderProcesses.js` → `processes.js` / `templates` / `categories` / `archived` |
-| Designer home | **Vite** | `designer.index` + `layoutnextvite` | `processes/loaderProcesses.js` → `newDesigner.js` |
-| Process Export | **Vite** | `processes.export` + `layoutnextvite` | `processes/loaderProcesses.js` → `export/index.js` (Vue Router) |
-| Process Import | **Vite** | `processes.import` + `layoutnextvite` | `processes/loaderProcesses.js` → `import/index.js` (Vue Router) |
-| Process Configure | **Vite** | `processes.edit` + `layoutnextvite` | `processes/loaderProcesses.js` → `processes/edit.js` + inline Vue boot |
+| Notifications | **Vite** | `notifications.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `notifications/index.js` |
+| Template Import | **Vite** | `templates.import` + `layoutnextvite` | `loader/loaderMinimal.js` → `templates/import/index.js` (Vue Router) |
+| Template Configure | **Vite** | `templates.configure` + `layoutnextvite` | boot `window.temporal.templateConfigurations` → `loader/loaderMinimal.js` → `templates/configure.js` + `mixins: addons` |
+| Template Assets | **Vite** | `templates.assets` + `layoutnextvite` | `loader/loaderMinimal.js` → `templates/assets.js` (state from `localStorage`) |
+| Processes (Designer) | **Vite** | `processes.index` + `layoutnextvite`; apps via child `@append` | `loader/loaderMinimal.js` → `processes.js` / `templates` / `categories` / `archived` |
+| Designer home | **Vite** | `designer.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `newDesigner.js` |
+| Process Export | **Vite** | `processes.export` + `layoutnextvite` | `loader/loaderMinimal.js` → `export/index.js` (Vue Router) |
+| Process Import | **Vite** | `processes.import` + `layoutnextvite` | `loader/loaderMinimal.js` → `import/index.js` (Vue Router) |
+| Process Configure | **Vite** | `processes.edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `processes/edit.js` + inline Vue boot |
 | Admin Users | **Vite** | `admin.users.index` + `edit` + `layoutnextvite` | `admin/users/loaderUsers.js` → `index.js` / `edit.js` + inline Vue boot |
 | Admin Groups | **Vite** | `admin.groups.index` + `edit` + `layoutnextvite` | `admin/groups/loaderGroups.js` → `index.js` / `edit.js` + inline Vue boot |
 | Admin Auth Clients | **Vite** | `auth-clients.index` + `layoutnextvite` | `admin/auth-clients/loaderAuthClients.js` → `index.js` |
 | Admin Settings | **Vite** | `settings.index` + `layoutnextvite` | `admin/settings/loaderSettings.js` → `index.js` (+ optional package email-listener Mix) |
 | Admin LDAP Logs | **Vite** | `admin.settings.ldap-logs` + `layoutnextvite` | `admin/users/loaderUsers.js` → `admin/settings/ldaplogs.js` |
 | Admin Customize UI | **Vite** | `customize-ui.edit` + `layoutnextvite` | `admin/cssOverride/loaderCssOverride.js` → `edit.js` (Tinymce) + inline Vue on `load` |
-| Admin Script Executors | **Vite** | `script-executors.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/script-executors/index.js` |
-| Admin Tenant Queues | **Vite** | `tenant-queue.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/tenant-queues/index.js` (Vue Router) |
+| Admin Script Executors | **Vite** | `script-executors.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/script-executors/index.js` |
+| Admin Tenant Queues | **Vite** | `tenant-queue.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/tenant-queues/index.js` (Vue Router) |
 | Admin Queues (Horizon) | **Vite layout** | `admin.queues.index` + `layoutnextvite` | `admin/users/loaderUsers.js` only; page is an iframe to `/admin/horizon` |
-| Admin DevLink | **Vite** | `devlink.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/devlink/index.js` (Vue Router) |
-| Admin Cases Retention | **Vite** | `cases-retention.index` + `layoutnextvite` | `admin/loaderAdmin.js` → `admin/cases-retention/index.js` |
-| Admin Logs | **Vite** | `admin.logs` + `layoutnextvite` | packages boot → `admin/loaderAdmin.js` → `admin/logs/index.js` (Vue Router) |
+| Admin DevLink | **Vite** | `devlink.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/devlink/index.js` (Vue Router) |
+| Admin Cases Retention | **Vite** | `cases-retention.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/cases-retention/index.js` |
+| Admin Logs | **Vite** | `admin.logs` + `layoutnextvite` | packages boot → `loader/loaderMinimal.js` → `admin/logs/index.js` (Vue Router) |
 | Environment Variables | **Vite** | `environment-variables.index` + `edit` + `layoutnextvite` | `processes/environment-variables/loaderEnvironment.js` → `index.js` / `edit.js` |
 | Screens (Designer) | **Vite** | `screens.index` + `edit` + `layoutnextvite`; tab apps via child `@append` | `processes/screens/loaderScreens.js` → `screens/index.js` / `screen-templates/myTemplates.js` / `publicTemplates.js` / `categories/index.js`; edit → `screens/edit.js` |
-| Scripts (Designer) | **Vite** | `scripts.index` + `scripts.edit` (configure) + `layoutnextvite` | `processes/scripts/loaderScripts.js` → `index.js`; configure → `editConfig.js` + inline Vue on `load` |
+| Scripts (Designer) | **Vite** | `scripts.index` + `scripts.edit` (configure) + `layoutnextvite` | `loader/loaderMonaco.js` → `index.js`; configure → `editConfig.js` + inline Vue on `load` |
 | Signals (Designer) | **Vite** | `signals.index` + `signals.edit` + `layoutnextvite` | `processes/signals/loaderSignals.js` → `index.js`; edit → `edit.js` + inline Vue on `load` |
 | Modeler | **Vite** | `processes.modeler.index` + `layoutnextvite` | `modeler/loaderModeler.js` (imports `initialLoad.js`) → package Mix scripts → `leave-warning.js` → `modeler/index.js` on `load` |
 | Processes Catalogue (desktop) | **Vite** | `process.browser.index` (`/process-browser`) + `layoutnextvite` | `processes-catalogue/loaderProcessesCatalogue.js` → ScreenBuilder scripts → `processesCatalogue.js` |
@@ -145,6 +145,9 @@ vite.config.js
 ## Registered Vite inputs (`vite.config.js`)
 
 ```
+resources/js/loader/loaderMinimal.js
+resources/js/loader/loaderMonaco.js
+
 resources/js/vite/auth/login.js
 resources/js/translations/index.js
 resources/js/vite/tasks/loaderTasks.js
@@ -156,7 +159,6 @@ resources/js/tasks/preview.js
 resources/js/tasks/loaderTasks.js
 resources/js/tasks/show.js
 resources/js/inbox-rules/index.js
-resources/js/processes/loaderProcesses.js
 resources/js/processes/processes.js
 resources/js/processes/edit.js
 resources/js/processes/newDesigner.js
@@ -165,7 +167,7 @@ resources/js/processes/import/index.js
 resources/js/templates/index.js
 resources/js/processes/categories/index.js
 resources/js/processes/archived.js
-resources/js/admin/loaderAdmin.js
+resources/js/loader/loaderMinimal.js
 resources/js/admin/users/loaderUsers.js
 resources/js/admin/users/index.js
 resources/js/admin/users/edit.js
@@ -190,7 +192,6 @@ resources/js/requests/loaderRequests.js
 resources/js/requests/loaderRequestsShow.js
 resources/js/requests/loaderRequestsPreview.js
 resources/js/requests/index.js
-resources/js/notifications/loaderNotifications.js
 resources/js/notifications/index.js
 resources/js/templates/loaderTemplates.js
 resources/js/templates/import/index.js
@@ -204,7 +205,6 @@ resources/js/processes/screens/index.js
 resources/js/processes/screen-templates/myTemplates.js
 resources/js/processes/screen-templates/publicTemplates.js
 resources/js/processes/screens/edit.js
-resources/js/processes/scripts/loaderScripts.js
 resources/js/processes/scripts/index.js
 resources/js/processes/scripts/editConfig.js
 resources/js/processes/scripts/edit.js
@@ -328,35 +328,35 @@ Dev tips:
 **Processes (Designer)** — `/processes`
 
 - View: `resources/views/processes/index.blade.php` → `layoutnextvite`
-- Loader: `@vite(['resources/js/processes/loaderProcesses.js'])`
+- Loader: `@vite(['resources/js/loader/loaderMinimal.js'])`
 - Page apps via child `@append`: `processes.js`, `templates/index.js`, `categories/index.js`, `archived.js` (one mount each — avoid double-mounting the same `el`)
-- `loaderProcesses.js`: `setupMain()` + copy `window.temporal?.packages` onto `ProcessMaker.packages` / `window.packages`
+- `loaderMinimal.js`: `setupMain()` + copy `window.temporal?.packages` onto `ProcessMaker.packages` / `window.packages`
 - Mix: `webpack.mix.js` no longer builds `resources/js/processes/index.js` / `edit.js` / `newDesigner.js`. Other Designer Mix bundles (script preview, modeler inflight `process-map.js`, Mix `initialLoad.js` for Mix pages) remain.
 
 **Designer home** — `/designer`
 
 - View: `resources/views/designer/index.blade.php` → `layoutnextvite`
 - Boot: `window.temporal.packages` / `window.packages` + `window.Processmaker.user` before loader
-- Entries: `loaderProcesses.js` → `newDesigner.js` (mounts `#new-designer`)
+- Entries: `loaderMinimal.js` → `newDesigner.js` (mounts `#new-designer`)
 - Boolean Blade props (`project`, `is-documenter-installed`) use `:prop="@json(...)"`
 
 **Process Export** — `/processes/{process}/export`
 
 - View: `resources/views/processes/export.blade.php` → `layoutnextvite`
 - Boot: `window.temporal.packages` / `window.packages` before loader
-- Entries: `loaderProcesses.js` → `export/index.js` (uses `window.ProcessMaker.Router`, meta tags for process name / project id)
+- Entries: `loaderMinimal.js` → `export/index.js` (uses `window.ProcessMaker.Router`, meta tags for process name / project id)
 
 **Process Import** — `/processes/import`
 
 - View: `resources/views/processes/import.blade.php` → `layoutnextvite`
 - Boot: packages + `ProcessMaker.importIsRunning` / `queueImports` (booleans via `@json`) before loader
-- Entries: `loaderProcesses.js` → `import/index.js` (Vue Router; shares export `State` / `CustomExportView`)
+- Entries: `loaderMinimal.js` → `import/index.js` (Vue Router; shares export `State` / `CustomExportView`)
 
 **Process Configure** — `/processes/{process}/edit`
 
 - View: `resources/views/processes/edit.blade.php` → `layoutnextvite`
 - Boot: set `window.temporal.packages` / `window.packages` before loader
-- Entries: `loaderProcesses.js` → `edit.js` (registers `CategorySelect`, `ProcessesPermissions`)
+- Entries: `loaderMinimal.js` → `edit.js` (registers `CategorySelect`, `ProcessesPermissions`)
 - Vue root stays **inline** in the Blade (`window.addEventListener('load', …)`) so Blade `@json(...)` boot data and plugin `mixins: addons` keep working without a full ESM rewrite
 - Plugin addons still come from `layoutnextvite` (`var addons = []` + `script` / `script_mix`)
 
@@ -364,8 +364,8 @@ Dev tips:
 
 - Views: `processes/scripts/index.blade.php`, `processes/scripts/edit.blade.php` → `layoutnextvite`
 - Boot: `window.temporal.packages` / `window.packages` before loader
-- Index: `loaderScripts.js` → `index.js` (via categorized resource / list)
-- Configure: `loaderScripts.js` → `editConfig.js` (registers `CategorySelect`, `SliderWithInput`) + inline Vue on `load` (`mixins: addons`)
+- Index: `loaderMonaco.js` → `index.js` (via categorized resource / list)
+- Configure: `loaderMonaco.js` → `editConfig.js` (registers `CategorySelect`, `SliderWithInput`) + inline Vue on `load` (`mixins: addons`)
 - Mix still builds script **builder** (`edit.js`) and **preview** (`preview.js`)
 
 **Signals (Designer)** — `/designer/signals`, `/designer/signals/{signalId}/edit`
@@ -424,13 +424,13 @@ Dev tips:
 **Admin Script Executors** — `/admin/script-executors`
 
 - View: `resources/views/admin/script-executors/index.blade.php` → `layoutnextvite`
-- Entries: `admin/loaderAdmin.js` (in content) → `admin/script-executors/index.js` (mounts `#script-executors`)
+- Entries: `loader/loaderMinimal.js` → `admin/script-executors/index.js` (mounts `#script-executors`)
 - Mix: no longer builds this page entry
 
 **Admin Tenant Queues** — `/admin/tenant-queues`
 
 - View: `resources/views/admin/tenant-queues/index.blade.php` → `layoutnextvite`
-- Entries: `admin/loaderAdmin.js` → `admin/tenant-queues/index.js` (Vue Router + `#tenant-queues-dashboard`)
+- Entries: `loader/loaderMinimal.js` → `admin/tenant-queues/index.js` (Vue Router + `#tenant-queues-dashboard`)
 - Access: not a `can:*` ability — `TenantQueueController::checkPermissions()` requires `is_administrator`, `config('app.multitenancy')`, and `!config('queue.disable_tenant_tracking')`
 - Mix: no longer builds this page entry
 
@@ -443,21 +443,21 @@ Dev tips:
 **Admin DevLink** — `/admin/devlink/{router?}`
 
 - View: `resources/views/admin/devlink/index.blade.php` → `layoutnextvite`
-- Entries: `admin/loaderAdmin.js` → `admin/devlink/index.js` (Vue Router base `/admin/devlink`, mounts `#devlink` / `<dev-link>`)
+- Entries: `loader/loaderMinimal.js` → `admin/devlink/index.js` (Vue Router base `/admin/devlink`, mounts `#devlink` / `<dev-link>`)
 - Web routes (middleware `admin`): `devlink.index` → `DevLinkController@index` (returns the Blade, or OAuth redirects); `devlink.oauth-client` → `getOauthClient` (**no Blade** — creates Passport client and redirects with query params)
 - Mix: no longer builds `admin/devlink/index.js`
 
 **Admin Cases Retention** — `/admin/cases-retention`
 
 - View: `resources/views/admin/cases-retention/index.blade.php` → `layoutnextvite`
-- Entries: `admin/loaderAdmin.js` → `admin/cases-retention/index.js` (mounts `#casesRetentionIndex` with `CasesRetentionLogs`; uses `window.Vue`)
+- Entries: `loader/loaderMinimal.js` → `admin/cases-retention/index.js` (mounts `#casesRetentionIndex` with `CasesRetentionLogs`; uses `window.Vue`)
 - Mix: no longer builds `admin/cases-retention/index.js`
 
 **Admin Logs** — `/admin/logs/{any?}`
 
 - View: `resources/views/admin/logs/index.blade.php` → `layoutnextvite`
 - Boot **before** loader: `window.temporal.packages` / `window.packages` (router guards call `hasEmailPackage()` / `hasAiPackage()` via `ProcessMaker.packages`)
-- Entries: `admin/loaderAdmin.js` → `admin/logs/index.js` (Vue Router base `/admin/logs`, mounts `#admin-logs-main`)
+- Entries: `loader/loaderMinimal.js` → `admin/logs/index.js` (Vue Router base `/admin/logs`, mounts `#admin-logs-main`)
 - **Pitfall:** empty `packages` makes `/` redirect to `/email/errors` and email guard bounce back to `/` → `RangeError: Maximum call stack size exceeded`. Always boot packages before the page entry; guards must not fall back to `/` when no package is present.
 - Mix: no longer builds `admin/logs/index.js`
 
@@ -517,7 +517,7 @@ Dev tips:
 
 **Templates** — import & configure
 
-Shared loader: `templates/loaderTemplates.js` — `setupMain()` + `window.ProcessMaker.packages = window.temporal?.packages || []`. No explicit boot script needed for packages.
+Shared loader: `loader/loaderMinimal.js` — `setupMain()` + `window.ProcessMaker.packages = window.temporal?.packages || []`. No explicit boot script needed for packages.
 
 *Template Import* — `/template/{type}/import` (`templates.import`)
 
@@ -544,8 +544,8 @@ Still Mix: `templates/export-screen`, `templates/import-screen`, `templates/list
 
 - Route: `notifications.index` → `NotificationController@index`
 - View: `resources/views/notifications/index.blade.php` → `layoutnextvite`
-- No explicit boot script needed; `loaderNotifications.js` reads `window.temporal?.packages` with optional chaining (defaults to `[]`)
-- Entries: `notifications/loaderNotifications.js` (`setupMain` + packages) → `notifications/index.js` (mounts `#notifications` with `NotificationsList`, `filter`, `filterComments`)
+- No explicit boot script needed; `loader/loaderMinimal.js` reads `window.temporal?.packages` with optional chaining (defaults to `[]`)
+- Entries: `loader/loaderMinimal.js` (`setupMain` + packages) → `notifications/index.js` (mounts `#notifications` with `NotificationsList`, `filter`, `filterComments`)
 - Mix: no longer builds notifications page entry
 
 **Processes Catalogue (desktop)**

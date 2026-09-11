@@ -181,7 +181,6 @@ export default defineConfig(({ mode }) => {
 
           "resources/js/notifications/index.js",
 
-          "resources/js/templates/loaderTemplates.js",
           "resources/js/templates/import/index.js",
 
           "resources/js/tasks/loaderTasks.js",
@@ -253,7 +252,6 @@ export default defineConfig(({ mode }) => {
 
           "resources/js/notifications/index.js",
 
-          "resources/js/templates/loaderTemplates.js",
           "resources/js/templates/import/index.js",
           "resources/js/templates/configure.js",
           "resources/js/templates/assets.js",

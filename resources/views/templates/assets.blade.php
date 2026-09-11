@@ -30,6 +30,6 @@
 @endsection
 
 @section('js')
-  @vite('resources/js/templates/loaderTemplates.js')  
+  @vite('resources/js/loader/loaderMinimal.js')  
   @vite('resources/js/templates/assets.js')
 @endsection

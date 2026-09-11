@@ -27,6 +27,6 @@
 @endsection
 
 @section('js')
-  @vite('resources/js/templates/loaderTemplates.js')  
+  @vite('resources/js/loader/loaderMinimal.js')  
   @vite('resources/js/templates/import/index.js')
 @endsection

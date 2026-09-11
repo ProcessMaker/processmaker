@@ -85,7 +85,7 @@
             screenTypes: @json($screenTypes),
         }
     </script>
-    @vite('resources/js/templates/loaderTemplates.js')  
+    @vite('resources/js/loader/loaderMinimal.js')  
 
     @vite('resources/js/templates/configure.js')
 @endsection
