@@ -123,7 +123,7 @@ vite.config.js
 | Admin Auth Clients | **Vite** | `auth-clients.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `index.js` |
 | Admin Settings | **Vite** | `settings.index` + `layoutnextvite` | `admin/settings/loaderSettings.js` → `index.js` (+ optional package email-listener Mix) |
 | Admin LDAP Logs | **Vite** | `admin.settings.ldap-logs` + `layoutnextvite` | `admin/users/loaderUsers.js` → `admin/settings/ldaplogs.js` |
-| Admin Customize UI | **Vite** | `customize-ui.edit` + `layoutnextvite` | `admin/cssOverride/loaderCssOverride.js` → `edit.js` (Tinymce) + inline Vue on `load` |
+| Admin Customize UI | **Vite** | `customize-ui.edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `edit.js` (Tinymce) + inline Vue on `load` |
 | Admin Script Executors | **Vite** | `script-executors.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/script-executors/index.js` |
 | Admin Tenant Queues | **Vite** | `tenant-queue.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/tenant-queues/index.js` (Vue Router) |
 | Admin Queues (Horizon) | **Vite layout** | `admin.queues.index` + `layoutnextvite` | `admin/users/loaderUsers.js` only; page is an iframe to `/admin/horizon` |
@@ -416,7 +416,7 @@ Dev tips:
 
 - View: `resources/views/admin/cssOverride/edit.blade.php` → `layoutnextvite`
 - Boot: packages + `window.config` / `loginFooterSetting` / `altTextSetting` before loader (ESM-safe for `SiteDesign.vue`)
-- Entries: `loaderCssOverride.js` → `edit.js` (registers Tinymce + `SiteDesign` / `ColorPicker`) + **inline Vue on `load`** (`#editCss`, `showTabs` / package `cssOverrideTabs`)
+- Entries: `loader/loaderMinimal.js` → `edit.js` (registers Tinymce + `SiteDesign` / `ColorPicker`) + **inline Vue on `load`** (`#editCss`, `showTabs` / package `cssOverrideTabs`)
 - TinyMCE under Vite: import core + theme + `icons/default` + plugins; with `skin: false` also import `tinymce/skins/ui/oxide/skin.min.css`. Content iframe CSS: inject oxide/default content CSS via `content_style` (`?raw`) plus `content_css: '/css/app.css'` — parent-page CSS imports do not apply inside the editor iframe.
 - Package tabs: `showTabs` is `tabs.length > 1`. `cssOverrideTabs` may arrive after page modules because addon scripts load after `@yield('js')`; merge on `window` `load` when needed.
 - Mix: no longer builds `admin/cssOverride/edit.js`

@@ -44,7 +44,7 @@
       window.altTextSetting = @json($altText);
       window.temporal.routes = @json($tab);
     </script>
-    @vite(['resources/js/admin/cssOverride/loaderCssOverride.js'])
+    @vite(['resources/js/loader/loaderMinimal.js'])
     @vite(['resources/js/admin/cssOverride/edit.js'])
     <script>
       window.addEventListener("load", function () {
