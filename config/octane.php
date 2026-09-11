@@ -155,6 +155,7 @@ return [
         // Services with mutable state that must be recreated per request
         ProcessMaker\Managers\LoginManager::class,
         ProcessMaker\Managers\ModelerManager::class,
+        ProcessMaker\Managers\ScreenBuilderManager::class,
         Lavary\Menu\Menu::class,
     ],
 
@@ -254,7 +255,7 @@ return [
 
     'caddy' => [
         'env' => [
-            'OCTANE_MEMORY_LIMIT' => env('OCTANE_MEMORY_LIMIT', '3072M'),
+            'OCTANE_MEMORY_LIMIT' => env('OCTANE_MEMORY_LIMIT', '512M'),
             'OCTANE_MAX_EXECUTION_TIME' => env('OCTANE_MAX_EXECUTION_TIME', 90),
             'OCTANE_POST_MAX_SIZE' => env('OCTANE_POST_MAX_SIZE', '200M'),
             'OCTANE_UPLOAD_MAX_FILESIZE' => env('OCTANE_UPLOAD_MAX_FILESIZE', '200M'),
