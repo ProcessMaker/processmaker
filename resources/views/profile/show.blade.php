@@ -86,7 +86,7 @@
 @endsection
 
 @section('js')
-  @vite('resources/js/admin/profile/loaderProfile.js')
+  @vite('resources/js/loader/loaderMinimal.js')
 <script>
 window.addEventListener('load', () => {
     new Vue({

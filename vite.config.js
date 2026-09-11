@@ -215,7 +215,6 @@ export default defineConfig(({ mode }) => {
           "resources/js/admin/auth/passwords/change.js",
           "resources/js/vite/auth/auth.js",
 
-          "resources/js/admin/profile/loaderProfile.js",
           "resources/js/admin/profile/edit.js",
 
           "resources/js/processes/environment-variables/loaderEnvironment.js",

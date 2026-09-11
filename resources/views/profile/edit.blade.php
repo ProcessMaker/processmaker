@@ -111,7 +111,7 @@
 @endsection
 
 @section('js')
-  @vite('resources/js/admin/profile/loaderProfile.js')
+  @vite('resources/js/loader/loaderMinimal.js')
 	@vite('resources/js/admin/profile/edit.js')
 
 <script>

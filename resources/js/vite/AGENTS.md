@@ -104,7 +104,7 @@ vite.config.js
 | Task show | **Vite** | `tasks.show` + `layoutnextvite` | `tasks/loaderTasks.js` → `tasks/show.js` |
 | Inbox Rules | **Vite** | `inbox-rules.index` + `layoutnextvite` | `inbox-rules/index.js` |
 | About | **Vite** | `about.index` + `layoutnextvite` | layout change only; no page JS entry |
-| Profile edit | **Vite** | `profile.edit` + `layoutnextvite` | `admin/profile/loaderProfile.js` → `admin/profile/edit.js` |
+| Profile edit | **Vite** | `profile.edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/profile/edit.js` |
 | Requests index | **Vite** | `requests.index` + `layoutnextvite` | `requests/loaderRequests.js` → `requests/index.js` |
 | Request detail | **Vite** | `requests.show` + `layoutnextvite` | `requests/loaderRequestsShow.js` → modeler `initialLoad.js` + `requests/show.js` → inline Vue mount on `window` `load` |
 | Mobile request detail | **Vite** | `requests.showMobile` + `mobilenextvite` | `requests/loaderRequestsShow.js` + `requests/show.js` → inline Vue mount on `window` `load` |
@@ -186,7 +186,6 @@ resources/js/admin/tenant-queues/index.js
 resources/js/admin/devlink/index.js
 resources/js/admin/cases-retention/index.js
 resources/js/admin/logs/index.js
-resources/js/admin/profile/loaderProfile.js
 resources/js/admin/profile/edit.js
 resources/js/requests/loaderRequests.js
 resources/js/requests/loaderRequestsShow.js
