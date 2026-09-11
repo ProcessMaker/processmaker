@@ -95,6 +95,6 @@
       window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
       window.packages = window.temporal.packages;
     </script>
-    @vite(['resources/js/admin/auth-clients/loaderAuthClients.js'])
+    @vite(['resources/js/loader/loaderMinimal.js'])
     @vite(['resources/js/admin/auth-clients/index.js'])
 @endsection

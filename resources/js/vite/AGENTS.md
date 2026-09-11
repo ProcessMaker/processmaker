@@ -120,7 +120,7 @@ vite.config.js
 | Process Configure | **Vite** | `processes.edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `processes/edit.js` + inline Vue boot |
 | Admin Users | **Vite** | `admin.users.index` + `edit` + `layoutnextvite` | `admin/users/loaderUsers.js` → `index.js` / `edit.js` + inline Vue boot |
 | Admin Groups | **Vite** | `admin.groups.index` + `edit` + `layoutnextvite` | `admin/groups/loaderGroups.js` → `index.js` / `edit.js` + inline Vue boot |
-| Admin Auth Clients | **Vite** | `auth-clients.index` + `layoutnextvite` | `admin/auth-clients/loaderAuthClients.js` → `index.js` |
+| Admin Auth Clients | **Vite** | `auth-clients.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `index.js` |
 | Admin Settings | **Vite** | `settings.index` + `layoutnextvite` | `admin/settings/loaderSettings.js` → `index.js` (+ optional package email-listener Mix) |
 | Admin LDAP Logs | **Vite** | `admin.settings.ldap-logs` + `layoutnextvite` | `admin/users/loaderUsers.js` → `admin/settings/ldaplogs.js` |
 | Admin Customize UI | **Vite** | `customize-ui.edit` + `layoutnextvite` | `admin/cssOverride/loaderCssOverride.js` → `edit.js` (Tinymce) + inline Vue on `load` |
@@ -395,7 +395,7 @@ Dev tips:
 
 - View: `resources/views/admin/auth-clients/index.blade.php` → `layoutnextvite`
 - Boot: `window.temporal.packages` / `window.packages` before loader
-- Entries: `loaderAuthClients.js` → `index.js` (registers `AuthClientsListing` + mounts `#authClients`)
+- Entries: `loader/loaderMinimal.js` → `index.js` (registers `AuthClientsListing` + mounts `#authClients`)
 - Mix: no longer builds `admin/auth-clients/index.js`
 
 **Admin Settings** — `/admin/settings`
