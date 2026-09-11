@@ -179,7 +179,6 @@ export default defineConfig(({ mode }) => {
           "resources/js/processes/screen-builder/typeDisplay.js",
           "resources/js/processes/screen-builder/main.js",
 
-          "resources/js/notifications/loaderNotifications.js",
           "resources/js/notifications/index.js",
 
           "resources/js/templates/loaderTemplates.js",
@@ -252,7 +251,6 @@ export default defineConfig(({ mode }) => {
           "resources/js/requests/mobile.js",
           "resources/js/requests/index.js",
 
-          "resources/js/notifications/loaderNotifications.js",
           "resources/js/notifications/index.js",
 
           "resources/js/templates/loaderTemplates.js",

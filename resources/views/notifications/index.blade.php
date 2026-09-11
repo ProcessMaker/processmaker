@@ -52,6 +52,6 @@
 @endsection
 
 @section('js')
-@vite('resources/js/notifications/loaderNotifications.js')  
+@vite('resources/js/loader/loaderMinimal.js')  
 @vite('resources/js/notifications/index.js')
 @endsection
