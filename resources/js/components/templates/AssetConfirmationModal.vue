@@ -21,7 +21,7 @@
   </template>
 
   <script>
-  import { Modal } from "SharedComponents";
+  import Modal from "../shared/Modal.vue";
 
   export default {
     components: { Modal },

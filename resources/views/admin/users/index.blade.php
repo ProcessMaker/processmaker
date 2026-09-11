@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Users')}}
@@ -24,7 +24,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-item nav-link" id="nav-deleted-users-tab" data-toggle="tab" href="#nav-deleted-users" role="tab"  
+                <a class="nav-item nav-link" id="nav-deleted-users-tab" data-toggle="tab" href="#nav-deleted-users" role="tab"
                 onclick="loadDeletedUsers()" aria-controls="nav-deleted-users" aria-selected="true">
                     {{ __('Deleted Users') }}
                 </a>
@@ -49,15 +49,12 @@
     </div>
 @endsection
 
-<script>
-    loadUsers = function () {
-        ProcessMaker.EventBus.$emit("api-data-users", true);
-    };
-    loadDeletedUsers = function () {
-        ProcessMaker.EventBus.$emit("api-data-deleted-users", true);
-    };
-</script>
-
 @section('js')
-    <script src="{{mix('js/admin/users/index.js')}}"></script>
+    <script>
+      window.temporal = window.temporal || {};
+      window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+      window.packages = window.temporal.packages;
+    </script>
+    @vite(['resources/js/admin/users/loaderUsers.js'])
+    @vite(['resources/js/admin/users/index.js'])
 @endsection

@@ -27,7 +27,7 @@
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
     @yield('meta')
     @endif
-    <meta name="timeout-worker" content="{{ mix('js/timeout.js') }}">
+    <meta name="timeout-worker" content="{{ asset('js/timeout.js') }}">
     <meta name="timeout-length" content="{{ Session::has('rememberme') && Session::get('rememberme') ? "Number.MAX_SAFE_INTEGER" : config('session.lifetime') }}">
     <meta name="timeout-warn-seconds" content="{{ config('session.expire_warning') }}">
     @if(Session::has('_alert'))
@@ -136,6 +136,12 @@
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
 @endif
 
+<script>
+  window.temporal = window.temporal || {};
+  window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+  window.packages = window.temporal.packages;
+</script>
+
 @yield('js')
 @stack('scripts')
 @foreach(GlobalScripts::getScripts() as $script)
@@ -144,7 +150,7 @@
 @isset($addons)
   @foreach ($addons as $addon)
     @if (!empty($addon['script_mix']))
-      <script type="text/javascript" src="{{ mix($addon['script_mix'][0], $addon['script_mix'][1]) }}"></script>
+      <script defer type="text/javascript" src="{{ mix($addon['script_mix'][0], $addon['script_mix'][1]) }}"></script>
     @endif
     @if (!empty($addon['script_mix_module']))
       <script type="module" src="{{ mix($addon['script_mix_module'][0], $addon['script_mix_module'][1]) }}"></script>

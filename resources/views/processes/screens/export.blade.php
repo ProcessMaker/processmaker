@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Export Screen')}}
@@ -44,26 +44,34 @@
 
 @section('js')
     <script>
-      new Vue({
-        el: '#exportScreen',
-        data: {
-          screenId: @json($screen->id)
-        },
-        methods: {
-          onCancel() {
-            window.location = '{{ route("screens.index") }}';
+        window.temporal = window.temporal || {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.packages = window.temporal.packages;
+    </script>
+    @vite(['resources/js/processes/screens/loaderScreens.js'])
+    <script>
+      window.addEventListener('load', function () {
+        new window.Vue({
+          el: '#exportScreen',
+          data: {
+            screenId: @json($screen->id)
           },
-          onExport() {
-            ProcessMaker.apiClient.post('screens/' + this.screenId + '/export')
-              .then(response => {
-                window.location = response.data.url;
-                ProcessMaker.alert(this.$t('The screen was exported.'), 'success');
-              })
-              .catch(error => {
-                ProcessMaker.alert(error.response.data.message, 'danger');
-              });
+          methods: {
+            onCancel() {
+              window.location = '{{ route("screens.index") }}';
+            },
+            onExport() {
+              ProcessMaker.apiClient.post('screens/' + this.screenId + '/export')
+                .then(response => {
+                  window.location = response.data.url;
+                  ProcessMaker.alert(this.$t('The screen was exported.'), 'success');
+                })
+                .catch(error => {
+                  ProcessMaker.alert(error.response.data.message, 'danger');
+                });
+            }
           }
-        }
-      })
+        });
+      });
     </script>
 @endsection

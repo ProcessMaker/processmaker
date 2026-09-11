@@ -100,7 +100,7 @@
 </template>
 
 <script>
-import { BasicSearch } from "SharedComponents";
+import BasicSearch from "../../../components/shared/BasicSearch.vue";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import isPMQL from "../../../modules/isPMQL";
 import PmqlInput from "../../../components/shared/PmqlInput";

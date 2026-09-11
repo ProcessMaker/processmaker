@@ -21,7 +21,7 @@
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
     <meta name="request-id" content="{{ $task->processRequest->id }}">
     @endif
-    <meta name="timeout-worker" content="{{ mix('js/timeout.js') }}">
+    <meta name="timeout-worker" content="{{ asset('js/timeout.js') }}">
     <meta name="timeout-length" content="{{ Session::has('rememberme') && Session::get('rememberme') ? "Number.MAX_SAFE_INTEGER" : config('session.lifetime') }}">
     <meta name="timeout-warn-seconds" content="{{ config('session.expire_warning') }}">
     @if(Session::has('_alert'))
@@ -37,35 +37,10 @@
     <title>{{__('Edit Task')}}</title>
 
     <link rel="icon" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    @vite(['resources/sass/app.scss'])
     <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
     @yield('css')
-    <script type="text/javascript">
-    @if(Auth::user())
-      window.Processmaker = {
-        csrfToken: "{{csrf_token()}}",
-        userId: "{{\Auth::user()->id}}",
-        messages: [],
-        apiTimeout: {{config('app.api_timeout')}}
-      };
-      @if(config('broadcasting.default') == 'redis')
-        window.Processmaker.broadcasting = {
-          broadcaster: "socket.io",
-          host: "{{config('broadcasting.connections.redis.host')}}",
-          key: "{{config('broadcasting.connections.redis.key')}}"
-        };
-      @endif
-      @if(config('broadcasting.default') == 'pusher')
-        window.Processmaker.broadcasting = {
-          broadcaster: "pusher",
-          key: "{{config('broadcasting.connections.pusher.key')}}",
-          cluster: "{{config('broadcasting.connections.pusher.options.cluster')}}",
-          forceTLS: {{config('broadcasting.connections.pusher.options.use_tls') ? 'true' : 'false'}},
-          debug: {{config('broadcasting.connections.pusher.options.debug') ? 'true' : 'false'}}
-        };
-      @endif
-    @endif
-  </script>
+
     @isset($addons)
         <script>
             var addons = [];
@@ -121,32 +96,28 @@
         </div>
     </div>
 </body>
-<!-- Scripts -->
 @if(config('broadcasting.default') == 'redis')
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
 @endif
-<script src="{{ mix('js/manifest.js') }}"></script>
-<script src="{{ mix('js/vue-vendor.js') }}"></script>
-<script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
-<script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
 <script>
+  window.temporal = {};
   window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   const screenBuilderScripts = @json($manager->getScripts());
-  const task = @json($task);
-  const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
-  const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
-  const userIsProcessManager = {{ in_array(Auth::user()->id, $task->process?->manager_id ?? []) ? "true": "false" }};
-  const screenFields = @json($screenFields);
-</script>
-<script src="{{ mix('js/tasks/loaderPreview.js')}}"></script>
-<script>
-  window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
-    if (screen.watchers_config) {
-      screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
-      screen.watchers_config.api.execution = @json(route('api.scripts.execution', ['key' => 'execution_key']));
-    } else {
-      console.warn('Screen builder version does not have watchers');
-    }
+  window.temporal.task = @json($task);
+  window.temporal.userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
+  window.temporal.userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
+  window.temporal.userIsProcessManager = {{ in_array(Auth::user()->id, $task->process?->manager_id ?? []) ? "true": "false" }};
+  window.temporal.screenFields = @json($screenFields);
+
+  window.addEventListener('app-bootstrapped', () => {
+    window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
+      if (screen.watchers_config) {
+        screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
+        screen.watchers_config.api.execution = @json(route('api.scripts.execution', ['key' => 'execution_key']));
+      } else {
+        console.warn('Screen builder version does not have watchers');
+      }
+    });
   });
 
   window.PM4ConfigOverrides = {
@@ -155,8 +126,37 @@
     postScriptEndpoint: '/scripts/execute/{id}?task_id={{ $task->id }}',
   };
 </script>
-
-<script src="{{mix('js/tasks/preview.js')}}"></script>
+@vite(['resources/js/tasks/loaderOnlyPreview.js'])
+<script type="text/javascript">
+    @if(Auth::user())
+      window.Processmaker = {
+        csrfToken: "{{csrf_token()}}",
+        userId: "{{\Auth::user()->id}}",
+        messages: [],
+        apiTimeout: {{config('app.api_timeout')}}
+      };
+      @if(config('broadcasting.default') == 'redis')
+        window.Processmaker.broadcasting = {
+          broadcaster: "socket.io",
+          host: "{{config('broadcasting.connections.redis.host')}}",
+          key: "{{config('broadcasting.connections.redis.key')}}"
+        };
+      @endif
+      @if(config('broadcasting.default') == 'pusher')
+        window.Processmaker.broadcasting = {
+          broadcaster: "pusher",
+          key: "{{config('broadcasting.connections.pusher.key')}}",
+          cluster: "{{config('broadcasting.connections.pusher.options.cluster')}}",
+          forceTLS: {{config('broadcasting.connections.pusher.options.use_tls') ? 'true' : 'false'}},
+          debug: {{config('broadcasting.connections.pusher.options.debug') ? 'true' : 'false'}}
+        };
+      @endif
+    @endif
+  </script>
+@foreach($manager->getScripts() as $script)
+  <script defer src="{{ $script }}"></script>
+@endforeach
+@vite(['resources/js/tasks/preview.js'])
 
 <style>
   .inline-input {

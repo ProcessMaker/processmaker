@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Environment Variables')}}
@@ -40,5 +40,12 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/environment-variables/index.js')}}"></script>
+
+    <script>
+        window.temporal = window.temporal || {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+    </script>
+    @vite(['resources/js/processes/environment-variables/loaderEnvironment.js'])
+    @vite(['resources/js/processes/environment-variables/index.js'])
 @endsection

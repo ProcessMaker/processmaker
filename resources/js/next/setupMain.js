@@ -73,6 +73,8 @@ export const setupMain = () => {
   import("./config/accesibility");
   import("./layout/sidebar");
   import("./layout/navbar");
+  
+  window.dispatchEvent(new Event("app-bootstrapped"));
 };
 
 export default { };

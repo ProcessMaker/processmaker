@@ -63,7 +63,9 @@
    </template>
    
    <script>
-   import { FormErrorsMixin, Required } from "SharedComponents";
+
+   import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+   import Required from "../../../components/shared/Required";
    export default {
        components: {Required},
        mixins: [FormErrorsMixin],

@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{ __('Request') . ' #' . $request->getKey() . ' - ' .  $screen->title }}
@@ -31,28 +31,36 @@
 @endsection
 
 @section('js')
-    @foreach($manager->getScripts() as $script)
-        <script src="{{$script}}"></script>
-    @endforeach
-
-    <script src="{{mix('js/requests/preview.js')}}"></script>
     <script>
-      new Vue({
-        el: "#request",
-        data() {
-          return {
-            data: @json($data),
-            screenRequested: @json($screen),
-            request: @json($request),
-          };
-        },
-        computed: {
-          config() {
-            this.screenRequested.data = this.data;
-            return this.screenRequested;
+      var screenBuilderScripts = @json($manager->getScripts());
+    </script>
+    @vite(['resources/js/requests/loaderRequestsPreview.js'])
+
+    @if ($type === 'FORM')
+      @vite(['resources/js/processes/screen-builder/typeForm.js'])
+    @elseif ($type === 'DISPLAY')
+      @vite(['resources/js/processes/screen-builder/typeDisplay.js'])
+    @endif
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        new Vue({
+          el: "#request",
+          data() {
+            return {
+              data: @json($data),
+              screenRequested: @json($screen),
+              request: @json($request),
+            };
           },
 
-        },
+          computed: {
+            config() {
+              this.screenRequested.data = this.data;
+              return this.screenRequested;
+            },
+
+          },
+        });
       });
     </script>
 @endsection

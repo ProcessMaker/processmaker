@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Settings')}}
@@ -26,20 +26,31 @@
 @endsection
 
 @section('js')
+    <script>
+      window.temporal = window.temporal || {};
+      window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+      window.packages = window.temporal.packages;
+    </script>
+    @vite(['resources/js/admin/settings/loaderSettings.js'])
+
     @if (hasPackage('package-email-start-event'))
     <script type="module" src="{{ mix('js/email-listener.js', 'vendor/processmaker/packages/package-email-start-event') }}"></script>
     @endif
 
-    <script src="{{mix('js/admin/settings/index.js')}}"></script>
+    @vite(['resources/js/admin/settings/index.js'])
 
     @if($errors->has('error'))
         <script>
-            window.ProcessMaker.alert("{{ $errors->first('error') }}", 'danger');
+            window.addEventListener('load', function () {
+              window.ProcessMaker.alert(@json($errors->first('error')), 'danger');
+            });
         </script>
     @endif
      @if($errors->has('message'))
         <script>
-            window.ProcessMaker.alert("{{ $message->first('message') }}", 'success');
+            window.addEventListener('load', function () {
+              window.ProcessMaker.alert(@json($errors->first('message')), 'success');
+            });
         </script>
     @endif
 @endsection

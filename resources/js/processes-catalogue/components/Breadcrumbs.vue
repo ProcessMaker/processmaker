@@ -61,7 +61,6 @@ export default {
 
 <style lang="css" scoped>
 .breadcrum-main {
-  margin: -16px -16px 0px -16px;
   background: white;
   border-bottom: 1px solid #DADDDF
 }

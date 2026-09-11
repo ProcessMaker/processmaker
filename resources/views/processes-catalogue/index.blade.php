@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite', ['content_margin' => '', 'overflow-auto' => ''])
 
 @section('title')
     {{__('Processes Catalogue')}}
@@ -25,22 +25,26 @@
 @endsection
 
 @section('js')
+  {{-- temporal must exist before loader (Vite modules run after deferred classic scripts) --}}
   <script>
-    window.ProcessMaker.isDocumenterInstalled = {{
+    window.temporal = {};
+    window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+    window.temporal.isDocumenterInstalled = {{
       Js::from(\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled())
     }};
-    window.ProcessMaker.permission = {{
+    window.temporal.permission = {{
       Js::from(\Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects', 'documentation'))
     }};
-    window.ProcessMaker.defaultSavedSearch = {{{$defaultSavedSearch ?? 'null'}}};
-    window.ProcessMaker.isTceCustomization = {{{config('app.tce_customization_enable') ? 'true' : 'false'}}};
-    window.ProcessMaker.metricsApiEndpoint = `{{{$metricsApiEndpoint}}}`;
+    window.temporal.defaultSavedSearch = {{{$defaultSavedSearch ?? 'null'}}};
+    window.temporal.isTceCustomization = {{{config('app.tce_customization_enable') ? 'true' : 'false'}}};
+    window.temporal.metricsApiEndpoint = `{{{$metricsApiEndpoint}}}`;
+    window.temporal.userConfiguration = @json($userConfiguration ?? []);
+    window.temporal.user = @json($currentUser);
+    window.packages = window.temporal.packages;
   </script>
+  @vite(['resources/js/processes-catalogue/loaderProcessesCatalogue.js'])
   @foreach($manager->getScripts() as $script)
-    <script src="{{$script}}"></script>
+    <script defer src="{{$script}}"></script>
   @endforeach
-  <script src="{{mix('js/processes-catalogue/index.js')}}"></script>
-  <script>
-    window.Processmaker.user = @json($currentUser);
-  </script>
+  @vite(['resources/js/processes-catalogue/processesCatalogue.js'])
 @endsection

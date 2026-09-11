@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('meta')
     <meta name="request-id" content="{{ $task->processRequest->id }}">
@@ -41,12 +41,17 @@
 </div>
 @endsection
 @section('js')
-<script src="{{mix('js/tasks/show.js')}}"></script>
+@vite(['resources/js/tasks/loaderTasks.js'])
+@vite(['resources/js/tasks/show.js'])
 <script>
+window.addEventListener('load', () => {
     let task = @json($task);
     task.draft = @json($task->draft);
     task.data = @json($task->processRequest->data);
     const screenFields = @json($screenFields);
+
+    const Vue = window.Vue;
+    const Vuex = window.Vuex;
     const store = new Vuex.Store();
     const main = new Vue({
       store: store,
@@ -134,6 +139,7 @@
       mounted () {
       },
     });
+});
 </script>
 @endsection
 

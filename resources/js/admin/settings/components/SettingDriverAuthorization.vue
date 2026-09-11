@@ -100,7 +100,8 @@
 </template>
 <script>
 // eslint-disable-next-line import/no-unresolved
-import { FormErrorsMixin, Required } from "SharedComponents";
+import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+import Required from "../../../components/shared/Required";
 import settingMixin from "../mixins/setting";
 import AdditionalDriverConnectionProperties from "./AdditionalDriverConnectionProperties.vue";
 import OauthConnectionProperties from "./cdata/OauthConnectionProperties.vue";

@@ -1,4 +1,4 @@
-@extends('layouts.preview')
+@extends('layouts.previewscreennextvite')
 
 
 @section('content')
@@ -20,10 +20,11 @@
 
 @section('js')
     @foreach($manager->getScripts() as $script)
-        <script src="{{$script}}"></script>
+        <script defer src="{{$script}}"></script>
     @endforeach
-    <script src="{{mix('js/processes/screens/preview.js')}}"></script>
+    @vite('resources/js/processes/screens/preview.js')
     <script>
+    window.addEventListener('load', () => {
         new Vue({
             el: '#screenPreview',
             data() {
@@ -38,5 +39,6 @@
                 }
             },
         });
+    });
     </script>
 @endsection

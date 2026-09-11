@@ -73,7 +73,7 @@
 
 <script>
 import { Multiselect } from "@processmaker/vue-multiselect";
-import { FormErrorsMixin } from "SharedComponents";
+import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
 import assetTypes from "../assetTypes";
 
 export default {

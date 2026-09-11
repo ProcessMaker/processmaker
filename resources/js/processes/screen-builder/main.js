@@ -1,17 +1,22 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import ScreenBuilder from "./screen";
+import { Multiselect } from "@processmaker/vue-multiselect";
+import ScreenBuilder from "./screen.vue";
+
+Vue.component("Multiselect", Multiselect);
 
 Vue.use(Vuex);
 const store = new Vuex.Store({});
 
-// Bootstrap our Designer application
-new Vue({
-  store,
-  el: "#screen-container",
-  components: { ScreenBuilder },
-  mounted() {
-    // used to reference the ScreenBuilder
-    window.ProcessMaker.ScreenBuilder = this.$refs.screenBuilder;
-  }
+// Mount after 'load' so package addon scripts (from $manager->getScripts())
+// are guaranteed to have executed before Vue renders the screen builder.
+window.addEventListener("load", () => {
+  new Vue({
+    store,
+    el: "#screen-container",
+    components: { ScreenBuilder },
+    mounted() {
+      window.ProcessMaker.ScreenBuilder = this.$refs.screenBuilder;
+    },
+  });
 });

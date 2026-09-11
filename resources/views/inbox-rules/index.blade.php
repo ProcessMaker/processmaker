@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Inbox Rules')}}
@@ -20,11 +20,11 @@
 @endsection
 
 @section('js')
+    @vite('resources/js/tasks/loaderTasks.js')
     <script>
         window.Processmaker.defaultColumns = @json($defaultColumns);
     </script>
-    <script src="{{mix('js/inbox-rules/index.js')}}"></script>
-    <script src="{{mix('js/inbox-rules/show.js')}}"></script>
+    @vite('resources/js/inbox-rules/index.js')
 @endsection
 
 @section('css')

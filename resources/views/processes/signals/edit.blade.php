@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
   {{__('Edit Signal')}}
@@ -76,50 +76,56 @@
 @endsection
 
 @section('js')
-<script src="{{mix('js/processes/signals/edit.js')}}"></script>
-
 <script>
-  new Vue({
-    el: '#editSignal',
-    mixins: addons,
-    data() {
-      return {
-        showAddUserModal: false,
-        formData: @json($signal),
-        originalId: (@json($signal)).id,
-        filter: '',
-        errors: {
-          'name': null,
-          'id': null,
+  window.temporal = window.temporal || {};
+  window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+  window.packages = window.temporal.packages;
+</script>
+@vite(['resources/js/processes/signals/loaderSignals.js'])
+@vite(['resources/js/processes/signals/edit.js'])
+<script>
+  // Mount after deferred package addon scripts (layoutnextvite yields page JS before addons).
+  window.addEventListener('load', function () {
+    new window.Vue({
+      el: '#editSignal',
+      mixins: typeof addons !== 'undefined' ? addons : [],
+      data() {
+        return {
+          showAddUserModal: false,
+          formData: @json($signal),
+          originalId: (@json($signal)).id,
+          filter: '',
+          errors: {
+            'name': null,
+            'id': null,
+          },
+        }
+      },
+      methods: {
+        resetErrors() {
+          this.errors = Object.assign({}, {
+            id: null,
+            name: null,
+          });
+        },
+        onClose() {
+          window.location.href = '/designer/signals';
+        },
+        onUpdate() {
+          this.resetErrors();
+          ProcessMaker.apiClient.put('signals/' + this.originalId, this.formData)
+            .then(() => {
+              ProcessMaker.alert(this.$t('Update Signal Successfully'), 'success');
+              this.onClose();
+            })
+            .catch(error => {
+              if (error.response.status && error.response.status === 422) {
+                this.errors = error.response.data.errors;
+              }
+            });
         },
       }
-    },
-    methods: {
-      resetErrors() {
-        this.errors = Object.assign({}, {
-          id: null,
-          name: null,
-        });
-      },
-      onClose() {
-        window.location.href = '/designer/signals';
-      },
-      onUpdate() {
-        this.resetErrors();
-        ProcessMaker.apiClient.put('signals/' + this.originalId, this.formData)
-          .then(response => {
-            ProcessMaker.alert(this.$t('Update Signal Successfully'), 'success');
-            this.onClose();
-          })
-          .catch(error => {
-            //define how display errors
-            if (error.response.status && error.response.status === 422) {
-              // Validation error
-              this.errors = error.response.data.errors;
-            }
-          });
-      },
-    }
+    });
   });
 </script>
 @endsection

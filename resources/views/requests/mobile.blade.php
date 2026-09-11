@@ -1,4 +1,4 @@
-@extends('layouts.mobile')
+@extends('layouts.mobilenextvite')
 @section('title')
 {{__($title)}}
 @endsection
@@ -19,11 +19,12 @@
 
 @section('js')
 <script>
-  //Data needed for default search
-  window.Processmaker.user = @json($currentUser);
-  window.Processmaker.status = '{{ $type }}';
+  window.temporal = {};
+  window.temporal.user = @json($currentUser);
+  window.temporal.status = '{{ $type }}';
 </script>
-<script src="{{mix('js/requests/mobile.js')}}"></script>
+@vite(['resources/js/requests/loaderRequests.js'])
+@vite(['resources/js/requests/mobile.js'])
 @endsection
 
 @section('css')

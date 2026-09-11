@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Import Screen')}}
@@ -91,70 +91,77 @@
 
 @section('js')
     <script>
-      new Vue({
-        el: '#importScreen',
-        data: {
-          file: '',
-          uploaded: false,
-          submitted: false,
-          options: [],
-          fileName: ''
-        },
-        methods: {
-          handleFile(e) {
-            this.file = this.$refs.file.files[0];
-            this.uploaded = true;
-            this.submitted = false;
-            this.fileName = this.file.name;
-            console.log(this.file);
+        window.temporal = window.temporal || {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.packages = window.temporal.packages;
+    </script>
+    @vite(['resources/js/processes/screens/loaderScreens.js'])
+    <script>
+      window.addEventListener('load', function () {
+        new window.Vue({
+          el: '#importScreen',
+          data: {
+            file: '',
+            uploaded: false,
+            submitted: false,
+            options: [],
+            fileName: ''
           },
-          reload() {
-            window.location.reload();
-          },
-          onCancel() {
-            window.location = '{{ route("screens.index") }}';
-          },
-          importFile() {
-            let formData = new FormData();
-            formData.append('file', this.file);
-            if (this.submitted) {
-              return
-            }
-            this.submitted = true;
-            ProcessMaker.apiClient.post('/screens/import',
-              formData,
-              {
-                headers: {
-                  'Content-Type': 'multipart/form-data'
+          methods: {
+            handleFile() {
+              this.file = this.$refs.file.files[0];
+              this.uploaded = true;
+              this.submitted = false;
+              this.fileName = this.file.name;
+            },
+            reload() {
+              window.location.reload();
+            },
+            onCancel() {
+              window.location = '{{ route("screens.index") }}';
+            },
+            importFile() {
+              let formData = new FormData();
+              formData.append('file', this.file);
+              if (this.submitted) {
+                return
+              }
+              this.submitted = true;
+              ProcessMaker.apiClient.post('/screens/import',
+                formData,
+                {
+                  headers: {
+                    'Content-Type': 'multipart/form-data'
+                  }
                 }
-              }
-            ).then(response => {
-              if (!response.data.status) {
-                ProcessMaker.alert(this.$t('Unable to import the screen.'), 'danger');
-                return;
-              }
-              this.options = response.data.status;
-              let message = this.$t('The screen was imported.');
-              let variant = 'success';
-              for (let item in this.options) {
-                if (!this.options[item].success) {
-                  message = this.$t('The screen was imported, but with errors.');
-                  variant = 'warning'
+              ).then(response => {
+                if (!response.data.status) {
+                  ProcessMaker.alert(this.$t('Unable to import the screen.'), 'danger');
+                  return;
                 }
-              }
-              ProcessMaker.alert(message, variant);
-              this.$refs.responseImport.show();
-            })
-              .catch(error => {
-                this.submitted = false;
-                ProcessMaker.alert(
-                  this.$t('Unable to import the screen.') +
-                  (error.response.data.message ? ': ' + error.response.data.message : ''),
-                  'danger'
-                  );
-              });
-          },
-        }
-      })
+                this.options = response.data.status;
+                let message = this.$t('The screen was imported.');
+                let variant = 'success';
+                for (let item in this.options) {
+                  if (!this.options[item].success) {
+                    message = this.$t('The screen was imported, but with errors.');
+                    variant = 'warning'
+                  }
+                }
+                ProcessMaker.alert(message, variant);
+                this.$refs.responseImport.show();
+              })
+                .catch(error => {
+                  this.submitted = false;
+                  ProcessMaker.alert(
+                    this.$t('Unable to import the screen.') +
+                    (error.response.data.message ? ': ' + error.response.data.message : ''),
+                    'danger'
+                    );
+                });
+            },
+          }
+        });
+      });
     </script>
 @endsection

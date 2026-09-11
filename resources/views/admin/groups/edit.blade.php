@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Edit Group')}}
@@ -230,11 +230,18 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/groups/edit.js')}}"></script>
     <script>
+      window.temporal = window.temporal || {};
+      window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+      window.packages = window.temporal.packages;
+    </script>
+    @vite(['resources/js/admin/groups/loaderGroups.js'])
+    @vite(['resources/js/admin/groups/edit.js'])
+    <script>
+      window.addEventListener("load", function () {
       new Vue({
         el: '#editGroup',
-        mixins:addons,
+        mixins: typeof addons !== 'undefined' ? addons : [],
         data() {
           return {
             formData: @json($group),
@@ -403,6 +410,7 @@
             this.$refs.addGroup.show();
           }
         }
+      });
       });
     </script>
 @endsection

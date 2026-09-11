@@ -1,7 +1,9 @@
 import Vue from "vue";
 import ModelerApp from "./components/ModelerApp";
 
-document.addEventListener("DOMContentLoaded", () => {
+// Mount after 'load' so package addon scripts (from $manager->getScriptWithParams())
+// are guaranteed to have executed before Vue renders the modeler.
+window.addEventListener("load", () => {
   window.ProcessMaker.i18nPromise.then(() => {
     new Vue({
       render: (h) => h(ModelerApp, {
@@ -12,3 +14,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }).$mount("#modeler-app");
   });
 });
+
