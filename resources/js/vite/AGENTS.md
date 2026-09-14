@@ -119,7 +119,7 @@ vite.config.js
 | Process Import | **Vite** | `processes.import` + `layoutnextvite` | `loader/loaderMinimal.js` → `import/index.js` (Vue Router) |
 | Process Configure | **Vite** | `processes.edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `processes/edit.js` + inline Vue boot |
 | Admin Users | **Vite** | `admin.users.index` + `edit` + `layoutnextvite` | `admin/users/loaderUsers.js` → `index.js` / `edit.js` + inline Vue boot |
-| Admin Groups | **Vite** | `admin.groups.index` + `edit` + `layoutnextvite` | `admin/groups/loaderGroups.js` → `index.js` / `edit.js` + inline Vue boot |
+| Admin Groups | **Vite** | `admin.groups.index` + `edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `index.js` / `edit.js` + inline Vue boot |
 | Admin Auth Clients | **Vite** | `auth-clients.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `index.js` |
 | Admin Settings | **Vite** | `settings.index` + `layoutnextvite` | `admin/settings/loaderSettings.js` → `index.js` (+ optional package email-listener Mix) |
 | Admin LDAP Logs | **Vite** | `admin.settings.ldap-logs` + `layoutnextvite` | `admin/users/loaderUsers.js` → `admin/settings/ldaplogs.js` |
@@ -171,7 +171,6 @@ resources/js/loader/loaderMinimal.js
 resources/js/admin/users/loaderUsers.js
 resources/js/admin/users/index.js
 resources/js/admin/users/edit.js
-resources/js/admin/groups/loaderGroups.js
 resources/js/admin/groups/index.js
 resources/js/admin/groups/edit.js
 resources/js/admin/auth-clients/loaderAuthClients.js
@@ -386,8 +385,8 @@ Dev tips:
 
 - Views: `admin/groups/index.blade.php`, `admin/groups/edit.blade.php` → `layoutnextvite`
 - Boot: `window.temporal.packages` / `window.packages` before loader
-- Index: `loaderGroups.js` → `index.js` (registers `GroupsListing` + mounts `#listGroups`)
-- Edit: `loaderGroups.js` → `edit.js` (registers listing/select components) + inline Vue on `load` (`mixins: addons`, Blade `@json`)
+- Index: `loader/loaderMinimal.js` → `index.js` (registers `GroupsListing` + mounts `#listGroups`)
+- Edit: `loader/loaderMinimal.js` → `edit.js` (registers listing/select components) + inline Vue on `load` (`mixins: addons`, Blade `@json`)
 - Mix: no longer builds `admin/groups/index.js` or `edit.js`
 
 **Admin Auth Clients** — `/admin/auth-clients`
