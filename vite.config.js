@@ -196,7 +196,6 @@ export default defineConfig(({ mode }) => {
           "resources/js/templates/index.js",
           "resources/js/processes/categories/index.js",
           "resources/js/processes/archived.js",
-          "resources/js/admin/users/loaderUsers.js",
           "resources/js/admin/users/index.js",
           "resources/js/admin/users/edit.js",
           "resources/js/admin/groups/index.js",

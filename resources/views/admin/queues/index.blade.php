@@ -16,7 +16,7 @@
 @endsection
 
 @section('content')
-    @vite(['resources/js/admin/users/loaderUsers.js'])
+    @vite(['resources/js/loader/loaderMinimal.js'])
     <iframe class="iframe-horizon mb-n1" src="/admin/horizon"></iframe>
 @endsection
 

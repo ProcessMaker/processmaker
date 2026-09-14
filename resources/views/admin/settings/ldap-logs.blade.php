@@ -16,7 +16,7 @@
     ]])
 @endsection
 @section('content')
-    @vite(['resources/js/admin/users/loaderUsers.js'])
+    @vite(['resources/js/loader/loaderMinimal.js'])
     <div class="px-3" id="ldap-logs">
         <div id="search-bar" class="search mb-3" vcloak>
             <div class="d-flex flex-column flex-md-row">

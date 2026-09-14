@@ -118,15 +118,15 @@ vite.config.js
 | Process Export | **Vite** | `processes.export` + `layoutnextvite` | `loader/loaderMinimal.js` → `export/index.js` (Vue Router) |
 | Process Import | **Vite** | `processes.import` + `layoutnextvite` | `loader/loaderMinimal.js` → `import/index.js` (Vue Router) |
 | Process Configure | **Vite** | `processes.edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `processes/edit.js` + inline Vue boot |
-| Admin Users | **Vite** | `admin.users.index` + `edit` + `layoutnextvite` | `admin/users/loaderUsers.js` → `index.js` / `edit.js` + inline Vue boot |
+| Admin Users | **Vite** | `admin.users.index` + `edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `index.js` / `edit.js` + inline Vue boot |
 | Admin Groups | **Vite** | `admin.groups.index` + `edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `index.js` / `edit.js` + inline Vue boot |
 | Admin Auth Clients | **Vite** | `auth-clients.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `index.js` |
 | Admin Settings | **Vite** | `settings.index` + `layoutnextvite` | `admin/settings/loaderSettings.js` → `index.js` (+ optional package email-listener Mix) |
-| Admin LDAP Logs | **Vite** | `admin.settings.ldap-logs` + `layoutnextvite` | `admin/users/loaderUsers.js` → `admin/settings/ldaplogs.js` |
+| Admin LDAP Logs | **Vite** | `admin.settings.ldap-logs` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/settings/ldaplogs.js` |
 | Admin Customize UI | **Vite** | `customize-ui.edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `edit.js` (Tinymce) + inline Vue on `load` |
 | Admin Script Executors | **Vite** | `script-executors.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/script-executors/index.js` |
 | Admin Tenant Queues | **Vite** | `tenant-queue.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/tenant-queues/index.js` (Vue Router) |
-| Admin Queues (Horizon) | **Vite layout** | `admin.queues.index` + `layoutnextvite` | `admin/users/loaderUsers.js` only; page is an iframe to `/admin/horizon` |
+| Admin Queues (Horizon) | **Vite layout** | `admin.queues.index` + `layoutnextvite` | `loader/loaderMinimal.js` only; page is an iframe to `/admin/horizon` |
 | Admin DevLink | **Vite** | `devlink.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/devlink/index.js` (Vue Router) |
 | Admin Cases Retention | **Vite** | `cases-retention.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/cases-retention/index.js` |
 | Admin Logs | **Vite** | `admin.logs` + `layoutnextvite` | packages boot → `loader/loaderMinimal.js` → `admin/logs/index.js` (Vue Router) |
@@ -168,7 +168,6 @@ resources/js/templates/index.js
 resources/js/processes/categories/index.js
 resources/js/processes/archived.js
 resources/js/loader/loaderMinimal.js
-resources/js/admin/users/loaderUsers.js
 resources/js/admin/users/index.js
 resources/js/admin/users/edit.js
 resources/js/admin/groups/index.js
@@ -376,8 +375,8 @@ Dev tips:
 
 - Views: `admin/users/index.blade.php`, `admin/users/edit.blade.php` → `layoutnextvite`
 - Boot: `window.temporal.packages` / `window.packages` before loader
-- Index: `loaderUsers.js` → `index.js` (mounts listings; `window.loadUsers` / `loadDeletedUsers`)
-- Edit: `loaderUsers.js` → `edit.js` (registers password/listing components) + inline Vue on `load` (`modalVueInstance` + `formVueInstance`, `mixins: addons`)
+- Index: `loader/loaderMinimal.js` → `index.js` (mounts listings; `window.loadUsers` / `loadDeletedUsers`)
+- Edit: `loader/loaderMinimal.js` → `edit.js` (registers password/listing components) + inline Vue on `load` (`modalVueInstance` + `formVueInstance`, `mixins: addons`)
 - Mix: no longer builds `admin/users/index.js` or `edit.js`
 
 **Admin Groups** — `/admin/groups`, `/admin/groups/{group}/edit`
@@ -406,7 +405,7 @@ Dev tips:
 **Admin LDAP Logs** — settings LDAP logs
 
 - View: `resources/views/admin/settings/ldap-logs.blade.php` → `layoutnextvite`
-- Entries: `admin/users/loaderUsers.js` → `admin/settings/ldaplogs.js`
+- Entries: `loader/loaderMinimal.js` → `admin/settings/ldaplogs.js`
 - Mix: no longer builds `admin/settings/ldaplogs.js`
 
 **Admin Customize UI** — `/admin/customize-ui/{tab?}`
@@ -434,7 +433,7 @@ Dev tips:
 **Admin Queues (Horizon)** — queue management iframe
 
 - View: `resources/views/admin/queues/index.blade.php` → `layoutnextvite`
-- Only loads `admin/users/loaderUsers.js` for chrome; body is `<iframe src="/admin/horizon">`
+- Only loads `loader/loaderMinimal.js` for chrome; body is `<iframe src="/admin/horizon">`
 - May redirect to tenant-queues when tenant tracking is restricted
 
 **Admin DevLink** — `/admin/devlink/{router?}`
