@@ -9,7 +9,7 @@
   <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
   <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
   <title>@yield('title') - {{ __('ProcessMaker') }}</title>
-  <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+  @vite('resources/sass/app.scss')
   @include('auth.partials.login-critical-styles')
   @include('auth.partials.auth-styles')
   <link rel="icon" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
