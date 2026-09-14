@@ -92,6 +92,21 @@
                 >
                 </b-form-checkbox-group>
             </div>
+            @if (!\Request::is('profile/edit') && in_array(\ProcessMaker\TwoFactorAuthentication::AUTH_APP, $global2FAEnabled))
+                <div class="form-group mb-0" v-if="formData.auth_app_configured_at">
+                    <button
+                        type="button"
+                        class="btn btn-outline-danger btn-sm w-100"
+                        @click="resetAuthApp"
+                        :disabled="resettingAuthApp"
+                    >
+                        {{ __('Reset Authenticator App') }}
+                    </button>
+                    <small class="form-text text-muted">
+                        {{ __('The user will configure a new authenticator on next login.') }}
+                    </small>
+                </div>
+            @endif
         @endif
     </div>
 

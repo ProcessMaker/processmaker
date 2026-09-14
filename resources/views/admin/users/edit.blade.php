@@ -287,6 +287,7 @@
             originalEmail: '',
             emailHasChanged: false,
             canCreateTokens: @json($canCreateTokens),
+            resettingAuthApp: false,
           }
         },
         created() {
@@ -554,6 +555,27 @@
             .catch(error => {
               this.errors = error.response.data.errors;
             });
+          },
+          resetAuthApp() {
+            if (!confirm(this.$t('Reset the authenticator app for this user?'))) {
+              return;
+            }
+
+            this.resettingAuthApp = true;
+
+            ProcessMaker.apiClient.put(`users/${this.formData.id}/reset_auth_app`)
+              .then(() => {
+                this.formData.auth_app_configured_at = null;
+                ProcessMaker.alert(this.$t('Authenticator app reset successfully.'), 'success');
+              })
+              .catch(error => {
+                const message = error.response?.data?.message
+                  || this.$t('Unable to reset authenticator app.');
+                ProcessMaker.alert(message, 'danger');
+              })
+              .finally(() => {
+                this.resettingAuthApp = false;
+              });
           },
           loadGroups(filter) {
             filter = typeof filter === 'string' ? '?filter=' + filter + '&' : '?';
