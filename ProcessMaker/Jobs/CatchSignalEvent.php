@@ -73,7 +73,7 @@ class CatchSignalEvent implements ShouldQueue
                 $this->eventDefinition,
                 $this->tokenId,
                 $this->requestId
-            )->onQueue('bpmn');
+            );
         }
         $count = ProcessRequest::where('status', 'ACTIVE')
             ->where('id', '!=', $this->requestId);
@@ -104,7 +104,7 @@ class CatchSignalEvent implements ShouldQueue
                     $this->eventDefinition,
                     $this->tokenId,
                     $this->requestId
-                )->onQueue('bpmn');
+                );
             }
         }
     }
