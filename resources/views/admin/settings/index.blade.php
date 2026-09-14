@@ -31,7 +31,7 @@
       window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
       window.packages = window.temporal.packages;
     </script>
-    @vite(['resources/js/admin/settings/loaderSettings.js'])
+    @vite(['resources/js/loader/loaderMinimal.js'])
 
     @if (hasPackage('package-email-start-event'))
     <script type="module" src="{{ mix('js/email-listener.js', 'vendor/processmaker/packages/package-email-start-event') }}"></script>

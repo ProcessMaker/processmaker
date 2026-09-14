@@ -201,7 +201,6 @@ export default defineConfig(({ mode }) => {
           "resources/js/admin/groups/index.js",
           "resources/js/admin/groups/edit.js",
           "resources/js/admin/auth-clients/index.js",
-          "resources/js/admin/settings/loaderSettings.js",
           "resources/js/admin/settings/index.js",
           "resources/js/admin/settings/ldaplogs.js",
           "resources/js/admin/cssOverride/edit.js",

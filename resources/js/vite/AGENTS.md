@@ -121,7 +121,7 @@ vite.config.js
 | Admin Users | **Vite** | `admin.users.index` + `edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `index.js` / `edit.js` + inline Vue boot |
 | Admin Groups | **Vite** | `admin.groups.index` + `edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `index.js` / `edit.js` + inline Vue boot |
 | Admin Auth Clients | **Vite** | `auth-clients.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `index.js` |
-| Admin Settings | **Vite** | `settings.index` + `layoutnextvite` | `admin/settings/loaderSettings.js` → `index.js` (+ optional package email-listener Mix) |
+| Admin Settings | **Vite** | `settings.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `index.js` (+ optional package email-listener Mix) |
 | Admin LDAP Logs | **Vite** | `admin.settings.ldap-logs` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/settings/ldaplogs.js` |
 | Admin Customize UI | **Vite** | `customize-ui.edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `edit.js` (Tinymce) + inline Vue on `load` |
 | Admin Script Executors | **Vite** | `script-executors.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/script-executors/index.js` |
@@ -174,7 +174,6 @@ resources/js/admin/groups/index.js
 resources/js/admin/groups/edit.js
 resources/js/admin/auth-clients/loaderAuthClients.js
 resources/js/admin/auth-clients/index.js
-resources/js/admin/settings/loaderSettings.js
 resources/js/admin/settings/index.js
 resources/js/admin/settings/ldaplogs.js
 resources/js/admin/cssOverride/loaderCssOverride.js
@@ -398,7 +397,7 @@ Dev tips:
 
 - View: `resources/views/admin/settings/index.blade.php` → `layoutnextvite`
 - Boot: `window.temporal.packages` / `window.packages` before loader
-- Entries: `loaderSettings.js` → optional Mix `email-listener.js` (package-email-start-event) → `index.js` (mounts `#settings` / `SettingsMain`)
+- Entries: `loader/loaderMinimal.js` → optional Mix `email-listener.js` (package-email-start-event) → `index.js` (mounts `#settings` / `SettingsMain`)
 - Plugin addon HTML still rendered in content; addon scripts via `layoutnextvite`
 - Mix: no longer builds `admin/settings/index.js`
 
