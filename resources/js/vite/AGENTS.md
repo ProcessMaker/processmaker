@@ -84,7 +84,6 @@ resources/views/requests/preview.blade.php              ← Vite (request screen
 resources/js/vite/tasks/                              ← Tasks entries
 resources/js/vite/auth/login.js                       ← Login / auth layout entry
 resources/js/loader/loaderMinimal.js                     ← shared admin setupMain loader
-resources/js/processes/environment-variables/loaderEnvironment.js ← env vars setupMain loader
 resources/js/processes/screens/loaderScreens.js       ← screens setupMain loader
 resources/js/processes-catalogue/loaderProcessesCatalogue.js
 resources/jscomposition/cases/casesMain/loaderCasesMain.js
@@ -130,7 +129,7 @@ vite.config.js
 | Admin DevLink | **Vite** | `devlink.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/devlink/index.js` (Vue Router) |
 | Admin Cases Retention | **Vite** | `cases-retention.index` + `layoutnextvite` | `loader/loaderMinimal.js` → `admin/cases-retention/index.js` |
 | Admin Logs | **Vite** | `admin.logs` + `layoutnextvite` | packages boot → `loader/loaderMinimal.js` → `admin/logs/index.js` (Vue Router) |
-| Environment Variables | **Vite** | `environment-variables.index` + `edit` + `layoutnextvite` | `processes/environment-variables/loaderEnvironment.js` → `index.js` / `edit.js` |
+| Environment Variables | **Vite** | `environment-variables.index` + `edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `index.js` / `edit.js` |
 | Screens (Designer) | **Vite** | `screens.index` + `edit` + `layoutnextvite`; tab apps via child `@append` | `processes/screens/loaderScreens.js` → `screens/index.js` / `screen-templates/myTemplates.js` / `publicTemplates.js` / `categories/index.js`; edit → `screens/edit.js` |
 | Scripts (Designer) | **Vite** | `scripts.index` + `scripts.edit` (configure) + `layoutnextvite` | `loader/loaderMonaco.js` → `index.js`; configure → `editConfig.js` + inline Vue on `load` |
 | Signals (Designer) | **Vite** | `signals.index` + `signals.edit` + `layoutnextvite` | `loader/loaderMinimal.js` → `index.js`; edit → `edit.js` + inline Vue on `load` |
@@ -193,7 +192,6 @@ resources/js/templates/loaderTemplates.js
 resources/js/templates/import/index.js
 resources/js/templates/configure.js
 resources/js/templates/assets.js
-resources/js/processes/environment-variables/loaderEnvironment.js
 resources/js/processes/environment-variables/index.js
 resources/js/processes/environment-variables/edit.js
 resources/js/processes/screens/loaderScreens.js
@@ -460,7 +458,7 @@ Dev tips:
 
 - Views: `processes/environment-variables/index.blade.php`, `edit.blade.php` → `layoutnextvite`
 - Boot: `window.temporal.packages` / `window.packages`; edit also sets `window.temporal.EnvironmentVariableEdit` (ESM-safe form data)
-- Entries: `loaderEnvironment.js` → `index.js` / `edit.js`
+- Entries: `loader/loaderMinimal.js` → `index.js` / `edit.js`
 - Mix: no longer builds `processes/environment-variables/index.js` or `edit.js`
 
 **Screens (Designer)** — `/designer/screens`, configure screen

@@ -214,7 +214,6 @@ export default defineConfig(({ mode }) => {
 
           "resources/js/admin/profile/edit.js",
 
-          "resources/js/processes/environment-variables/loaderEnvironment.js",
           "resources/js/processes/environment-variables/index.js",
           "resources/js/processes/environment-variables/edit.js",
           "resources/js/processes/screens/loaderScreens.js",

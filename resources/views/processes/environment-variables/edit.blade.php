@@ -65,6 +65,6 @@
             do_not_update: @json((bool) $environmentVariable->do_not_update),
         };
     </script>
-    @vite(['resources/js/processes/environment-variables/loaderEnvironment.js'])
+    @vite(['resources/js/loader/loaderMinimal.js'])
     @vite(['resources/js/processes/environment-variables/edit.js'])
 @endsection
