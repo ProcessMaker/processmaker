@@ -130,6 +130,7 @@ class User extends Authenticatable implements HasMedia
         'password_changed_at',
         'connected_accounts',
         'preferences_2fa',
+        'auth_app_configured_at',
         'email_task_notification',
     ];
 
@@ -144,6 +145,7 @@ class User extends Authenticatable implements HasMedia
         'loggedin_at' => 'datetime',
         'schedule' => 'array',
         'preferences_2fa' => 'array',
+        'auth_app_configured_at' => 'datetime',
     ];
 
     /**
@@ -548,6 +550,11 @@ class User extends Authenticatable implements HasMedia
     public function sessions(): HasMany
     {
         return $this->hasMany(UserSession::class);
+    }
+
+    public function hasAuthAppConfigured(): bool
+    {
+        return $this->auth_app_configured_at !== null;
     }
 
     public function getValid2FAPreferences(): array

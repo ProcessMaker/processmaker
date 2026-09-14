@@ -80,16 +80,34 @@ class TwoFactorAuthentication
         return $otp->now();
     }
 
+    public function isAuthAppCode(string $code): bool
+    {
+        return strlen($code) === 6;
+    }
+
     public function validateCode(User $user, string $code)
     {
-        // The code is for Google Authenticator app?
-        $forGoogleAuthApp = strlen($code) === 6;
-
         // Create OTP instance
-        $otp = $this->createOtpInstance($user, $forGoogleAuthApp);
+        $otp = $this->createOtpInstance($user, $this->isAuthAppCode($code));
 
         // Validate code
         return $otp->verify($code);
+    }
+
+    public function markAuthAppConfigured(User $user): void
+    {
+        if ($user->hasAuthAppConfigured()) {
+            return;
+        }
+
+        $user->auth_app_configured_at = now();
+        $user->save();
+    }
+
+    public function userCanSetUpAuthApp(User $user): bool
+    {
+        return in_array(self::AUTH_APP, $user->getValid2FAPreferences(), true)
+            && !$user->hasAuthAppConfigured();
     }
 
     /**

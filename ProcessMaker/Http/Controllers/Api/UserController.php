@@ -1150,4 +1150,28 @@ class UserController extends Controller
 
         return response([], 204);
     }
+
+    public function resetAuthApp(User $user)
+    {
+        if (!Auth::user()->can('edit', $user)) {
+            throw new AuthorizationException(__('Not authorized to update this user.'));
+        }
+
+        if (!$user->hasAuthAppConfigured()) {
+            return response([
+                'message' => __('Authenticator app is not configured for this user.'),
+            ], 422);
+        }
+
+        $original = $user->getOriginal();
+        $user->auth_app_configured_at = null;
+        $user->saveOrFail();
+
+        UserUpdated::dispatch($user, $user->getChanges(), $original);
+
+        return response([
+            'message' => __('Authenticator app reset successfully.'),
+            'auth_app_configured_at' => null,
+        ]);
+    }
 }
