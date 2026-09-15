@@ -2,17 +2,22 @@
 
 namespace Tests\Feature\Api\V1_1;
 
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use ProcessMaker\Http\Controllers\Api\V1_1\ProcessVariableController;
+use ProcessMaker\Models\Column;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\User;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\Package\VariableFinder\Models\AssetVariable;
 use ProcessMaker\Package\VariableFinder\Models\ProcessVariable;
 use ProcessMaker\Package\VariableFinder\Models\VarFinderVariable;
+use ProcessMaker\Services\ProcessVariableDiscoveryService;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -23,15 +28,14 @@ class ProcessVariableControllerTest extends TestCase
     private bool $isVariablesFinderEnabled;
 
     /**
-     * Set up test environment by creating a test user and authenticating as them
+     * Load Variable Finder fixtures after the test user exists.
+     *
+     * Named withUserSetup so RequestHelper invokes it after the user is created.
      *
      * @return void
      */
-    public function setupCreateUser()
+    public function withUserSetup()
     {
-        $this->user = User::factory()->create();
-        $this->actingAs($this->user);
-
         // Check if the VariableFinder package is enabled
         $this->isVariablesFinderEnabled = class_exists(ProcessVariable::class) && Schema::hasTable('process_variables');
 
@@ -243,7 +247,7 @@ class ProcessVariableControllerTest extends TestCase
                 // Generate data similarly to mockVariableFinder
                 $format = $this->getRandomDataType();
                 $label = "Variable {$i} for Process {$processId}";
-                $field = "data.var_{$processId}_{$i}";
+                $field = "var_{$processId}_{$i}";
 
                 // 3. Create the VarFinderVariable record linked to the same AssetVariable
                 VarFinderVariable::create([
@@ -362,7 +366,7 @@ class ProcessVariableControllerTest extends TestCase
         $this->assertFalse($filteredFields->contains('data.var_1_2'));
 
         // Check that the total count matches the actual number of variables
-        $this->assertEquals(10, $responseData['meta']['total']); // Total number of variables
+        $this->assertEquals(8, $responseData['meta']['total']); // Total number of variables
     }
 
     /**
@@ -543,5 +547,239 @@ class ProcessVariableControllerTest extends TestCase
         $this->assertFalse($filteredFields->contains('status'));
         $this->assertFalse($filteredFields->contains('initiated_at'));
         $this->assertFalse($filteredFields->contains('completed_at'));
+    }
+
+    public function test_fulltext_saved_search_with_empty_process_ids_loads_available_columns(): void
+    {
+        ProcessVariableController::mock(false);
+        ProcessVariableController::useVarFinder(false);
+        Setting::updateOrCreate(
+            ['key' => 'indexed-search'],
+            ['config' => ['enabled' => false]]
+        );
+
+        $process = Process::factory()->create();
+        ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'data' => ['four_33159_variable' => 'value'],
+        ]);
+        $savedSearch = SavedSearch::factory()->create([
+            'type' => SavedSearch::TYPE_REQUEST,
+            'meta' => [
+                'icon' => 'search',
+                'columns' => [],
+            ],
+            'pmql' => '(fulltext LIKE "%test%")',
+        ]);
+
+        $url = '/api/1.1/processes/variables?processIds=&savedSearchId=' . $savedSearch->id
+            . '&onlyAvailable=&per_page=100&page=';
+        $fields = collect();
+        $page = 1;
+
+        do {
+            $response = $this->apiCall('GET', $url . $page);
+            $response->assertStatus(200);
+            $fields = $fields->merge(collect($response->json('data'))->pluck('field'));
+            $lastPage = (int) $response->json('meta.last_page');
+            $page++;
+        } while ($page <= $lastPage);
+
+        $this->assertContains('case_number', $fields);
+        $this->assertContains('data.four_33159_variable', $fields);
+    }
+
+    public function test_only_available_columns_are_paginated_without_losing_fields(): void
+    {
+        ProcessVariableController::mock(false);
+        ProcessVariableController::useVarFinder(false);
+
+        $process = Process::factory()->create();
+        $data = collect(range(1, 125))->mapWithKeys(function ($index) {
+            return ["four_33159_paginated_{$index}" => 'value'];
+        })->all();
+        ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'data' => $data,
+        ]);
+        $savedSearch = SavedSearch::factory()->create([
+            'type' => SavedSearch::TYPE_REQUEST,
+            'meta' => [
+                'icon' => 'search',
+                'columns' => [
+                    [
+                        'label' => 'Active paginated variable',
+                        'field' => 'data.four_33159_paginated_1',
+                    ],
+                ],
+            ],
+            'pmql' => '',
+        ]);
+        $url = '/api/1.1/processes/variables?processIds=' . $process->id
+            . '&savedSearchId=' . $savedSearch->id
+            . '&onlyAvailable=&per_page=50&page=';
+
+        $firstPage = $this->apiCall('GET', $url . '1');
+        $firstPage->assertStatus(200);
+        $total = $firstPage->json('meta.total');
+        $lastPage = $firstPage->json('meta.last_page');
+        $fields = collect($firstPage->json('data'))->pluck('field');
+
+        $this->assertGreaterThan(100, $total);
+        $this->assertCount(50, $firstPage->json('data'));
+        $this->assertSame(50, $firstPage->json('meta.per_page'));
+        $this->assertSame(1, $firstPage->json('meta.from'));
+        $this->assertSame(50, $firstPage->json('meta.to'));
+        $this->assertSame((int) ceil($total / 50), $lastPage);
+
+        for ($page = 2; $page <= $lastPage; $page++) {
+            $response = $this->apiCall('GET', $url . $page);
+            $expectedCount = min(50, $total - (($page - 1) * 50));
+
+            $response->assertStatus(200);
+            $this->assertCount($expectedCount, $response->json('data'));
+            $this->assertSame($page, $response->json('meta.current_page'));
+            $this->assertSame($total, $response->json('meta.total'));
+            $this->assertSame((($page - 1) * 50) + 1, $response->json('meta.from'));
+            $this->assertSame(($page - 1) * 50 + $expectedCount, $response->json('meta.to'));
+            $fields = $fields->merge(collect($response->json('data'))->pluck('field'));
+        }
+
+        $this->assertCount($total, $fields);
+        $this->assertCount($total, $fields->unique());
+        $this->assertNotContains('data.four_33159_paginated_1', $fields);
+        foreach (range(2, 125) as $index) {
+            $this->assertContains("data.four_33159_paginated_{$index}", $fields);
+        }
+    }
+
+    public function test_process_screen_variable_pages_exclude_active_columns(): void
+    {
+        ProcessVariableController::mock(false);
+        ProcessVariableController::useVarFinder(false);
+
+        $bpmn = file_get_contents(base_path('tests/Feature/Api/bpmnPatterns/SimpleTaskProcess.bpmn'));
+        $screen = $this->createScreenWithFields(91, 12);
+        $process = Process::factory()->create([
+            'bpmn' => str_replace('pm:screenRef="2"', 'pm:screenRef="' . $screen->id . '"', $bpmn),
+        ]);
+        $savedSearch = SavedSearch::factory()->create([
+            'type' => SavedSearch::TYPE_REQUEST,
+            'meta' => [
+                'icon' => 'search',
+                'columns' => [
+                    [
+                        'label' => 'Variable 1 for Process 91',
+                        'field' => 'data.var_91_1',
+                    ],
+                ],
+            ],
+            'pmql' => '',
+        ]);
+        $url = '/api/1.1/processes/variables?processIds=' . $process->id
+            . '&savedSearchId=' . $savedSearch->id
+            . '&per_page=5&page=';
+        $fields = collect();
+
+        for ($page = 1; $page <= 3; $page++) {
+            $response = $this->apiCall('GET', $url . $page);
+
+            $response->assertStatus(200);
+            $this->assertLessThanOrEqual(5, count($response->json('data')));
+            $this->assertSame(11, $response->json('meta.total'));
+            $fields = $fields->merge(collect($response->json('data'))->pluck('field'));
+        }
+
+        $this->assertCount(11, $fields);
+        $this->assertCount(11, $fields->unique());
+        $this->assertNotContains('data.var_91_1', $fields);
+    }
+
+    public function test_only_available_without_saved_search_returns_an_empty_typed_page(): void
+    {
+        $response = $this->apiCall(
+            'GET',
+            '/api/1.1/processes/variables?processIds=1&page=2&per_page=7&onlyAvailable='
+        );
+
+        $response->assertStatus(200);
+        $this->assertSame([], $response->json('data'));
+        $this->assertSame(2, $response->json('meta.current_page'));
+        $this->assertSame(7, $response->json('meta.per_page'));
+        $this->assertSame(0, $response->json('meta.total'));
+        $this->assertSame(1, $response->json('meta.last_page'));
+        $this->assertNull($response->json('meta.from'));
+        $this->assertNull($response->json('meta.to'));
+        $this->assertNull($response->json('meta.links.next'));
+    }
+
+    public function test_only_available_does_not_scan_process_request_data(): void
+    {
+        $savedSearch = SavedSearch::factory()->create([
+            'type' => SavedSearch::TYPE_REQUEST,
+            'meta' => ['columns' => []],
+            'pmql' => '(fulltext LIKE "%test%")',
+        ]);
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        try {
+            $response = $this->apiCall(
+                'GET',
+                '/api/1.1/processes/variables?processIds=&savedSearchId=' . $savedSearch->id
+                    . '&page=1&per_page=5&onlyAvailable='
+            );
+            $queries = collect(DB::getQueryLog())->pluck('query')->implode("\n");
+        } finally {
+            DB::disableQueryLog();
+        }
+
+        $response->assertStatus(200);
+        $this->assertStringNotContainsString('lower(', strtolower($queries));
+        $this->assertStringNotContainsString('LOWER(', $queries);
+    }
+
+    public function test_variable_finder_sort_memory_error_falls_back_to_screen_variables(): void
+    {
+        if (!$this->isVariablesFinderEnabled) {
+            $this->markTestSkipped('Variable Finder is not enabled.');
+        }
+
+        ProcessVariableController::mock(false);
+        ProcessVariableController::useVarFinder(true);
+        $this->mock(ProcessVariableDiscoveryService::class, function ($mock) {
+            $mock->shouldReceive('forProcessIds')
+                ->once()
+                ->andReturn(collect([
+                    new Column([
+                        'label' => 'Fallback Field',
+                        'field' => 'data.fallback_field',
+                        'sortable' => true,
+                        'default' => false,
+                        'format' => 'string',
+                        'mask' => null,
+                    ]),
+                ]));
+        });
+        DB::beforeExecuting(function ($query, $bindings) {
+            if (!str_contains($query, 'var_finder_variables')) {
+                return;
+            }
+
+            $previous = new \PDOException('Out of sort memory', 1038);
+            $previous->errorInfo = ['HY001', 1038, 'Out of sort memory'];
+
+            throw new QueryException('processmaker', $query, $bindings, $previous);
+        });
+
+        $response = $this->apiCall(
+            'GET',
+            '/api/1.1/processes/variables?processIds=1&page=1&per_page=5'
+        );
+
+        $response->assertStatus(200);
+        $this->assertSame(['data.fallback_field'], collect($response->json('data'))->pluck('field')->all());
+        $this->assertSame(1, $response->json('meta.total'));
+        $this->assertSame(5, $response->json('meta.per_page'));
     }
 }
