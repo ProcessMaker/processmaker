@@ -227,16 +227,7 @@ class ProcessVariableDiscoveryService
         }
 
         try {
-            $payload = $resolver();
-            Cache::put($lastKnownKey, $payload, self::LAST_KNOWN_SECONDS);
-
-            return $payload;
-        } catch (Throwable $exception) {
-            Log::warning('Process variable discovery failed', [
-                'message' => $exception->getMessage(),
-            ]);
-
-            return is_array($lastKnown) ? $lastKnown : [];
+            return $this->resolveAndRemember($lastKnownKey, $lastKnown, $resolver);
         } finally {
             $lock->release();
         }
@@ -260,7 +251,28 @@ class ProcessVariableDiscoveryService
             }
 
             // No last-known-good payload: resolve directly so we do not cache an empty result.
-            return $resolver();
+            return $this->resolveAndRemember($lastKnownKey, $lastKnown, $resolver);
+        }
+    }
+
+    /**
+     * @param  mixed  $lastKnown
+     * @param  callable(): list<array<string, mixed>>  $resolver
+     * @return list<array<string, mixed>>
+     */
+    private function resolveAndRemember(string $lastKnownKey, $lastKnown, callable $resolver): array
+    {
+        try {
+            $payload = $resolver();
+            Cache::put($lastKnownKey, $payload, self::LAST_KNOWN_SECONDS);
+
+            return $payload;
+        } catch (Throwable $exception) {
+            Log::warning('Process variable discovery failed', [
+                'message' => $exception->getMessage(),
+            ]);
+
+            return is_array($lastKnown) ? $lastKnown : [];
         }
     }
 
