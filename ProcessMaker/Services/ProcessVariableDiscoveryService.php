@@ -265,13 +265,13 @@ class ProcessVariableDiscoveryService
         $processStamp = Process::whereIn('id', $processIds)->pluck('updated_at', 'id')->toJson();
         $finderStamp = $useVariableFinder ? $this->variableFinderFingerprint() : 'screens';
 
-        return 'process-variables:scoped:v1:' . sha1($processStamp . '|' . $finderStamp);
+        return 'process-variables:scoped:v1:' . hash('xxh128', $processStamp . '|' . $finderStamp);
     }
 
     private function unscopedCacheKey(bool $useVariableFinder): string
     {
         if ($useVariableFinder && $this->variableFinderAvailable()) {
-            return 'process-variables:unscoped:v1:' . sha1($this->variableFinderFingerprint());
+            return 'process-variables:unscoped:v1:' . hash('xxh128', $this->variableFinderFingerprint());
         }
 
         $processStamp = Process::query()
@@ -280,7 +280,7 @@ class ProcessVariableDiscoveryService
             ->pluck('updated_at', 'id')
             ->toJson();
 
-        return 'process-variables:unscoped-screens:v1:' . sha1($processStamp);
+        return 'process-variables:unscoped-screens:v1:' . hash('xxh128', $processStamp);
     }
 
     private function variableFinderFingerprint(): string
