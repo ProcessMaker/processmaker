@@ -120,15 +120,22 @@ class ProcessVariableController extends Controller
         $processIds = !empty($validated['processIds'])
             ? array_map('intval', explode(',', $validated['processIds']))
             : [];
-        $perPage = $validated['per_page'] ?? 20;
-        $page = $validated['page'] ?? 1;
+        $perPage = (int) ($validated['per_page'] ?? 20);
+        $page = (int) ($validated['page'] ?? 1);
         $excludeSavedSearch = $validated['savedSearchId'] ?? 0;
 
-        // Generate mock data
-        if (static::$mockData) {
+        // Available columns and process variables have independent pagination.
+        if ($request->has('onlyAvailable')) {
+            $paginator = $this->getAvailableColumnsPaginator(
+                $excludeSavedSearch,
+                $page,
+                $perPage,
+                $request
+            );
+        } elseif (static::$mockData) {
             $paginator = $this->getProcessesVariablesFromMock($processIds, $excludeSavedSearch, $page, $perPage, $request);
         } else {
-            $paginator = $this->getProcessesVariables($processIds, $excludeSavedSearch, $page, $perPage, $request);
+            $paginator = $this->getProcessesVariables($processIds, $excludeSavedSearch, $page, $perPage);
         }
 
         return response()->json([
@@ -204,10 +211,9 @@ class ProcessVariableController extends Controller
      * @param bool $excludeSavedSearch Flag to exclude saved searches.
      * @param int $page The page number for pagination.
      * @param int $perPage The number of items per page for pagination.
-     * @param Request $request The HTTP request instance.
-     * @return \Illuminate\Http\JsonResponse JSON response containing the process variables.
+     * @return LengthAwarePaginator
      */
-    public function getProcessesVariables(array $processIds, $excludeSavedSearch, $page, $perPage, $request)
+    public function getProcessesVariables(array $processIds, $excludeSavedSearch, $page, $perPage)
     {
         // Determine which columns to exclude based on the saved search
         $activeColumns = [];
@@ -225,22 +231,11 @@ class ProcessVariableController extends Controller
             || !Schema::hasTable('process_variables')
             || !self::$useVarFinder
         ) {
-            $paginator = $this->getProcessesVariablesFrom($processIds);
-            if ($request->has('onlyAvailable')) {
-                return $this->mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns);
-            }
-
-            return $paginator;
+            return $this->getProcessesVariablesFrom($processIds, $activeColumns);
         }
 
         if ($processIds === []) {
-            $paginator = new LengthAwarePaginator([], 0, $perPage, $page);
-
-            if ($request->has('onlyAvailable')) {
-                return $this->mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns);
-            }
-
-            return $paginator;
+            return new LengthAwarePaginator([], 0, $perPage, $page);
         }
 
         // Build a single query that joins asset_variables, and var_finder_variables
@@ -260,6 +255,15 @@ class ProcessVariableController extends Controller
                 DB::raw('NULL AS `default`'),
             ]);
 
+        $activeDataColumns = collect($activeColumns)
+            ->filter(fn ($column) => str_starts_with($column, 'data.'))
+            ->map(fn ($column) => substr($column, 5))
+            ->values()
+            ->all();
+        if ($activeDataColumns !== []) {
+            $query->whereNotIn('vfv.field', $activeDataColumns);
+        }
+
         try {
             $paginator = $query->paginate($perPage, ['*'], 'page', $page);
         } catch (QueryException $exception) {
@@ -272,35 +276,36 @@ class ProcessVariableController extends Controller
                 'page' => $page,
                 'per_page' => $perPage,
             ]);
-            $paginator = $this->getProcessesVariablesFrom($processIds);
-        }
-
-        if ($request->has('onlyAvailable')) {
-            return $this->mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns);
+            $paginator = $this->getProcessesVariablesFrom($processIds, $activeColumns);
         }
 
         return $paginator;
     }
 
     /**
-     * Merge only available columns with collection items
-     *
-     * @param LengthAwarePaginator $paginator
-     * @param SavedSearch|null $savedSearch
-     * @param array $activeColumns
+     * Paginate the saved search columns separately from process variables.
      *
      * @return LengthAwarePaginator
      */
-    private function mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns)
+    private function getAvailableColumnsPaginator($savedSearchId, int $page, int $perPage, Request $request)
     {
+        $savedSearch = $savedSearchId ? SavedSearch::find($savedSearchId) : null;
+        $activeColumns = $savedSearch?->current_columns?->pluck('field')->toArray() ?? [];
         $availableColumns = $this->mergeAvailableColumns($savedSearch);
-        $availableColumns = $availableColumns->merge($paginator->items());
         $availableColumns = $this->filterActiveColumns($availableColumns, $activeColumns)
             ->unique('field')
             ->values();
-        $paginator->setCollection($availableColumns);
 
-        return $paginator;
+        return new LengthAwarePaginator(
+            $availableColumns->forPage($page, $perPage)->values(),
+            $availableColumns->count(),
+            $perPage,
+            $page,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
     }
 
     /**
@@ -356,10 +361,11 @@ class ProcessVariableController extends Controller
      * Retrieve process variables from its screens.
      *
      * @param array $processIds
+     * @param array $activeColumns
      *
      * @return LengthAwarePaginator
      */
-    private function getProcessesVariablesFrom(array $processIds)
+    private function getProcessesVariablesFrom(array $processIds, array $activeColumns = [])
     {
         $perPage = request()->get('per_page', 20);
         // Validate processIds input is required
@@ -369,6 +375,9 @@ class ProcessVariableController extends Controller
 
         $processes = Process::whereIn('id', $processIds)->get();
         $columns = app(ProcessScreenVariableService::class)->forProcesses($processes);
+        $columns = $this->filterActiveColumns($columns, $activeColumns)
+            ->unique('field')
+            ->values();
 
         // Paginate the result
         $page = request()->get('page', 1);
