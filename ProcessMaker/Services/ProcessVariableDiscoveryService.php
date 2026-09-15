@@ -221,7 +221,9 @@ class ProcessVariableDiscoveryService
         $lock = Cache::lock($cacheKey . ':lock', self::CACHE_LOCK_SECONDS);
 
         if (!$lock->get()) {
-            return $this->waitForLock($lock, $lastKnownKey, $lastKnown);
+            // Never return an empty list here: Cache::flexible would persist it
+            // as the fresh payload and hide variables for the full cache window.
+            return $this->waitForLock($lock, $lastKnownKey, $lastKnown, $resolver);
         }
 
         try {
@@ -242,9 +244,10 @@ class ProcessVariableDiscoveryService
 
     /**
      * @param  mixed  $lastKnown
+     * @param  callable(): list<array<string, mixed>>  $resolver
      * @return list<array<string, mixed>>
      */
-    private function waitForLock($lock, string $lastKnownKey, $lastKnown): array
+    private function waitForLock($lock, string $lastKnownKey, $lastKnown, callable $resolver): array
     {
         try {
             return $lock->block(
@@ -252,7 +255,12 @@ class ProcessVariableDiscoveryService
                 fn () => Cache::get($lastKnownKey, is_array($lastKnown) ? $lastKnown : [])
             );
         } catch (LockTimeoutException) {
-            return is_array($lastKnown) ? $lastKnown : [];
+            if (is_array($lastKnown) && $lastKnown !== []) {
+                return $lastKnown;
+            }
+
+            // No last-known-good payload: resolve directly so we do not cache an empty result.
+            return $resolver();
         }
     }
 
