@@ -36,9 +36,11 @@
           {{ html()->password('password')->id('password')->attribute('rows', 4)->class('form-control form-control-login')->attribute('v-model', 'formData.password')->attribute('autocomplete', 'new-password')->attribute('@input', 'props.updatePassword($event.target.value)')->attribute('v-bind:class', '{\'form-control\':true, \'form-control-login\':true, \'is-invalid\':errors.password}') }}
         </div>
       </vue-password>
-      <small v-for="(error, index) in errors.password" v-cloak class="text-danger d-block">
-        @{{ error }}
-      </small>
+      <template v-if="errors.password">
+        <small v-for="(error, index) in errors.password" :key="index" v-cloak class="text-danger d-block">
+          @{{ error }}
+        </small>
+      </template>
     </div>
     <div class="form-group mb-3">
       {{ html()->label(__('Confirm Password'), 'confpassword') }}<small class="ml-1">*</small>
