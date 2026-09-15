@@ -270,7 +270,7 @@ class ProcessVariableController extends Controller
                 'per_page' => $perPage,
             ]);
 
-            return $this->getProcessesVariablesFrom($processIds, $activeColumns, $page, $perPage, $request);
+            return $this->getProcessesVariablesFrom($processIds, $activeColumns, $page, $perPage, $request, false);
         }
     }
 
@@ -358,10 +358,11 @@ class ProcessVariableController extends Controller
         array $activeColumns,
         int $page,
         int $perPage,
-        Request $request
+        Request $request,
+        ?bool $useVariableFinder = null
     ): LengthAwarePaginator {
         $service = app(ProcessVariableDiscoveryService::class);
-        $useVariableFinder = self::$useVarFinder;
+        $useVariableFinder = $useVariableFinder ?? self::$useVarFinder;
         $columns = $processIds === []
             ? $service->unscoped($useVariableFinder)
             : $service->forProcessIds($processIds, $useVariableFinder);
