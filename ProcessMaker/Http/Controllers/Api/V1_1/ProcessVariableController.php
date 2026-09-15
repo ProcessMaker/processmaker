@@ -256,7 +256,7 @@ class ProcessVariableController extends Controller
             return $this->mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns);
         }
 
-        return $query->paginate($perPage, ['*'], 'page', $page);
+        return $paginator;
     }
 
     /**
@@ -285,15 +285,13 @@ class ProcessVariableController extends Controller
      */
     private function mergeAvailableColumns(?SavedSearch $savedSearch = null)
     {
-        $availableColumns = collect();
-
-        if ($savedSearch?->available_columns) {
-            $availableColumns = $savedSearch->available_columns->merge(
-                $savedSearch->getDataColumnsAttribute() ?? collect()
-            );
+        if (!$savedSearch) {
+            return collect();
         }
 
-        return $availableColumns;
+        $availableColumns = $savedSearch->available_columns;
+
+        return $availableColumns->merge($savedSearch->getDataColumnsAttribute() ?? collect());
     }
 
     /**
