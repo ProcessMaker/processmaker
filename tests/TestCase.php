@@ -96,16 +96,19 @@ abstract class TestCase extends BaseTestCase
 
         $this->disableSetContentMiddleware();
 
+        // Snapshot the migrated/seeded database before setup* fixtures write
+        // inside the RefreshDatabase transaction. A locking dump after those
+        // writes waits forever on this connection's uncommitted changes.
+        if (!self::$databaseSnapshotFile) {
+            self::$databaseSnapshotFile = $this->takeDatabaseSnapshot('non-transactional-test');
+        }
+
         $classMethods = get_class_methods($this);
         foreach (array_diff($classMethods, $this->skipSetupMethods) as $method) {
             $imethod = strtolower($method);
             if (strpos($imethod, 'setup') === 0 && $imethod !== 'setup') {
                 $this->$method();
             }
-        }
-
-        if (!self::$databaseSnapshotFile) {
-            self::$databaseSnapshotFile = $this->takeDatabaseSnapshot('non-transactional-test');
         }
 
         if ($this->withPermissions === true) {
@@ -303,11 +306,11 @@ abstract class TestCase extends BaseTestCase
         $result = \Illuminate\Support\Facades\Process::run('command -v mariadb-dump');
 
         if ($result->successful()) {
-            return 'mariadb-dump ';
+            return 'mariadb-dump --single-transaction --quick ';
         }
 
         // Fall back to mysqldump
-        return 'mysqldump ';
+        return 'mysqldump --single-transaction --quick ';
     }
 
     private function getMysqlCommand()
