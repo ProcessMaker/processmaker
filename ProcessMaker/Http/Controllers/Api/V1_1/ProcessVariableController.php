@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace ProcessMaker\Http\Controllers\Api\V1_1;
 
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\Package\VariableFinder\Models\ProcessVariable;
+use ProcessMaker\Services\ProcessScreenVariableService;
 
 class ProcessVariableController extends Controller
 {
@@ -232,6 +233,16 @@ class ProcessVariableController extends Controller
             return $paginator;
         }
 
+        if ($processIds === []) {
+            $paginator = new LengthAwarePaginator([], 0, $perPage, $page);
+
+            if ($request->has('onlyAvailable')) {
+                return $this->mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns);
+            }
+
+            return $paginator;
+        }
+
         // Build a single query that joins asset_variables, and var_finder_variables
         // and applies filtering for excluded fields.
         $query = DB::table('asset_variables as av')
@@ -249,8 +260,20 @@ class ProcessVariableController extends Controller
                 DB::raw('NULL AS `default`'),
             ]);
 
-        // Return the paginated result
-        $paginator = $query->paginate($perPage, ['*'], 'page', $page);
+        try {
+            $paginator = $query->paginate($perPage, ['*'], 'page', $page);
+        } catch (QueryException $exception) {
+            if ((int) ($exception->errorInfo[1] ?? 0) !== 1038) {
+                throw $exception;
+            }
+
+            Log::warning('Variable Finder exceeded MySQL sort memory; using screen variables', [
+                'process_count' => count($processIds),
+                'page' => $page,
+                'per_page' => $perPage,
+            ]);
+            $paginator = $this->getProcessesVariablesFrom($processIds);
+        }
 
         if ($request->has('onlyAvailable')) {
             return $this->mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns);
@@ -272,7 +295,9 @@ class ProcessVariableController extends Controller
     {
         $availableColumns = $this->mergeAvailableColumns($savedSearch);
         $availableColumns = $availableColumns->merge($paginator->items());
-        $availableColumns = $this->filterActiveColumns($availableColumns, $activeColumns);
+        $availableColumns = $this->filterActiveColumns($availableColumns, $activeColumns)
+            ->unique('field')
+            ->values();
         $paginator->setCollection($availableColumns);
 
         return $paginator;
@@ -342,30 +367,8 @@ class ProcessVariableController extends Controller
             return new LengthAwarePaginator([], 0, $perPage, 1);
         }
 
-        // Get screens used in the processes
         $processes = Process::whereIn('id', $processIds)->get();
-        $ids = collect([]);
-        foreach ($processes as $process) {
-            $manager = app(ExportManager::class);
-            try {
-                $ids = $ids->merge($manager->getDependenciesOfType(Screen::class, $process));
-            } catch (\Exception $e) {
-                $ids = collect([]);
-            }
-        }
-
-        // Get columns from screens
-        $columns = collect([]);
-        $screens = Screen::whereIn('id', $ids->unique())->where('type', '!=', 'DISPLAY')->get();
-        foreach ($screens as $screen) {
-            $screenColumns = $screen->fields->map(function ($item) {
-                $item->field = "data.{$item->field}";
-
-                return $item;
-            });
-
-            $columns = $columns->merge($screenColumns);
-        }
+        $columns = app(ProcessScreenVariableService::class)->forProcesses($processes);
 
         // Paginate the result
         $page = request()->get('page', 1);
