@@ -69,8 +69,7 @@
                                             {{ __('Send Again') }}
                                         </a>
                                     </div>
-                                    @if (in_array(\ProcessMaker\TwoFactorAuthentication::AUTH_APP,
-                                        config('password-policies.2fa_method', [])))
+                                    @if ($showAuthAppSetup ?? false)
                                     <div class="form-group">
                                         <a href="{{ route('2fa.auth_app_qr') }}">
                                             {{ __('Authenticator app') }}
