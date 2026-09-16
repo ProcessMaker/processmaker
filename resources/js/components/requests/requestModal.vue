@@ -8,6 +8,7 @@
       hide-footer
       :title="$t('New Case')"
       :size="size"
+      @hidden="hideModal"
     >
       <progress-loader
         ref="progressLoader"
@@ -171,9 +172,20 @@ export default {
     },
     showModal() {
       this.loaded = true;
-      // Perform initial load of requests from backend
       this.$refs.requestModalAdd.show();
       this.fetch();
+    },
+    hideModal() {
+      this.loaded = false;
+      this.filter = "";
+      this.error = false;
+      this.processes = {};
+      this.page = 1;
+      this.perPage = 15;
+      const pagination = this.$refs.listProcess;
+      if (pagination && String(pagination.perPage) !== "15") {
+        pagination.perPage = "15";
+      }
     },
     // Overwrite handler to change the page based on events fired
     onPageChange: function onPageChange(page) {
@@ -189,6 +201,19 @@ export default {
       }
       if (this.page > this.$refs.listProcess.tablePagination.last_page) {
         this.page = this.$refs.listProcess.tablePagination.last_page;
+      }
+      this.fetch();
+    },
+    changePerPage(value) {
+      const perPage = Number(value);
+      this.perPage = perPage;
+      const pagination = this.$refs.listProcess ? this.$refs.listProcess.tablePagination : null;
+      const total = pagination && pagination.total ? pagination.total : 0;
+      if (total > 0 && this.page * perPage > total) {
+        this.page = Math.ceil(total / perPage);
+      }
+      if (this.page <= 0) {
+        this.page = 1;
       }
       this.fetch();
     },
