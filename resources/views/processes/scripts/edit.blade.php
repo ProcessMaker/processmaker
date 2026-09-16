@@ -82,6 +82,26 @@
                             <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
                         </div>
 
+                        <div class="form-group" v-if="isPhpScript">
+                            <div class="custom-control custom-switch">
+                                <input
+                                    type="checkbox"
+                                    class="custom-control-input"
+                                    id="allow_in_process"
+                                    v-model="formData.allow_in_process"
+                                >
+                                <label class="custom-control-label" for="allow_in_process">
+                                    {{ __('Allow Run Script without Docker') }}
+                                </label>
+                            </div>
+                            <small class="form-text text-muted">
+                                {{ __('Run this trusted PHP script in the ProcessMaker worker (no Docker). Requires CORE_SERVICE_TASK_ENABLED. Use Script Runtime modules for package helpers.') }}
+                            </small>
+                            <div class="invalid-feedback d-block" role="alert" v-if="errors.allow_in_process">
+                                @{{ errors.allow_in_process[0] }}
+                            </div>
+                        </div>
+
                         <slider-with-input
                             :label="$t('Timeout')"
                             :description="$t('How many seconds the script should be allowed to run (0 is unlimited).')"
@@ -160,17 +180,29 @@
               'timeout': null,
               'retry_attempts': null,
               'retry_wait_time': null,
+              'allow_in_process': null,
               'status': null
             },
             editScriptHooks: [],
           }
+        },
+        computed: {
+          isPhpScript() {
+            const executor = this.scriptExecutors[this.formData.script_executor_id];
+            return executor && String(executor.language).toLowerCase() === 'php';
+          },
         },
         watch: {
           selectedProjects: {
             handler() {
               this.formData.projects = this.selectedProjects;
             }
-          }
+          },
+          isPhpScript(isPhp) {
+            if (!isPhp) {
+              this.formData.allow_in_process = false;
+            }
+          },
         },
         methods: {
           resetErrors() {
@@ -178,6 +210,7 @@
               title: null,
               language: null,
               description: null,
+              allow_in_process: null,
               status: null
             });
           },
@@ -199,6 +232,7 @@
               retry_attempts: this.formData.retry_attempts,
               retry_wait_time: this.formData.retry_wait_time,
               script_executor_id: this.formData.script_executor_id,
+              allow_in_process: this.isPhpScript ? !!this.formData.allow_in_process : false,
             })
               .then(response => {
                 ProcessMaker.alert(this.$t('The script was saved.'), 'success');
@@ -218,6 +252,7 @@
         },
         mounted() {
           this.selectedProjects = this.assignedProjects.length > 0 ?this.assignedProjects.map(project => project.id) : null;
+          this.formData.allow_in_process = !!this.formData.allow_in_process;
         }
       });
     </script>
