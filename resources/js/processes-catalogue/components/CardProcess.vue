@@ -65,8 +65,6 @@ import pagination from "./utils/pagination.vue";
 import SearchCards from "./utils/SearchCards.vue";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import Card from "./utils/Card.vue";
-import { EventBus } from '../index.js';
-
 
 export default {
   components: {
@@ -223,7 +221,7 @@ export default {
      */
     openProcessInfo(process) {
       if (this.categoryId === 'all_templates') {
-        EventBus.$emit('templates-selected', { template: process, type: "Process" });
+        ProcessMaker.EventBus.$emit('templates-selected', { template: process, type: "Process" });
         return;
       }
       this.$router.push({ name: "show", params: { process: process, processId: process.id } });

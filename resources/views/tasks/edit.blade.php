@@ -1,4 +1,4 @@
-@extends('layouts.layoutnext')
+@extends('layouts.layoutnextvite')
 
 @section('meta')
   <meta name="request-id" content="{{ $task->processRequest->id }}">
@@ -406,16 +406,39 @@
 @endsection
 @section('js')
 @include('shared.monaco')
-<script src="{{ mix('js/manifest.js') }}"></script>
-<script src="{{ mix('js/vue-vendor.js') }}"></script>
-<script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
-<script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
 <script >
   window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   const screenBuilderScripts = @json($manager->getScripts());
+  window.temporal.tceEnableCaseNumberScreen = @json($tceEnableCaseNumberScreen);
+  window.temporal.userConfiguration = @json($userConfiguration);
+  window.temporal.taskDraftsEnabled = @json($taskDraftsEnabled);
 </script>
-<script src="{{ mix('js/tasks/loaderEdit.js')}}"></script>
+@vite('resources/js/tasks/loaderEdit.js')
   <script>
+  window.PM4ConfigOverrides = {
+    requestFiles: @json($files),
+    getScreenEndpoint: 'tasks/{{ $task->id }}/screens',
+    postScriptEndpoint: '/scripts/execute/{id}?task_id={{ $task->id }}',
+  };
+
+  window.sessionStorage.setItem(
+    'elementDestinationURL',
+    '{{ route('requests.show', ['request' => $task->process_request_id]) }}'
+  );
+
+  const task = @json($task);
+  let draftTask = task.draft;
+  const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
+  const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
+  const userIsProcessManager = {{ in_array(Auth::user()->id, $task->process?->manager_id ?? []) ? "true": "false" }};
+  const caseNumber = @json($caseNumber);
+
+
+  let screenFields = @json($screenFields);
+  window.Processmaker.user = @json($currentUser);
+
+
+  window.addEventListener('load', () => {
     window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
       if (screen.watchers_config) {
         screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
@@ -424,40 +447,17 @@
         console.warn('Screen builder version does not have watchers');
       }
     });
-
-    window.PM4ConfigOverrides = {
-      requestFiles: @json($files),
-      getScreenEndpoint: 'tasks/{{ $task->id }}/screens',
-      postScriptEndpoint: '/scripts/execute/{id}?task_id={{ $task->id }}',
-    };
-
-    window.sessionStorage.setItem(
-      'elementDestinationURL',
-      '{{ route('requests.show', ['request' => $task->process_request_id]) }}'
-    );
-
-    const task = @json($task);
-    let draftTask = task.draft;
-    const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
-    const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
-    const userIsProcessManager = {{ in_array(Auth::user()->id, $task->process?->manager_id ?? []) ? "true": "false" }};
-    const caseNumber = @json($caseNumber);
-    window.ProcessMaker.tceEnableCaseNumberScreen = @json($tceEnableCaseNumberScreen);
-    const userConfiguration = @json($userConfiguration);
-    let screenFields = @json($screenFields);
-    window.Processmaker.user = @json($currentUser);
-    window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
+  });
   </script>
 
   @foreach(GlobalScripts::getScripts() as $script)
-    <script src="{{$script}}"></script>
+    <script defer src="{{$script}}"></script>
   @endforeach
 
-  <script src="{{mix('js/tasks/edit.js')}}"></script>
+  @vite('resources/js/tasks/edit.js')
 @endsection
 
 @section('css')
-<link href="{{ mix('css/collapseDetails.css') }}" rel="stylesheet">
 <style>
   .menu-tab-content {
     margin-left: -16px;
