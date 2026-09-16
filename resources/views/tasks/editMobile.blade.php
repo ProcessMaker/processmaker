@@ -1,4 +1,4 @@
-@extends('layouts.mobile')
+@extends('layouts.mobilenextvite')
 
 @section('meta')
     <meta name="request-id" content="{{ $task->processRequest->id }}">
@@ -59,16 +59,8 @@
 @endsection
 
 @section('js')
+  @vite(['resources/js/tasks/loaderTasks.js'])
   <script>
-    window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
-      if (screen.watchers_config) {
-        screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
-        screen.watchers_config.api.execution = @json(route('api.scripts.execution', ['key' => 'execution_key']));
-      } else {
-        console.warn('Screen builder version does not have watchers');
-      }
-    });
-
     window.PM4ConfigOverrides = {
       requestFiles: @json($files),
       getScreenEndpoint: 'tasks/{{ $task->id }}/screens',
@@ -80,14 +72,25 @@
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ in_array(Auth::user()->id, $task->process?->manager_id ?? []) ? "true": "false" }};
     var screenFields = @json($screenFields);
-    window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
 
   </script>
   @foreach($manager->getScripts() as $script)
-    <script src="{{$script}}"></script>
+    <script defer src="{{$script}}"></script>
   @endforeach
-  <script src="{{mix('js/tasks/show.js')}}"></script>
+  @vite(['resources/js/tasks/show.js'])
   <script>
+    window.addEventListener('load', () => {
+      window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
+        if (screen.watchers_config) {
+          screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
+          screen.watchers_config.api.execution = @json(route('api.scripts.execution', ['key' => 'execution_key']));
+        } else {
+          console.warn('Screen builder version does not have watchers');
+        }
+      });
+
+      window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
+
       const store = new Vuex.Store();
       const main = new Vue({
         mixins:addons,
@@ -402,6 +405,7 @@
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)
+    });
     </script>
     
 @endsection
