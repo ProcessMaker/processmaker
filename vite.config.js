@@ -229,6 +229,7 @@ export default defineConfig(({ mode }) => {
 
           "resources/js/processes/scripts/preview.js",
 
+          "resources/js/processes/modeler/globals.js",
           "resources/js/processes/modeler/loaderModeler.js",
           "resources/js/processes/modeler/index.js",
           "resources/js/processes/modeler/initialLoad.js",
@@ -348,7 +349,11 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         treeshake: {
           moduleSideEffects: (id) => id.includes("bootstrap-globals")
-            || id.includes("libraries/lodash"),
+            || id.includes("libraries/lodash")
+            || id.includes("libraries/modelerInspector")
+            || id.includes("libraries/sharedComponents")
+            || id.includes("libraries/vueFormElements")
+            || id.includes("libraries/processesComponents"),
         },
       },
     },
