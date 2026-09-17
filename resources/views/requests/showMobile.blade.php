@@ -1,4 +1,4 @@
-@extends('layouts.mobile')
+@extends('layouts.mobilenextvite')
 @section('title')
   {{ __('Request Detail') }}
 @endsection
@@ -144,8 +144,10 @@
 @endsection
 
 @section('js')
+  @vite(['resources/js/requests/loaderRequestsShow.js'])
+  @vite(['resources/js/processes/modeler/initialLoad.js'])
   @if (hasPackage('package-files'))
-    <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
+    <script defer src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
   @endif
 
   <script>
@@ -154,9 +156,10 @@
     };
   </script>
 
-  <script src="{{ mix('js/requests/show.js') }}"></script>
+  @vite(['resources/js/requests/show.js'])
 
   <script>
+  window.addEventListener('load', () => {
     const main = new Vue({
       el: "#requestMobile",
       mixins: addons,
@@ -185,6 +188,7 @@
         }
       },
     });
+  });
   </script>
 @endsection
 

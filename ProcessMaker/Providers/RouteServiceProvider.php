@@ -58,11 +58,21 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
+        $this->mapHealthRoutes();
+
         $this->mapApiRoutes();
 
         $this->mapWebRoutes();
 
         $this->mapEngineRoutes();
+    }
+
+    /**
+     * Lightweight health routes without web session/middleware overhead.
+     */
+    protected function mapHealthRoutes()
+    {
+        Route::group([], base_path('routes/health.php'));
     }
 
     /**

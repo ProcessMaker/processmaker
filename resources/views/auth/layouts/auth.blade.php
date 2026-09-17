@@ -9,7 +9,7 @@
   <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
   <meta name="settings-translations-enabled" content="{{ config('translations.enabled') ? 'true' : 'false' }}">
   <title>@yield('title') - {{ __('ProcessMaker') }}</title>
-  <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+  @vite('resources/sass/app.scss')
   @include('auth.partials.login-critical-styles')
   @include('auth.partials.auth-styles')
   <link rel="icon" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
@@ -71,7 +71,17 @@
   @stack('scripts')
   @hasSection('skip-auth-language-scripts')
   @else
-    @include('auth.partials.auth-language-scripts')
+    @vite(['resources/js/vite/auth/login.js'])
+    @foreach(GlobalScripts::getScripts() as $script)
+      @if (strpos($script, '/vendor/processmaker/packages/package-dynamic-ui/js/global.js') !== 0)
+        <script src="{{ $script }}" defer></script>
+      @endif
+    @endforeach
+    <script>
+      window.ProcessMaker = window.ProcessMaker || {};
+      window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+    </script>
+    @vite(['resources/js/translations/index.js'])
   @endif
 </body>
 </html>

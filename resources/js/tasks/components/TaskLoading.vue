@@ -3,7 +3,7 @@
     <div class="content">
       <img
         class="image"
-        src="/img/tasks-loading.svg"
+        :src="tasksLoadingImage"
       >
       <div class="content-text">
         <h1>{{ $t("The task is loading") }}</h1>
@@ -17,7 +17,9 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      tasksLoadingImage: '/img/tasks-loading.svg',
+    };
   },
 };
 </script>

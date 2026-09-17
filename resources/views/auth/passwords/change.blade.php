@@ -36,9 +36,11 @@
           {{ html()->password('password')->id('password')->attribute('rows', 4)->class('form-control form-control-login')->attribute('v-model', 'formData.password')->attribute('autocomplete', 'new-password')->attribute('@input', 'props.updatePassword($event.target.value)')->attribute('v-bind:class', '{\'form-control\':true, \'form-control-login\':true, \'is-invalid\':errors.password}') }}
         </div>
       </vue-password>
-      <small v-for="(error, index) in errors.password" v-cloak class="text-danger d-block">
-        @{{ error }}
-      </small>
+      <template v-if="errors.password">
+        <small v-for="(error, index) in errors.password" :key="index" v-cloak class="text-danger d-block">
+          @{{ error }}
+        </small>
+      </template>
     </div>
     <div class="form-group mb-3">
       {{ html()->label(__('Confirm Password'), 'confpassword') }}<small class="ml-1">*</small>
@@ -60,14 +62,10 @@
 @endsection
 
 @section('js')
-<script src="{{ mix('js/manifest.js') }}"></script>
-<script src="{{ mix('js/vue-vendor.js') }}"></script>
-<script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
-<script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
-<script src="{{ mix('js/modeler-vendor.js') }}"></script>
-<script src="{{ mix('js/app.js') }}"></script>
-<script src="{{ mix('js/admin/auth/passwords/change.js') }}"></script>
+@vite(['resources/js/vite/auth/auth.js'])
+@vite(['resources/js/admin/auth/passwords/change.js'])
 <script>
+window.addEventListener('load', () => {
   var formVueInstance = new Vue({
     el: '#changePassword',
     data() {
@@ -128,6 +126,16 @@
       },
     }
   });
+});
 </script>
-@include('auth.partials.auth-language-scripts-minimal')
+@foreach(GlobalScripts::getScripts() as $script)
+  @if (strpos($script, '/vendor/processmaker/packages/package-dynamic-ui/js/global.js') !== 0)
+    <script src="{{ $script }}" defer></script>
+  @endif
+@endforeach
+<script>
+  window.ProcessMaker = window.ProcessMaker || {};
+  window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+</script>
+@vite(['resources/js/translations/index.js'])
 @endsection

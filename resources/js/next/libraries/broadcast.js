@@ -1,5 +1,6 @@
 import TenantAwareEcho from "../../common/TenantAwareEcho";
 import { setGlobalVariables } from "../globalVariables";
+import PusherJs from "pusher-js";
 
 export default () => {
   // Verify if the broadcasting is enabled
@@ -8,7 +9,7 @@ export default () => {
     let Pusher;
 
     if (config.broadcaster === "pusher") {
-      Pusher = require("pusher-js");
+      Pusher = PusherJs;
       Pusher.logToConsole = config.debug;
     }
 
