@@ -485,7 +485,7 @@ class ProcessExecutionRawRepository
                 $subGroupIds = array_values(array_unique($subGroupIds));
                 $groupPlaceholders = implode(',', array_fill(0, count($subGroupIds), '?'));
                 $activeGroups = DB::select(
-                    "SELECT id FROM groups WHERE id IN ($groupPlaceholders) AND status = ?",
+                    "SELECT id FROM `groups` WHERE id IN ($groupPlaceholders) AND status = ?",
                     array_merge($subGroupIds, ['ACTIVE'])
                 );
                 foreach ($activeGroups as $group) {
