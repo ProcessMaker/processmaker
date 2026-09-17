@@ -23,17 +23,26 @@ const monacoFiles = [
   "base/common/worker/simpleWorker.nls.js",
 ];
 const monacoLanguages = ["php", "css", "lua", "javascript", "csharp", "java", "python", "r", "html", "xml", "typescript", "sql"];
+// vite-plugin-static-copy preserves src path segments unless stripBase is set.
+// Mix used mix.copy(src, dest+file) — strip node_modules/monaco-editor/min/vs (4 segments).
+const monacoStripBase = 4;
 const monacoTargets = [
   ...monacoFiles.map((file) => ({
     src: `${monacoSrc}/${file}`,
-    dest: path.join(monacoDest, path.dirname(file)).replace(/\\/g, "/"),
+    dest: monacoDest,
+    rename: { stripBase: monacoStripBase },
   })),
   ...monacoLanguages.map((lang) => ({
     src: `${monacoSrc}/basic-languages/${lang}/${lang}.js`,
-    dest: `${monacoDest}/basic-languages/${lang}`,
+    dest: monacoDest,
+    rename: { stripBase: monacoStripBase },
   })),
   // mirrors mix.copyDirectory(`${monacoSource}language`, `${monacoDestination}language`)
-  { src: `${monacoSrc}/language`, dest: monacoDest },
+  {
+    src: `${monacoSrc}/language/**/*`,
+    dest: monacoDest,
+    rename: { stripBase: monacoStripBase },
+  },
 ];
 
 /**
@@ -112,6 +121,35 @@ const vueMonacoRequireShim = {
  * SFC's main module and picks that asset node, sending the hot update to
  * tailwind.css instead of the component.
  */
+/**
+ * Mix/bootstrap set window._ globally; legacy code uses bare `_.method` without
+ * importing lodash. Webpack ProvidePlugin injected lodash automatically — mirror
+ * that here so Vite ESM bundles resolve `_` correctly.
+ */
+const lodashGlobalPlugin = {
+  name: "pm:lodash-global",
+  enforce: "pre",
+  transform(code, id) {
+    if (!/[/\\]resources[/\\]js[/\\]/.test(id)) {
+      return null;
+    }
+    if (!/\b_\.[a-zA-Z_$]/.test(code)) {
+      return null;
+    }
+    if (
+      /from\s+['"]lodash/.test(code)
+      || /require\s*\(\s*['"]lodash/.test(code)
+      || /import\s+_\s+from/.test(code)
+    ) {
+      return null;
+    }
+    return {
+      code: `import _ from "lodash";\n${code}`,
+      map: null,
+    };
+  },
+};
+
 const vue2HmrMainModuleFix = {
   name: "pm:vue2-hmr-main-module-fix",
   enforce: "post",
@@ -152,6 +190,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
+      lodashGlobalPlugin,
       modelerPublicPathPlugin,
       yaml(),
       laravel({
@@ -284,14 +323,13 @@ export default defineConfig(({ mode }) => {
       // dest paths are relative to outDir (public/build), so '../' escapes to public/
       viteStaticCopy({
         targets: [
-          // Static images (mirrors webpack.mix.js .copy() calls)
-          { src: "resources/img/*", dest: "../img" },
-          { src: "resources/img/launchpad-images/*", dest: "../img/launchpad-images" },
-          { src: "resources/img/launchpad-images/icons/*", dest: "../img/launchpad-images/icons" },
-          { src: "resources/img/connected-account-images/*", dest: "../img/connected-account-images" },
-          { src: "resources/img/smartinbox-images/*", dest: "../img/smartinbox-images" },
-          { src: "resources/img/pagination-images/*", dest: "../img/pagination-images" },
-          { src: "resources/img/script_lang/*", dest: "../img/script_lang" },
+          // Static images — stripBase removes the resources/img/ prefix so files land
+          // directly under public/img/ (not public/img/resources/img/).
+          {
+            src: "resources/img/**/*",
+            dest: "../img",
+            rename: { stripBase: 2 },
+          },
           // Vendor JS / Vue files served as plain scripts by Mix pages
           { src: "node_modules/snapsvg/dist/snap.svg.js", dest: "../js" },
           { src: "resources/js/components/CustomActions.vue", dest: "../js" },

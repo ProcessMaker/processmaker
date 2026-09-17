@@ -9,7 +9,7 @@ import {
 import vuex from "./libraries/vuex";
 import bootstrap from "./libraries/bootstrap";
 import jquery from "./libraries/jquery";
-import lodash from "./libraries/lodash";
+import "./libraries/lodash";
 import sharedComponents from "./libraries/sharedComponents";
 import asyncComponents from "./components/index";
 import ProcessesComponents from "./libraries/processesComponents";
