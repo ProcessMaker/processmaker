@@ -336,8 +336,12 @@ export default defineConfig(({ mode }) => {
           { src: "resources/js/components/DetailRow.vue", dest: "../js" },
           { src: "resources/js/components/FilterBar.vue", dest: "../js" },
           { src: "resources/js/timeout.js", dest: "../js" },
-          // Modeler SVG icons (same target as Mix; referenced by modeler's __webpack_require__.p)
-          { src: "node_modules/@processmaker/modeler/dist/img", dest: "../js/img" },
+          // Modeler SVG icons (referenced by modeler's __webpack_require__.p → /js/img/)
+          {
+            src: "node_modules/@processmaker/modeler/dist/img/**/*",
+            dest: "../js/img",
+            rename: { stripBase: 5 },
+          },
           // BPMN font symbols
           { src: "node_modules/bpmn-font/dist", dest: "../css/bpmn-symbols" },
           // Monaco Editor (mirrors webpack.mix.js lines 119-138)
@@ -395,7 +399,8 @@ export default defineConfig(({ mode }) => {
             || id.includes("libraries/processesComponents")
             || id.includes("libraries/processesCatalogueComponents")
             || id.includes("libraries/scriptsComponents")
-            || id.includes("libraries/screensComponents"),
+            || id.includes("libraries/screensComponents")
+            || id.includes("processes/scripts/customFilters"),
         },
       },
     },

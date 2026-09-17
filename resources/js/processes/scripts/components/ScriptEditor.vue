@@ -402,11 +402,11 @@
 </template>
 
 <script>
+import Vue from "vue";
 import MonacoEditor from "vue-monaco";
 import _ from "lodash";
 import TopMenu from "../../../components/Menu.vue";
-// eslint-disable-next-line no-unused-vars
-import customFilters from "../customFilters";
+import "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
 import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 import AiTab from "./AiTab.vue";

@@ -1,3 +1,5 @@
+import Vue from "vue";
+
 // PHP
 Vue.filter("php", (value) => {
   value = value.split("\r");
