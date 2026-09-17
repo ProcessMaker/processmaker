@@ -386,12 +386,16 @@ export default defineConfig(({ mode }) => {
       manifest: "manifest.json",
       rollupOptions: {
         treeshake: {
-          moduleSideEffects: (id) => id.includes("bootstrap-globals")
+          moduleSideEffects: (id) => /\.(css|scss|sass)(\?|$)/.test(id)
+            || id.includes("bootstrap-globals")
             || id.includes("libraries/lodash")
             || id.includes("libraries/modelerInspector")
             || id.includes("libraries/sharedComponents")
             || id.includes("libraries/vueFormElements")
-            || id.includes("libraries/processesComponents"),
+            || id.includes("libraries/processesComponents")
+            || id.includes("libraries/processesCatalogueComponents")
+            || id.includes("libraries/scriptsComponents")
+            || id.includes("libraries/screensComponents"),
         },
       },
     },
