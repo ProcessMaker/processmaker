@@ -345,6 +345,12 @@ export default defineConfig(({ mode }) => {
       outDir: "public/build",
       emptyOutDir: true,
       manifest: "manifest.json",
+      rollupOptions: {
+        treeshake: {
+          moduleSideEffects: (id) => id.includes("bootstrap-globals")
+            || id.includes("libraries/lodash"),
+        },
+      },
     },
     server: {
       host: "127.0.0.1",

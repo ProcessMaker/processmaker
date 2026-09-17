@@ -138,12 +138,6 @@
         <script defer src="{{$script}}"></script>
     @endforeach
 
-    @if ($type === 'FORM')
-      @vite(['resources/js/processes/screen-builder/typeForm.js'])
-    @elseif ($type === 'DISPLAY')
-      @vite(['resources/js/processes/screen-builder/typeDisplay.js'])
-    @endif
-
     @vite(['resources/js/leave-warning.js'])
     @vite(['resources/js/processes/screen-builder/main.js'])
 @endsection

@@ -18,8 +18,6 @@
       :title="title"
       :process="process"
       :full-carousel="fullCarousel"
-      :is-wizard-template="createdFromWizardTemplate"
-      @getHelperProcess="getHelperProcess"
       @closeCarousel="closeFullCarousel"
       @close="closeProcessInfo"
     >
@@ -68,13 +66,6 @@
       :description-settings="process.description"
       :process="process"
     />
-    <wizard-helper-process-modal
-      v-if="createdFromWizardTemplate"
-      id="wizardHelperProcessModal"
-      ref="wizardHelperProcessModal"
-      :process-launchpad-id="process.id"
-      :wizard-template-uuid="wizardTemplateUuid"
-    />
   </div>
 </template>
 
@@ -93,7 +84,6 @@ import ProcessHeaderStart from "./ProcessHeaderStart.vue";
 import SlideProcessInfo from "./slideProcessInfo/SlideProcessInfo.vue";
 import CarouselSlide from "./CarouselSlide.vue";
 import ProcessOptions from "./ProcessOptions.vue";
-import WizardHelperProcessModal from "../../components/templates/WizardHelperProcessModal.vue";
 
 const tceValidScreen = ["tce-student", "tce-college", "tce-grants"];
 
@@ -110,7 +100,6 @@ export default {
     SlideProcessInfo,
     CarouselSlide,
     ProcessOptions,
-    WizardHelperProcessModal,
   },
   mixins: [ellipsisMenuMixin, processNavigationMixin, ProcessesMixin],
   props: ["process", "currentUserId", "ellipsisPermission"],
@@ -130,12 +119,6 @@ export default {
       return this.fullCarousel
         ? this.process.name
         : this.$t("Process Information");
-    },
-    createdFromWizardTemplate() {
-      return !!this.process?.properties?.wizardTemplateUuid;
-    },
-    wizardTemplateUuid() {
-      return this.process?.properties?.wizardTemplateUuid;
     },
   },
   mounted() {
@@ -173,11 +156,6 @@ export default {
     },
     closeFullCarousel() {
       this.fullCarousel = false;
-    },
-    getHelperProcess() {
-      if (this.$refs.wizardHelperProcessModal) {
-        this.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
-      }
     },
   },
 };
