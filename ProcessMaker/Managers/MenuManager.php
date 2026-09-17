@@ -4,9 +4,19 @@ namespace ProcessMaker\Managers;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View;
+use Lavary\Menu\Collection;
 
 class MenuManager extends \Lavary\Menu\Menu
 {
+    /**
+     * Clear menu builders so the next request does not inherit items from a prior user.
+     */
+    public function reset(): void
+    {
+        $this->menu = [];
+        $this->collection = new Collection();
+    }
+
     /**
      * Create a new menu builder instance.
      *

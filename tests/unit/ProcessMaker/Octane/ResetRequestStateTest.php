@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace Tests\Unit\ProcessMaker\Octane;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Laravel\Octane\Events\RequestTerminated;
+use Lavary\Menu\Facade as Menu;
+use Lavary\Menu\Menu as MenuContract;
 use ProcessMaker\Events\RedirectToEvent;
+use ProcessMaker\Http\Middleware\GenerateMenus;
 use ProcessMaker\Listeners\HandleRedirectListener;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\User;
 use ProcessMaker\Octane\ResetRequestState;
 use ProcessMaker\Providers\ProcessMakerServiceProvider;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,6 +67,65 @@ class ResetRequestStateTest extends TestCase
         HandleRedirectListener::sendRedirectToEvent();
 
         Event::assertNotDispatched(RedirectToEvent::class);
+    }
+
+    public function test_generate_menus_does_not_leak_admin_items_to_sso_user_after_octane_reset(): void
+    {
+        $admin = User::factory()->create(['is_administrator' => true]);
+        $ssoUser = User::factory()->create(['is_administrator' => false]);
+
+        Auth::login($admin);
+        $this->runGenerateMenus();
+
+        $this->assertTrue($this->menuHasItemTitle('sidebar_admin', __('Users')));
+
+        $listener = new ResetRequestState();
+        $listener->handle();
+        $this->app->forgetInstance(MenuContract::class);
+
+        Auth::login($ssoUser);
+        $this->runGenerateMenus();
+
+        $this->assertFalse($this->menuHasItemTitle('topnav', __('Admin')));
+        $this->assertFalse($this->menuHasItemTitle('sidebar_admin', __('Users')));
+    }
+
+    private function runGenerateMenus(): void
+    {
+        $middleware = app(GenerateMenus::class);
+        $middleware->handle(Request::create('/'), fn () => response('ok'));
+    }
+
+    private function menuHasItemTitle(string $menuName, string $title): bool
+    {
+        $builder = Menu::get($menuName);
+
+        if ($builder === null) {
+            return false;
+        }
+
+        foreach ($builder->all() as $item) {
+            if ($this->itemHasTitle($item, $title)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function itemHasTitle($item, string $title): bool
+    {
+        if ($item->title === $title) {
+            return true;
+        }
+
+        foreach ($item->children() as $child) {
+            if ($this->itemHasTitle($child, $title)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 
