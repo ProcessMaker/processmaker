@@ -116,7 +116,11 @@ a {
   @vite(['resources/js/leave-warning.js'])
   @vite(['resources/js/processes/modeler/initialLoad.js'])
   @foreach($modelerPackageScripts as $script)
-    <script defer src="{{ $script }}"></script>
+    @if(($script['type'] ?? '') === 'module')
+      <script type="module" src="{{ $script['src'] }}"></script>
+    @else
+      <script defer src="{{ $script['src'] }}"></script>
+    @endif
   @endforeach
   @vite(['resources/js/processes/modeler/index.js'])
   @yield('extra_js')
