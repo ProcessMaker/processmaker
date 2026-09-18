@@ -342,8 +342,12 @@ export default defineConfig(({ mode }) => {
             dest: "../js/img",
             rename: { stripBase: 5 },
           },
-          // BPMN font symbols
-          { src: "node_modules/bpmn-font/dist", dest: "../css/bpmn-symbols" },
+          // BPMN font symbols — layout expects /css/bpmn-symbols/css/bpmn.css
+          {
+            src: "node_modules/bpmn-font/dist/**/*",
+            dest: "../css/bpmn-symbols",
+            rename: { stripBase: 3 },
+          },
           // Monaco Editor (mirrors webpack.mix.js lines 119-138)
           ...monacoTargets,
         ],
@@ -399,8 +403,7 @@ export default defineConfig(({ mode }) => {
             || id.includes("libraries/processesComponents")
             || id.includes("libraries/processesCatalogueComponents")
             || id.includes("libraries/scriptsComponents")
-            || id.includes("libraries/screensComponents")
-            || id.includes("processes/scripts/customFilters"),
+            || id.includes("libraries/screensComponents"),
         },
       },
     },
