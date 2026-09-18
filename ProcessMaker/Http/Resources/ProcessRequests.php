@@ -22,11 +22,13 @@ class ProcessRequests extends ApiResource
             $array['participants'] = $this->participants;
         }
         if (in_array('activeTasks', $include)) {
-            $array['active_tasks'] = $this->tokens()
-                ->select(['id', 'element_name', 'status', 'user_id'])
-                ->where('status', 'ACTIVE')
-                ->where('element_type', 'task')
-                ->get();
+            $array['active_tasks'] = $this->relationLoaded('activeTasks')
+                ? $this->activeTasks
+                : $this->tokens()
+                    ->select(['id', 'element_name', 'status', 'user_id'])
+                    ->where('status', 'ACTIVE')
+                    ->where('element_type', 'task')
+                    ->get();
         }
         if (in_array('user', $include)) {
             $array['user'] = new Users($this->user);
