@@ -1,3 +1,5 @@
+import Vue from "vue";
+import _, { debounce } from "lodash";
 import { submitCollectionData } from "./utils/index";
 
 const {

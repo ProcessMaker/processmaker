@@ -1,3 +1,4 @@
+import "../../vite/bootstrap-globals.js";
 import Vue from "vue";
 import TasksList from "../../tasks/components/TasksList.vue";
 import TasksListCounter from "../../tasks/components/TasksListCounter.vue";

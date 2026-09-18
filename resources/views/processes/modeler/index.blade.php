@@ -65,9 +65,13 @@ a {
   window.temporal.defaultEmailNotification = @json($defaultEmailNotification);
 
   window.temporal.multiplayer = {
-    broadcaster: "{{config('multiplayer.default')}}",
-    host: "{{config('multiplayer.url')}}",
-    enabled: "{{ config('multiplayer.enabled') }}",
+    broadcaster: @json(config('multiplayer.default')),
+    host: @json(config('multiplayer.url') !== 'null' ? config('multiplayer.url') : null),
+    enabled: @json(
+      filter_var(config('multiplayer.enabled'), FILTER_VALIDATE_BOOLEAN)
+      && config('multiplayer.url') !== 'null'
+      && config('multiplayer.url')
+    ),
   };
   window.temporal.PMBlockList = @json($pmBlockList);
   window.temporal.ExternalIntegrationsList = @json($externalIntegrationsList);
@@ -107,20 +111,17 @@ a {
   window.temporal.warnings = @json($process->warnings);
   window.temporal.tceCustomizationEnable = @json($isTceCustomization);
   </script>
+  @vite(['resources/js/processes/modeler/globals.js'])
   @vite(['resources/js/processes/modeler/loaderModeler.js'])
   @vite(['resources/js/leave-warning.js'])
   @vite(['resources/js/processes/modeler/initialLoad.js'])
-    @foreach($manager->getScriptWithParams() as $params)
-      <script defer
-      @foreach ($params as $key => $value)
-        @if (is_bool($value))
-          {{ $key }}
-        @else
-          {{ $key }}="{{ $value }}"
-        @endif
-      @endforeach
-      ></script>
-    @endforeach
-    @vite(['resources/js/processes/modeler/index.js'])
+  @foreach($modelerPackageScripts as $script)
+    @if(($script['type'] ?? '') === 'module')
+      <script type="module" src="{{ $script['src'] }}"></script>
+    @else
+      <script defer src="{{ $script['src'] }}"></script>
+    @endif
+  @endforeach
+  @vite(['resources/js/processes/modeler/index.js'])
   @yield('extra_js')
 @endsection

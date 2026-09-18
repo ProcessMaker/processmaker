@@ -35,12 +35,6 @@
       var screenBuilderScripts = @json($manager->getScripts());
     </script>
     @vite(['resources/js/requests/loaderRequestsPreview.js'])
-
-    @if ($type === 'FORM')
-      @vite(['resources/js/processes/screen-builder/typeForm.js'])
-    @elseif ($type === 'DISPLAY')
-      @vite(['resources/js/processes/screen-builder/typeDisplay.js'])
-    @endif
     <script>
       window.addEventListener('DOMContentLoaded', () => {
         new Vue({

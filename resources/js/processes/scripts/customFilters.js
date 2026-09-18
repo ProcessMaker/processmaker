@@ -1,5 +1,4 @@
-// PHP
-Vue.filter("php", (value) => {
+export function phpBoilerplate(value) {
   value = value.split("\r");
   let format = "";
   const content = [];
@@ -21,10 +20,9 @@ Vue.filter("php", (value) => {
   });
 
   return `${content.join("\n")}\n\n\ return [];`;
-});
+}
 
-// JAVASCRIPT
-Vue.filter("javascript", (value) => {
+export function javascriptBoilerplate(value) {
   value = value.split("\r");
   let format = "";
   const content = [];
@@ -46,10 +44,9 @@ Vue.filter("javascript", (value) => {
   });
 
   return `${content.join("\n")}\n\n\ return {};`;
-});
+}
 
-// LUA
-Vue.filter("lua", (value) => {
+export function luaBoilerplate(value) {
   value = value.split("\r");
   let format = "";
   const content = [];
@@ -71,10 +68,9 @@ Vue.filter("lua", (value) => {
   });
 
   return `${content.join("\n")}\n\n\ return {};`;
-});
+}
 
-// C#
-Vue.filter("csharp", (value) => {
+export function csharpBoilerplate(value) {
   value = value.split("\r");
   let format = "";
   const content = [];
@@ -96,10 +92,9 @@ Vue.filter("csharp", (value) => {
   });
 
   return `${content.join("\n")}\n\n\ return {};`;
-});
+}
 
-// JAVA
-Vue.filter("java", (value) => {
+export function javaBoilerplate(value) {
   value = value.split("\r");
   let format = "";
   const content = [];
@@ -121,16 +116,15 @@ Vue.filter("java", (value) => {
   });
 
   return `${content.join("\n")}\n\n\ return {};`;
-});
+}
 
-// Python
-Vue.filter("python", (value) => {
+export function pythonBoilerplate(value) {
   value = value.split("\r");
   let format = "";
   const content = [];
 
   value.shift();
-  value.forEach((line, i) => {
+  value.forEach((line) => {
     line = line.replace("{accessEnvVar}", "os.environ['ENV_VAR_NAME']");
     line = line.replace("{dataVariable}", "the data variable");
     line = line.replace("{configVariable}", "the config variable");
@@ -144,4 +138,19 @@ Vue.filter("python", (value) => {
   content.push("#  output = {\"name\": user.fullname}");
 
   return `${content.join("\n")}\n\noutput={};`;
-});
+}
+
+const boilerplateByLanguage = {
+  php: phpBoilerplate,
+  "php-nayra": phpBoilerplate,
+  javascript: javascriptBoilerplate,
+  lua: luaBoilerplate,
+  csharp: csharpBoilerplate,
+  java: javaBoilerplate,
+  python: pythonBoilerplate,
+};
+
+export function formatScriptBoilerplate(language, template) {
+  const formatter = boilerplateByLanguage[language];
+  return formatter ? formatter(template) : template;
+}
