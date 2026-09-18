@@ -1,3 +1,5 @@
+import Vue from "vue";
+import _, { debounce } from "lodash";
 import TaskSaveNotification from "./components/TaskSaveNotification.vue";
 import TasksList from "./components/TasksList.vue";
 import TaskSavePanel from "./components/TaskSavePanel.vue";
