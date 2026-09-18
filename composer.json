@@ -180,7 +180,7 @@
                 "package-product-analytics": "1.5.12",
                 "package-projects": "1.12.12",
                 "package-rpa": "1.1.2",
-                "package-savedsearch": "1.43.20",
+                "package-savedsearch": "1.43.21",
                 "package-slideshow": "1.4.3",
                 "package-smart-extract": "1.0.1",
                 "package-signature": "1.15.6",
@@ -188,7 +188,7 @@
                 "package-translations": "2.14.7",
                 "package-versions": "1.13.1",
                 "package-vocabularies": "2.17.2",
-                "package-webentry": "2.29.19",
+                "package-webentry": "2.29.20",
                 "package-api-testing": "1.3.3",
                 "package-variable-finder": "1.0.7",
                 "packages": "^0"
