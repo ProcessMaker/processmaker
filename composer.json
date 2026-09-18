@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "2026.15.1",
+    "version": "2026.15.2",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -36,7 +36,7 @@
         "laravel/ui": "^4.6",
         "lavary/laravel-menu": "^1.8",
         "lcobucci/jwt": "^5.6",
-        "league/commonmark": "^2.9.0",
+        "league/commonmark": "^2.10.0",
         "league/flysystem-aws-s3-v3": "^3.25.1",
         "mateusjunges/laravel-kafka": "^2.11",
         "mittwald/vault-php": "^2.1",
@@ -117,10 +117,10 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "d323d2ce",
+            "build": "a1d20216",
             "cicd-enabled": true,
             "custom": {
-                "package-ellucian-ethos": "1.19.10",
+                "package-ellucian-ethos": "1.19.12",
                 "paypal-package": "dev-fall",
                 "pps-adsync": "dev-fall",
                 "ps_ethos": "dev-main",
@@ -180,7 +180,7 @@
                 "package-product-analytics": "1.5.12",
                 "package-projects": "1.12.12",
                 "package-rpa": "1.1.2",
-                "package-savedsearch": "1.43.20",
+                "package-savedsearch": "1.43.21",
                 "package-slideshow": "1.4.3",
                 "package-smart-extract": "1.0.1",
                 "package-signature": "1.15.6",
@@ -188,7 +188,7 @@
                 "package-translations": "2.14.7",
                 "package-versions": "1.13.1",
                 "package-vocabularies": "2.17.2",
-                "package-webentry": "2.29.19",
+                "package-webentry": "2.29.20",
                 "package-api-testing": "1.3.3",
                 "package-variable-finder": "1.0.7",
                 "packages": "^0"

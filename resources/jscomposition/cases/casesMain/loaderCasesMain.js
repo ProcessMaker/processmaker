@@ -1,3 +1,4 @@
+import "../../../js/vite/bootstrap-globals.js";
 import { setupMain } from "../../../js/next/setupMain.js";
 import screenBuilderNext from "../../../js/next/screenBuilder.js";
 import * as ScreenBuilder from "@processmaker/screen-builder";

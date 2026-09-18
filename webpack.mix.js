@@ -83,6 +83,10 @@ mix
   .js("resources/js/processes/modeler/initialLoad.js", "public/js/processes/modeler")
 
   .js("resources/js/processes/screens/preview.js", "public/js/processes/screens")
+  // Screen-builder type addons are still classic scripts loaded via ScreenBuilderManager.
+  // Keep on Mix until all consumers load them as Vite modules.
+  .js("resources/js/processes/screen-builder/typeForm.js", "public/js/processes/screen-builder")
+  .js("resources/js/processes/screen-builder/typeDisplay.js", "public/js/processes/screen-builder")
 
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
