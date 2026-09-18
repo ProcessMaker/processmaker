@@ -157,12 +157,13 @@ class User extends Authenticatable implements HasMedia
 
         static::deleting(function ($user) {
             $user->status = 'INACTIVE';
-            $user->save();
+            // Persist the inactive status without treating the delete as a user update.
+            $user->saveQuietly();
         });
 
         static::restoring(function ($user) {
+            // SoftDeletes::restore() saves this with deleted_at=null; avoid a second updated event.
             $user->status = 'ACTIVE';
-            $user->save();
         });
 
         static::deleted(function ($user) {
