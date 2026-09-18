@@ -139,6 +139,9 @@ return [
     // PM Analytics Chart
     'pm_analytics_chart' => env('PM_ANALYTICS_CHART', 'https://localhost'),
 
+    // When is true, task email notifications per defaulta are sent.
+    'email_tasks_default_enabled' => env('EMAIL_TASKS_DEFAULT_ENABLED', 'true'),
+
     // When true, email notifications are sent even when the assigned user matches the current user.
     'notifications_send_to_same_user' => env('NOTIFICATIONS_SEND_TO_SAME_USER', 'true'),
 
