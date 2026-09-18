@@ -1074,21 +1074,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $language = new ExpressionLanguage();
 
         foreach ($assignments as $assignment) {
-            $isTrue = false;
-
-            if (!empty($assignment['expression'])) {
-                try {
-                    $isTrue = $language->evaluate($assignment['expression'], $variables);
-                } catch (Throwable $e) {
-                    $isTrue = false;
-                }
-            }
-
-            if ($isTrue) {
-                $result[] = $assignment['assignee'];
-            }
-
-            if (isset($assignment['default']) && $assignment['default'] === true) {
+            if ($this->isAssignmentRuleMatch($assignment, $variables, $language)) {
                 $result[] = $assignment['assignee'];
             }
         }
@@ -1099,26 +1085,61 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Get the assignees from the expression
      *
-     * @param string $form_data
+     * @param string|array $form_data
      * @return array
      */
-    public function getAssigneesFromExpression(string $form_data): array
+    public function getAssigneesFromExpression(string|array $form_data): array
     {
-        $formData = json_decode($form_data, true);
+        $formData = is_array($form_data) ? $form_data : json_decode($form_data, true);
 
         $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
         $assignmentRules = $activity->getProperty('assignmentRules', null);
-        $assignments = json_decode($assignmentRules, true);
+        $assignments = json_decode($assignmentRules, true) ?? [];
 
-        $include_ids = $this->getAssignees($assignments, $formData);
+        $userIds = [];
+        $language = new ExpressionLanguage();
+        foreach ($assignments as $assignment) {
+            if (!$this->isAssignmentRuleMatch($assignment, $formData, $language)) {
+                continue;
+            }
 
-        // we add the manager to the list of assignees
-        $manager_id = $this->process->manager_id;
-        if ($manager_id) {
-            $include_ids[] = $manager_id;
+            if (($assignment['type'] ?? 'user') === 'group') {
+                $groupUsers = [];
+                $this->process->getConsolidatedUsers($assignment['assignee'], $groupUsers);
+                foreach ($groupUsers as $userId) {
+                    if (!empty($userId) && is_numeric($userId)) {
+                        $userIds[$userId] = $userId;
+                    }
+                }
+            } else {
+                $userIds[$assignment['assignee']] = $assignment['assignee'];
+            }
         }
 
-        return $include_ids;
+        foreach ((array) ($this->process->manager_id ?? []) as $managerId) {
+            if (!empty($managerId) && is_numeric($managerId)) {
+                $userIds[$managerId] = $managerId;
+            }
+        }
+
+        return array_values($userIds);
+    }
+
+    private function isAssignmentRuleMatch(array $assignment, array $variables, ExpressionLanguage $language): bool
+    {
+        if (isset($assignment['default']) && $assignment['default'] === true) {
+            return true;
+        }
+
+        if (empty($assignment['expression'])) {
+            return false;
+        }
+
+        try {
+            return $language->evaluate($assignment['expression'], $variables);
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
     /**
