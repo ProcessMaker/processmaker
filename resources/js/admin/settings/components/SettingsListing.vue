@@ -374,7 +374,7 @@ export default {
     dataProvider(context, callback) {
       this.filter = '';
       this.pmql = '';
-      if (this.searchQuery.isPMQL()) {
+      if (isPMQL.call(this.searchQuery || "")) {
         this.pmql = this.searchQuery;
       } else {
         this.filter = this.searchQuery;

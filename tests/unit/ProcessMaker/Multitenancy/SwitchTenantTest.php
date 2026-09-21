@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\ProcessMaker\Multitenancy;
 
+use Illuminate\Broadcasting\BroadcastManager;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\Crypt;
 use Laravel\Passport\ClientRepository;
@@ -17,6 +18,28 @@ use Tests\TestCase;
 
 class SwitchTenantTest extends TestCase
 {
+    public function test_make_current_keeps_broadcast_manager_and_channel_callbacks(): void
+    {
+        $app = app();
+        $manager = $app->make(BroadcastManager::class);
+        $manager->connection()->channel('ProcessMaker.Models.User.{id}', function ($user, $id) {
+            return (int) $user->id === (int) $id;
+        });
+
+        $switch = new SwitchTenant();
+
+        try {
+            $switch->makeCurrent($this->fakeTenant());
+
+            $this->assertSame($manager, $app->make(BroadcastManager::class));
+            $this->assertTrue(
+                $app->make(BroadcastManager::class)->connection()->getChannels()->has('ProcessMaker.Models.User.{id}')
+            );
+        } finally {
+            $switch->forgetCurrent();
+        }
+    }
+
     public function test_make_current_flushes_passport_singletons_and_auth_guards(): void
     {
         $app = app();
@@ -28,16 +51,7 @@ class SwitchTenantTest extends TestCase
         $auth->guard('web');
 
         $previousEncrypter = $app->make('encrypter');
-        $tenantKey = 'base64:' . base64_encode(Encrypter::generateKey(config('app.cipher')));
-
-        $tenant = new Tenant();
-        $tenant->id = 999001;
-        $tenant->domain = 'tenant-999001.test';
-        $tenant->database = config('database.connections.processmaker.database');
-        $tenant->config = [
-            'app.url' => config('app.url'),
-            'app.key' => Crypt::encryptString($tenantKey),
-        ];
+        $tenant = $this->fakeTenant();
 
         $switch = new SwitchTenant();
 
@@ -52,6 +66,22 @@ class SwitchTenantTest extends TestCase
         } finally {
             $switch->forgetCurrent();
         }
+    }
+
+    private function fakeTenant(): Tenant
+    {
+        $tenantKey = 'base64:' . base64_encode(Encrypter::generateKey(config('app.cipher')));
+
+        $tenant = new Tenant();
+        $tenant->id = 999001;
+        $tenant->domain = 'tenant-999001.test';
+        $tenant->database = config('database.connections.processmaker.database');
+        $tenant->config = [
+            'app.url' => config('app.url'),
+            'app.key' => Crypt::encryptString($tenantKey),
+        ];
+
+        return $tenant;
     }
 
     private function containerInstances($app): array

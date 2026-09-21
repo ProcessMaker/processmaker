@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Multitenancy;
 
-use Illuminate\Broadcasting\BroadcastManager;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
@@ -11,7 +10,6 @@ use Laravel\Passport\ClientRepository;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\ResourceServer;
 use ProcessMaker\Application;
-use ProcessMaker\Multitenancy\Broadcasting\TenantAwareBroadcastManager;
 use Spatie\Multitenancy\Concerns\UsesMultitenancyConfig;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\SwitchTenantTask;
@@ -43,11 +41,6 @@ class SwitchTenant implements SwitchTenantTask
         request()->headers->set('host', $tenant->domain);
 
         $this->overrideConfigs($app, $tenant);
-
-        // Extend BroadcastManager to our custom implementation that prefixes the channel names with the tenant id.
-        $app->extend(BroadcastManager::class, function ($manager, $app) use ($tenant) {
-            return new TenantAwareBroadcastManager($app, $tenant->id);
-        });
     }
 
     /**
