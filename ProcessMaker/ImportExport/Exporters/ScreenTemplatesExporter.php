@@ -29,6 +29,7 @@ class ScreenTemplatesExporter extends ExporterBase
         $screenTemplate->is_default_template = 0;
         $screenTemplate->media_collection = 'st-' . $screenTemplate->uuid . '-media';
         $screenTemplate->save();
+        $screenTemplate->clearMediaCollection($screenTemplate->media_collection);
 
         foreach ($this->getReference(DependentType::MEDIA) ?? [] as $item) {
             if (empty($item['base64'])) {

@@ -363,6 +363,11 @@ class ScreenTemplateTest extends TestCase
         $this->assertNotEmpty($templateMedia['thumbnail']->url);
         $this->assertNotFalse(filter_var($templateMedia['thumbnail']->url, FILTER_VALIDATE_URL));
         $this->assertFileExists($importedTemplate->getMedia($importedCollection)->first()->getPath());
+
+        // Import the template again to check if the media collection is the same
+        $this->actingAs($actingAsUser)->import($payload);
+        $importedTemplate->refresh();
+        $this->assertCount(1, $importedTemplate->getMedia($importedCollection));
     }
 
     public function testImportExportScreenTemplatesRoutes()
