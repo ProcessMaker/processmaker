@@ -6,7 +6,10 @@ use Illuminate\Broadcasting\BroadcastManager;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
-use Monolog\Handler\RotatingFileHandler;
+use Laravel\Passport\ApiTokenCookieFactory;
+use Laravel\Passport\ClientRepository;
+use League\OAuth2\Server\AuthorizationServer;
+use League\OAuth2\Server\ResourceServer;
 use ProcessMaker\Application;
 use ProcessMaker\Multitenancy\Broadcasting\TenantAwareBroadcastManager;
 use Spatie\Multitenancy\Concerns\UsesMultitenancyConfig;
@@ -65,7 +68,31 @@ class SwitchTenant implements SwitchTenantTask
 
         // app key / encrypter
         $this->setConfig('app.key', $this->landlordConfig('app.key'));
+        $this->flushTenantSensitiveSingletons($app);
+    }
+
+    /**
+     * Drop container instances that captured the previous tenant's APP_KEY or oauth keys.
+     *
+     * Passport's ResourceServer/AuthorizationServer and Encrypter are singletons.
+     * Under Octane they can outlive a tenant switch and keep signing or verifying
+     * laravel_token cookies with the wrong key (API 401s).
+     */
+    private function flushTenantSensitiveSingletons(Application $app): void
+    {
         $app->forgetInstance('encrypter');
+        $app->forgetInstance(ResourceServer::class);
+        $app->forgetInstance(AuthorizationServer::class);
+        $app->forgetInstance(ClientRepository::class);
+        $app->forgetInstance(ApiTokenCookieFactory::class);
+
+        if ($app->resolved('auth.driver')) {
+            $app->forgetInstance('auth.driver');
+        }
+
+        if ($app->resolved('auth')) {
+            $app->make('auth')->forgetGuards();
+        }
     }
 
     private function landlordConfig($key)
@@ -130,7 +157,7 @@ class SwitchTenant implements SwitchTenantTask
         // app key / encrypter
         $landlordEncrypter = $app->make('encrypter');
         $this->setConfig('app.key', $landlordEncrypter->decryptString($tenant->config['app.key']));
-        $app->forgetInstance('encrypter');
+        $this->flushTenantSensitiveSingletons($app);
 
         // Logging
         $this->setConfig('logging.channels.daily.path', storage_path('logs/processmaker.log'));
