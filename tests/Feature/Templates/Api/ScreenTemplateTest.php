@@ -336,6 +336,13 @@ class ScreenTemplateTest extends TestCase
     {
         $adminUser = User::factory()->create();
         $screenTemplate = ScreenTemplates::factory()->create(['name' => 'ScreenTemplate', 'user_id' => $adminUser->id]);
+        $mediaCollection = 'st-' . $screenTemplate->uuid . '-media';
+        $screenTemplate->media_collection = $mediaCollection;
+        $screenTemplate->save();
+        $screenTemplate->addMedia(UploadedFile::fake()->image('thumbnail.png'))
+            ->withCustomProperties(['media_type' => 'thumbnail'])
+            ->toMediaCollection($mediaCollection);
+
         $payload = $this->export($screenTemplate, ScreenTemplatesExporter::class);
         $screenTemplate->delete();
         $this->assertDatabaseMissing('screen_templates', ['name' => $screenTemplate->name]);
@@ -346,6 +353,16 @@ class ScreenTemplateTest extends TestCase
         $this->assertDatabaseHas('screen_templates', ['name' => $screenTemplate->name]);
         $importedTemplate = ScreenTemplates::where('name', $screenTemplate->name)->first();
         $this->assertEquals($actingAsUser->id, $importedTemplate->user_id);
+
+        $importedCollection = 'st-' . $importedTemplate->uuid . '-media';
+        $this->assertEquals($importedCollection, $importedTemplate->media_collection);
+        $this->assertCount(1, $importedTemplate->getMedia($importedCollection));
+
+        $templateMedia = $importedTemplate->template_media;
+        $this->assertNotEmpty($templateMedia['thumbnail']);
+        $this->assertNotEmpty($templateMedia['thumbnail']->url);
+        $this->assertNotFalse(filter_var($templateMedia['thumbnail']->url, FILTER_VALIDATE_URL));
+        $this->assertFileExists($importedTemplate->getMedia($importedCollection)->first()->getPath());
     }
 
     public function testImportExportScreenTemplatesRoutes()
