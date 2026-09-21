@@ -301,7 +301,17 @@ class User extends Authenticatable implements HasMedia
 
     public function groups()
     {
-        return $this->morphToMany('ProcessMaker\Models\Group', 'member', 'group_members');
+        return new Relations\UserGroups(
+            Group::query(),
+            $this,
+            'member',
+            'group_members',
+            'member_id',
+            'group_id',
+            $this->getKeyName(),
+            (new Group())->getKeyName(),
+            'groups'
+        );
     }
 
     public function projectMembers()
