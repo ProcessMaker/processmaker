@@ -91,6 +91,36 @@ class SelfServiceGroupCacheInvalidationTest extends TestCase
         $this->assertFalse($user->canSelfServe($task));
     }
 
+    public function test_update_groups_api_drops_cached_self_service_visibility(): void
+    {
+        $admin = User::factory()->create(['is_administrator' => true]);
+        $group = Group::factory()->create();
+        $user = User::factory()->create();
+        $user->groups()->attach($group);
+
+        $task = ProcessRequestToken::factory()->create([
+            'is_self_service' => true,
+            'status' => 'ACTIVE',
+            'user_id' => null,
+            'self_service_groups' => ['groups' => [$group->id]],
+        ]);
+
+        $user->selfServiceGroupIds();
+        $this->actingAs($user, 'web');
+        $this->assertTrue($user->canSelfServe($task));
+
+        $response = $this->actingAs($admin, 'api')
+            ->putJson(route('api.users.groups.update', $user), ['groups' => []]);
+
+        $response->assertNoContent();
+
+        $user = $user->fresh();
+        $this->actingAs($user, 'web');
+
+        $this->assertSame([], $user->selfServiceGroupIds()->all());
+        $this->assertFalse($user->canSelfServe($task));
+    }
+
     public function test_group_member_delete_via_eloquent_drops_cached_self_service_visibility(): void
     {
         $group = Group::factory()->create();
