@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- New minimal PAR-01 fixture; no clean shared parallel automated-task fixture exists. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" targetNamespace="http://processmaker.com/tests/inline-task-execution">
+  <bpmn:process id="inline_parallel_script_service" name="PAR-01 Parallel Script and Service Tasks" isExecutable="true">
+    <bpmn:startEvent id="start" name="Start">
+      <bpmn:outgoing>flow_start_split</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:parallelGateway id="split" name="Parallel Split" gatewayDirection="Diverging">
+      <bpmn:incoming>flow_start_split</bpmn:incoming>
+      <bpmn:outgoing>flow_split_script</bpmn:outgoing>
+      <bpmn:outgoing>flow_split_service</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:scriptTask id="branch_script" name="Branch Script" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_split_script</bpmn:incoming>
+      <bpmn:outgoing>flow_script_join</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['parallel_script' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:serviceTask id="branch_service" name="Branch Service" implementation="inline-test-parallel-service">
+      <bpmn:incoming>flow_split_service</bpmn:incoming>
+      <bpmn:outgoing>flow_service_join</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:parallelGateway id="join" name="Parallel Join" gatewayDirection="Converging">
+      <bpmn:incoming>flow_script_join</bpmn:incoming>
+      <bpmn:incoming>flow_service_join</bpmn:incoming>
+      <bpmn:outgoing>flow_join_end</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:endEvent id="end" name="End">
+      <bpmn:incoming>flow_join_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_start_split" sourceRef="start" targetRef="split" />
+    <bpmn:sequenceFlow id="flow_split_script" sourceRef="split" targetRef="branch_script" />
+    <bpmn:sequenceFlow id="flow_split_service" sourceRef="split" targetRef="branch_service" />
+    <bpmn:sequenceFlow id="flow_script_join" sourceRef="branch_script" targetRef="join" />
+    <bpmn:sequenceFlow id="flow_service_join" sourceRef="branch_service" targetRef="join" />
+    <bpmn:sequenceFlow id="flow_join_end" sourceRef="join" targetRef="end" />
+  </bpmn:process>
+</bpmn:definitions>

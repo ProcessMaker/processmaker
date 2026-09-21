@@ -1,9 +1,19 @@
+import Vue from "vue";
+import _, { debounce } from "lodash";
 import { submitCollectionData } from "./utils/index";
-// const store = new Vuex.Store();
+
+const {
+  task,
+  userHasAccessToTask,
+  userIsAdmin,
+  userIsProcessManager,
+  screenFields = [],
+} = window.temporal || {};
+
 const main = new Vue({
   // store: store,
   el: "#task",
-  mixins: addons,
+  mixins: typeof addons !== "undefined" ? addons : [],
   data: {
     // Edit data
     fieldsToUpdate: [],
@@ -12,7 +22,7 @@ const main = new Vue({
       automaticLayout: true,
     },
     showJSONEditor: false,
-    windowParent: window.parent.ProcessMaker,
+    windowParent: window.parent?.ProcessMaker || window.ProcessMaker,
     // Reassignment
     selected: null,
     selectedIndex: -1,

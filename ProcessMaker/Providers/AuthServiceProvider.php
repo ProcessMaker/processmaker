@@ -92,9 +92,7 @@ class AuthServiceProvider extends ServiceProvider
 
         try {
             // Cache the permissions for a day to improve performance
-            $permissions = Cache::remember('permissions', 86400, function () {
-                return Permission::pluck('name')->toArray();
-            });
+            $permissions = Permission::cachedNames();
             foreach ($permissions as $permission) {
                 Gate::define($permission, function ($user) use ($permission) {
                     return $user->hasPermission($permission);

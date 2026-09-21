@@ -32,6 +32,7 @@ use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
+use ProcessMaker\Repositories\ProcessExecutionRawRepository;
 use ProcessMaker\Rules\BPMNValidation;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -669,6 +670,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
+     * @deprecated Use ProcessExecutionRawRepository::getNextUserRaw()
+     */
+    public function getNextUserRaw(ActivityInterface $activity, ProcessRequestToken $token)
+    {
+        return app(ProcessExecutionRawRepository::class)->getNextUserRaw($this, $activity, $token);
+    }
+
+    /**
      * If user assignment is not valid reassign to Process Manager
      *
      * @param ProcessRequest $request
@@ -708,7 +717,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         return $user;
     }
 
-    private function scalateToManagerIfEnabled($user, $activity, $token, $assignmentType)
+    public function scalateToManagerIfEnabled($user, $activity, $token, $assignmentType)
     {
         if ($user) {
             $assignmentProcess = self::where('name', self::ASSIGNMENT_PROCESS)->first();

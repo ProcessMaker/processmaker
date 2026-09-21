@@ -15,8 +15,11 @@ class ValidateEditUserAndPasswordPermission
     {
         $user = $request->route('user');
         $fields = $request->json()->all();
-        if (($fields['username'] !== $user->getAttribute('username') || in_array('password', $fields)) &&
-        !Auth::user()->hasPermission('edit-user-and-password') && !Auth::user()->is_administrator) {
+        $usernameChanged = array_key_exists('username', $fields)
+            && $fields['username'] !== $user->getAttribute('username');
+        $passwordChanged = array_key_exists('password', $fields);
+        if (($usernameChanged || $passwordChanged) &&
+            !Auth::user()->hasPermission('edit-user-and-password') && !Auth::user()->is_administrator) {
             throw new AuthorizationException(__('Not authorized to update the username and password.'));
         }
 

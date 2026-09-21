@@ -23,7 +23,9 @@ use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken as Token;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
@@ -194,12 +196,48 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         ]);
     }
 
-    private function canRunInlineTask(Token $token): bool
+    /**
+     * Determine whether a task can safely reuse the current linear execution context.
+     */
+    private function canRunInlineTask(Token $token, EntityInterface $element): bool
     {
         $instance = $token->getInstance();
         $engine = $instance->getEngine();
         if (!$engine->isInlineTaskExecutionEnabled()) {
             return false;
+        }
+
+        // These execution models require isolation across requests or task instances.
+        if ($instance->getRawOriginal('process_collaboration_id')
+            || $instance->getRawOriginal('parent_request_id')
+            || $token->isMultiInstance()) {
+            return false;
+        }
+
+        // Boundary events depend on normal queued failure and event handling.
+        if ($element instanceof ActivityInterface && $element->getBoundaryEvents()->count() > 0) {
+            return false;
+        }
+
+        $process = $element->getProcess();
+        // BPMN participant metadata detects collaboration when request metadata is unavailable.
+        if ($process?->getProperty(ProcessInterface::BPMN_PROPERTY_PARTICIPANT)) {
+            return false;
+        }
+
+        // Keep parent tasks asynchronous before and after child-process execution.
+        foreach ($process?->getActivities() ?? [] as $activity) {
+            if ($activity instanceof CallActivityInterface) {
+                return false;
+            }
+        }
+
+        // Inline execution must not bypass an explicitly configured service queue.
+        if ($element instanceof ServiceTaskInterface) {
+            $configuration = json_decode($element->getProperty('config', '{}'), true) ?: [];
+            if (($configuration['queue'] ?? 'bpmn') !== 'bpmn') {
+                return false;
+            }
         }
 
         $activeTokens = collect($instance->getTokens())
@@ -210,6 +248,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
             ))
             ->values();
 
+        // Reuse is safe only for the current token in a strictly linear state.
         return $activeTokens->count() === 1
             && (string) $activeTokens->first()->getId() === (string) $token->getId();
     }
@@ -224,7 +263,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     {
         Log::info('Dispatch a script task: ' . $scriptTask->getId() . ' #' . $token->getId());
 
-        if ($this->canRunInlineTask($token)) {
+        if ($this->canRunInlineTask($token, $scriptTask)) {
             $this->runInlineTask($token, RunScriptTask::class);
             return;
         }
@@ -244,7 +283,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     {
         Log::info('Dispatch a service task: ' . $serviceTask->getId());
 
-        if ($this->canRunInlineTask($token)) {
+        if ($this->canRunInlineTask($token, $serviceTask)) {
             $this->runInlineTask($token, RunServiceTask::class);
             return;
         }

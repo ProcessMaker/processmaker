@@ -182,6 +182,77 @@ class PasswordResetTest extends TestCase
         $this->assertTrue(Hash::check('oneOnlyPassword', $user->password));
     }
 
+    public function testResetPasswordRejectsPasswordThatDoesNotMeetPolicy(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create([
+            'email' => 'weak-password-reset@example.com',
+            'status' => 'ACTIVE',
+        ]);
+
+        /** @var ConcretePasswordBroker $broker */
+        $broker = Password::broker();
+        $token = $broker->createToken($user);
+
+        $response = $this->from(route('password.reset', ['token' => $token]))->post('/password/reset', [
+            'token' => $token,
+            'email' => $user->email,
+            'username' => $user->username,
+            'password' => '12345678',
+            'password_confirmation' => '12345678',
+        ]);
+
+        $response->assertSessionHasErrors('password');
+
+        $user->refresh();
+        $this->assertTrue(Hash::check('oneOnlyPassword', $user->password));
+    }
+
+    public function testResetPasswordRejectsPasswordBelowConfiguredMinimumLength(): void
+    {
+        config(['password-policies.minimum_length' => 10]);
+
+        /** @var User $user */
+        $user = User::factory()->create([
+            'email' => 'short-password-reset@example.com',
+            'status' => 'ACTIVE',
+        ]);
+
+        /** @var ConcretePasswordBroker $broker */
+        $broker = Password::broker();
+        $token = $broker->createToken($user);
+
+        $response = $this->from(route('password.reset', ['token' => $token]))->post('/password/reset', [
+            'token' => $token,
+            'email' => $user->email,
+            'username' => $user->username,
+            'password' => 'Abcd1234!',
+            'password_confirmation' => 'Abcd1234!',
+        ]);
+
+        $response->assertSessionHasErrors('password');
+
+        $user->refresh();
+        $this->assertTrue(Hash::check('oneOnlyPassword', $user->password));
+    }
+
+    public function testShowResetFormDisplaysPasswordRequirements(): void
+    {
+        config(['password-policies.minimum_length' => 10]);
+
+        $user = User::factory()->create([
+            'email' => 'requirements-reset-form@example.com',
+            'status' => 'ACTIVE',
+        ]);
+
+        $url = route('password.reset', ['token' => 'some-token']);
+        $response = $this->get($url . '?email=' . urlencode($user->email));
+
+        $response->assertOk();
+        $response->assertSee(__('Password Requirements'), false);
+        $response->assertSee(__('Minimum of :length characters in length', ['length' => 10]), false);
+    }
+
     public function testResetPasswordUpdatesPasswordForActiveUser(): void
     {
         /** @var User $user */

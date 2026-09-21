@@ -127,10 +127,12 @@ class PermissionCacheServiceTest extends TestCase
         // Cache user permissions
         $this->cacheService->cacheUserPermissions($this->userId, $this->userPermissions);
         $this->cacheService->putLegacyUserPermissions($this->userId, $this->userPermissions, 3600);
+        $this->cacheService->rememberUserPermissionGroups($this->userId, 3600, fn () => ['Projects', 'Process Catalog']);
 
         // Verify cache exists
         $this->assertNotNull(Cache::get("user_permissions:{$this->userId}"));
         $this->assertNotNull(Cache::get("user_{$this->userId}_permissions"));
+        $this->assertNotNull(Cache::get("user_permission_groups:{$this->userId}"));
 
         // Invalidate cache
         $this->cacheService->invalidateUserPermissions($this->userId);
@@ -138,6 +140,7 @@ class PermissionCacheServiceTest extends TestCase
         // Verify cache was cleared
         $this->assertNull(Cache::get("user_permissions:{$this->userId}"));
         $this->assertNull(Cache::get("user_{$this->userId}_permissions"));
+        $this->assertNull(Cache::get("user_permission_groups:{$this->userId}"));
     }
 
     /**
