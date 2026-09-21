@@ -12,6 +12,7 @@ use ProcessMaker\Models\ScriptDockerCopyingFilesTrait;
 use ProcessMaker\Models\ScriptDockerNayraTrait;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
+use ProcessMaker\Services\SmartExtractConfiguration;
 use RuntimeException;
 
 abstract class Base
@@ -177,6 +178,10 @@ abstract class Base
             foreach ($variables as $variable) {
                 // Fix variables that have spaces
                 $variable['name'] = str_replace(' ', '_', $variable['name']);
+                if ($variable['name'] === SmartExtractConfiguration::API_HOST) {
+                    continue;
+                }
+
                 if ($useEscape) {
                     $variablesParameter[] = escapeshellarg($variable['name']) . '=' . escapeshellarg($variable['value']);
                 } else {
@@ -185,14 +190,19 @@ abstract class Base
             }
         });
 
+        $smartExtractApiHost = app(SmartExtractConfiguration::class)->apiHost();
+        if ($smartExtractApiHost !== null) {
+            $variablesParameter[] = $useEscape
+                ? SmartExtractConfiguration::API_HOST . '=' . escapeshellarg($smartExtractApiHost)
+                : SmartExtractConfiguration::API_HOST . '=' . $smartExtractApiHost;
+        }
+
         // Add the url to the host
         if ($useEscape) {
             $variablesParameter[] = 'HOST_URL=' . escapeshellarg(config('app.docker_host_url'));
-            $variablesParameter[] = 'SMART_EXTRACT_API_HOST=' . escapeshellarg(config('smart-extract.api_host'));
             $variablesParameter[] = 'SMART_EXTRACT_REQUEST_TIMEOUT=' . escapeshellarg((string) config('smart-extract.request_timeout'));
         } else {
             $variablesParameter[] = 'HOST_URL=' . config('app.docker_host_url');
-            $variablesParameter[] = 'SMART_EXTRACT_API_HOST=' . config('smart-extract.api_host');
             $variablesParameter[] = 'SMART_EXTRACT_REQUEST_TIMEOUT=' . config('smart-extract.request_timeout');
         }
 

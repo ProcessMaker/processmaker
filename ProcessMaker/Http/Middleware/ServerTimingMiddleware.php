@@ -28,6 +28,8 @@ class ServerTimingMiddleware
             return $next($request);
         }
 
+        ProcessMakerServiceProvider::beginRequestTiming();
+
         // Start time for controller execution
         $startController = microtime(true);
 

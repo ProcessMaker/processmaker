@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- New minimal FBK-01 fixture with an externally controlled service implementation. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" targetNamespace="http://processmaker.com/tests/inline-task-execution">
+  <bpmn:process id="inline_revision_mismatch" name="FBK-01 Revision Mismatch" isExecutable="true">
+    <bpmn:startEvent id="start" name="Start">
+      <bpmn:outgoing>flow_start_user</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="user_task" name="Release Controlled Service" pm:assignment="requester">
+      <bpmn:incoming>flow_start_user</bpmn:incoming>
+      <bpmn:outgoing>flow_user_service</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:serviceTask id="service_a" name="Externally Controlled Service A" implementation="inline-test-revision-service">
+      <bpmn:incoming>flow_user_service</bpmn:incoming>
+      <bpmn:outgoing>flow_service_script</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:scriptTask id="script_b" name="Script B" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_service_script</bpmn:incoming>
+      <bpmn:outgoing>flow_script_end</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['revision_script_b' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="end" name="End">
+      <bpmn:incoming>flow_script_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_start_user" sourceRef="start" targetRef="user_task" />
+    <bpmn:sequenceFlow id="flow_user_service" sourceRef="user_task" targetRef="service_a" />
+    <bpmn:sequenceFlow id="flow_service_script" sourceRef="service_a" targetRef="script_b" />
+    <bpmn:sequenceFlow id="flow_script_end" sourceRef="script_b" targetRef="end" />
+  </bpmn:process>
+</bpmn:definitions>

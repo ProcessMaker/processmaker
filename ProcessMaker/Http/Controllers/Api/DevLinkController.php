@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Exception\ValidationException;
@@ -26,6 +28,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\BundleUpdatedNotification;
 use ProcessMaker\Package\PackageDynamicUI\Models\Dashboard;
 use ProcessMaker\Package\PackageDynamicUI\Models\Menu;
+use ProcessMaker\Services\DevLink\BundleFingerprint;
 
 class DevLinkController extends Controller
 {
@@ -105,10 +108,20 @@ class DevLinkController extends Controller
     public function ping(DevLink $devLink)
     {
         try {
-            return $devLink->client()->get(route('api.devlink.pong', [], false));
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'DevLink connection error'], $e->getCode());
+            $response = $devLink->client()->get(route('api.devlink.pong', [], false));
+        } catch (RequestException $e) {
+            $status = $e->response->status();
+
+            return response()->json([
+                'status' => in_array($status, [401, 403], true) ? 'authorization_required' : 'error',
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json(['status' => 'error']);
         }
+
+        return response()->json([
+            'status' => $response->json('status') === 'ok' ? 'ok' : 'error',
+        ]);
     }
 
     public function pong()
@@ -160,14 +173,21 @@ class DevLinkController extends Controller
         return $devLink->remoteBundles($request->input('filter'));
     }
 
-    public function createBundle(Request $request)
+    public function createBundle(Request $request, BundleFingerprint $fingerprint)
     {
-        $bundle = new Bundle();
-        $bundle->name = $request->input('name');
-        $bundle->description = $request->input('description');
-        $bundle->published = (bool) $request->input('published', false);
-        $bundle->version = 1;
-        $bundle->saveOrFail();
+        $bundle = DB::transaction(function () use ($request, $fingerprint) {
+            $bundle = new Bundle();
+            $bundle->name = $request->input('name');
+            $bundle->description = $request->input('description');
+            $bundle->published = (bool) $request->input('published', false);
+            $bundle->version = 1;
+            $bundle->saveOrFail();
+
+            $bundle->published_fingerprint = $fingerprint->calculate($bundle);
+            $bundle->saveOrFail();
+
+            return $bundle;
+        });
 
         return $bundle;
     }
@@ -184,12 +204,34 @@ class DevLinkController extends Controller
         return $bundle;
     }
 
-    public function increaseBundleVersion(Bundle $bundle)
+    public function increaseBundleVersion(Bundle $bundle, BundleFingerprint $fingerprint)
     {
-        $bundle->notifyBundleUpdated();
+        $bundle->validateEditable();
 
-        $bundle->version = $bundle->version + 1;
-        $bundle->saveOrFail();
+        $bundle = DB::transaction(function () use ($bundle, $fingerprint) {
+            $lockedBundle = Bundle::whereKey($bundle->id)->lockForUpdate()->firstOrFail();
+            $lockedBundle->validateEditable();
+            $currentFingerprint = $fingerprint->calculate($lockedBundle);
+
+            // Legacy source bundles have no trustworthy published snapshot to backfill from.
+            // Their first publication establishes the baseline; later identical attempts are blocked.
+            if (
+                $lockedBundle->published_fingerprint !== null
+                && hash_equals($lockedBundle->published_fingerprint, $currentFingerprint)
+            ) {
+                throw ValidationException::withMessages([
+                    '*' => 'There are no changes to publish for this bundle.',
+                ]);
+            }
+
+            $lockedBundle->version = $lockedBundle->version + 1;
+            $lockedBundle->published_fingerprint = $currentFingerprint;
+            $lockedBundle->saveOrFail();
+
+            return $lockedBundle;
+        });
+
+        $bundle->notifyBundleUpdated();
 
         return $bundle;
     }
@@ -216,15 +258,19 @@ class DevLinkController extends Controller
 
     public function deleteBundle(Bundle $bundle)
     {
-        $bundle->assets()->delete();
-        $bundle->settings()->delete();
-        $bundle->instances()->delete();
-        $bundle->delete();
+        DB::transaction(function () use ($bundle) {
+            $lockedBundle = Bundle::whereKey($bundle->id)->lockForUpdate()->firstOrFail();
+            $lockedBundle->assets()->delete();
+            $lockedBundle->settings()->delete();
+            $lockedBundle->instances()->delete();
+            $lockedBundle->delete();
+        });
     }
 
     public function installRemoteBundle(Request $request, DevLink $devLink, int $remoteBundleId)
     {
         $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
+        $operationId = $this->operationId($request);
         DevLinkInstall::dispatch(
             $request->user()->id,
             $devLink->id,
@@ -232,6 +278,7 @@ class DevLinkController extends Controller
             $remoteBundleId,
             $updateType,
             DevLinkInstall::TYPE_INSTALL_BUNDLE,
+            $operationId,
         );
 
         return [
@@ -242,6 +289,7 @@ class DevLinkController extends Controller
     public function reinstallBundle(Request $request, Bundle $bundle)
     {
         $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
+        $operationId = $this->operationId($request);
         DevLinkInstall::dispatch(
             $request->user()->id,
             $bundle->dev_link_id,
@@ -249,6 +297,7 @@ class DevLinkController extends Controller
             $bundle->id,
             $updateType,
             DevLinkInstall::TYPE_REINSTALL_BUNDLE,
+            $operationId,
         );
 
         return [
@@ -370,6 +419,7 @@ class DevLinkController extends Controller
     public function installRemoteAsset(Request $request, DevLink $devLink)
     {
         $updateType = $request->input('updateType', DevLinkInstall::MODE_UPDATE);
+        $operationId = $this->operationId($request);
 
         DevLinkInstall::dispatch(
             $request->user()->id,
@@ -377,7 +427,8 @@ class DevLinkController extends Controller
             $request->input('class'),
             $request->input('id'),
             $updateType,
-            DevLinkInstall::TYPE_IMPORT_ASSET
+            DevLinkInstall::TYPE_IMPORT_ASSET,
+            $operationId,
         );
 
         return [
@@ -424,14 +475,30 @@ class DevLinkController extends Controller
 
     public function deleteBundleAsset(BundleAsset $bundleAsset)
     {
-        $bundleAsset->delete();
+        DB::transaction(function () use ($bundleAsset) {
+            $bundle = Bundle::whereKey($bundleAsset->bundle_id)->lockForUpdate()->firstOrFail();
+
+            if (
+                !$bundle->editable()
+                && $bundleAsset->integrity_status === BundleAsset::INTEGRITY_VALID
+            ) {
+                throw ValidationException::withMessages([
+                    '*' => __('Only unavailable assets can be removed from an installed bundle.'),
+                ]);
+            }
+
+            $bundleAsset->delete();
+        });
 
         return response()->json(['message' => 'Bundle asset association deleted.'], 200);
     }
 
     public function deleteBundleSetting(BundleSetting $bundleSetting)
     {
-        $bundleSetting->delete();
+        DB::transaction(function () use ($bundleSetting) {
+            Bundle::whereKey($bundleSetting->bundle_id)->lockForUpdate()->firstOrFail();
+            $bundleSetting->delete();
+        });
 
         return response()->json(['message' => 'Bundle setting deleted.'], 200);
     }
@@ -501,5 +568,14 @@ class DevLinkController extends Controller
     {
         CompileUI::dispatch($request->user()?->id);
         CustomizeUiUpdated::dispatch([], [], false);
+    }
+
+    private function operationId(Request $request): string
+    {
+        $validated = $request->validate([
+            'operation_id' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        return $validated['operation_id'] ?? (string) Str::uuid();
     }
 }

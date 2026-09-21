@@ -35,8 +35,9 @@ class InitializeScriptMicroservice extends Command
                 // Keep only the first occurrence of each language
                 if (isset($requiredLanguages[$executor->language])) {
                     $this->info('Keeping ' . $executor->language);
-                } else {
+                } elseif (!config('app.custom_executors')) {
                     // Hide non-microservice languages as well as any duplicate languages
+                    // Only do this if custom executors are not enabled on the microservice
                     $this->info('Hiding ' . $executor->language);
                     $executor->is_system = true;
                     $executor->type = ScriptExecutorType::Duplicate;

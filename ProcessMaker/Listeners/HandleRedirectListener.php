@@ -20,6 +20,17 @@ class HandleRedirectListener
         self::$redirectionParams = $params;
     }
 
+    /**
+     * Reset the static state for Octane compatibility.
+     * This prevents data leaks between requests in long-running workers.
+     */
+    public static function reset(): void
+    {
+        self::$processRequest = null;
+        self::$redirectionMethod = '';
+        self::$redirectionParams = [];
+    }
+
     public static function sendRedirectToEvent()
     {
         $method = self::$redirectionMethod;

@@ -75,12 +75,14 @@ trait HelperTrait
         return $exporter->payload();
     }
 
-    public function import($payload, $options = null)
+    public function import($payload, $options = null, $logger = null)
     {
         $options = $options ?: new Options([]);
-        $importer = new Importer($payload, $options);
+        $importer = new Importer($payload, $options, $logger);
         $importer->previewImport();
         $importer->doImport();
+
+        return $importer;
     }
 
     public function makeOptions($options = [])

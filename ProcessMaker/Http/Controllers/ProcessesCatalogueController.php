@@ -31,12 +31,6 @@ class ProcessesCatalogueController extends Controller
 
     public function index(Request $request, Process $process = null)
     {
-        if ($request->has('guided_templates')) {
-            return redirect()->route('process.browser.index', [
-                'categoryId' => 'guided_templates',
-                'template' => $request->input('template'),
-            ]);
-        }
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, 'DISPLAY'));
         $launchpad = null;

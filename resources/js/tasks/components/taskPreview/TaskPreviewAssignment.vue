@@ -57,10 +57,9 @@
 import {
   ref, onMounted, nextTick, computed,
 } from "vue";
+import _ from "lodash";
 import PMDropdownSuggest from "../../../components/PMDropdownSuggest.vue";
 import { getReassignUsers, updateReassignUser, updateComment } from "../../api";
-
-const { _ } = window;
 
 const props = defineProps({
   task: {

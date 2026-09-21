@@ -18,6 +18,7 @@ class EnvironmentVariableFactory extends Factory
             'name' => $this->faker->word(),
             'description' => $this->faker->sentence(),
             'value' => $this->faker->sentence(),
+            'do_not_update' => false,
         ];
     }
 }

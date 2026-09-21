@@ -106,7 +106,7 @@
             v-if="messages.length == 0"
             class="no-notifications-mobile"
           >
-            <img :alt="$t('All Clear')" src="/img/all-cleared.svg">
+            <img :alt="$t('All Clear')" :src="allClearedImage">
             <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>
             <b-button variant="primary" href="/notifications">{{ $t('View All Notifications') }}</b-button>
@@ -197,7 +197,7 @@
             class="no-notifications"
             data-cy="notification-popover-no-notifications"
           >
-            <img :alt="$t('All Clear')" src="/img/all-cleared.svg">
+            <img :alt="$t('All Clear')" :src="allClearedImage">
             <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>
             <b-button variant="primary" href="/notifications">{{ $t('View All Notifications') }}</b-button>
@@ -231,6 +231,7 @@ export default {
   },
   data() {
     return {
+      allClearedImage: '/img/all-cleared.svg',
       isOpen: false,
       totalMessages: 0,
       incrementTotalMessages: false,
@@ -288,13 +289,18 @@ export default {
     this.checkScreenWidth();
     window.addEventListener("resize", this.checkScreenWidth);
 
-    if ($("#navbar-request-button").length > 0) {
-      this.arrowStyle.top = `${$("#navbar-request-button").offset().top + 45}px`;
-      this.arrowStyle.left = `${$("#navbar-request-button").offset().left + 53}px`;
+    const navbarRequestButton = document.querySelector("#navbar-request-button");
+    if (navbarRequestButton) {
+      const updateArrowStyle = (topOffset, leftOffset) => {
+        const rect = navbarRequestButton.getBoundingClientRect();
+        this.arrowStyle.top = `${rect.top + window.scrollY + topOffset}px`;
+        this.arrowStyle.left = `${rect.left + window.scrollX + leftOffset}px`;
+      };
+
+      updateArrowStyle(45, 53);
 
       window.addEventListener("resize", () => {
-        this.arrowStyle.top = `${$("#navbar-request-button").offset().top + 42}px`;
-        this.arrowStyle.left = `${$("#navbar-request-button").offset().left + 32}px`;
+        updateArrowStyle(42, 32);
       });
     }
     this.updateTotalMessages();

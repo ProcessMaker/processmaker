@@ -20,21 +20,6 @@
             {{ title }}
           </h3>
           <div class="tw-flex tw-gap-4">
-            <div
-              v-if="isWizardTemplate"
-              class="tw-flex"
-            >
-              <div
-                class="tw-m-0 tw-text-lg tw-font-medium tw-text-gray-700 hover:tw-cursor-pointer"
-                @click="getHelperProcess"
-              >
-                <img
-                  src="../../../../img/wizard-icon.svg"
-                  :alt="$t('Guided Template Icon')"
-                >
-                <span> {{ $t('Re-run Wizard') }} </span>
-              </div>
-            </div>
             <button
               class="tw-bg-transparent tw-border-none
                 tw-text-lg tw-text-gray-600 tw-cursor-pointer
@@ -74,10 +59,6 @@ export default {
       type: Object,
       required: true,
     },
-    isWizardTemplate: {
-      type: Boolean,
-      default: false,
-    },
   },
   methods: {
     closeSlide() {
@@ -85,9 +66,6 @@ export default {
     },
     closeFullCarousel() {
       this.$emit("closeCarousel");
-    },
-    getHelperProcess() {
-      this.$emit("getHelperProcess");
     },
   },
 };

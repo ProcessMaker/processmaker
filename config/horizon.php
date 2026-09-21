@@ -152,6 +152,7 @@ return [
                 'minProcesses' => env('PM4_HORIZON_SUPERVISOR_BPMN_MIN_PROCESSES', 1),
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_BPMN_MAX_PROCESSES', 1),
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
+                'maxJobs' => (int) env('PM4_HORIZON_SUPERVISOR_BPMN_MAX_JOBS', 10),
             ],
             'supervisor-1' => [
                 'connection' => 'redis',
@@ -162,6 +163,7 @@ return [
                 'minProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MIN_PROCESSES', 1),
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MAX_PROCESSES', 1),
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
+                'maxJobs' => (int) env('PM4_HORIZON_SUPERVISOR_1_MAX_JOBS', 100),
             ],
         ],
 
@@ -176,6 +178,7 @@ return [
                 'minProcesses' => env('PM4_HORIZON_SUPERVISOR_BPMN_MIN_PROCESSES', 1),
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_BPMN_MAX_PROCESSES', 1),
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
+                'maxJobs' => (int) env('PM4_HORIZON_SUPERVISOR_BPMN_MAX_JOBS', 10),
             ],
             'supervisor-1' => [
                 'connection' => 'redis',
@@ -186,6 +189,7 @@ return [
                 'minProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MIN_PROCESSES', 1),
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MAX_PROCESSES', 1),
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
+                'maxJobs' => (int) env('PM4_HORIZON_SUPERVISOR_1_MAX_JOBS', 100),
             ],
         ],
 
@@ -200,6 +204,7 @@ return [
                 'minProcesses' => env('PM4_HORIZON_SUPERVISOR_BPMN_MIN_PROCESSES', 1),
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_BPMN_MAX_PROCESSES', 1),
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
+                'maxJobs' => (int) env('PM4_HORIZON_SUPERVISOR_BPMN_MAX_JOBS', 10),
             ],
             'supervisor-1' => [
                 'connection' => 'redis',
@@ -210,6 +215,7 @@ return [
                 'minProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MIN_PROCESSES', 1),
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MAX_PROCESSES', 1),
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
+                'maxJobs' => (int) env('PM4_HORIZON_SUPERVISOR_1_MAX_JOBS', 100),
             ],
         ],
     ],

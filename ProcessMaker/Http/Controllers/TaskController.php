@@ -27,6 +27,7 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Services\SmartExtractConfiguration;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 use ProcessMaker\Traits\TaskControllerIndexMethods;
@@ -42,6 +43,10 @@ class TaskController extends Controller
         'completed' => 'Completed',
         'overdue' => 'Due',
     ];
+
+    public function __construct(private readonly SmartExtractConfiguration $smartExtractConfiguration)
+    {
+    }
 
     public function index()
     {
@@ -190,25 +195,7 @@ class TaskController extends Controller
                 'datetime_format',
             ]);
             $userConfiguration = (new UserConfigurationController())->index();
-            $hitlEnabled = config('smart-extract.hitl_enabled', false) && $isSmartExtractTask;
-
-            // Build the iframe source
-            $iframeSrc = null;
-            if ($hitlEnabled) {
-                $dashboardUrl = config('smart-extract.dashboard_url');
-                $requestData = $task->processRequest->data ?? [];
-
-                $documentToken = $requestData['documentToken'] ?? null;
-                $fileId = $requestData['fileId'] ?? null;
-
-                if ($documentToken && $fileId && !empty($dashboardUrl)) {
-                    $queryParams = http_build_query([
-                        'documentToken' => $documentToken,
-                        'fileId' => $fileId,
-                    ]);
-                    $iframeSrc = $dashboardUrl . '?' . $queryParams;
-                }
-            }
+            [$hitlEnabled, $iframeSrc] = $this->smartExtractHitlConfiguration($task, $isSmartExtractTask);
 
             return view('tasks.edit', [
                 'task' => $task,
@@ -229,6 +216,30 @@ class TaskController extends Controller
                 'tceEnableCaseNumberScreen' => config('app.tce_enable_case_number_screen'),
             ]);
         }
+    }
+
+    private function smartExtractHitlConfiguration(
+        ProcessRequestToken $task,
+        bool $isSmartExtractTask
+    ): array {
+        $hitlEnabled = $this->smartExtractConfiguration->hitlEnabled() && $isSmartExtractTask;
+        if (!$hitlEnabled) {
+            return [false, null];
+        }
+
+        $dashboardUrl = $this->smartExtractConfiguration->dashboardUrl();
+        $requestData = $task->processRequest->data ?? [];
+        $documentToken = $requestData['documentToken'] ?? null;
+        $fileId = $requestData['fileId'] ?? null;
+
+        if (!$documentToken || !$fileId || empty($dashboardUrl)) {
+            return [true, null];
+        }
+
+        return [true, $dashboardUrl . '?' . http_build_query([
+            'documentToken' => $documentToken,
+            'fileId' => $fileId,
+        ])];
     }
 
     public function quickFillEdit(ProcessRequestToken $task)

@@ -94,12 +94,15 @@ export default {
       return this.$route.params.logType;
     },
     title() {
+      if (this.$route.path.startsWith('/agents/monitoring')) {
+        return 'FlowGenie Monitoring';
+      }
       if (this.isAgentsCategory) {
         const agentTitles = {
           design: 'FlowGenie Studio Logs',
           execution: 'Runtime Logs',
         };
-        return agentTitles[this.logType] ?? 'FlowGenie Agents Logs';
+        return agentTitles[this.logType] ?? 'FlowGenie Agents logs';
       }
 
       const titles = {
