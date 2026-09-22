@@ -1085,12 +1085,12 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Get the assignees from the expression
      *
-     * @param string|array $form_data
+     * @param string|array|null $form_data
      * @return array
      */
-    public function getAssigneesFromExpression(string|array $form_data): array
+    public function getAssigneesFromExpression(string|array|null $form_data = []): array
     {
-        $formData = is_array($form_data) ? $form_data : json_decode($form_data, true);
+        $formData = $this->resolveExpressionVariables($form_data);
 
         $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
         $assignmentRules = $activity->getProperty('assignmentRules', null);
@@ -1123,6 +1123,22 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         }
 
         return array_values($userIds);
+    }
+
+    private function resolveExpressionVariables(string|array|null $form_data): array
+    {
+        $formData = is_array($form_data) ? $form_data : json_decode($form_data ?? '', true);
+        $formData = is_array($formData) ? $formData : [];
+
+        unset($formData['_user'], $formData['_request'], $formData['_process']);
+
+        $instanceData = $this->processRequest?->data ?? [];
+
+        if (empty($formData)) {
+            return $instanceData;
+        }
+
+        return array_merge($instanceData, $formData);
     }
 
     private function isAssignmentRuleMatch(array $assignment, array $variables, ExpressionLanguage $language): bool

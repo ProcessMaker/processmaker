@@ -1099,6 +1099,14 @@ class UsersTest extends TestCase
         $result->assertStatus(200);
         $userIds = array_column($result->json()['data'], 'id');
         $this->assertContains($groupUser->id, $userIds);
+
+        $emptyFormDataResult = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'assignable_for_task_id' => $task->id,
+            'form_data' => [],
+        ]);
+
+        $emptyFormDataResult->assertStatus(200);
+        $this->assertContains($groupUser->id, array_column($emptyFormDataResult->json()['data'], 'id'));
     }
 
     /**

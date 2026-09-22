@@ -252,13 +252,14 @@ class UserController extends Controller
         if (!empty($include_ids_string)) {
             $include_ids = explode(',', $include_ids_string);
         } elseif ($request->has('assignable_for_task_id')) {
-            $processRequestToken = ProcessRequestToken::findOrFail($request->input('assignable_for_task_id'));
+            $processRequestToken = ProcessRequestToken::with(['process', 'processRequest'])
+                ->findOrFail($request->input('assignable_for_task_id'));
             if (config('app.reassign_restrict_to_assignable_users')) {
                 $include_ids = $processRequestToken->process->getAssignableUsersByAssignmentType($processRequestToken);
                 $bpmnAssignment = $processRequestToken->getBpmnDefinition()->getBpmnElementInstance()
                     ->getProperty('assignment', null);
-                if ($bpmnAssignment === 'rule_expression' && $request->has('form_data')) {
-                    $include_ids = $processRequestToken->getAssigneesFromExpression($request->input('form_data'));
+                if ($bpmnAssignment === 'rule_expression') {
+                    $include_ids = $processRequestToken->getAssigneesFromExpression($request->input('form_data', []));
                 }
                 if ($bpmnAssignment === 'process_variable' && $request->has('form_data')) {
                     $include_ids = $processRequestToken->getUsersFromProcessVariable($request->input('form_data'));
