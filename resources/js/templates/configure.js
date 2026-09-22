@@ -10,9 +10,9 @@ new Vue({
     mixins: addons,
     data() {
         return {
-            formData: window.ProcessMaker.templateConfigurations.data,
-            screenTypes: window.ProcessMaker.templateConfigurations.screenTypes,
-            type: window.ProcessMaker.templateConfigurations.templateType,
+            formData: window.temporal.templateConfigurations.data,
+            screenTypes: window.temporal.templateConfigurations.screenTypes,
+            type: window.temporal.templateConfigurations.templateType,
             dataGroups: [],
             value: [],
             errors: {

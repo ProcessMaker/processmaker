@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Filters;
 
+use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -98,6 +99,8 @@ abstract class BaseFilter
 
     private function apply($query): void
     {
+        $this->validateRawFilterContext();
+
         if ($valueAliasMethod = $this->valueAliasMethod()) {
             $this->valueAliasAdapter($valueAliasMethod, $query);
         } elseif ($this->subjectType === self::TYPE_STAGE) {
@@ -175,7 +178,9 @@ abstract class BaseFilter
         $operator = $this->operator();
         $value = $this->value();
 
-        if (!is_numeric($value)) {
+        if ($value instanceof Expression) {
+            $value = $value->getValue(DB::connection()->getQueryGrammar());
+        } elseif (!is_numeric($value)) {
             $value = DB::connection()->getPdo()->quote($value);
         }
 
@@ -259,6 +264,34 @@ abstract class BaseFilter
         return $this->subjectType === self::TYPE_FIELD && str_starts_with($this->subjectValue, 'data.');
     }
 
+    private function validateRawFilterContext(): void
+    {
+        if (!$this->filteringWithRawValue()) {
+            return;
+        }
+
+        if ($this->subjectType !== self::TYPE_FIELD) {
+            abort(422, 'Raw filters are only supported for fields.');
+        }
+
+        if ($this->isJsonData()) {
+            return;
+        }
+
+        $allowedFields = [
+            'created_at',
+            'updated_at',
+            'initiated_at',
+            'completed_at',
+            'due_at',
+            'started_at',
+        ];
+
+        if (!in_array($this->subjectValue, $allowedFields, true)) {
+            abort(422, 'Raw filters are only supported for temporal fields.');
+        }
+    }
+
     private function subject()
     {
         if ($this->isJsonData()) {
@@ -299,11 +332,7 @@ abstract class BaseFilter
             return $this->value . '%';
         }
 
-        if ($this->filteringWithRawValue()) {
-            return $this->getRawValue();
-        }
-
-        return $this->value;
+        return $this->valueWithRawExpressions($this->value);
     }
 
     abstract protected function valueAliasMethod();

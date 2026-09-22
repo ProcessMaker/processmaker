@@ -155,6 +155,7 @@ return [
         // Services with mutable state that must be recreated per request
         ProcessMaker\Managers\LoginManager::class,
         ProcessMaker\Managers\ModelerManager::class,
+        ProcessMaker\Managers\ScreenBuilderManager::class,
         Lavary\Menu\Menu::class,
     ],
 
@@ -239,7 +240,7 @@ return [
     |
     */
 
-    'max_execution_time' => env('OCTANE_MAX_EXECUTION_TIME', 30),
+    'max_execution_time' => env('OCTANE_MAX_EXECUTION_TIME', 90),
 
     /*
     |--------------------------------------------------------------------------
@@ -247,15 +248,26 @@ return [
     |--------------------------------------------------------------------------
     |
     | Extra env vars for the FrankenPHP process. Start Octane with
-    | `--caddyfile=Caddyfile` so php_ini memory_limit is applied.
+    | `--caddyfile=Caddyfile` so php_ini settings are applied.
     | PHPRC / PHP_INI does not change FrankenPHP worker memory (stays 128M).
     |
     */
 
     'caddy' => [
         'env' => [
-            'FRANKENPHP_MEMORY_LIMIT' => env('FRANKENPHP_MEMORY_LIMIT', '3072M'),
+            'OCTANE_MEMORY_LIMIT' => env('OCTANE_MEMORY_LIMIT', '512M'),
+            'OCTANE_MAX_EXECUTION_TIME' => env('OCTANE_MAX_EXECUTION_TIME', 90),
+            'OCTANE_POST_MAX_SIZE' => env('OCTANE_POST_MAX_SIZE', '200M'),
+            'OCTANE_UPLOAD_MAX_FILESIZE' => env('OCTANE_UPLOAD_MAX_FILESIZE', '200M'),
+            'OCTANE_MAX_INPUT_VARS' => env('OCTANE_MAX_INPUT_VARS', 9000),
+            'OCTANE_MAX_INPUT_TIME' => env('OCTANE_MAX_INPUT_TIME', 90),
         ],
+    ],
+    'health' => [
+        'host' => env('OCTANE_HEALTH_HOST', '127.0.0.1'),
+        'port' => (int) env('OCTANE_HEALTH_PORT', 8001),
+        'endpoint' => env('OCTANE_HEALTH_ENDPOINT', '/health/live'),
+        'timeout' => (float) env('OCTANE_HEALTH_TIMEOUT', 2),
     ],
 
 ];

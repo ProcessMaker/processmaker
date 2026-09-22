@@ -85,4 +85,17 @@ class ProcessRequestTest extends TestCase
         $this->assertNotContains($completedToken->id, $collaborationActiveTokens);
         $this->assertNotContains($completedToken2->id, $collaborationActiveTokens);
     }
+
+    public function testMergeLatestStoredDataLoadsDataColumnFromDatabase(): void
+    {
+        $request = ProcessRequest::factory()->create([
+            'data' => ['marker' => 'from_database'],
+        ]);
+
+        $row = ProcessRequest::query()->whereKey($request->id)->first(['data']);
+
+        $this->assertNotNull($row);
+        $this->assertIsArray($row->data);
+        $this->assertSame('from_database', $row->data['marker']);
+    }
 }
