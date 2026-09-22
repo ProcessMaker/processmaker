@@ -1,4 +1,3 @@
-
 # ProcessMaker 4 Documentation
 
 # Overview
@@ -7,113 +6,173 @@ ProcessMaker is an open source, workflow management software suite, which includ
 
 ## Getting Started
 
-If you are new to ProcessMaker 4 and would like to load the software locally, we recommend you download the Dockerized version from https://github.com/ProcessMaker/pm4core-docker
+If you are new to ProcessMaker 4 and would like to load the software locally, we recommend you download the Dockerized version from [https://github.com/ProcessMaker/pm4core-docker](https://github.com/ProcessMaker/pm4core-docker)
 
 ## System Requirements
 
-* [Composer 2](https://getcomposer.org/)
-* [Node.js 16.18.1](https://nodejs.org/en/)
-* [NPM 8.9](https://www.npmjs.com/package/npm)
-* [PHP 8.1](https://php.net)
-* [PHP-FPM](https://www.php.net/manual/en/install.fpm.php)
-* [PHP GD Extension](https://www.php.net/manual/en/image.installation.php)
-* [PHP ImageMagick Extension](https://www.php.net/manual/en/book.imagick.php)
-* [PHP IMAP Extension](https://www.php.net/manual/en/imap.setup.php)
-* [Nginx](https://nginx.org/)
-* [MySql 8.0](https://dev.mysql.com/downloads/mysql/8.0.html)
-* [Redis](https://redis.io/)
-* [Docker](https://docs.docker.com/get-docker/)
+- [Composer 2](https://getcomposer.org/)
+- [Node.js 16.18.1](https://nodejs.org/en/)
+- [NPM 8.9](https://www.npmjs.com/package/npm)
+- [PHP 8.1](https://php.net)
+- [PHP-FPM](https://www.php.net/manual/en/install.fpm.php)
+- [PHP GD Extension](https://www.php.net/manual/en/image.installation.php)
+- [PHP ImageMagick Extension](https://www.php.net/manual/en/book.imagick.php)
+- [PHP IMAP Extension](https://www.php.net/manual/en/imap.setup.php)
+- [Nginx](https://nginx.org/)
+- [MySql 8.0](https://dev.mysql.com/downloads/mysql/8.0.html)
+- [Redis](https://redis.io/)
+- [Docker](https://docs.docker.com/get-docker/)
+
 
 
 ## Install
 
 Before installing, Nginx needs to be configured to use php-fpm and point to the public folder
 
-1. Download and unzip a version from the releases page https://github.com/ProcessMaker/processmaker/releases
-1. Configure Nginx to use php-fpm and point to the public folder in the unzipped code. See https://laravel.com/docs/8.x/deployment#nginx
-1. CD into the folder and run `composer install`
-1. Run the installer `php artisan processmaker:install` and follow the instructions
-1. Edit the .env file to update any server specific settings
-1. Install javascript assets `npm install`
-1. Compile javascript assets `npm run dev`
-1. Configure [laravel echo server](https://github.com/tlaverdure/Laravel-Echo-Server) in a separate shell `npx laravel-echo-server init` using the following settings:
-   1. Do you want to run this server in development mode? **Yes**
-   1. Which port would you like to serve from? **6001**
-   1. Which database would you like to use to store presence channel members? **redis**
-   1. Enter the host of your Laravel authentication server. *Enter your instance's url*
-   1. Will you be serving on http or https? **http**
-   1. Do you want to generate a client ID/Key for HTTP API? **No**
-   1. Do you want to setup cross domain access to the API? **No**
-   1. What do you want this config to be saved as? **laravel-echo-server.json**
-1. Then run [laravel echo server](https://github.com/tlaverdure/Laravel-Echo-Server) `npx laravel-echo-server start`
-1. Run horizon in a separate shell `php artisan horizon`
-1. If you change any settings, make sure to run `php artisan optimize:clear` and restart horizon
+1. Download and unzip a version from the releases page [https://github.com/ProcessMaker/processmaker/releases](https://github.com/ProcessMaker/processmaker/releases)
+2. Configure Nginx to use php-fpm and point to the public folder in the unzipped code. See [https://laravel.com/docs/8.x/deployment#nginx](https://laravel.com/docs/8.x/deployment#nginx)
+3. CD into the folder and run `composer install`
+4. Run the installer `php artisan processmaker:install` and follow the instructions
+5. Edit the .env file to update any server specific settings
+6. Install javascript assets `npm install`
+7. Compile javascript assets `npm run dev`
+8. Configure [laravel echo server](https://github.com/tlaverdure/Laravel-Echo-Server) in a separate shell `npx laravel-echo-server init` using the following settings:
+  1. Do you want to run this server in development mode? **Yes**
+  2. Which port would you like to serve from? **6001**
+  3. Which database would you like to use to store presence channel members? **redis**
+  4. Enter the host of your Laravel authentication server. *Enter your instance's url*
+  5. Will you be serving on http or https? **http**
+  6. Do you want to generate a client ID/Key for HTTP API? **No**
+  7. Do you want to setup cross domain access to the API? **No**
+  8. What do you want this config to be saved as? **laravel-echo-server.json**
+9. Then run [laravel echo server](https://github.com/tlaverdure/Laravel-Echo-Server) `npx laravel-echo-server start`
+10. Run horizon in a separate shell `php artisan horizon`
+11. If you change any settings, make sure to run `php artisan optimize:clear` and restart horizon
+
+
 
 ## Installing and upgrading an enterprise instance hosted on AWS
 
-https://processmaker.atlassian.net/wiki/spaces/PM4/pages/480149598/Server+Deployment
+[https://processmaker.atlassian.net/wiki/spaces/PM4/pages/480149598/Server+Deployment](https://processmaker.atlassian.net/wiki/spaces/PM4/pages/480149598/Server+Deployment)
 
 ## Using ProcessMaker 4
 
 The online documentation for usage of ProcessMaker 4 can be found by clicking the link below.
 
-https://docs.processmaker.com/
+[https://docs.processmaker.com/](https://docs.processmaker.com/)
 
 ## Testing
+
 All PRs for PM4 and it's packages should be accompanied by a test.
 
 ## CI/CD
 
+Put `ci:` tags anywhere in the pull request body. Separate tags with whitespace; one tag per line is the easiest. Editing the PR body re-runs CI.
+
 ### Automated Tests
-When ever you open or update a PR, the test suite is run with all packages installed.
 
-If your PR requires branches in other packges or core, you can specify the branch anywhere in the PR body with this tag:
+Opening or updating a PR builds an image with enterprise packages installed and runs the PHPUnit suite. Tests run whether or not you deploy an instance.
 
-`ci:< package name >:< branch name>`
+### Package and Core Branches
 
-For example, if you open a PR in core that requires a bugfix branch in connector-send-email, put this in your core PR body text:
+Point CI at a branch of another package, or of core, with:
+
+`ci:<package>:<branch>`
+
+For example, a core PR that needs a connector-send-email branch:
 
 `ci:connector-send-email:bugfix/FOUR-5059`
 
-This works in package PRs as well. To specify a branch in core, use:
+From a package PR, pin core the same way:
 
 `ci:processmaker:my-branch-in-core`
 
-If no branches are specified in the PR body, the develop branch of each package will be used.
+The repository that owns the PR always builds from that PR's head branch.
 
-### Release Branches and Packages
+When many packages share one branch name, set a wildcard. Each package that has the branch uses it. Packages that do not have it fall back to the release branch:
 
-If your PR is based on a release branch (for example `release-2024-fall <-- feature/123`), then all packages will be installed using the corresponding base branch (`release-2024-fall`). No need to add additional `ci:` tags.
+`ci:*:epic/FOUR-12345`
 
-However, if your PR has an intermediate branch, for example (`epic/abc <-- feature/123`), where `epic/abc` is branched off the `release-2024-fall` branch, you will need to add `ci:release-branch:release-2024-fall` to your PR body so the CI builder knows what branch to use for packages.
+An explicit `ci:<package>:<branch>` tag wins over the wildcard.
 
+`@processmaker` JavaScript dependencies are built from the same branch rules. Name one to build a feature branch, for example `ci:modeler:my-branch`. Packages with their own bundle step are `modeler`, `screen-builder`, `vue-form-elements`, and `vue-multiselect`. `processmaker-bpmn-moddle` is linked into `modeler` when its branch is set.
+
+A `ci:<package>:<branch>` tag for a normal `processmaker/*` dependency that is not in the enterprise list still installs that package.
+
+Branch selection order:
+
+1. `ci:<package>:<branch>`
+2. `ci:*:<branch>`, when that branch exists on the package
+3. The release branch (develop)
+
+### Package Source
+
+PHP packages and script executors are installed from private Packagist as `dev-<branch>`.
+
+`ci:use-github-branches` clones those branches from GitHub instead.
+
+`ci:use-packagist-versions` keeps the versions already pinned in core `composer.json`. When both source tags are present, this one is used.
 
 ### CI Server
 
-A full working instance can be built by adding the tag `ci:deploy` to your PR description. A link will be posted in the PR comments when it's ready. Note that this currently takes 10 to 30 minutes before the instance is ready.
+`ci:deploy` builds a full instance and comments the URL on the PR when it is ready. The Helm install allows up to 75 minutes.
 
-The instance will stay active until the PR is merged.
+The hostname comes from the repository and branch:
 
-You can wipe the database on the CI Server by adding the tag `ci:db:clean`. Remember to remove the tag from your PR description or the DB will be wiped clean every time the PR is updated.
+- Multitenancy, the default: `https://tenant-1.ci-<id>.engk8s.processmaker.net`
+- `ci:single-tenant`: `https://ci-<id>.engk8s.processmaker.net`
+
+The instance is removed when the PR is closed. `ci:redeploy` deletes the current instance, builds, and deploys a new one. CI then removes `ci:redeploy` from the PR body so later edits leave the new instance in place. The Harbor image is kept across a redeploy and deleted when the PR is closed.
+
+`ci:skip-redeploy` skips the Helm install or upgrade. The workflow still comments the instance URL. Use it when an instance already exists and should stay as it is.
+
+`ci:skip-build` skips the Docker image build and push. Later jobs use the image already stored for this PR.
+
+`ci:db:clean` wipes and re-seeds the database every time the instance starts. Remove the tag when data should persist. Leaving it in the body wipes the database on later updates and pod restarts.
+
+`ci:no-octane` serves the instance with PHP-FPM. Octane (FrankenPHP) is the default.
+
+`ci:pmai_dev` points the instance at the dev PMAI service.
+
+`ci:api-test` runs the API test suite after a successful deploy and comments the results. It requires `ci:deploy` or `ci:redeploy`. With no extra tags, every suite runs. Limit the run with one or more of:
+
+- `ci:api-test-saved-searches-results`
+- `ci:api-test-saved-searches-charts`
+- `ci:api-test-tasks-closed`
+- `ci:api-test-requests-show`
+- `ci:api-test-cases-started`
+- `ci:api-test-cases-participated`
+
+`ci:api-test-iterations:<n>` sets the iteration count. The default is 5.
+
+`ci:run-testbench` runs testbench against the deployed instance after a successful deploy. It also requires `ci:deploy` or `ci:redeploy`.
 
 ### Environment Variables
-You can add or overwrite environment variables on the deployed server using this syntax in your PR body
+
+Add or overwrite environment variables on the deployed server from the PR body:
+
 ```
 ci:MY_ENVIRONMENT_VARIABLE=value
 ```
-Or with double quotes if the value has spaces
+
+Use double quotes when the value has spaces:
+
 ```
 ci:MY_ENVIRONMENT_VARIABLE="custom value"
 ```
 
+
+
 ### Specify the K8S Distribution Branch
-The CI Builder uses the `pm4-k8s-distribution` repository for building and deploying your PR branch in a CI server.
 
-By default, the branch of `pm4-k8s-distribution` used for the build will be the same as the release branch (see "Release Branches and Packages" above).
+The CI builder uses `pm4-k8s-distribution` to build and deploy the PR. That checkout uses the release branch described above.
 
-If you are testing updates to `pm4-k8s-distribution`, you can specify a branch in your PR body with `ci:k8s-branch:some-other-branch`
+To test a different k8s distribution branch:
+
+`ci:k8s-branch:some-other-branch`
 
 ### PHPUnit Tests
+
 We use PHPUnit for both integration and unit testing. Most of our PHPUnit tests are integration tests that use the framework and database.
 
 Run the entire testsuite with `phpunit`
@@ -121,12 +180,15 @@ Run the entire testsuite with `phpunit`
 If phpunit is not in your $PATH, you can use `vendor/bin/phpunit ...`
 
 To run the entire suite faster using parallel tests, run
+
 ```
 PARALLEL_TEST_PROCESSES=6 vendor/bin/paratest -p 6
 ```
+
 - The environment variable and the -p argument must be the same number of parallel processes.
 
 To run an individual test, run
+
 ```
 phpunit tests/path/to/testTest.php
 ```
@@ -136,6 +198,7 @@ skip populating the database with `POPULATE_DATABASE=0 phpunit ...` to run tests
 - All test file names must end in Test.php
 
 Package tests should be saved in the package repository but must be run from processmaker core:
+
 ```
 phpunit vendor/processmaker/package-name/tests/...
 ```
@@ -145,37 +208,39 @@ Then, modify the code until the test passes*
 
 ## Development
 
+
+
 #### System Requirements
 
 You can develop ProcessMaker as well as ProcessMaker packages locally. In order to do so, you must have the following:
 
-* [Virtualbox  5.2](https://www.virtualbox.org/) or above
-* [Vagrant 2.2.0](https://www.vagrantup.com/) or above
-* [PHP 8.1](https://php.net) or above
-  * Windows users can install [XAMPP](https://www.apachefriends.org/index.html)
-* [Composer 2](https://getcomposer.org/)
-* [Node.js 16.18.1](https://nodejs.org/en/) or above
+- [Virtualbox  5.2](https://www.virtualbox.org/) or above
+- [Vagrant 2.2.0](https://www.vagrantup.com/) or above
+- [PHP 8.1](https://php.net) or above
+  - Windows users can install [XAMPP](https://www.apachefriends.org/index.html)
+- [Composer 2](https://getcomposer.org/)
+- [Node.js 16.18.1](https://nodejs.org/en/) or above
 
 **Steps for Development Installation**
 
-* Clone the repository into a directory
-* Perform `composer install` to install required libraries. If you are on windows, you may need to run `composer install --ignore-platform-reqs` due to Horizon requiring the pcntl extension. You can safely ignore this as the application runs in the virtual machine which has the appropriate extensions installed.
-* Perform `npm install` in the project directory
-* Perform `npm run dev` to build the front-end assets
-* Modify your local `/etc/hosts` add `192.168.10.10 processmaker.local.processmaker.com`. On Windows, this file is located at `C:\Windows\System32\Drivers\etc\hosts`.
-  * If you need to change the ip address to something else to avoid conflicts on your network, modify the `Homestead.yaml` file accordingly. Do not commit this change to the repository.
-* Execute `vagrant up` in the project directory to bring up the laravel homestead virtual machine
-* Execute `vagrant ssh` to ssh into the newly created virtual machine
-* Execute `php artisan processmaker:install` in `/home/vagrant/processmaker` to start the ProcessMaker Installation
-  * Specify `localhost` as your local database server
-  * Specify `3306` as your local database port
-  * Specify `processmaker` as your local database name
-  * Specify `homestead` as your local database username
-  * Specify `secret` as your local database password
-  * Specify `https://processmaker.local.processmaker.com` as your application url
-* Check your .env file to ensure the `PROCESSMAKER_SCRIPTS_DOCKER` variable has the right Docker installation path, especially if you are under macOS (Docker on macOS installs under /usr/local/bin/docker).
-* Visit `https://processmaker.local.processmaker.com` in your browser to access the application
-  * Login with the username of `admin` and password of `admin`
+- Clone the repository into a directory
+- Perform `composer install` to install required libraries. If you are on windows, you may need to run `composer install --ignore-platform-reqs` due to Horizon requiring the pcntl extension. You can safely ignore this as the application runs in the virtual machine which has the appropriate extensions installed.
+- Perform `npm install` in the project directory
+- Perform `npm run dev` to build the front-end assets
+- Modify your local `/etc/hosts` add `192.168.10.10 processmaker.local.processmaker.com`. On Windows, this file is located at `C:\Windows\System32\Drivers\etc\hosts`.
+  - If you need to change the ip address to something else to avoid conflicts on your network, modify the `Homestead.yaml` file accordingly. Do not commit this change to the repository.
+- Execute `vagrant up` in the project directory to bring up the laravel homestead virtual machine
+- Execute `vagrant ssh` to ssh into the newly created virtual machine
+- Execute `php artisan processmaker:install` in `/home/vagrant/processmaker` to start the ProcessMaker Installation
+  - Specify `localhost` as your local database server
+  - Specify `3306` as your local database port
+  - Specify `processmaker` as your local database name
+  - Specify `homestead` as your local database username
+  - Specify `secret` as your local database password
+  - Specify `https://processmaker.local.processmaker.com` as your application url
+- Check your .env file to ensure the `PROCESSMAKER_SCRIPTS_DOCKER` variable has the right Docker installation path, especially if you are under macOS (Docker on macOS installs under /usr/local/bin/docker).
+- Visit `https://processmaker.local.processmaker.com` in your browser to access the application
+  - Login with the username of `admin` and password of `admin`
 
 When developing, make sure to turn on debugging in your `.env` so you can see the actual error instead of the Whoops page.
 
@@ -196,7 +261,9 @@ For macOS:
 
 If you choose not to install the certificate, you should access the socket.io js file in your browser to allow unsafe connections from it. Otherwise, real-time notifications may not work in your development environment.
 
-* [https://processmaker.local.processmaker.com:6001/socket.io/socket.io.js](https://processmaker.local.processmaker.com:6001/socket.io/socket.io.js)
+- [https://processmaker.local.processmaker.com:6001/socket.io/socket.io.js](https://processmaker.local.processmaker.com:6001/socket.io/socket.io.js)
+
+
 
 #### Customize Logos
 
@@ -211,15 +278,20 @@ LOGIN_LOGO_PATH={{LOGIN PAGE LOGO PATH HERE}}
 
 1. Run npm run dev
 
+
+
 #### Scheduled tasks/events
 
 To run time based BPMN events like Timer Start Events or Intermediate Timer Events, the laravel scheduler should be enabled. To do this open a console and:
+
 1. Execute crontab -e
-2. Add to the cron tab the following line \(replacing the upper cased text with the directory where your proyecto is located \):
+2. Add to the cron tab the following line replacing the upper cased text with the directory where your proyecto is located :
 
 ```text
 * * * * * cd YOUR_BPM_PROJECT && php artisan schedule:run >> /dev/null 2>&1
 ```
+
+
 
 #### API
 
@@ -336,20 +408,25 @@ And for a show method
     ...
 ```
 
+
+
 #### NAYRA
 
 Please add/change the next configuration in .env file to define the message broker driver that is used for Nayra
 
 # Message broker driver, possible values: rabbitmq, kafka, this is optional, if not exists or is empty, the Nayra will be work as normally with local execution
+
 MESSAGE_BROKER_DRIVER=rabbitmq
 
 # Rabbit MQ connection, only when you use RabbitMQ
+
 RABBITMQ_HOST=127.0.0.1
 RABBITMQ_PORT=30672
 RABBITMQ_LOGIN=guest
 RABBITMQ_PASSWORD=guest
 
 # Kafka connection, only when you use Kafka
+
 KAFKA_BROKERS=127.0.0.1:30092
 
 **Notes**
@@ -378,7 +455,7 @@ Full OpenAPI 3.0 specification at [https://github.com/OAI/OpenAPI-Specification/
 
 **Testing with Laravel Dusk**
 
-When testing in [Laravel Dusk](https://laravel.com/docs/6.x/dusk), make sure to turn off debugging mode in your `.env` so you can use the whole page and screens executing functional tests. Then, change app\_env value to `develop` in the same file:
+When testing in [Laravel Dusk](https://laravel.com/docs/6.x/dusk), make sure to turn off debugging mode in your `.env` so you can use the whole page and screens executing functional tests. Then, change appenv value to `develop` in the same file:
 
 ```text
 APP_DEBUG=FALSE
@@ -399,45 +476,64 @@ To interact with web elements [https://laravel.com/docs/6.x/dusk#interacting-wit
 
 List of available assertions [https://laravel.com/docs/6.x/dusk#available-assertions](https://laravel.com/docs/6.x/dusk#available-assertions)
 
-
 # ICONS
 
 Please follow the steps:
+
 1. Execute the command in root processmaker
+
 ```text
 npm install
 ```
-2. Add the new svg icon file in the /processmaker/resources/devhub/pm-font/svg
+
+1. Add the new svg icon file in the /processmaker/resources/devhub/pm-font/svg
+
 ```text
 /processmaker/resources/devhub/pm-font/svg/my-new-icon.svg
 ```
+
 3.Run the follow command
+
 ```text
 npm run font
 ```
+
 4.Run the follow command
+
 ```text
 npm run dev
 ```
+
 5.To use your new icon, in any template or component, add the icon as follows:
+
 ```text
 <i class="fp-my-new-icon" />
 ```
 
+
+
 ### RECOMMENDATIONS ABOUT ICONS
-1. We recommend using the file name with '-' for example: 
+
+1. We recommend using the file name with '-' for example:
+
 ```text
 "left-arrow.svg"
 ```
-2. To use the icon, we should use the same name of the file,  for example: 
+
+1. To use the icon, we should use the same name of the file,  for example:
+
 ```text
 File name: "my-jonas-custom-icon.svg"
 How to use icon: <i class="fp-my-jonas-custom-icon" />
 ```
-3. To check all the icons
+
+1. To check all the icons
+
 ```text
 npm run dev-font
 ```
+
+
 
 # Case Retention Tier (CASE_RETENTION_TIER)
 
@@ -445,28 +541,35 @@ The case retention policy controls how long cases are stored before they are aut
 
 ### Supported tiers
 
-| Tier | Retention options available |
-|------|----------------------------|
-| **1** | Six months, One year |
-| **2** | Six months, One year, Three years |
+
+| Tier  | Retention options available                   |
+| ----- | --------------------------------------------- |
+| **1** | Six months, One year                          |
+| **2** | Six months, One year, Three years             |
 | **3** | Six months, One year, Three years, Five years |
 
+
 Set the variable in your `.env` file:
+
 ```env
 CASE_RETENTION_POLICY_ENABLED=true
 CASE_RETENTION_TIER=1
 ```
+
 Use `1`, `2`, or `3`. The default is `1` if not set. The default retention period shown in the UI for Tier 1 is one year.
-
-
 
 # Prometheus and Grafana
 
 This guide explains how to install and run **Prometheus** and **Grafana** using Docker. Both tools complement each other: Prometheus collects and monitors metrics, while Grafana visualizes them with interactive dashboards.
 
 ## Local Development with docker compose
+
+
+
 ### Prometheus & Grafana
+
 Go to the metrics directory
+
 ```text
 cd metrics
 ```
@@ -477,9 +580,9 @@ Edit `prometheus.yml` and update the target hostname with your local processmake
 
 Run `docker compose up -d`
 
-Check that prometheus can connect to your local instance at http://localhost:9090/targets
+Check that prometheus can connect to your local instance at [http://localhost:9090/targets](http://localhost:9090/targets)
 
-Go to Grafana at http://localhost:3000/
+Go to Grafana at [http://localhost:3000/](http://localhost:3000/)
 
 When you are finished, run `docker compose down`. To delete all data, run `docker compose down -v`
 
@@ -488,6 +591,7 @@ When you are finished, run `docker compose down`. To delete all data, run `docke
 Now you can use the `Metrics` Facade anywhere in your application to manage metrics.
 
 ### **1. Counter**
+
 A **Counter** only **increases** over time or resets to zero. It is used for cumulative events.
 
 - Total number of HTTP requests:  
@@ -498,7 +602,10 @@ A **Counter** only **increases** over time or resets to zero. It is used for cum
   ```
 - Number of system errors (e.g., HTTP 5xx).
 
+
+
 ### **2. Gauge**
+
 A **Gauge** can **increase or decrease**. It is used for values that fluctuate over time.
 
 - Current number of active jobs in a queue:  
@@ -508,7 +615,10 @@ A **Gauge** can **increase or decrease**. It is used for values that fluctuate o
   ```
 - Memory or CPU usage.
 
+
+
 ### **3. Histogram**
+
 A **Histogram** measures **value distributions** by organizing them into buckets. It is ideal for latency or size measurements.
 
 - Duration of HTTP requests:  
@@ -558,18 +668,25 @@ ProcessMaker can now be set up as a multitenant application.
 
 - Create an empty datbase named `landlord`. Your `DB_USERNAME` should have permission to write to this table.
 
+
+
 ## Transition your dev instnace to multitenancy
 
 Run the following command to enable multitenancy
+
 ```
 php artisan tenants:enable --migrate
 ```
+
 This command will
+
 - Setup the landlord database. Make sure you create the empty landlord database first.
 - Set your existing database as the tenant database
 - Copy your existing `storage` folder to `storage/tenant_1`
 - Copy your existing `resources/lang` folder to `resources/lang/tenant_1`
 - Enable multitenancy in your .env
+
+
 
 ## Using `valet share` for the script microservice
 
@@ -585,11 +702,13 @@ valet link another-tenant.test
 ```
 
 Run the following command to create another tenant:
+
 ```
 php artisan tenants:create --domain="another-tenant.test" --name="Another Tenant" --database="another_tenant"
 ```
 
 This command will
+
 - Create the required folder structure
 - Create the tenant database
 
@@ -608,6 +727,7 @@ copy the `.env` file into the transitions folder and add the instnace name to th
 For example `.env.my-instance`
 
 Run the following command to migrate the instance(s) to a tenant:
+
 ```
 php artisan tenants:transition
 ```
@@ -620,6 +740,6 @@ You must move the tenants storage folder and the resources/lang folder manually
 
 Distributed under the [AGPL Version 3](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
-ProcessMaker \(C\) 2002 - 2020 ProcessMaker Inc.
+ProcessMaker C 2002 - 2020 ProcessMaker Inc.
 
 For further information visit: [http://www.processmaker.com/](http://www.processmaker.com/) 
