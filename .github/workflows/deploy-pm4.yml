@@ -15,5 +15,5 @@ concurrency:
 jobs:
   run:
     name: Run PM4-workflow
-    uses: processmaker/.github/.github/workflows/deploy-pm4.yml@enable-octane-cicd
+    uses: processmaker/.github/.github/workflows/deploy-pm4.yml@main
     secrets: inherit
