@@ -248,13 +248,16 @@ class UserController extends Controller
         }
 
         $include_ids = [];
+        $applyAssignableFilter = false;
         $include_ids_string = $request->input('include_ids', '');
         if (!empty($include_ids_string)) {
             $include_ids = explode(',', $include_ids_string);
+            $applyAssignableFilter = true;
         } elseif ($request->has('assignable_for_task_id')) {
             $processRequestToken = ProcessRequestToken::with(['process', 'processRequest'])
                 ->findOrFail($request->input('assignable_for_task_id'));
             if (config('app.reassign_restrict_to_assignable_users')) {
+                $applyAssignableFilter = true;
                 $include_ids = $processRequestToken->process->getAssignableUsersByAssignmentType($processRequestToken);
                 $bpmnAssignment = $processRequestToken->getBpmnDefinition()->getBpmnElementInstance()
                     ->getProperty('assignment', null);
@@ -267,7 +270,7 @@ class UserController extends Controller
             }
         }
 
-        if (!empty($include_ids)) {
+        if ($applyAssignableFilter) {
             $query->whereIn('id', $include_ids);
         }
 

@@ -1057,6 +1057,50 @@ class UsersTest extends TestCase
         $this->assertNotContains($otherUser->id, $userIds);
     }
 
+    public function testPostUsersTaskCountWithRuleExpressionNoMatchReturnsEmptyList()
+    {
+        config(['app.reassign_restrict_to_assignable_users' => true]);
+
+        $assignableUser = User::factory()->create(['status' => 'ACTIVE']);
+        $unrestrictedUser = User::factory()->create(['status' => 'ACTIVE']);
+
+        $rules = [
+            ['type' => 'user', 'assignee' => $assignableUser->id, 'expression' => 'TestVar < 10'],
+        ];
+
+        $bpmn = file_get_contents(__DIR__ . '/processes/AssignmentByProcessVariable.bpmn');
+        $bpmn = str_replace('[ASSIGNMENT]', 'rule_expression', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_USERS]', '', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_GROUPS]', '', $bpmn);
+        $bpmn = str_replace('[IS_SELF_SERVICE]', 'false', $bpmn);
+        $bpmn = str_replace('[ASSIGNMENT_RULES]', htmlspecialchars(json_encode($rules)), $bpmn);
+
+        $process = Process::factory()->create(['bpmn' => $bpmn, 'manager_id' => null]);
+
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'data' => ['TestVar' => 99],
+        ]);
+
+        $task = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'task1_node',
+            'user_id' => $assignableUser->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        $result = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'assignable_for_task_id' => $task->id,
+            'form_data' => ['TestVar' => 99],
+        ]);
+
+        $result->assertStatus(200);
+        $userIds = array_column($result->json()['data'], 'id');
+        $this->assertEmpty($userIds);
+        $this->assertNotContains($unrestrictedUser->id, $userIds);
+    }
+
     public function testPostUsersTaskCountWithRuleExpressionGroupAssignment()
     {
         config(['app.reassign_restrict_to_assignable_users' => true]);
