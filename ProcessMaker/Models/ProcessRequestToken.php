@@ -1098,21 +1098,28 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
         $userIds = [];
         $language = new ExpressionLanguage();
+        $hasExpressionMatch = false;
+
         foreach ($assignments as $assignment) {
+            if ($this->isDefaultAssignmentRule($assignment)) {
+                continue;
+            }
+
             if (!$this->isAssignmentRuleMatch($assignment, $formData, $language)) {
                 continue;
             }
 
-            if (($assignment['type'] ?? 'user') === 'group') {
-                $groupUsers = [];
-                $this->process->getConsolidatedUsers($assignment['assignee'], $groupUsers);
-                foreach ($groupUsers as $userId) {
-                    if (!empty($userId) && is_numeric($userId)) {
-                        $userIds[$userId] = $userId;
-                    }
+            $hasExpressionMatch = true;
+            $this->appendAssignmentAssignees($assignment, $userIds);
+        }
+
+        if (!$hasExpressionMatch) {
+            foreach ($assignments as $assignment) {
+                if (!$this->isDefaultAssignmentRule($assignment)) {
+                    continue;
                 }
-            } else {
-                $userIds[$assignment['assignee']] = $assignment['assignee'];
+
+                $this->appendAssignmentAssignees($assignment, $userIds);
             }
         }
 
@@ -1141,10 +1148,36 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         return array_merge($instanceData, $formData);
     }
 
-    private function isAssignmentRuleMatch(array $assignment, array $variables, ExpressionLanguage $language): bool
+    private function isDefaultAssignmentRule(array $assignment): bool
     {
         if (isset($assignment['default']) && $assignment['default'] === true) {
             return true;
+        }
+
+        return array_key_exists('expression', $assignment) && $assignment['expression'] === null;
+    }
+
+    private function appendAssignmentAssignees(array $assignment, array &$userIds): void
+    {
+        if (($assignment['type'] ?? 'user') === 'group') {
+            $groupUsers = [];
+            $this->process->getConsolidatedUsers($assignment['assignee'], $groupUsers);
+            foreach ($groupUsers as $userId) {
+                if (!empty($userId) && is_numeric($userId)) {
+                    $userIds[$userId] = $userId;
+                }
+            }
+
+            return;
+        }
+
+        $userIds[$assignment['assignee']] = $assignment['assignee'];
+    }
+
+    private function isAssignmentRuleMatch(array $assignment, array $variables, ExpressionLanguage $language): bool
+    {
+        if ($this->isDefaultAssignmentRule($assignment)) {
+            return false;
         }
 
         if (empty($assignment['expression'])) {

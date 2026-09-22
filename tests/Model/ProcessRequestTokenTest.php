@@ -569,6 +569,51 @@ class ProcessRequestTokenTest extends TestCase
         }
     }
 
+    public function testGetAssigneesFromExpressionExcludesDefaultWhenExpressionRuleMatches()
+    {
+        $matchedUser = User::factory()->create(['status' => 'ACTIVE']);
+        $defaultUser = User::factory()->create(['status' => 'ACTIVE']);
+
+        $process = Process::factory()->create();
+        $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
+
+        $rules = [
+            ['type' => 'user', 'assignee' => $matchedUser->id, 'expression' => 'TestVar<10'],
+            ['type' => 'user', 'assignee' => $defaultUser->id, 'default' => true],
+        ];
+
+        $activity = $this->createMock(\ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface::class);
+        $activity->method('getProperty')
+            ->willReturnCallback(function ($key, $default) use ($rules) {
+                if ($key === 'assignmentRules') {
+                    return json_encode($rules);
+                }
+
+                return $default;
+            });
+
+        $bpmnDefinition = $this->createMock(\ProcessMaker\Nayra\Storage\BpmnElement::class);
+        $bpmnDefinition->method('getBpmnElementInstance')
+            ->willReturn($activity);
+
+        $token = $this->getMockBuilder(ProcessRequestToken::class)
+            ->onlyMethods(['getBpmnDefinition'])
+            ->getMock();
+
+        $token->process_id = $process->id;
+        $token->process_request_id = $request->id;
+        $token->process = $process;
+
+        $token->expects($this->atLeastOnce())
+            ->method('getBpmnDefinition')
+            ->willReturn($bpmnDefinition);
+
+        $result = $token->getAssigneesFromExpression(['TestVar' => 5]);
+
+        $this->assertContains($matchedUser->id, $result);
+        $this->assertNotContains($defaultUser->id, $result);
+    }
+
     public function testGetAssigneesFromExpressionFallsBackToRequestDataWhenFormDataIsEmpty()
     {
         $groupUsers = User::factory()->count(3)->create(['status' => 'ACTIVE']);
