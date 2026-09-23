@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessRequest;
 use Tests\Feature\Shared\RequestHelper;
@@ -15,6 +16,8 @@ class ProcessLaunchpadTest extends TestCase
     use RequestHelper, RefreshDatabase;
 
     const API_TEST_URL = '/process_launchpad';
+
+    const PROCESSES_API_TEST_URL = '/process_bookmarks/processes';
 
     const STRUCTURE = [
         'launchpad',
@@ -47,6 +50,53 @@ class ProcessLaunchpadTest extends TestCase
         // Validate the header status code
         $response->assertStatus(200);
         $this->assertNotEmpty($response);
+    }
+
+    public function testGetProcessesReturnsEmptyCollectionForNonNumericCategory()
+    {
+        Process::factory()->create();
+
+        $response = $this->apiCall('GET', self::PROCESSES_API_TEST_URL, [
+            'category' => 'lorem',
+        ]);
+
+        $response->assertOk()
+            ->assertJsonCount(0, 'data')
+            ->assertJsonPath('meta.total', 0);
+    }
+
+    public function testGetProcessesReturnsEmptyCollectionForMissingNumericCategory()
+    {
+        Process::factory()->create();
+
+        $response = $this->apiCall('GET', self::PROCESSES_API_TEST_URL, [
+            'category' => '0',
+        ]);
+
+        $response->assertOk()
+            ->assertJsonCount(0, 'data')
+            ->assertJsonPath('meta.total', 0);
+    }
+
+    public function testGetProcessesFiltersByValidCategory()
+    {
+        $category = ProcessCategory::factory()->create();
+        $otherCategory = ProcessCategory::factory()->create();
+        $process = Process::factory()->create([
+            'process_category_id' => $category->id,
+        ]);
+        Process::factory()->create([
+            'process_category_id' => $otherCategory->id,
+        ]);
+
+        $response = $this->apiCall('GET', self::PROCESSES_API_TEST_URL, [
+            'category' => $category->id,
+        ]);
+
+        $response->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $process->id)
+            ->assertJsonPath('meta.total', 1);
     }
 
     /**
