@@ -293,6 +293,14 @@ class Script extends ProcessMakerModel implements ScriptInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    protected function getVersionableAttributes(): ?array
+    {
+        return ['code'];
+    }
+
+    /**
      * Get the associated run_as_user
      */
     public function runAsUser()
