@@ -36,7 +36,7 @@ class ProcessMakerModel extends Model
 
         $columnsToShow = array_diff($this->getTableColumns(), $columns);
         $columnsToShow = array_map(function ($column) {
-            return $this->table . '.' . $column;
+            return $this->getTable() . '.' . $column;
         }, $columnsToShow);
 
         return $query->select($columnsToShow);
