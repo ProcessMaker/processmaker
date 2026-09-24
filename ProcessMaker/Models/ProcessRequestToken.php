@@ -33,7 +33,6 @@ use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Throwable;
 
 /**
@@ -1071,10 +1070,9 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     public function getAssignees(array $assignments, array $variables): array
     {
         $result = [];
-        $language = new ExpressionLanguage();
 
         foreach ($assignments as $assignment) {
-            if ($this->isAssignmentRuleMatch($assignment, $variables, $language)) {
+            if ($this->isAssignmentRuleMatch($assignment, $variables)) {
                 $result[] = $assignment['assignee'];
             }
         }
@@ -1097,7 +1095,6 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $assignments = json_decode($assignmentRules, true) ?? [];
 
         $userIds = [];
-        $language = new ExpressionLanguage();
         $hasExpressionMatch = false;
 
         foreach ($assignments as $assignment) {
@@ -1105,7 +1102,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 continue;
             }
 
-            if (!$this->isAssignmentRuleMatch($assignment, $formData, $language)) {
+            if (!$this->isAssignmentRuleMatch($assignment, $formData)) {
                 continue;
             }
 
@@ -1139,13 +1136,20 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
         unset($formData['_user'], $formData['_request'], $formData['_process']);
 
-        $instanceData = $this->processRequest?->data ?? [];
-
-        if (empty($formData)) {
-            return $instanceData;
+        $instance = $this->getInstance();
+        if ($instance) {
+            $variables = $instance->getDataStore()->getData();
+        } else {
+            $variables = $this->processRequest?->data ?? [];
         }
 
-        return array_merge($instanceData, $formData);
+        $variables = is_array($variables) ? $variables : [];
+
+        if (empty($formData)) {
+            return $variables;
+        }
+
+        return array_merge($variables, $formData);
     }
 
     private function isDefaultAssignmentRule(array $assignment): bool
@@ -1174,7 +1178,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $userIds[$assignment['assignee']] = $assignment['assignee'];
     }
 
-    private function isAssignmentRuleMatch(array $assignment, array $variables, ExpressionLanguage $language): bool
+    private function isAssignmentRuleMatch(array $assignment, array $variables): bool
     {
         if ($this->isDefaultAssignmentRule($assignment)) {
             return false;
@@ -1185,7 +1189,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         }
 
         try {
-            return $language->evaluate($assignment['expression'], $variables);
+            return (bool) feelExpression($assignment['expression'], $variables);
         } catch (Throwable $e) {
             return false;
         }

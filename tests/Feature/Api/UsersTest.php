@@ -1480,6 +1480,48 @@ class UsersTest extends TestCase
         $result->assertStatus(200);
     }
 
+    public function testPostUsersTaskCountExcludesAuthenticatedUserForReassignment()
+    {
+        config(['app.reassign_restrict_to_assignable_users' => true]);
+
+        $admin = $this->user;
+        $otherManager = User::factory()->create(['status' => 'ACTIVE']);
+
+        $bpmn = file_get_contents(__DIR__ . '/processes/AssignmentByProcessVariable.bpmn');
+        $bpmn = str_replace('[ASSIGNMENT]', 'requester', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_USERS]', '', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_GROUPS]', '', $bpmn);
+        $bpmn = str_replace('[IS_SELF_SERVICE]', 'false', $bpmn);
+        $bpmn = str_replace('[ASSIGNMENT_RULES]', '', $bpmn);
+
+        $process = Process::factory()->create([
+            'manager_id' => [$admin->id, $otherManager->id],
+            'bpmn' => $bpmn,
+        ]);
+
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $admin->id,
+        ]);
+
+        $task = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'task1_node',
+            'user_id' => $admin->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        $result = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'assignable_for_task_id' => $task->id,
+        ]);
+
+        $result->assertStatus(200);
+        $userIds = array_column($result->json()['data'], 'id');
+        $this->assertNotContains($admin->id, $userIds);
+        $this->assertContains($otherManager->id, $userIds);
+    }
+
     public function testPostUsersTaskCountWithRuleExpressionAssignment()
     {
         config(['app.reassign_restrict_to_assignable_users' => true]);

@@ -316,6 +316,10 @@ class UserController extends Controller
             $query->whereIn('id', $include_ids);
         }
 
+        if ($request->has('assignable_for_task_id')) {
+            $query->where('id', '!=', $request->user()->id);
+        }
+
         $response = $query
             ->where('is_system', false)
             ->where('status', 'ACTIVE')
