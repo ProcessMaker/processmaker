@@ -316,6 +316,11 @@ class UserController extends Controller
             $query->whereIn('id', $include_ids);
         }
 
+        // Reassign modal only: assignable_for_task_id is sent by getReassignUsers(), not by other
+        // users_task_count consumers. Without this filter, the authenticated user can appear in the
+        // dropdown and reassign the task to themselves (unnecessary logs and invalid UX). Assignment
+        // rules and assignable user resolution above are unchanged; this only removes the session user
+        // from the final list.
         if ($request->has('assignable_for_task_id')) {
             $query->where('id', '!=', $request->user()->id);
         }
