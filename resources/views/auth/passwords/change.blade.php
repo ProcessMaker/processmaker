@@ -16,13 +16,7 @@
     <div class="auth-card-header">
       <h1 class="auth-card-title">{{ __('Please change your account password') }}</h1>
     </div>
-    <div class="alert alert-primary mb-3">{{ __('Password Requirements') }}:
-      <ul class="mb-0">
-        <li>{{ __('Minimum of 8 characters in length') }}</li>
-        <li>{{ __('Contains an uppercase letter') }}</li>
-        <li>{{ __('Contains a number or symbol') }}</li>
-      </ul>
-    </div>
+    @include('auth.partials.password-requirements')
     @if (session()->has('timeout'))
     <div class="alert alert-danger mb-3">{{ __("Your account has been timed out for security.") }}</div>
     @endif
