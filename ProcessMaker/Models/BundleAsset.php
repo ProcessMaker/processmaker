@@ -30,6 +30,8 @@ class BundleAsset extends ProcessMakerModel
 
     const PM_BLOCK_CLASS = 'ProcessMaker\Package\PackagePmBlocks\Models\PmBlock';
 
+    const SERVICE_TASK_RESOURCE_CLASS = 'ProcessMaker\Package\PackageServiceTask\Models\ServiceTaskResource';
+
     public static function canExport(?ProcessMakerModel $asset)
     {
         return $asset !== null
@@ -100,6 +102,8 @@ class BundleAsset extends ProcessMakerModel
                 return "/designer/flow-genies/{$this->asset_id}/edit";
             case self::PM_BLOCK_CLASS:
                 return "/designer/pm-blocks/{$this->asset_id}/edit";
+            case self::SERVICE_TASK_RESOURCE_CLASS:
+                return "/service-task/{$this->asset_id}/edit";
             default:
                 return null;
         }
@@ -124,6 +128,8 @@ class BundleAsset extends ProcessMakerModel
                 return 'flow_genie';
             case self::PM_BLOCK_CLASS:
                 return 'pm_block';
+            case self::SERVICE_TASK_RESOURCE_CLASS:
+                return 'service_task_resource';
             default:
                 return null;
         }
