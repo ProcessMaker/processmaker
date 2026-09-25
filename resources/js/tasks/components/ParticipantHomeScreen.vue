@@ -347,17 +347,6 @@ export default {
     },
     processDashboardSelected(id, type) {
       this.selectedProcess = type;
-      if (type === "process") {
-        this.$router.push({
-          name: "process-browser",
-          query: { process: id },
-        });
-      } else if (type === "dashboard") {
-        this.$router.push({
-          name: "dashboard",
-          query: { dashboard: id },
-        });
-      }
     },
     toggleMenu(value) {
       this.showMenu = value;
