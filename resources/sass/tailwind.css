@@ -53,3 +53,8 @@
     margin: revert-layer;
     padding: 0px;
   }
+
+  /* Set Images in form-group in the center */
+  .form-group img {
+    display: inline-flex;
+  }
