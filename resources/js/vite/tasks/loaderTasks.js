@@ -6,11 +6,13 @@ import modeler from "../../../js/next/modeler";
 import screenBuilderNext from "../../../js/next/screenBuilder";
 // Load screen-builder for PMBLOCKs
 import * as ScreenBuilder from "@processmaker/screen-builder";
+import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.ScreenBuilder = ScreenBuilder;
 
 setupMain();
 screenBuilderNext();
+window.Vue.use(ScreenBuilder.default);
 modeler();
 
 window.ProcessMaker.taskDraftsEnabled = window.temporal.taskDraftsEnabled;

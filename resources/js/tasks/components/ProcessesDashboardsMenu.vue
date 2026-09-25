@@ -110,16 +110,25 @@ export default {
         this.getDashboardViewScreen(id.toString());
       }
 
-      this.$emit("processDashboardSelected", { id, type });
+      this.$emit("processDashboardSelected", id, type);
       this.$emit("menuItemSelected");
     },
     callDashboardViewScreen(id, screen, formData) {
       const router = this.$router || this.$root.$router;
+      const dashboardId = id.toString();
+
+      if (
+        router.currentRoute.name === "dashboard"
+        && router.currentRoute.params.dashboardId === dashboardId
+      ) {
+        return;
+      }
+
       router
         .push({
           name: "dashboard",
           params: {
-            dashboardId: id.toString(),
+            dashboardId,
             screen,
             formData,
           },
