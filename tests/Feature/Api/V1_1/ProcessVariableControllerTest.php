@@ -2,11 +2,15 @@
 
 namespace Tests\Feature\Api\V1_1;
 
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use PDOException;
 use ProcessMaker\Http\Controllers\Api\V1_1\ProcessVariableController;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
@@ -18,39 +22,51 @@ use Tests\TestCase;
 
 class ProcessVariableControllerTest extends TestCase
 {
-    use RequestHelper;
+    use RequestHelper {
+        setUp as requestHelperSetUp;
+    }
 
     private bool $isVariablesFinderEnabled;
 
-    /**
-     * Set up test environment by creating a test user and authenticating as them
-     *
-     * @return void
-     */
-    public function setupCreateUser()
-    {
-        $this->user = User::factory()->create();
-        $this->actingAs($this->user);
+    private ?Process $requesterProcess = null;
 
-        // Check if the VariableFinder package is enabled
+    protected function setUp(): void
+    {
+        $this->requestHelperSetUp();
+        $this->configureVariableFinder();
+    }
+
+    /**
+     * Choose mock data or Variable Finder without creating processes.
+     * Process::factory() compiles BPMN, so it stays out of this hook.
+     */
+    private function configureVariableFinder(): void
+    {
         $this->isVariablesFinderEnabled = class_exists(ProcessVariable::class) && Schema::hasTable('process_variables');
 
-        // Clear process variables cache
-        $this->clearCache([1, 2, 3]);
-        $this->clearCache([1, 2]);
-
-        // Create the processes variables
         if (!$this->isVariablesFinderEnabled) {
-            // Mock the ProcessVariableController to use mock data instead of VariableFinder package
             ProcessVariableController::mock(true);
             ProcessVariableController::useVarFinder(false);
-            $this->mockVariableFinder([1, 2, 3], null);
-            $this->mockVariableFinder([1, 2], null);
-        } else {
-            ProcessVariableController::mock(false);
-            ProcessVariableController::useVarFinder(true);
-            $this->loadVariableFinderData([1, 2, 3]);
+
+            return;
         }
+
+        ProcessVariableController::mock(false);
+        ProcessVariableController::useVarFinder(true);
+    }
+
+    /**
+     * Build the process 1/2/3 variable catalog. Call only from tests that read it.
+     */
+    private function seedVariableFinderProcesses(array $processIds = [1, 2, 3]): void
+    {
+        if (!$this->isVariablesFinderEnabled) {
+            $this->mockVariableFinder($processIds, null);
+
+            return;
+        }
+
+        $this->loadVariableFinderData($processIds);
     }
 
     /**
@@ -58,6 +74,8 @@ class ProcessVariableControllerTest extends TestCase
      */
     public function test_can_get_process_variables_with_pagination(): void
     {
+        $this->seedVariableFinderProcesses();
+
         // Make request to the endpoint
         $response = $this->apiCall('GET', '/api/1.1/processes/variables?processIds=1,2,3&page=1&per_page=15');
 
@@ -283,6 +301,8 @@ class ProcessVariableControllerTest extends TestCase
      */
     public function test_pagination_consistency(): void
     {
+        $this->seedVariableFinderProcesses([1]);
+
         // Get first page
         $firstPage = $this->apiCall('GET', '/api/1.1/processes/variables?processIds=1&page=1&per_page=5')
             ->json();
@@ -329,6 +349,8 @@ class ProcessVariableControllerTest extends TestCase
      */
     public function test_saved_search_id_filtering(): void
     {
+        $this->seedVariableFinderProcesses([1]);
+
         // Create a saved search with specific columns
         $savedSearch = SavedSearch::factory()->create([
             'meta' => [
@@ -543,5 +565,177 @@ class ProcessVariableControllerTest extends TestCase
         $this->assertFalse($filteredFields->contains('status'));
         $this->assertFalse($filteredFields->contains('initiated_at'));
         $this->assertFalse($filteredFields->contains('completed_at'));
+    }
+
+    public function test_requester_saved_search_with_empty_process_ids_and_oversized_data_returns_columns(): void
+    {
+        ProcessVariableController::mock(false);
+
+        $requester = User::factory()->create([
+            'username' => 'participant' . bin2hex(random_bytes(4)),
+        ]);
+        // getProcessesAttribute() treats the PMQL literal as a process name.
+        $process = Process::factory()->create([
+            'name' => $requester->username,
+        ]);
+        $this->makeRequest($requester, $process, ['requester_department' => 'engineering']);
+        $this->makeRequest($requester, $process, ['oversized_only_key' => str_repeat('x', 1048577)]);
+
+        $savedSearch = SavedSearch::factory()->create([
+            'type' => 'request',
+            'user_id' => $this->user->id,
+            'pmql' => '(requester = "' . $requester->username . '")',
+            'meta' => [
+                'columns' => [],
+            ],
+        ]);
+
+        $response = $this->apiCall(
+            'GET',
+            '/api/1.1/processes/variables?processIds=&page=1&per_page=100&savedSearchId='
+            . $savedSearch->id
+            . '&onlyAvailable='
+        );
+
+        $response->assertStatus(200);
+        $fields = collect($response->json('data'))->pluck('field');
+        $this->assertTrue($fields->contains('case_number'));
+        $this->assertTrue($fields->contains('data.requester_department'));
+        $this->assertFalse($fields->contains('data.oversized_only_key'));
+    }
+
+    public function test_only_available_excludes_columns_already_active_on_the_saved_search(): void
+    {
+        $savedSearch = $this->requesterSavedSearch(
+            ['requester_department' => 'engineering'],
+            [
+                ['label' => 'Case Number', 'field' => 'case_number'],
+                ['label' => 'Department', 'field' => 'data.requester_department'],
+            ]
+        );
+
+        $response = $this->getOnlyAvailable($savedSearch);
+
+        $response->assertStatus(200);
+        $fields = collect($response->json('data'))->pluck('field');
+        $this->assertFalse($fields->contains('case_number'));
+        $this->assertFalse($fields->contains('data.requester_department'));
+        $this->assertTrue($fields->contains('case_title'));
+    }
+
+    public function test_only_available_returns_defaults_when_discovery_hits_sort_memory(): void
+    {
+        $savedSearch = $this->requesterSavedSearch(['requester_department' => 'engineering']);
+
+        $throwSortError = true;
+        DB::connection()->beforeExecuting(function ($query) use (&$throwSortError) {
+            if (!$throwSortError || !str_contains(strtolower($query), 'length(')) {
+                return;
+            }
+
+            $throwSortError = false;
+            $previous = new PDOException(
+                'SQLSTATE[HY001]: Memory allocation error: 1038 Out of sort memory, consider increasing server sort buffer size'
+            );
+            $previous->errorInfo = ['HY001', 1038, 'Out of sort memory, consider increasing server sort buffer size'];
+
+            throw new QueryException(DB::connection()->getName(), $query, [], $previous);
+        });
+
+        try {
+            $response = $this->getOnlyAvailable($savedSearch);
+        } finally {
+            $throwSortError = false;
+        }
+
+        $response->assertStatus(200);
+        $fields = collect($response->json('data'))->pluck('field');
+        $this->assertTrue($fields->contains('case_number'));
+        $this->assertFalse($fields->contains('data.requester_department'));
+        $this->assertArrayHasKey('total', $response->json('meta'));
+    }
+
+    public function test_empty_process_ids_without_only_available_does_not_merge_saved_search_columns(): void
+    {
+        $savedSearch = $this->requesterSavedSearch(['requester_department' => 'engineering']);
+
+        $response = $this->apiCall(
+            'GET',
+            '/api/1.1/processes/variables?processIds=&page=1&per_page=100&savedSearchId=' . $savedSearch->id
+        );
+
+        $response->assertStatus(200);
+        $fields = collect($response->json('data'))->pluck('field');
+        $this->assertFalse($fields->contains('case_number'));
+        $this->assertFalse($fields->contains('data.requester_department'));
+        $this->assertSame(0, $response->json('meta.total'));
+    }
+
+    public function test_only_available_does_not_include_another_requesters_fields(): void
+    {
+        $savedSearch = $this->requesterSavedSearch(['requester_department' => 'engineering']);
+        $someoneElse = User::factory()->create();
+        $this->makeRequest($someoneElse, $this->requesterProcess, ['other_requester_secret' => 'nope']);
+
+        $response = $this->getOnlyAvailable($savedSearch);
+
+        $response->assertStatus(200);
+        $fields = collect($response->json('data'))->pluck('field');
+        $this->assertTrue($fields->contains('data.requester_department'));
+        $this->assertFalse($fields->contains('data.other_requester_secret'));
+    }
+
+    private function requesterSavedSearch(array $data, array $columns = []): SavedSearch
+    {
+        ProcessVariableController::mock(false);
+
+        $requester = User::factory()->create([
+            'username' => 'participant' . bin2hex(random_bytes(4)),
+        ]);
+        $this->requesterProcess = Process::factory()->create([
+            'name' => $requester->username,
+        ]);
+        $this->makeRequest($requester, $this->requesterProcess, $data);
+
+        return SavedSearch::factory()->create([
+            'type' => 'request',
+            'user_id' => $this->user->id,
+            'pmql' => '(requester = "' . $requester->username . '")',
+            'meta' => [
+                'columns' => $columns,
+            ],
+        ]);
+    }
+
+    /**
+     * Insert a request without model events or the factory's extra process graphs.
+     * The saving observer parses `data`, which is expensive for the oversized payload.
+     */
+    private function makeRequest(User $user, Process $process, array $data): void
+    {
+        $versionId = $process->getLatestVersion()->id;
+
+        ProcessRequest::withoutEvents(function () use ($user, $process, $data, $versionId) {
+            ProcessRequest::factory()->create([
+                'name' => 'Request',
+                'status' => 'ACTIVE',
+                'data' => $data,
+                'user_id' => $user->id,
+                'process_id' => $process->id,
+                'callable_id' => 'start',
+                'process_collaboration_id' => null,
+                'process_version_id' => $versionId,
+            ]);
+        });
+    }
+
+    private function getOnlyAvailable(SavedSearch $savedSearch)
+    {
+        return $this->apiCall(
+            'GET',
+            '/api/1.1/processes/variables?processIds=&page=1&per_page=100&savedSearchId='
+            . $savedSearch->id
+            . '&onlyAvailable='
+        );
     }
 }
