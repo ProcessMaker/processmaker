@@ -3,7 +3,9 @@
     <process-header-start
         :process="process"
         :ellipsis-permission="ellipsisPermission"
+        :show-process-info="showProcessInfo"
         @goBack="goBack()"
+        @toggle-info="toggleInfo"
         @onProcessNavigate="onProcessNavigate"
         v-if="!mobileApp"
       />
@@ -11,6 +13,28 @@
       v-if="showScreen"
       :screen="screen"
     />
+    <slide-process-info
+      :show="showProcessInfo"
+      :title="title"
+      :process="process"
+      :full-carousel="fullCarousel"
+      @closeCarousel="closeFullCarousel"
+      @close="closeProcessInfo"
+    >
+      <div class="tw-flex tw-flex-col tw-gap-4 tw-pl-10 tw-pr-10">
+        <carousel-slide
+          :process="process"
+          @full-carousel="showFullCarousel"
+        />
+        <div v-show="!fullCarousel">
+          <process-options
+            class="tw-w-full"
+            :process="process"
+            :collapsed="collapsed"
+          />
+        </div>
+      </div>
+    </slide-process-info>
     <create-template-modal
       id="create-template-modal"
       ref="create-template-modal"
@@ -57,6 +81,9 @@ import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
 import ProcessesMixin from "./mixins/ProcessesMixin";
 import ProcessHeaderStart from "./ProcessHeaderStart.vue";
+import SlideProcessInfo from "./slideProcessInfo/SlideProcessInfo.vue";
+import CarouselSlide from "./CarouselSlide.vue";
+import ProcessOptions from "./ProcessOptions.vue";
 
 const tceValidScreen = ["tce-student", "tce-college", "tce-grants"];
 
@@ -70,6 +97,9 @@ export default {
     AddToProjectModal,
     LaunchpadSettingsModal,
     ProcessHeaderStart,
+    SlideProcessInfo,
+    CarouselSlide,
+    ProcessOptions,
   },
   mixins: [ellipsisMenuMixin, processNavigationMixin, ProcessesMixin],
   props: ["process", "currentUserId", "ellipsisPermission"],
@@ -79,7 +109,17 @@ export default {
       screen_id: "",
       showScreen: false,
       mobileApp: window.ProcessMaker.mobileApp,
+      showProcessInfo: false,
+      fullCarousel: false,
+      collapsed: true,
     };
+  },
+  computed: {
+    title() {
+      return this.fullCarousel
+        ? this.process.name
+        : this.$t("Process Information");
+    },
   },
   mounted() {
     this.getScreen();
@@ -104,6 +144,18 @@ export default {
             window.ProcessMaker.alert(this.$t("TCE dashboards are currently unavailable, please contact with the administrator in order to enable"), "danger");
           }
         });
+    },
+    toggleInfo() {
+      this.showProcessInfo = !this.showProcessInfo;
+    },
+    closeProcessInfo() {
+      this.showProcessInfo = false;
+    },
+    showFullCarousel() {
+      this.fullCarousel = true;
+    },
+    closeFullCarousel() {
+      this.fullCarousel = false;
     },
   },
 };
