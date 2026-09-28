@@ -8,7 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
     <title>{{ __('Enter Security Code') }}</title>
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    @vite('resources/sass/app.scss')
     <link rel="icon" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
 </head>
 <body>
@@ -69,13 +69,17 @@
                                             {{ __('Send Again') }}
                                         </a>
                                     </div>
-                                    @if ($showAuthAppSetup ?? false)
-                                    <div class="form-group">
+                                    <div class="form-group text-right">
+                                        @if ($showAuthAppSetup ?? false)
                                         <a href="{{ route('2fa.auth_app_qr') }}">
                                             {{ __('Authenticator app') }}
                                         </a>
+                                        <br>
+                                        @endif
+                                        <a href="{{ route('logout') }}" dusk="login-as-another-user">
+                                            {{ __('Log in as another user') }}
+                                        </a>
                                     </div>
-                                    @endif
                                 </div>
                                 <div class="form-group">
                                     <button

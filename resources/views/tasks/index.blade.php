@@ -1,4 +1,4 @@
-@extends('layouts.layout', ['content_margin' => '', 'overflow-auto' => ''])
+@extends('layouts.layoutnextvite', ['content_margin' => '', 'overflow-auto' => ''])
 
 @section('title')
     {{ __($title) }}
@@ -149,29 +149,31 @@
 @endsection
 
 @section('js')
+    {{-- temporal must exist before loaderTasks (Vite modules run after deferred classic scripts) --}}
     <script>
-        window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
-        window.ProcessMaker.advanced_filter = @json($userFilter);
-        window.Processmaker.defaultColumns = @json($defaultColumns);
-        window.ProcessMaker.isDefaultColumns = @json($isDefaultColumns ?? false);
-        window.ProcessMaker.userConfiguration = @json($userConfiguration ?? []);
+        window.temporal = {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.temporal.taskDraftsEnabled = @json($taskDraftsEnabled);
+        window.temporal.advanced_filter = @json($userFilter);
+        window.temporal.defaultColumns = @json($defaultColumns);
+        window.temporal.isDefaultColumns = @json($isDefaultColumns ?? false);
+        window.temporal.userConfiguration = @json($userConfiguration ?? []);
         window.sessionStorage.setItem('elementDestinationURL', window.location.href);
-        window.ProcessMaker.showOldTaskScreen = @json($showOldTaskScreen);
-        window.Processmaker.user = @json($currentUser);
-        window.Processmaker.selectedProcess = @json($selectedProcess);
-        window.Processmaker.defaultSavedSearchId = @json($defaultSavedSearchId);
-        window.ProcessMaker.isTceCustomization = {{{config('app.tce_customization_enable') ? 'true' : 'false'}}};
-        window.ProcessMaker.metricsApiEndpoint = `{{{$metricsApiEndpoint}}}`;
-    </script>
-    @foreach($manager->getScripts() as $script)
-        <script src="{{$script}}"></script>
-    @endforeach
-    <script>
-        window.ProcessMaker.ellipsisPermission = {{
+        window.temporal.showOldTaskScreen = @json($showOldTaskScreen);
+        window.temporal.user = @json($currentUser);
+        window.temporal.selectedProcess = @json($selectedProcess);
+        window.temporal.defaultSavedSearchId = @json($defaultSavedSearchId);
+        window.temporal.isTceCustomization = {{{config('app.tce_customization_enable') ? 'true' : 'false'}}};
+        window.temporal.metricsApiEndpoint = `{{{$metricsApiEndpoint}}}`;
+        window.temporal.ellipsisPermission = {{
           Js::from(\Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects', 'documentation'))
         }};
-      </script>
-    <script src="{{ mix('js/tasks/index.js') }}"></script>
+    </script>
+    @vite(['resources/js/vite/tasks/loaderTasks.js'])
+    @foreach($manager->getScripts() as $script)
+        <script defer src="{{$script}}"></script>
+    @endforeach
+    @vite(['resources/js/vite/tasks/tasks.js'])
 @endsection
 
 @section('css')
