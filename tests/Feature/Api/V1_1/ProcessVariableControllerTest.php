@@ -567,7 +567,7 @@ class ProcessVariableControllerTest extends TestCase
         $this->assertFalse($filteredFields->contains('completed_at'));
     }
 
-    public function test_requester_saved_search_with_empty_process_ids_and_oversized_data_returns_columns(): void
+    public function test_requester_saved_search_with_empty_process_ids_and_large_data_returns_columns(): void
     {
         ProcessVariableController::mock(false);
 
@@ -579,7 +579,7 @@ class ProcessVariableControllerTest extends TestCase
             'name' => $requester->username,
         ]);
         $this->makeRequest($requester, $process, ['requester_department' => 'engineering']);
-        $this->makeRequest($requester, $process, ['oversized_only_key' => str_repeat('x', 1048577)]);
+        $this->makeRequest($requester, $process, ['large_only_key' => str_repeat('x', 1048577)]);
 
         $savedSearch = SavedSearch::factory()->create([
             'type' => 'request',
@@ -601,7 +601,7 @@ class ProcessVariableControllerTest extends TestCase
         $fields = collect($response->json('data'))->pluck('field');
         $this->assertTrue($fields->contains('case_number'));
         $this->assertTrue($fields->contains('data.requester_department'));
-        $this->assertFalse($fields->contains('data.oversized_only_key'));
+        $this->assertTrue($fields->contains('data.large_only_key'));
     }
 
     public function test_only_available_excludes_columns_already_active_on_the_saved_search(): void
@@ -629,7 +629,7 @@ class ProcessVariableControllerTest extends TestCase
 
         $throwSortError = true;
         DB::connection()->beforeExecuting(function ($query) use (&$throwSortError) {
-            if (!$throwSortError || !str_contains(strtolower($query), 'length(')) {
+            if (!$throwSortError || !$this->isIdSampleQuery($query)) {
                 return;
             }
 
@@ -709,7 +709,7 @@ class ProcessVariableControllerTest extends TestCase
 
     /**
      * Insert a request without model events or the factory's extra process graphs.
-     * The saving observer parses `data`, which is expensive for the oversized payload.
+     * The saving observer parses `data`, which is expensive for the large payload.
      */
     private function makeRequest(User $user, Process $process, array $data): void
     {
@@ -727,6 +727,14 @@ class ProcessVariableControllerTest extends TestCase
                 'process_version_id' => $versionId,
             ]);
         });
+    }
+
+    private function isIdSampleQuery(string $sql): bool
+    {
+        $normalized = strtolower($sql);
+
+        return str_contains($normalized, 'select `process_requests`.`id` from')
+            && str_contains($normalized, 'order by `process_requests`.`id` desc');
     }
 
     private function getOnlyAvailable(SavedSearch $savedSearch)
