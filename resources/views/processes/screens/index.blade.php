@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Screens')}}
@@ -16,6 +16,12 @@
 @endsection
 
 @section('content')
+    <script>
+        window.temporal = window.temporal || {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+    </script>
+    @vite(['resources/js/processes/screens/loaderScreens.js'])
     @component('components.categorized_resource', [
             'tabs' => [
             __('Screens'),

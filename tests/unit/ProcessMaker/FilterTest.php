@@ -54,6 +54,64 @@ class FilterTest extends TestCase
         );
     }
 
+    public function testRawIntervalValue()
+    {
+        $sql = $this->filter([
+            [
+                'subject' => ['type' => 'Field', 'value' => 'due_at'],
+                'operator' => '<=',
+                'value' => 'raw(NOW() + INTERVAL 1 DAY)',
+            ],
+        ], ProcessRequestToken::class);
+
+        $this->assertStringContainsString('`due_at` <= NOW() + INTERVAL 1 DAY', $sql);
+    }
+
+    public function testRawBetweenValues()
+    {
+        $sql = $this->filter([
+            [
+                'subject' => ['type' => 'Field', 'value' => 'due_at'],
+                'operator' => 'between',
+                'value' => ['raw(NOW())', 'raw(NOW() + INTERVAL 1 DAY)'],
+            ],
+        ], ProcessRequestToken::class);
+
+        $this->assertStringContainsString(
+            '`due_at` between NOW() and NOW() + INTERVAL 1 DAY',
+            $sql
+        );
+    }
+
+    public function testRejectsUntrustedRawExpression()
+    {
+        try {
+            $this->filter([
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'due_at'],
+                    'operator' => '=',
+                    'value' => 'raw((SELECT password FROM users LIMIT 1))',
+                ],
+            ], ProcessRequestToken::class);
+            $this->fail('Expected a 422 HttpException for an invalid raw expression.');
+        } catch (HttpException $e) {
+            $this->assertEquals(422, $e->getStatusCode());
+        }
+    }
+
+    public function testAllowsRawExpressionForJsonField()
+    {
+        $sql = $this->filter([
+            [
+                'subject' => ['type' => 'Field', 'value' => 'data.expiration_date'],
+                'operator' => '>=',
+                'value' => 'raw(NOW())',
+            ],
+        ]);
+
+        $this->assertStringContainsString('NOW()', $sql);
+    }
+
     public function testCompareDataInteger()
     {
         $filter = [

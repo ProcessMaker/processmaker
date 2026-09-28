@@ -6,7 +6,7 @@
       variant="light"
       @click="firstPage"
     >
-      <img src="/img/pagination-images/first.svg" :alt="$t('No Image')">
+      <img :src="firstPageImage" :alt="$t('No Image')">
     </b-button>
     <b-button
       :disabled="currentPage === 1"
@@ -14,7 +14,7 @@
       variant="light"
       @click="previousPage"
     >
-      <img src="/img/pagination-images/previous.svg" :alt="$t('No Image')">
+      <img :src="previousPageImage" :alt="$t('No Image')">
     </b-button>
 
     <input
@@ -36,7 +36,7 @@
       variant="light"
       @click="nextPage"
     >
-      <img src="/img/pagination-images/next.svg" :alt="$t('No Image')">
+      <img :src="nextPageImage" :alt="$t('No Image')">
     </b-button>
     <b-button
       :disabled="currentPage >= totalPageCount"
@@ -44,7 +44,7 @@
       variant="light"
       @click="lastPage"
     >
-      <img src="/img/pagination-images/last.svg" :alt="$t('No Image')">
+      <img :src="lastPageImage" :alt="$t('No Image')">
     </b-button>
     <span class="pagination-total">
       {{ totalItems }}
@@ -100,6 +100,10 @@ export default {
   },
   data() {
     return {
+      firstPageImage: '/img/pagination-images/first.svg',
+      previousPageImage: '/img/pagination-images/previous.svg',
+      nextPageImage: '/img/pagination-images/next.svg',
+      lastPageImage: '/img/pagination-images/last.svg',
       itemsPerPage: [
         {
           perPage: this.$t("15 items"),

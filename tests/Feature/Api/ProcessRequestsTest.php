@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use PHPUnit\Framework\Attributes\Group as TestGroup;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
@@ -23,8 +24,8 @@ use Tests\TestCase;
 /**
  * Tests routes related to processes / CRUD related methods
  *
- * @group process_tests
  */
+#[TestGroup('process_tests')]
 class ProcessRequestsTest extends TestCase
 {
     use RequestHelper;
@@ -1090,6 +1091,21 @@ class ProcessRequestsTest extends TestCase
         $json = $response->json();
 
         $this->assertEquals($hit->id, $json['data'][0]['id']);
+    }
+
+    public function testAdvancedFilterRejectsUntrustedRawExpression()
+    {
+        $filter = json_encode([
+            [
+                'subject' => ['type' => 'Field', 'value' => 'created_at'],
+                'operator' => '=',
+                'value' => 'raw((SELECT password FROM users LIMIT 1))',
+            ],
+        ]);
+
+        $response = $this->apiCall('GET', self::API_TEST_URL, ['advanced_filter' => $filter]);
+
+        $response->assertStatus(422);
     }
 
     // Test enableIsActionbyemail function

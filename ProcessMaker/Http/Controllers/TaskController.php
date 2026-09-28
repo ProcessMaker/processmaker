@@ -229,7 +229,9 @@ class TaskController extends Controller
         ProcessRequestToken $task,
         bool $isSmartExtractTask
     ): array {
-        $hitlEnabled = $this->smartExtractConfiguration->hitlEnabled() && $isSmartExtractTask;
+        $hitlEnabled = $this->smartExtractConfiguration->hitlEnabled()
+            && $isSmartExtractTask
+            && !$task->is_self_service;
         if (!$hitlEnabled) {
             return [false, null];
         }

@@ -61,4 +61,44 @@ class TaskControllerSmartExtractTest extends TestCase
 
         $this->assertSame([false, null], $method->invoke($controller, $task, true));
     }
+
+    public function test_hitl_configuration_is_not_rendered_until_self_service_task_is_claimed(): void
+    {
+        EnvironmentVariable::factory()->create([
+            'name' => SmartExtractConfiguration::HITL_ENABLED,
+            'value' => 'true',
+        ]);
+        EnvironmentVariable::factory()->create([
+            'name' => SmartExtractConfiguration::DASHBOARD_URL,
+            'value' => 'https://dashboard.example.com/edit.html',
+        ]);
+
+        $processRequest = new ProcessRequest([
+            'data' => [
+                'documentToken' => 'document-token',
+                'fileId' => 'file-123',
+            ],
+        ]);
+        $task = new ProcessRequestToken([
+            'is_self_service' => true,
+        ]);
+        $task->setRelation('processRequest', $processRequest);
+
+        $controller = new TaskController(app(SmartExtractConfiguration::class));
+        $method = new ReflectionMethod(TaskController::class, 'smartExtractHitlConfiguration');
+        $method->setAccessible(true);
+
+        $this->assertSame([false, null], $method->invoke($controller, $task, true));
+
+        $task->is_self_service = false;
+        $task->user_id = 1;
+
+        $this->assertSame(
+            [
+                true,
+                'https://dashboard.example.com/edit.html?documentToken=document-token&fileId=file-123',
+            ],
+            $method->invoke($controller, $task, true)
+        );
+    }
 }

@@ -9,6 +9,8 @@
   <h1 class="auth-card-title">{{ __('Reset Your Password') }}</h1>
 </div>
 
+@include('auth.partials.password-requirements')
+
 <form role="form" class="form" method="POST" action="{{ url('/password/reset') }}">
   @csrf
   <input type="hidden" name="token" value="{{ $token }}">
