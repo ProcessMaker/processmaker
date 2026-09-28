@@ -3,8 +3,10 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use ProcessMaker\Exception\DevLinkRemoteBundleException;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Options;
@@ -143,19 +145,28 @@ class DevLink extends ProcessMakerModel
 
         $this->logger->status(__('Downloading bundle from remote instance'));
 
-        $bundleInfo = $this->remoteBundle($remoteBundleId)->json();
+        try {
+            $bundleInfo = $this->remoteBundle($remoteBundleId)->json();
 
-        $bundleExport = $this->client()->get(
-            route('api.devlink.export-local-bundle', ['bundle' => $remoteBundleId], false)
-        )->json();
+            $bundleExport = $this->client()->get(
+                route('api.devlink.export-local-bundle', ['bundle' => $remoteBundleId], false)
+            )->json();
 
-        $bundleSettingsExport = $this->client()->get(
-            route('api.devlink.export-local-bundle-settings', ['bundle' => $remoteBundleId], false)
-        )->json();
+            $bundleSettingsExport = $this->client()->get(
+                route('api.devlink.export-local-bundle-settings', ['bundle' => $remoteBundleId], false)
+            )->json();
 
-        $bundleSettingsPayloads = $this->client()->get(
-            route('api.devlink.export-local-bundle-setting-payloads', ['bundle' => $remoteBundleId], false)
-        )->json();
+            $bundleSettingsPayloads = $this->client()->get(
+                route('api.devlink.export-local-bundle-setting-payloads', ['bundle' => $remoteBundleId], false)
+            )->json();
+        } catch (RequestException $exception) {
+            $invalidAssets = $exception->response->json('errors.assets');
+            if (is_array($invalidAssets) && $invalidAssets !== []) {
+                throw new DevLinkRemoteBundleException($invalidAssets, $exception);
+            }
+
+            throw $exception;
+        }
 
         $bundle = Bundle::updateOrCreate(
             [

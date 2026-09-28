@@ -34,17 +34,19 @@ const props = defineProps({
 
 defineEmits(['view']);
 
-const getAssetCount = (type) => {
-  return props.assets?.filter(asset => asset.type.toUpperCase() === type.toUpperCase()).length;
-};
+const getAssetCount = (type) => props.assets?.filter(
+  (asset) => asset.type && asset.type.toUpperCase() === type.toUpperCase(),
+).length;
 
 const navigate = (type) => {
-  router.push({ 
-    name: 'bundle-asset-listing', 
+  router.push({
+    name: 'bundle-asset-listing',
     params: { type: type.type },
-    state: { assets: props.assets.filter(asset => 
-      asset.type.toUpperCase() === type.type.toUpperCase()
-    )}
+    state: {
+      assets: props.assets.filter(
+        (asset) => asset.type && asset.type.toUpperCase() === type.type.toUpperCase(),
+      ),
+    },
   });
 };
 </script>

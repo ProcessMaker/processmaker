@@ -16,7 +16,8 @@ class ImportLog implements ShouldBroadcastNow
         public $userId,
         public $type,
         public $message,
-        public $additionalParams = []
+        public $additionalParams = [],
+        public $operationId = null,
     ) {
     }
 

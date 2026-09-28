@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
   {{ __('Template Assets') }}
@@ -25,11 +25,11 @@
       :response-id="responseId"
       :request="request"
       :redirect-to="redirectTo"
-      :wizard-template-uuid="wizardTemplateUuid"
     />
   </div>
 @endsection
 
 @section('js')
-  <script src="{{ mix('js/templates/assets.js') }}"></script>
+  @vite('resources/js/loader/loaderMinimal.js')  
+  @vite('resources/js/templates/assets.js')
 @endsection

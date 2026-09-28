@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Adapted from tests/Feature/Api/processes/child.bpmn as EXC-04's self-contained child fixture. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" targetNamespace="http://processmaker.com/tests/inline-task-execution">
+  <bpmn:process id="ProcessId" name="EXC-04 Call Activity Child" isExecutable="true">
+    <bpmn:startEvent id="child_start" name="Child Start">
+      <bpmn:outgoing>flow_child_start_service</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="child_service" name="Child Service" implementation="inline-test-call-child-service">
+      <bpmn:incoming>flow_child_start_service</bpmn:incoming>
+      <bpmn:outgoing>flow_child_service_end</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="child_end" name="Child End">
+      <bpmn:incoming>flow_child_service_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_child_start_service" sourceRef="child_start" targetRef="child_service" />
+    <bpmn:sequenceFlow id="flow_child_service_end" sourceRef="child_service" targetRef="child_end" />
+  </bpmn:process>
+</bpmn:definitions>

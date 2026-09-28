@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Adapted from database/processes/templates/Collaboration.bpmn for EXC-03. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" targetNamespace="http://processmaker.com/tests/inline-task-execution">
+  <bpmn:message id="INLINE_COLLAB_MESSAGE" name="Inline Collaboration Message" />
+  <bpmn:collaboration id="inline_collaboration">
+    <bpmn:participant id="participant_a" name="Participant A" processRef="participant_a_process" />
+    <bpmn:participant id="participant_b" name="Participant B" processRef="participant_b_process" />
+    <bpmn:messageFlow id="message_a_to_b" sourceRef="send_to_b" targetRef="start_b" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="participant_a_process" name="Participant A Process" isExecutable="true">
+    <bpmn:startEvent id="start_a" name="Start A">
+      <bpmn:outgoing>flow_a_start_script_a</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="participant_a_script_a" name="Participant A Script A" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_a_start_script_a</bpmn:incoming>
+      <bpmn:outgoing>flow_a_script_a_script_b</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['participant_a_script_a' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="participant_a_script_b" name="Participant A Script B" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_a_script_a_script_b</bpmn:incoming>
+      <bpmn:outgoing>flow_a_script_b_send</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['participant_a_script_b' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:intermediateThrowEvent id="send_to_b" name="Send to Participant B">
+      <bpmn:incoming>flow_a_script_b_send</bpmn:incoming>
+      <bpmn:outgoing>flow_a_send_end</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="send_to_b_message" messageRef="INLINE_COLLAB_MESSAGE" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:endEvent id="end_a" name="End A">
+      <bpmn:incoming>flow_a_send_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_a_start_script_a" sourceRef="start_a" targetRef="participant_a_script_a" />
+    <bpmn:sequenceFlow id="flow_a_script_a_script_b" sourceRef="participant_a_script_a" targetRef="participant_a_script_b" />
+    <bpmn:sequenceFlow id="flow_a_script_b_send" sourceRef="participant_a_script_b" targetRef="send_to_b" />
+    <bpmn:sequenceFlow id="flow_a_send_end" sourceRef="send_to_b" targetRef="end_a" />
+  </bpmn:process>
+
+  <bpmn:process id="participant_b_process" name="Participant B Process" isExecutable="true">
+    <bpmn:startEvent id="start_b" name="Start B from Message">
+      <bpmn:outgoing>flow_b_start_service</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="start_b_message" messageRef="INLINE_COLLAB_MESSAGE" />
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="participant_b_service" name="Participant B Service" implementation="inline-test-collaboration-service">
+      <bpmn:incoming>flow_b_start_service</bpmn:incoming>
+      <bpmn:outgoing>flow_b_service_script</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:scriptTask id="participant_b_script" name="Participant B Script" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_b_service_script</bpmn:incoming>
+      <bpmn:outgoing>flow_b_script_end</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['participant_b_script' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="end_b" name="End B">
+      <bpmn:incoming>flow_b_script_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_b_start_service" sourceRef="start_b" targetRef="participant_b_service" />
+    <bpmn:sequenceFlow id="flow_b_service_script" sourceRef="participant_b_service" targetRef="participant_b_script" />
+    <bpmn:sequenceFlow id="flow_b_script_end" sourceRef="participant_b_script" targetRef="end_b" />
+  </bpmn:process>
+</bpmn:definitions>

@@ -13,6 +13,7 @@ use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\Services\ScriptMicroserviceService;
+use ProcessMaker\Services\SmartExtractConfiguration;
 use stdClass;
 
 class ScriptMicroserviceRunner
@@ -85,9 +86,19 @@ class ScriptMicroserviceRunner
         EnvironmentVariable::chunk(50, function (Collection $variables) use (&$variablesParameter) {
             foreach ($variables as $variable) {
                 // Fix variables that have spaces
-                $variablesParameter[str_replace(' ', '_', $variable->name)] = $variable->value;
+                $name = str_replace(' ', '_', $variable->name);
+                if ($name === SmartExtractConfiguration::API_HOST) {
+                    continue;
+                }
+
+                $variablesParameter[$name] = $variable->value;
             }
         });
+
+        $smartExtractApiHost = app(SmartExtractConfiguration::class)->apiHost();
+        if ($smartExtractApiHost !== null) {
+            $variablesParameter[SmartExtractConfiguration::API_HOST] = $smartExtractApiHost;
+        }
 
         // Add the url to the host
         $variablesParameter['HOST_URL'] = config('app.docker_host_url');
@@ -105,7 +116,6 @@ class ScriptMicroserviceRunner
             $variablesParameter['API_HOST'] = config('app.docker_host_url') . '/api/1.0';
             $variablesParameter['APP_URL'] = config('app.docker_host_url');
             $variablesParameter['API_SSL_VERIFY'] = (config('app.api_ssl_verify') ? '1' : '0');
-            $variablesParameter['SMART_EXTRACT_API_HOST'] = config('smart-extract.api_host');
             $variablesParameter['SMART_EXTRACT_REQUEST_TIMEOUT'] = config('smart-extract.request_timeout');
         }
 

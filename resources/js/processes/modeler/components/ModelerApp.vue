@@ -64,17 +64,24 @@
 </template>
 
 <script>
-import { Modeler, ValidationStatus } from "@processmaker/modeler";
+import { Modeler as ModelerSource, ValidationStatus as ValidationStatusSource } from "@processmaker/modeler";
 import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../../../components/pm-blocks/CreatePmBlockModal.vue";
 import autosaveMixins from "../../../modules/autosave/mixins";
 import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 
+const asVueComponent = (component) => {
+  if (!component || typeof component === "function" || Object.isExtensible(component)) {
+    return component;
+  }
+  return { ...component };
+};
+
 export default {
   name: "ModelerApp",
   components: {
-    Modeler,
-    ValidationStatus,
+    Modeler: asVueComponent(ModelerSource),
+    ValidationStatus: asVueComponent(ValidationStatusSource),
     CreateTemplateModal,
     CreatePmBlockModal,
   },

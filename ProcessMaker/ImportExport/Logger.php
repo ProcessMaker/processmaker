@@ -14,16 +14,19 @@ class Logger
 
     public $userId = null;
 
+    public $operationId = null;
+
     private $warnings = [];
 
     private int $totalSteps = 1;
 
     private int $currentStep = 1;
 
-    public function __construct($userId = null)
+    public function __construct($userId = null, $operationId = null)
     {
         $this->pid = getmypid();
         $this->userId = $userId;
+        $this->operationId = $operationId;
 
         if ($userId) {
             Event::listen(MessageLogged::class, function (MessageLogged $e) {
@@ -71,7 +74,13 @@ class Logger
             return;
         }
 
-        ImportLog::dispatch($this->userId, $type, substr($message, 0, 1000), $additionalParams);
+        ImportLog::dispatch(
+            $this->userId,
+            $type,
+            substr($message, 0, 1000),
+            $additionalParams,
+            $this->operationId,
+        );
         $this->logToFile($type, $message, $additionalParams);
     }
 

@@ -990,7 +990,7 @@ class ImportProcess implements ShouldQueue
         $watcherList = [];
         foreach ($screen->watchers as $watcher) {
             $script = $watcher->script;
-            $watcher->script_id = $script->id;
+            $watcher->script_id = str_replace(['script-', 'data_source-'], '', $script->id);
             $watcher->script->title = $script->title;
             $watcherList[] = $watcher;
         }

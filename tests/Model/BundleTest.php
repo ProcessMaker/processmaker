@@ -3,6 +3,7 @@
 namespace Tests\Model;
 
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Exception\BundleIntegrityException;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\Models\Bundle;
@@ -10,12 +11,17 @@ use ProcessMaker\Models\BundleAsset;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
+use ProcessMaker\Services\DevLink\BundleFingerprint;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
 class BundleTest extends TestCase
 {
     use HelperTrait;
+
+    private const ALPHA_DASHBOARD_NAME = 'Alpha Dashboard';
+
+    private const ALPHA_MENU_NAME = 'Alpha Menu';
 
     public function testExport()
     {
@@ -42,6 +48,129 @@ class BundleTest extends TestCase
         $this->assertEquals(2, count($payload));
         $this->assertEquals($process->name, $payload[0]['name']);
         $this->assertEquals($screen->title, $payload[1]['name']);
+    }
+
+    public function testPublicationFingerprintIsStableAcrossAssetOrder()
+    {
+        $screen1 = Screen::factory()->create(['title' => 'Screen 1']);
+        $screen2 = Screen::factory()->create(['title' => 'Screen 2']);
+        $bundle1 = Bundle::factory()->create();
+        $bundle2 = Bundle::factory()->create();
+
+        $bundle1->syncAssets([$screen1, $screen2]);
+        $bundle2->syncAssets([$screen2, $screen1]);
+
+        $fingerprint = app(BundleFingerprint::class);
+
+        $this->assertSame(
+            $fingerprint->calculate($bundle1->fresh()),
+            $fingerprint->calculate($bundle2->fresh()),
+        );
+    }
+
+    public function testPublicationFingerprintIgnoresTimestampsButDetectsAssetChanges()
+    {
+        $screen = Screen::factory()->create(['title' => 'Original Screen']);
+        $bundle = Bundle::factory()->create();
+        $bundle->syncAssets([$screen]);
+        $fingerprint = app(BundleFingerprint::class);
+        $originalFingerprint = $fingerprint->calculate($bundle->fresh());
+
+        $screen->timestamps = false;
+        $screen->updated_at = now()->addHour();
+        $screen->saveQuietly();
+        $screen->timestamps = true;
+
+        $this->assertSame($originalFingerprint, $fingerprint->calculate($bundle->fresh()));
+
+        $screen->title = 'Updated Screen';
+        $screen->save();
+
+        $this->assertNotSame($originalFingerprint, $fingerprint->calculate($bundle->fresh()));
+    }
+
+    public function testPublicationFingerprintIgnoresBundleMetadata()
+    {
+        $bundle = Bundle::factory()->create([
+            'name' => 'Original Bundle',
+            'description' => 'Original Description',
+            'published' => true,
+        ]);
+        $fingerprint = app(BundleFingerprint::class);
+        $originalFingerprint = $fingerprint->calculate($bundle);
+
+        $bundle->name = 'Renamed Bundle';
+        $bundle->description = 'Updated Description';
+        $bundle->published = false;
+        $bundle->save();
+
+        $this->assertSame($originalFingerprint, $fingerprint->calculate($bundle->fresh()));
+    }
+
+    public function testPublicationFingerprintNormalizesSettingSelectionOrder()
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $bundle1 = Bundle::factory()->create();
+        $bundle2 = Bundle::factory()->create();
+
+        $bundle1->addSettings('users', json_encode(['id' => [$user1->id, $user2->id]]));
+        $bundle2->addSettings('users', json_encode(['id' => [$user2->id, $user1->id]]));
+
+        $fingerprint = app(BundleFingerprint::class);
+        $originalFingerprint = $fingerprint->calculate($bundle1->fresh());
+
+        $this->assertSame($originalFingerprint, $fingerprint->calculate($bundle2->fresh()));
+
+        $bundle1->addSettings('users', json_encode(['id' => [$user1->id]]), replaceIds: true);
+
+        $this->assertNotSame($originalFingerprint, $fingerprint->calculate($bundle1->fresh()));
+    }
+
+    public function testExportRejectsBundleWithUnavailableAssetsBeforeExporting()
+    {
+        $bundle = Bundle::factory()->create(['name' => 'Corrupt Bundle']);
+        $screen = Screen::factory()->create();
+        $missingProcessId = Process::max('id') + 1000;
+        BundleAsset::factory()->create([
+            'bundle_id' => $bundle->id,
+            'asset_type' => Screen::class,
+            'asset_id' => $screen->id,
+        ]);
+        $missingBundleAsset = BundleAsset::factory()->create([
+            'bundle_id' => $bundle->id,
+            'asset_type' => Process::class,
+            'asset_id' => $missingProcessId,
+        ]);
+        $unavailableBundleAsset = BundleAsset::factory()->create([
+            'bundle_id' => $bundle->id,
+            'asset_type' => 'ProcessMaker\Missing\Asset',
+            'asset_id' => 1234,
+        ]);
+
+        try {
+            $bundle->export();
+            $this->fail('Expected bundle integrity validation to fail.');
+        } catch (BundleIntegrityException $exception) {
+            $this->assertSame(
+                'The bundle Corrupt Bundle contains unavailable assets and cannot be exported.',
+                $exception->getMessage()
+            );
+            $this->assertSame([
+                [
+                    'bundle_asset_id' => $missingBundleAsset->id,
+                    'asset_type' => Process::class,
+                    'asset_id' => $missingProcessId,
+                    'integrity_status' => BundleAsset::INTEGRITY_MISSING,
+                ],
+                [
+                    'bundle_asset_id' => $unavailableBundleAsset->id,
+                    'asset_type' => 'ProcessMaker\Missing\Asset',
+                    'asset_id' => 1234,
+                    'integrity_status' => BundleAsset::INTEGRITY_TYPE_UNAVAILABLE,
+                ],
+            ], $exception->invalidAssets());
+        }
     }
 
     public function testSyncAssets()
@@ -166,8 +295,8 @@ class BundleTest extends TestCase
         $bundle->savePayloadsToFile([], [[
             self::settingPayload('dashboard_package', 'dashboard-zulu', 'Zulu Dashboard'),
             self::settingPayload('menu_package', 'menu-bravo', 'Bravo Menu'),
-            self::settingPayload('dashboard_package', 'dashboard-alpha', 'Alpha Dashboard'),
-            self::settingPayload('menu_package', 'menu-alpha', 'Alpha Menu'),
+            self::settingPayload('dashboard_package', 'dashboard-alpha', self::ALPHA_DASHBOARD_NAME),
+            self::settingPayload('menu_package', 'menu-alpha', self::ALPHA_MENU_NAME),
         ]]);
 
         $this->assertTrue($bundle->newestVersionFile()->getCustomProperty('settings_payloads_complete'));
@@ -177,7 +306,7 @@ class BundleTest extends TestCase
             'selection' => 'partial',
             'available' => true,
             'items' => [
-                ['key' => 'dashboard-alpha', 'name' => 'Alpha Dashboard'],
+                ['key' => 'dashboard-alpha', 'name' => self::ALPHA_DASHBOARD_NAME],
                 ['key' => 'dashboard-zulu', 'name' => 'Zulu Dashboard'],
             ],
         ], $bundle->settingPreview('ui_dashboards'));
@@ -187,7 +316,7 @@ class BundleTest extends TestCase
             'selection' => 'all',
             'available' => true,
             'items' => [
-                ['key' => 'menu-alpha', 'name' => 'Alpha Menu'],
+                ['key' => 'menu-alpha', 'name' => self::ALPHA_MENU_NAME],
                 ['key' => 'menu-bravo', 'name' => 'Bravo Menu'],
             ],
         ], $bundle->settingPreview('ui_menus'));
@@ -213,8 +342,8 @@ class BundleTest extends TestCase
         $bundle->addSettings('ui_dashboards', null);
         $bundle->addSettings('ui_menus', json_encode(['id' => [9001]]));
         $bundle->addMediaFromString(gzencode(json_encode([
-            self::settingPayload('dashboard_package', 'dashboard-alpha', 'Alpha Dashboard'),
-            self::settingPayload('menu_package', 'menu-alpha', 'Alpha Menu'),
+            self::settingPayload('dashboard_package', 'dashboard-alpha', self::ALPHA_DASHBOARD_NAME),
+            self::settingPayload('menu_package', 'menu-alpha', self::ALPHA_MENU_NAME),
         ])))
             ->usingFileName('payloads.json.gz')
             ->withCustomProperties(['version' => $bundle->version])
