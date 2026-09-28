@@ -7,6 +7,7 @@ window.ScreenBuilder = ScreenBuilder;
 
 setupMain();
 screenBuilderNext();
+window.Vue.use(ScreenBuilder.default);
 
 window.ProcessMaker.isDocumenterInstalled = window.temporal.isDocumenterInstalled;
 window.ProcessMaker.permission = window.temporal.permission;
