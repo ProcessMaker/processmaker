@@ -171,6 +171,14 @@ class User extends Authenticatable implements HasMedia
             $user->status = 'INACTIVE';
             $user->removeFromGroups();
         });
+
+        static::updating(function (self $user) {
+            // Authenticator secrets include the username, so a rename invalidates
+            // enrolled codes. Clear enrollment so the user can scan a new QR code.
+            if ($user->isDirty('username') && $user->hasAuthAppConfigured()) {
+                $user->auth_app_configured_at = null;
+            }
+        });
     }
 
     /**
