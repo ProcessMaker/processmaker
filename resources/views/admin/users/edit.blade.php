@@ -611,7 +611,9 @@
             if (!this.validatePassword()) return false;
             if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
               this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1) return false;
-            ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
+            const payload = { ...this.formData };
+            delete payload.auth_app_configured_at;
+            ProcessMaker.apiClient.put('users/' + this.formData.id, payload)
               .then(response => {
                 ProcessMaker.alert(this.$t('User Updated Successfully '), 'success');
                 this.originalEmail = this.formData.email;

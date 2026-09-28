@@ -130,7 +130,6 @@ class User extends Authenticatable implements HasMedia
         'password_changed_at',
         'connected_accounts',
         'preferences_2fa',
-        'auth_app_configured_at',
         'email_task_notification',
     ];
 
