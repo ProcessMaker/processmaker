@@ -4,7 +4,6 @@ import vueFormElements from "../../js/next/libraries/vueFormElements";
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.ScreenBuilder = ScreenBuilder;
-
 setupMain();
 window.Vue.use(ScreenBuilder.default);
 
