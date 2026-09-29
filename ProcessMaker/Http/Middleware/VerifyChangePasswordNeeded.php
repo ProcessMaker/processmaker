@@ -12,7 +12,7 @@ class VerifyChangePasswordNeeded
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  Closure  $next
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -23,7 +23,7 @@ class VerifyChangePasswordNeeded
 
         if ($this->checkPasswordExpiration()) {
             // Set the error message
-            session()->put('login-error', _('Your password has expired.'));
+            session()->put('login-error', __('Your password has expired.'));
 
             // Redirect to change password screen
             return redirect()->route('password.change');
