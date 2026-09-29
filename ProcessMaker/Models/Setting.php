@@ -535,20 +535,15 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
 
     public static function readyToUseSettingsDatabase()
     {
-        if (self::$readyToUseSettingsDatabase) {
-            return true;
+        if (!self::$readyToUseSettingsDatabase) {
+            self::$readyToUseSettingsDatabase =
+                app('tenant-resolved') &&
+                self::databaseAvailable() &&
+                self::redisAvailable() &&
+                self::settingsTableExists();
         }
 
-        $ready = app('tenant-resolved') &&
-            self::databaseAvailable() &&
-            self::redisAvailable() &&
-            self::settingsTableExists();
-
-        if ($ready) {
-            self::$readyToUseSettingsDatabase = true;
-        }
-
-        return $ready;
+        return self::$readyToUseSettingsDatabase;
     }
 
     private static function databaseAvailable()
