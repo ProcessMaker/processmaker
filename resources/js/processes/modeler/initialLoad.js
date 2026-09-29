@@ -54,6 +54,9 @@ import NotifyProcessManager from "./components/inspector/NotifyProcessManager";
 import { onModelerInit } from "./modelerInit";
 import StageManager from "./components/inspector/StageManager";
 
+const Vue = window.Vue;
+const ProcessMaker = window.ProcessMaker;
+
 Vue.component("UserSelect", UserSelect);
 Vue.component("UserById", UserById);
 Vue.component("GroupSelect", GroupSelect);

@@ -29,6 +29,11 @@ class RealTimeOutputExtension implements Extension
 
     public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void
     {
+        $enabled = getenv('PHPUNIT_REALTIME_OUTPUT');
+        if (!filter_var($enabled === false ? 'false' : $enabled, FILTER_VALIDATE_BOOLEAN)) {
+            return;
+        }
+
         $facade->registerSubscriber(new class implements PreparationStartedSubscriber {
             public function notify(PreparationStarted $event): void
             {

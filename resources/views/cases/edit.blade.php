@@ -1,4 +1,4 @@
-@extends('layouts.layoutnext',['content_margin' => '', 'overflow-auto' => ''])
+@extends('layouts.layoutnextvite',['content_margin' => '', 'overflow-auto' => ''])
 
 @section('title')
   {{ __('Case Detail') }}
@@ -140,17 +140,12 @@
 @endsection
 
 @section('js')
-  <script src="{{ mix('js/manifest.js') }}"></script>
-  <script src="{{ mix('js/vue-vendor.js') }}"></script>
-  <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
-  <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
-  <script src="{{ mix('js/modeler-vendor.js') }}"></script>
+  {{-- temporal must exist before loader (Vite modules run after deferred classic scripts) --}}
   <script>
-    const data = @json($request->getRequestData());
+    window.temporal = {};
     const requestId = @json($request->getKey());
     const request = @json($request->getRequestAsArray());
-    const canCancel = @json($canCancel);
-    const canViewPrint = @json($canPrintScreens);
+
     const errorLogs = @json(['data' => $request->getErrors()]);
     const processId = @json($request->process->id);
     const canViewComments = @json($canViewComments);
@@ -161,43 +156,26 @@
     const currentStages = @json($currentStages);
     const progressStage = @json($progressStage);
     const tceCustomizationEnable = @json($isTceCustomization);
+
+    temporal.requestId = requestId;
+    temporal.request = request;
+    temporal.canCancel = @json($canCancel);
+    temporal.canViewPrint = @json($canPrintScreens);
+    temporal.data = @json($request->getRequestData());
+    temporal.bpmn = @json($bpmn);
+    temporal.requestFiles = @json($request->requestFiles());
+    temporal.pmBlockList = @json($pmBlockList);
     window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   </script>
-  <script src="{{mix('js/composition/cases/casesDetail/loader.js')}}"></script>
-  <script src="{{mix('js/initialLoad.js')}}"></script>
+  @vite(['resources/jscomposition/cases/casesDetail/loaderCasesDetail.js'])
+  @vite(['resources/js/initialLoad.js'])
 
-  <script>
-    window.ProcessMaker.caseNumber = request.case_number;
-    window.ProcessMaker.modeler = {
-      xml: @json($bpmn),
-      configurables: [],
-      requestCompletedNodes: inflightData.requestCompletedNodes,
-      requestInProgressNodes: inflightData.requestInProgressNodes,
-      requestIdleNodes: inflightData.requestIdleNodes,
-      requestId: inflightData.requestId,
-    }
-
-    window.ProcessMaker.EventBus.$on('modeler-start', ({
-      loadXML
-    }) => {
-      loadXML(window.ProcessMaker.modeler.xml);
-    });
-
-    window.PM4ConfigOverrides = {
-      requestFiles: @json($request->requestFiles())
-    };
-
-    window.ProcessMaker.PMBlockList = @json($pmBlockList);
-  </script>
-
-  <!-- Load the screen scripts -->
   @foreach(GlobalScripts::getScripts() as $script)
-    <script src="{{$script}}"></script>
+    <script defer src="{{$script}}"></script>
   @endforeach
-  
-  <!-- Load the modeler scripts -->
+
   @foreach($managerModelerScripts as $params)
-    <script
+    <script defer
     @foreach ($params as $key => $value)
       @if (is_bool($value))
         {{ $key }}
@@ -209,11 +187,10 @@
   @endforeach
 
   @if (hasPackage('package-files'))
-  <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
-  <script src="{{ mix('js/manager-cases.js', 'vendor/processmaker/packages/package-files') }}"></script>
+  <script defer src="{{ mix('js/manager-cases.js', 'vendor/processmaker/packages/package-files') }}"></script>
   @endif
 
-  <script src="{{mix('js/composition/cases/casesDetail/edit.js')}}"></script>
+  @vite(['resources/jscomposition/cases/casesDetail/casesDetail.js'])
 @endsection
 
 @section('css')

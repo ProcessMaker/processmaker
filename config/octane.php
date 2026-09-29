@@ -22,6 +22,9 @@ use Laravel\Octane\Listeners\FlushUploadedFiles;
 use Laravel\Octane\Listeners\ReportException;
 use Laravel\Octane\Listeners\StopWorkerIfNecessary;
 use Laravel\Octane\Octane;
+use ProcessMaker\Models\AnonymousUser;
+
+$multitenancyEnabled = filter_var(env('MULTITENANCY', false), FILTER_VALIDATE_BOOL);
 
 return [
 
@@ -38,7 +41,7 @@ return [
     |
     */
 
-    'server' => env('OCTANE_SERVER', 'roadrunner'),
+    'server' => env('OCTANE_SERVER', 'frankenphp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -132,18 +135,38 @@ return [
 
     'warm' => [
         ...Octane::defaultServicesToWarm(),
-        // Services to pre-resolve on worker start
+        // AnonymousUser is tenant-scoped; warming it at worker boot queries the
+        // default connection before any tenant is resolved (breaks multitenancy).
+        ...($multitenancyEnabled ? [] : [
+            AnonymousUser::class,
+        ]),
+        ProcessMaker\ImportExport\Extension::class,
+        ProcessMaker\ImportExport\SignalHelper::class,
+        ProcessMaker\Managers\MenuManager::class,
         ProcessMaker\Managers\PackageManager::class,
-        ProcessMaker\Managers\LoginManager::class,
         ProcessMaker\Managers\IndexManager::class,
+        ProcessMaker\Managers\ScreenBuilderManager::class,
+        ProcessMaker\Managers\ScriptBuilderManager::class,
+        ProcessMaker\Managers\DockerManager::class,
+        ProcessMaker\Managers\GlobalScriptsManager::class,
+        ProcessMaker\Helpers\PmHash::class,
+        ProcessMaker\Models\RequestDevice::class,
+        ProcessMaker\PolicyExtension::class,
+        Illuminate\Foundation\PackageManifest::class,
+        'compiledscreen',
+        'setting.cache',
+        'currentTenant',
     ],
 
     'flush' => [
         // Services with mutable state that must be recreated per request
-        ProcessMaker\Models\AnonymousUser::class,
-        ProcessMaker\ImportExport\Extension::class,
-        ProcessMaker\ImportExport\SignalHelper::class,
-        ProcessMaker\Managers\MenuManager::class,
+        ProcessMaker\Managers\LoginManager::class,
+        ProcessMaker\Managers\ModelerManager::class,
+        ProcessMaker\Managers\ScreenBuilderManager::class,
+        Lavary\Menu\Menu::class,
+        ...($multitenancyEnabled ? [
+            AnonymousUser::class,
+        ] : []),
     ],
 
     /*
@@ -227,6 +250,34 @@ return [
     |
     */
 
-    'max_execution_time' => 30,
+    'max_execution_time' => env('OCTANE_MAX_EXECUTION_TIME', 90),
+
+    /*
+    |--------------------------------------------------------------------------
+    | FrankenPHP / Caddy
+    |--------------------------------------------------------------------------
+    |
+    | Extra env vars for the FrankenPHP process. Start Octane with
+    | `--caddyfile=Caddyfile` so php_ini settings are applied.
+    | PHPRC / PHP_INI does not change FrankenPHP worker memory (stays 128M).
+    |
+    */
+
+    'caddy' => [
+        'env' => [
+            'OCTANE_MEMORY_LIMIT' => env('OCTANE_MEMORY_LIMIT', '512M'),
+            'OCTANE_MAX_EXECUTION_TIME' => env('OCTANE_MAX_EXECUTION_TIME', 90),
+            'OCTANE_POST_MAX_SIZE' => env('OCTANE_POST_MAX_SIZE', '200M'),
+            'OCTANE_UPLOAD_MAX_FILESIZE' => env('OCTANE_UPLOAD_MAX_FILESIZE', '200M'),
+            'OCTANE_MAX_INPUT_VARS' => env('OCTANE_MAX_INPUT_VARS', 9000),
+            'OCTANE_MAX_INPUT_TIME' => env('OCTANE_MAX_INPUT_TIME', 90),
+        ],
+    ],
+    'health' => [
+        'host' => env('OCTANE_HEALTH_HOST', '127.0.0.1'),
+        'port' => (int) env('OCTANE_HEALTH_PORT', 8001),
+        'endpoint' => env('OCTANE_HEALTH_ENDPOINT', '/health/live'),
+        'timeout' => (float) env('OCTANE_HEALTH_TIMEOUT', 2),
+    ],
 
 ];

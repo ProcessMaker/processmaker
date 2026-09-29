@@ -20,6 +20,18 @@ class BpmnEngine implements EngineInterface
 {
     use EngineTrait;
 
+    public const INACTIVE_TOKEN_STATUSES = ['CLOSED', 'TRIGGERED', 'COMPLETED'];
+
+    /**
+     * @var array|null
+     */
+    private $nextInlineJob = null;
+
+    /**
+     * @var bool
+     */
+    private $inlineTaskExecutionEnabled = false;
+
     /**
      * @var RepositoryFactoryInterface
      */
@@ -163,5 +175,33 @@ class BpmnEngine implements EngineInterface
             }
         }
         $this->getJobManager()->disableRegisterStartEvents();
+    }
+
+    public function isInlineTaskExecutionEnabled(): bool
+    {
+        return $this->inlineTaskExecutionEnabled;
+    }
+
+    public function setInlineTaskExecutionEnabled(bool $enabled): void
+    {
+        $this->inlineTaskExecutionEnabled = $enabled;
+    }
+
+    public function scheduleInlineJob(array $job): void
+    {
+        // This is a single pending-job slot; replacing it would silently skip a task.
+        if ($this->nextInlineJob !== null) {
+            throw new \LogicException('An inline BPMN job is already scheduled.');
+        }
+
+        $this->nextInlineJob = $job;
+    }
+
+    public function pullInlineJob(): ?array
+    {
+        $job = $this->nextInlineJob;
+        $this->nextInlineJob = null;
+
+        return $job;
     }
 }
