@@ -1,6 +1,33 @@
 import { getGlobalVariable, setGlobalPMVariables } from "../globalVariables";
 import datetime_format from "../../data/datetime_formats.json";
 
+// Profile settings store PHP date tokens; Moment uses a different token set.
+export const momentFormatsFor = (phpFormat) => {
+  const match = datetime_format.find((value) => value.format === phpFormat);
+  if (!match) {
+    return null;
+  }
+  return {
+    datetime_format: match.momentFormat,
+    calendar_format: match.calendarFormat,
+  };
+};
+
+export const withMomentDateFormats = (user) => {
+  if (!user || typeof user !== "object") {
+    return user;
+  }
+  const formats = momentFormatsFor(user.datetime_format);
+  if (!formats) {
+    return user;
+  }
+  return {
+    ...user,
+    datetime_format: formats.datetime_format,
+    calendar_format: formats.calendar_format,
+  };
+};
+
 export default () => {
   const moment = getGlobalVariable("moment");
   const userID = document.head.querySelector("meta[name=\"user-id\"]");
@@ -25,12 +52,11 @@ export default () => {
       avatar: userAvatar?.content,
     };
 
-    datetime_format.forEach((value) => {
-      if (formatDate.content === value.format) {
-        user.datetime_format = value.momentFormat;
-        user.calendar_format = value.calendarFormat;
-      }
-    });
+    const formats = momentFormatsFor(formatDate?.content);
+    if (formats) {
+      user.datetime_format = formats.datetime_format;
+      user.calendar_format = formats.calendar_format;
+    }
 
     if (user) {
       moment.tz.setDefault(user.timezone);

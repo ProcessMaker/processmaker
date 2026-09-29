@@ -62,6 +62,31 @@ class CasesControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
+    public function testProcessManagerCanOpenManagedCaseButUnrelatedUserCannot()
+    {
+        $processManager = User::factory()->create();
+        $firstManager = User::factory()->create();
+        $process = Process::factory()->create([
+            'manager_id' => [$firstManager->id, $processManager->id],
+        ]);
+        $request = ProcessRequest::factory()->create([
+            'parent_request_id' => null,
+            'process_id' => $process->id,
+            'status' => 'COMPLETED',
+        ]);
+        $route = route('cases.show', ['case_number' => $request->case_number]);
+
+        $response = $this->actingAs($processManager)->get($route);
+
+        $response->assertStatus(200);
+        $response->assertViewIs('cases.edit');
+        $response->assertViewHas('isProcessManager', true);
+
+        $this->actingAs(User::factory()->create())
+            ->get($route)
+            ->assertStatus(403);
+    }
+
     public function testCasesAllPageReturns403WithoutViewAllCasesPermission()
     {
         Permission::firstOrCreate(
