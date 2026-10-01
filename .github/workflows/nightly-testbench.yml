@@ -10,6 +10,14 @@ on:
         required: false
         type: boolean
         default: false
+      mode:
+        description: Run testbench after deploy, or only delete and redeploy instances
+        required: true
+        type: choice
+        default: Run Now
+        options:
+          - Run Now
+          - Redeploy Only
 
 jobs:
   run:
@@ -18,3 +26,4 @@ jobs:
     secrets: inherit
     with:
       skip_build: ${{ inputs.skip_build == true }}
+      redeploy_only: ${{ inputs.mode == 'Redeploy Only' }}
