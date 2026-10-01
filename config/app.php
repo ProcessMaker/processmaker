@@ -334,4 +334,8 @@ return [
         'claim_timeout_minutes' => env('SCHEDULER_CLAIM_TIMEOUT_MINUTES', 5),
         'bpmn_timer_overlap_minutes' => env('SCHEDULER_BPMN_TIMER_OVERLAP_MINUTES', 5),
     ],
+
+    // When true, hides the Requests page search bar and the filter chips listed under it.
+    // Table column filters remain available.
+    'hide_requests_search_bar' => filter_var(env('HIDE_REQUESTS_SEARCH_BAR', false), FILTER_VALIDATE_BOOLEAN),
 ];
