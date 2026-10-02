@@ -178,7 +178,11 @@ class ScriptExecutor extends ProcessMakerModel
         }
 
         return [
-            'title' => 'required',
+            'title' => [
+                'required',
+                Rule::unique('script_executors', 'title')
+                    ->where('language', request('language'))
+                    ->ignore($existing ? $existing->id : 'NULL')],
             'language' => [
                 'required',
                 Rule::in($allowedLanguages),
@@ -191,12 +195,20 @@ class ScriptExecutor extends ProcessMakerModel
         ];
     }
 
+    public static function messages(): array
+    {
+        return [
+            'title.unique' => __("The Name for language :language has already been taken.",
+                ['language' => config("script-runners")[request('language')]["name"] ?? request('language')]),
+        ];
+    }
+
     public static function list($language = null, $forEditMode = false)
     {
         $list = [];
         $executors =
             self::active()->where('is_system', false)->orderBy('language', 'asc')
-            ->orderBy('created_at', 'asc');
+                ->orderBy('created_at', 'asc');
 
         if ($language) {
             $executors->where('language', $language);
