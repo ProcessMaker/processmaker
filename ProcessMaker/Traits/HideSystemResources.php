@@ -3,6 +3,7 @@
 namespace ProcessMaker\Traits;
 
 use Facades\ProcessMaker\Helpers\CachedSchema;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use ProcessMaker\Models\Process;
@@ -57,7 +58,7 @@ trait HideSystemResources
         }
     }
 
-    public function scopeNonSystem($query)
+    public function scopeNonSystem($query, $optimized = false)
     {
         if (substr(static::class, -8) === 'Category') {
             return $query->where('is_system', false);
@@ -105,9 +106,25 @@ trait HideSystemResources
         } elseif (static::class == User::class) {
             return $query->where('is_system', false);
         } elseif (static::class === ProcessRequestToken::class) {
-            return $query->whereHas('process.categories', function ($query) {
-                $query->where('is_system', false);
-            });
+            // Direct EXISTS avoids Process global scopes (e.g. published/process_versions).
+            if (!$optimized) {
+                return $query->whereHas('process.categories', function ($query) {
+                    $query->where('is_system', false);
+                });
+            } else {
+                return $query->whereExists(function ($sub) {
+                    $sub->select(DB::raw(1))
+                        ->from('processes')
+                        ->join('category_assignments', function ($join) {
+                            $join->on('category_assignments.assignable_id', '=', 'processes.id')
+                                ->where('category_assignments.assignable_type', '=', Process::class);
+                        })
+                        ->join('process_categories', 'process_categories.id', '=', 'category_assignments.category_id')
+                        ->whereColumn('processes.id', 'process_request_tokens.process_id')
+                        ->whereNull('processes.deleted_at')
+                        ->where('process_categories.is_system', false);
+                });
+            }
         } elseif (static::class === ProcessTemplates::class) {
             return $query->where('process_templates.is_system', false)
                 ->when(CachedSchema::hasColumn('process_templates', 'asset_type'), function ($query) {
