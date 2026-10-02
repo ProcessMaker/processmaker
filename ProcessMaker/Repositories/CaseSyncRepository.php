@@ -68,7 +68,8 @@ class CaseSyncRepository
                         'keywords' => CaseUtils::getKeywords($dataKeywords),
                     ],
                 );
-                // copy all the columns from cases_started to cases_participated, except for the user_id
+                // Copy case-level columns from cases_started to cases_participated, except
+                // user_id and tasks. Tasks are user-scoped and applied separately below.
                 $sql = "UPDATE cases_participated AS cp
                 INNER JOIN cases_started AS cs ON cp.case_number = cs.case_number
                 SET
@@ -78,7 +79,6 @@ class CaseSyncRepository
                     cp.processes = cs.processes,
                     cp.requests = cs.requests,
                     cp.request_tokens = cs.request_tokens,
-                    cp.tasks = cs.tasks,
                     cp.participants = cs.participants,
                     cp.initiated_at = cs.initiated_at,
                     cp.completed_at = cs.completed_at,
@@ -86,6 +86,8 @@ class CaseSyncRepository
                 WHERE cp.case_number = '{$instance->case_number}';
                 ";
                 DB::statement($sql);
+
+                self::syncParticipatedTasks($instance->case_number, $caseStartedTasks);
 
                 $successes[] = $caseStarted->case_number;
             } catch (\Exception $e) {
@@ -174,6 +176,7 @@ class CaseSyncRepository
                 'process_id' => $token->process_id,
                 'element_type' => $token->element_type,
                 'status' => $token->status,
+                'user_id' => $token->user_id,
             ];
 
             $caseParticipatedData['processes'] = CaseUtils::storeProcesses($caseParticipatedData['processes'], $processData);
@@ -184,7 +187,11 @@ class CaseSyncRepository
             $caseStartedRequestTokens = CaseUtils::storeRequestTokens($caseStartedRequestTokens, $token->getKey());
             $caseStartedTasks = CaseUtils::storeTasks($caseStartedTasks, $taskData);
 
-            self::syncCasesParticipated($instance->case_number, $token->user_id, $caseParticipatedData);
+            self::syncCasesParticipated(
+                $instance->case_number,
+                $token->user_id,
+                self::participatedDataForUser($caseParticipatedData, $token->user_id)
+            );
         }
     }
 
@@ -228,6 +235,7 @@ class CaseSyncRepository
                     'process_id' => $spToken->process_id,
                     'element_type' => $spToken->element_type,
                     'status' => $spToken->status,
+                    'user_id' => $spToken->user_id,
                 ];
 
                 if (in_array($spToken->element_type, CaseUtils::ALLOWED_ELEMENT_TYPES)) {
@@ -239,7 +247,11 @@ class CaseSyncRepository
                     $caseStartedRequestTokens = CaseUtils::storeRequestTokens($caseStartedRequestTokens, $spToken->getKey());
                     $caseStartedTasks = CaseUtils::storeTasks($caseStartedTasks, $taskData);
 
-                    self::syncCasesParticipated($instance->case_number, $spToken->user_id, $caseParticipatedData);
+                    self::syncCasesParticipated(
+                        $instance->case_number,
+                        $spToken->user_id,
+                        self::participatedDataForUser($caseParticipatedData, $spToken->user_id)
+                    );
                 }
             }
         }
@@ -248,12 +260,17 @@ class CaseSyncRepository
     /**
      * Sync the cases participated.
      *
-     * @param CaseStarted $caseStarted
-     * @param TokenInterface $token
+     * @param int|string $caseNumber
+     * @param int|null $userId
+     * @param array $data
      * @return void
      */
     private static function syncCasesParticipated($caseNumber, $userId, $data)
     {
+        if (is_null($userId)) {
+            return;
+        }
+
         CaseParticipated::updateOrCreate(
             [
                 'case_number' => $caseNumber,
@@ -261,5 +278,41 @@ class CaseSyncRepository
             ],
             $data,
         );
+    }
+
+    /**
+     * Build participated case data with tasks scoped to a specific user.
+     *
+     * @param array $data
+     * @param int|null $userId
+     * @return array
+     */
+    private static function participatedDataForUser(array $data, $userId): array
+    {
+        if (is_null($userId)) {
+            return $data;
+        }
+
+        $data['tasks'] = CaseUtils::filterTasksByUser($data['tasks'] ?? collect(), $userId);
+
+        return $data;
+    }
+
+    /**
+     * Apply user-scoped task lists to all participated rows for a case.
+     *
+     * @param int|string $caseNumber
+     * @param Collection $caseStartedTasks
+     * @return void
+     */
+    private static function syncParticipatedTasks($caseNumber, Collection $caseStartedTasks): void
+    {
+        $participants = CaseParticipated::where('case_number', $caseNumber)->get();
+
+        foreach ($participants as $participant) {
+            $participant->update([
+                'tasks' => CaseUtils::filterTasksByUser($caseStartedTasks, $participant->user_id),
+            ]);
+        }
     }
 }
