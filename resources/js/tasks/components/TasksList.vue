@@ -382,13 +382,13 @@ export default {
           href: "/requests/{{process_request.id}}",
         },
       ],
-      orderBy: "ID",
+      orderBy: "id",
       order_direction: "DESC",
       status: "",
       sortOrder: [
         {
           field: "ID",
-          sortField: "ID",
+          sortField: "id",
           direction: "DESC",
         },
       ],
