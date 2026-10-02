@@ -6,6 +6,8 @@ use ProcessMaker\Models\EnvironmentVariable;
 
 class SmartExtractConfiguration
 {
+    public const SEND_DOCUMENT_SCRIPT_KEY = 'package-smart-extract/document-send';
+
     public const API_HOST = 'SMART_EXTRACT_API_HOST';
 
     public const CLIENT_ID = 'SMART_EXTRACT_CLIENT_ID';
