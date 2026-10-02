@@ -342,13 +342,13 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function getNotificationsAttribute()
     {
         $array = [];
+        $settings = $this->notification_settings->whereNull('element_id');
 
         foreach ($this->requestNotifiableTypes as $notifiable) {
             foreach ($this->requestNotificationTypes as $notification) {
-                $setting = $this->notification_settings()
-                    ->whereNull('element_id')
+                $setting = $settings
                     ->where('notifiable_type', $notifiable)
-                    ->where('notification_type', $notification)->get();
+                    ->where('notification_type', $notification);
 
                 if ($setting->count()) {
                     $value = true;
@@ -372,9 +372,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     {
         $array = [];
 
-        $elements = $this->notification_settings()
-            ->whereNotNull('element_id')
-            ->get();
+        $elements = $this->notification_settings->whereNotNull('element_id');
 
         foreach ($elements->groupBy('element_id') as $group) {
             $elementId = $group->first()->element_id;
