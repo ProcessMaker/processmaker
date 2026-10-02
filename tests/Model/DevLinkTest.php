@@ -5,6 +5,7 @@ namespace Tests\Model;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Exception\DevLinkRemoteBundleException;
+use ProcessMaker\Exception\DevLinkRemoteValidationException;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Screen;
@@ -27,6 +28,8 @@ class DevLinkTest extends TestCase
     private const LOCAL_BUNDLE_API_PATH = 'local-bundles/123';
 
     private const EXPORT_LOCAL_BUNDLE_API_PATH = 'export-local-bundle/123';
+
+    private const MISSING_DISPLAY_SCREEN_MESSAGE = 'The dashboard "DevLink Dashboard" references a Display Screen that is no longer available. Assign a valid Display Screen on the source instance and try again.';
 
     public function testGetClientUrl()
     {
@@ -160,6 +163,41 @@ class DevLinkTest extends TestCase
         );
 
         $devLink->installRemoteBundle(123, 'update');
+    }
+
+    public function testInstallRemoteBundleReportsUnavailableRemoteDependencies()
+    {
+        Http::preventStrayRequests();
+        Http::fake([
+            self::remoteApiUrl(self::LOCAL_BUNDLE_API_PATH) => Http::response(self::remoteBundleResponse('5')),
+            self::remoteApiUrl(self::EXPORT_LOCAL_BUNDLE_API_PATH) => Http::response(['payloads' => []]),
+            self::remoteApiUrl('export-local-bundle/123/settings') => Http::response(['settings' => []]),
+            self::remoteApiUrl('export-local-bundle/123/settings-payloads') => Http::response([
+                'error' => [
+                    'code' => 422,
+                    'message' => self::MISSING_DISPLAY_SCREEN_MESSAGE,
+                ],
+                'errors' => [
+                    'dependencies' => [self::MISSING_DISPLAY_SCREEN_MESSAGE],
+                ],
+            ], 422),
+        ]);
+
+        $devLink = DevLink::factory()->create([
+            'url' => self::REMOTE_INSTANCE_URL,
+        ]);
+
+        try {
+            $devLink->installRemoteBundle(123, 'update');
+            $this->fail('Installing a remote bundle with an unavailable dependency should fail.');
+        } catch (DevLinkRemoteValidationException $exception) {
+            $this->assertSame(self::MISSING_DISPLAY_SCREEN_MESSAGE, $exception->getMessage());
+        }
+
+        $this->assertDatabaseMissing('bundles', [
+            'dev_link_id' => $devLink->id,
+            'remote_id' => 123,
+        ]);
     }
 
     public function testInstallRemoteBundleImportsAndReinstallsEverySelectedMenu()
