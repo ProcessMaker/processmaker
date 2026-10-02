@@ -19,7 +19,7 @@ class TwoFactorAuthNotification extends Notification
     /**
      * Create a new notification instance.
      *
-     * @param \ProcessMaker\Models\User $user
+     * @param User $user
      * @param string $code
      */
     public function __construct(User $user, string $code)
@@ -43,12 +43,12 @@ class TwoFactorAuthNotification extends Notification
      * Get the mail representation of the notification.
      *
      * @param mixed $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @return MailMessage
      */
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject(_('Security Code'))
+            ->subject(__('Security Code'))
             ->greeting($this->user->username)
             ->line(__('This is your security code: :code', ['code' => $this->code]));
     }
