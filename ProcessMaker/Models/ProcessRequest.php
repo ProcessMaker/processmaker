@@ -185,6 +185,28 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     }
 
     /**
+     * Determine if the model existed in the search index prior to an update.
+     * Prevents unnecessary RemoveFromSearch jobs when indexed search is disabled.
+     *
+     * @return bool
+     */
+    public function wasSearchableBeforeUpdate()
+    {
+        return $this->shouldBeSearchable();
+    }
+
+    /**
+     * Determine if the model existed in the search index prior to deletion.
+     * Prevents unnecessary RemoveFromSearch jobs when indexed search is disabled.
+     *
+     * @return bool
+     */
+    public function wasSearchableBeforeDelete()
+    {
+        return $this->shouldBeSearchable();
+    }
+
+    /**
      * Get the indexable data array for the model.
      *
      * @return array
