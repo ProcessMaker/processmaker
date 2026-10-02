@@ -312,9 +312,9 @@ class FilterTest extends TestCase
 
         $this->assertEquals(
             'select * from `process_requests` where (((' .
-                "`id` in (select `process_request_id` from `process_request_tokens` where `user_id` = {$user1->id} and `element_type` in ('task', 'userTask', 'startEvent'))) " .
-                "or (`id` in (select `process_request_id` from `process_request_tokens` where `user_id` = {$user2->id} and `element_type` in ('task', 'userTask', 'startEvent'))) " .
-                "or ((`id` in (select `process_request_id` from `process_request_tokens` where `user_id` = {$user3->id} and `element_type` in ('task', 'userTask', 'startEvent'))))))",
+                "`id` in (select `process_request_id` from `process_request_tokens` where `user_id` = {$user1->id})) " .
+                "or (`id` in (select `process_request_id` from `process_request_tokens` where `user_id` = {$user2->id})) " .
+                "or ((`id` in (select `process_request_id` from `process_request_tokens` where `user_id` = {$user3->id})))))",
             $sql
         );
     }
