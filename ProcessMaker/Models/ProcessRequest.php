@@ -404,6 +404,17 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     }
 
     /**
+     * Active task tokens for this request.
+     */
+    public function activeTasks()
+    {
+        return $this->hasMany(ProcessRequestToken::class)
+            ->select(['id', 'element_name', 'status', 'user_id', 'process_request_id'])
+            ->where('status', 'ACTIVE')
+            ->where('element_type', 'task');
+    }
+
+    /**
      * Get the creator/author of this request.
      */
     public function user()
@@ -1088,6 +1099,10 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
     public function getProcessVersionAlternativeAttribute(): string | null
     {
+        if (array_key_exists('process_version_alternative', $this->attributes)) {
+            return $this->attributes['process_version_alternative'] ?? 'A';
+        }
+
         return $this->processVersion?->alternative ?? 'A';
     }
 
