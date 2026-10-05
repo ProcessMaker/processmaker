@@ -46,6 +46,7 @@ use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
 use ProcessMaker\Http\Middleware\NoCache;
+use Symfony\Component\HttpFoundation\Response;
 
 // Public storage route - must be before auth middleware
 Route::get('storage/{path}', [StorageController::class, 'serve'])
@@ -242,6 +243,10 @@ Route::group([
 Broadcast::routes();
 
 // Authentication Routes...
+Route::options('login', function () {
+    return response('', Response::HTTP_METHOD_NOT_ALLOWED)
+        ->header('Allow', 'GET, HEAD, POST');
+});
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [LoginController::class, 'loginWithIntendedCheck']);
 Route::get('logout', [LoginController::class, 'beforeLogout'])->name('logout');
