@@ -100,7 +100,6 @@
 
 <script>
 import SelectTemplateModal from "../../components/templates/SelectTemplateModal.vue";
-import { EventBus } from '../index.js';
 
 export default {
   components: {
@@ -138,7 +137,7 @@ export default {
     };
   },
   created() {
-    EventBus.$on('templates-selected', (obj) => {
+    window.ProcessMaker.EventBus.$on('templates-selected', (obj) => {
       this.openTemplate(obj);
     });
 

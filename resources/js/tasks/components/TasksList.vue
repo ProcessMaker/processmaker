@@ -32,7 +32,7 @@
           >
             <img
               v-if="column.field === 'is_priority'"
-              src="/img/priority-header.svg"
+              :src="priorityHeaderImage"
               alt="priority-header"
               width="20"
               height="20"
@@ -339,6 +339,7 @@ export default {
   },
   data() {
     return {
+      priorityHeaderImage: '/img/priority-header.svg',
       tooltipFromButton: "",
       selectedRow: 0,
       taskTooltipButtons: [
