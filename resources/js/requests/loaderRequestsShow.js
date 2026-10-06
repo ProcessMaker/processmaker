@@ -1,3 +1,4 @@
+import initializeScreenCacheFromMeta from "../next/initializeScreenCacheFromMeta";
 import { setupMain } from "../next/setupMain";
 import monaco from "../next/monaco";
 import modeler from "../next/modeler";
@@ -9,6 +10,7 @@ import("@processmaker/screen-builder/dist/vue-form-builder.css");
 import("@processmaker/vue-form-elements/dist/vue-form-elements.css");
 
 setupMain();
+initializeScreenCacheFromMeta();
 monaco();
 modeler();
 

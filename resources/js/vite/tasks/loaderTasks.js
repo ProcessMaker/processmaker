@@ -1,4 +1,5 @@
 import "../../../js/vite/bootstrap-globals.js";
+import initializeScreenCacheFromMeta from "../../../js/next/initializeScreenCacheFromMeta";
 import { setupMain } from "../../../js/next/setupMain";
 import { withMomentDateFormats } from "../../next/config/user";
 import vueFormElements from "../../../js/next/libraries/vueFormElements";
@@ -12,6 +13,7 @@ import "@processmaker/screen-builder/dist/vue-form-builder.css";
 window.ScreenBuilder = ScreenBuilder;
 
 setupMain();
+initializeScreenCacheFromMeta();
 screenBuilderNext();
 window.Vue.use(ScreenBuilder.default);
 modeler();

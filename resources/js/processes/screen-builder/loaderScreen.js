@@ -1,4 +1,5 @@
 import * as ScreenBuilder from "@processmaker/screen-builder";
+import initializeScreenCacheFromMeta from "../../next/initializeScreenCacheFromMeta";
 import { setupMain } from "../../next/setupMain";
 import monaco from "../../next/monaco";
 import vueFormElements from "../../next/libraries/vueFormElements";
@@ -10,6 +11,7 @@ import("@processmaker/screen-builder/dist/vue-form-builder.css");
 window.ScreenBuilder = ScreenBuilder;
 
 setupMain();
+initializeScreenCacheFromMeta();
 monaco();
 window.Vue.use(ScreenBuilder.default);
 
