@@ -270,7 +270,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
 
         $instance = $token->processRequest;
         $process = $instance->process;
-        RunScriptTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
+        RunScriptTask::dispatch($process, $instance, $token, []);
     }
 
     /**
@@ -354,7 +354,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         $excludeProcesses = [$token->getInstance()->getModel()->process_id];
 
         $excludeRequests = $this->getCollaboratingInstanceIds($token->getInstance());
-        ThrowSignalEvent::dispatch($signalRef, $data, $excludeProcesses, $excludeRequests)->onQueue('bpmn');
+        ThrowSignalEvent::dispatch($signalRef, $data, $excludeProcesses, $excludeRequests);
     }
 
     /**
@@ -386,7 +386,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
      */
     public function throwSignalEvent($signalRef, array $data = [], array $exclude = [])
     {
-        ThrowSignalEvent::dispatch($signalRef, $data, $exclude)->onQueue('bpmn');
+        ThrowSignalEvent::dispatch($signalRef, $data, $exclude);
     }
 
     /**
@@ -402,7 +402,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
             $processId,
             $signalRef,
             $data
-        )->onQueue('bpmn');
+        );
     }
 
     /**
@@ -429,7 +429,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
      */
     public function throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
     {
-        ThrowMessageEvent::dispatch($instanceId, $elementId, $messageRef, $payload)->onQueue('bpmn');
+        ThrowMessageEvent::dispatch($instanceId, $elementId, $messageRef, $payload);
     }
 
     /**
