@@ -24,6 +24,7 @@ enum ExporterMap
         ],
         'screen_translation' => [\ProcessMaker\Package\Translations\Models\Translatable::class, \ProcessMaker\Package\Translations\ImportExport\TranslatableExporter::class],
         'pm_block' => [\ProcessMaker\Package\PackagePmBlocks\Models\PmBlock::class, \ProcessMaker\Package\PackagePmBlocks\ImportExport\PmBlockExporter::class],
+        'service_task_resource' => [\ProcessMaker\Package\PackageServiceTask\Models\ServiceTaskResource::class, \ProcessMaker\Package\PackageServiceTask\ImportExport\Exporters\ServiceTaskResourceExporter::class],
     ];
 
     public static function getModelClass(string $type): ?string
