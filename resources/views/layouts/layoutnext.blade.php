@@ -95,7 +95,6 @@
         {!! config('global_header') !!}
         <!-- End Global Header -->
     @endif
-    @stack('preload')
 </head>
 <body>
 <a class="skip-navigation alert alert-info" role="link" href="#main" tabindex="1">@{{ __('Skip to Content') }}</a>

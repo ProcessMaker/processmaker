@@ -27,14 +27,6 @@
       ], 'attributes' => 'v-cloak'])
 @endsection
 @section('content')
-@push('preload')
-  <link rel="preload" href="{{ mix('js/manifest.js') }}" as="script">
-  <link rel="preload" href="{{ mix('js/vue-vendor.js') }}" as="script">
-  <link rel="preload" href="{{ mix('js/bootstrap-vendor.js') }}" as="script">
-  <link rel="preload" href="{{ mix('js/fortawesome-vendor.js') }}" as="script">
-  <link rel="preload" href="{{ mix('js/tasks/loaderEdit.js') }}" as="script">
-  <link rel="preload" href="{{ mix('js/tasks/edit.js') }}" as="script">
-@endpush
 <div
   id="task"
   v-cloak
