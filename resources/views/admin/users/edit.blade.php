@@ -290,6 +290,7 @@
             originalEmail: '',
             emailHasChanged: false,
             canCreateTokens: @json($canCreateTokens),
+            resettingAuthApp: false,
           }
         },
         created() {
@@ -558,6 +559,27 @@
               this.errors = error.response.data.errors;
             });
           },
+          resetAuthApp() {
+            if (!confirm(this.$t('Reset the authenticator app for this user?'))) {
+              return;
+            }
+
+            this.resettingAuthApp = true;
+
+            ProcessMaker.apiClient.put(`users/${this.formData.id}/reset_auth_app`)
+              .then(() => {
+                this.formData.auth_app_configured_at = null;
+                ProcessMaker.alert(this.$t('Authenticator app reset successfully.'), 'success');
+              })
+              .catch(error => {
+                const message = error.response?.data?.message
+                  || this.$t('Unable to reset authenticator app.');
+                ProcessMaker.alert(message, 'danger');
+              })
+              .finally(() => {
+                this.resettingAuthApp = false;
+              });
+          },
           loadGroups(filter) {
             filter = typeof filter === 'string' ? '?filter=' + filter + '&' : '?';
             ProcessMaker.apiClient
@@ -589,7 +611,9 @@
             if (!this.validatePassword()) return false;
             if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
               this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1) return false;
-            ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
+            const payload = { ...this.formData };
+            delete payload.auth_app_configured_at;
+            ProcessMaker.apiClient.put('users/' + this.formData.id, payload)
               .then(response => {
                 ProcessMaker.alert(this.$t('User Updated Successfully '), 'success');
                 this.originalEmail = this.formData.email;
