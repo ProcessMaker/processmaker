@@ -1,16 +1,19 @@
 import "../../../js/vite/bootstrap-globals.js";
 import { setupMain } from "../../../js/next/setupMain";
+import { withMomentDateFormats } from "../../next/config/user";
 import vueFormElements from "../../../js/next/libraries/vueFormElements";
 import modelerInspector from "../../../js/next/libraries/modelerInspector";
 import modeler from "../../../js/next/modeler";
 import screenBuilderNext from "../../../js/next/screenBuilder";
 // Load screen-builder for PMBLOCKs
 import * as ScreenBuilder from "@processmaker/screen-builder";
+import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.ScreenBuilder = ScreenBuilder;
 
 setupMain();
 screenBuilderNext();
+window.Vue.use(ScreenBuilder.default);
 modeler();
 
 window.ProcessMaker.taskDraftsEnabled = window.temporal.taskDraftsEnabled;
@@ -19,7 +22,9 @@ window.ProcessMaker.defaultColumns = window.temporal.defaultColumns;
 window.ProcessMaker.isDefaultColumns = window.temporal.isDefaultColumns;
 window.ProcessMaker.userConfiguration = window.temporal.userConfiguration;
 window.ProcessMaker.showOldTaskScreen = window.temporal.showOldTaskScreen;
-window.ProcessMaker.user = window.temporal.user;
+// Blade user stores a PHP datetime format; convert it before Moment formatters read it.
+const pageUser = withMomentDateFormats(window.temporal.user);
+window.ProcessMaker.user = pageUser;
 window.ProcessMaker.selectedProcess = window.temporal.selectedProcess;
 window.ProcessMaker.defaultSavedSearchId = window.temporal.defaultSavedSearchId;
 window.ProcessMaker.isTceCustomization = window.temporal.isTceCustomization;
@@ -30,6 +35,6 @@ window.ProcessMaker.packages = window.temporal.packages;
 // Legacy Mix keys (lowercase "m") used by TasksMixin / ParticipantHomeScreen
 window.Processmaker = window.Processmaker || {};
 window.Processmaker.defaultColumns = window.temporal.defaultColumns;
-window.Processmaker.user = window.temporal.user;
+window.Processmaker.user = pageUser;
 window.Processmaker.selectedProcess = window.temporal.selectedProcess;
 window.Processmaker.defaultSavedSearchId = window.temporal.defaultSavedSearchId;
