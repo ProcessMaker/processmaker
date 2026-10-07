@@ -55,6 +55,14 @@ trait HasVersioning
      */
     public function saveVersion()
     {
+        $draft = $this->getDraftVersion();
+
+        if ($draft && !$this->isPublishingVersionableContent()) {
+            $this->syncDraftMetadata($draft);
+
+            return null;
+        }
+
         $attributes = $this->getModelAttributes();
         $version = $this->versions()->create($attributes);
 
@@ -66,6 +74,53 @@ trait HasVersioning
         }
 
         return $version;
+    }
+
+    /**
+     * Attributes that trigger publishing a new version when changed.
+     * Return null to always publish on save (legacy behavior).
+     */
+    protected function getVersionableAttributes(): ?array
+    {
+        return null;
+    }
+
+    /**
+     * Determine if the current save publishes versionable content.
+     */
+    protected function isPublishingVersionableContent(): bool
+    {
+        $versionableAttributes = $this->getVersionableAttributes();
+
+        if ($versionableAttributes === null) {
+            return true;
+        }
+
+        return !empty(array_intersect(
+            array_keys($this->getChanges()),
+            $versionableAttributes
+        ));
+    }
+
+    /**
+     * Sync metadata from the model to an existing draft without overwriting versionable content.
+     */
+    private function syncDraftMetadata(Model $draft): void
+    {
+        $attributes = $this->getModelAttributes();
+
+        foreach ($this->getVersionableAttributes() ?? [] as $attribute) {
+            unset($attributes[$attribute]);
+        }
+
+        foreach ($attributes as $key => $value) {
+            if ($draft->getAttribute($key) != $value) {
+                $draft->fill($attributes);
+                $draft->save();
+
+                return;
+            }
+        }
     }
 
     /**
