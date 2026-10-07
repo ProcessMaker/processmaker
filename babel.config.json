@@ -1,7 +1,6 @@
 {
   "plugins": [
-    "@babel/plugin-transform-runtime",
-    "istanbul"
+    "@babel/plugin-transform-runtime"
   ],
   "presets": ["@babel/preset-env"]
 }
