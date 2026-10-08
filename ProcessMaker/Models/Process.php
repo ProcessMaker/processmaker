@@ -1611,6 +1611,10 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     public function getProcessCategoryIdAttribute($value)
     {
+        if ($this->relationLoaded('categories')) {
+            return implode(',', $this->categories->pluck('pivot.category_id')->toArray()) ?: $value;
+        }
+
         return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
     }
 

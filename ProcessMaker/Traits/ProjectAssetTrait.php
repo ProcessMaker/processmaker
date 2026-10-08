@@ -77,6 +77,10 @@ trait ProjectAssetTrait
 
     public function getProjectsAttribute()
     {
+        if (array_key_exists('projects', $this->attributes) && is_string($this->attributes['projects'])) {
+            return $this->attributes['projects'];
+        }
+
         if (class_exists(self::PROJECT_ASSET_MODEL_CLASS)) {
             $projectAssets = self::PROJECT_ASSET_MODEL_CLASS::where('asset_id', $this->id)
                 ->where('asset_type', get_class($this))
