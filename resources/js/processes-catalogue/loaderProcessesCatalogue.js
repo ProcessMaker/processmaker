@@ -1,12 +1,12 @@
 import { setupMain } from "../../js/next/setupMain.js";
-import screenBuilderNext from "../../js/next/screenBuilder.js";
 import * as ScreenBuilder from "@processmaker/screen-builder";
 import vueFormElements from "../../js/next/libraries/vueFormElements";
+import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.ScreenBuilder = ScreenBuilder;
 
 setupMain();
-screenBuilderNext();
+window.Vue.use(ScreenBuilder.default);
 
 window.ProcessMaker.isDocumenterInstalled = window.temporal.isDocumenterInstalled;
 window.ProcessMaker.permission = window.temporal.permission;
