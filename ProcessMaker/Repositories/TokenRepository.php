@@ -390,6 +390,11 @@ class TokenRepository implements TokenRepositoryInterface
         $token->process_id = $token->getInstance()->process_id;
         $token->process_request_id = $token->getInstance()->getKey();
         $token->data = $token->getInstance()->getDataStore()->getData();
+        // A closed token can no longer be claimed, e.g. when an interrupting boundary event closes an unclaimed self-service task
+        if ($token->is_self_service) {
+            $token->is_self_service = 0;
+        }
+
         $token->updateTokenProperties();
         $token->save();
         $token->setId($token->getKey());
