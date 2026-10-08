@@ -27,10 +27,14 @@
               id="title"
               class="mb-2"
               v-model="formData.title"
+              :state="errors.title ? false : null"
               type="text"
               required
               placeholder="Job Title"
             ></b-form-input>
+            <div class="invalid-feedback" role="alert" v-if="errors.title">
+                @{{errors.title[0]}}
+            </div>
         </div>
 <hr>
     <h5 class="mt-1 mb-3">{{__('Contact Information')}}</h5>
