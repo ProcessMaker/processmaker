@@ -124,6 +124,13 @@
             <button type="button" @click="onSubmitDuplicateScript" class="btn btn-secondary ml-2">{{ $t('Save') }}</button>
           </div>
         </b-modal>
+        <copy-flow-genie-modal
+          ref="copy-flow-genie-modal"
+          asset-type="Flow Genie"
+          :asset-name="flowGenieName"
+          :asset-data="flowGenieData"
+          @reload="fetch()"
+        />
       </div>
     </div>
   </div>
@@ -147,6 +154,7 @@ import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vu
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import AddToBundle from "../../components/shared/AddToBundle.vue";
 import CategorySelect from "../categories/components/CategorySelect.vue";
+import CopyFlowGenieModal from "./CopyFlowGenieModal.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -158,6 +166,7 @@ export default {
     EllipsisMenu,
     AddToBundle,
     CategorySelect,
+    CopyFlowGenieModal,
   },
   mixins: [
     datatableMixin,
@@ -208,6 +217,8 @@ export default {
       processTemplateName: "",
       pmBlockName: "",
       bundleAssetType: "ProcessMaker\\Models\\Process",
+      flowGenieName: "",
+      flowGenieData: {},
     };
   },
   methods: {
@@ -267,7 +278,7 @@ export default {
         case "Decision Table":
           return this.addBundleAction(this.decisionTableActions, 2);
         case "Flow Genie":
-          return this.addBundleAction(this.flowGenieActions, 2);
+          return this.addBundleAction(this.flowGenieActions, 3);
         default:
           return []; // Handle unknown asset types as needed
       }
@@ -424,6 +435,16 @@ export default {
             this.errors = error.response.data.errors;
           }
         });
+    },
+    /**
+     * Open the copy Flow Genie modal
+     */
+    showFlowGenieCopyModal(data) {
+      this.flowGenieName = data.name || data.title || "";
+      this.flowGenieData = data;
+      this.$nextTick(() => {
+        this.$refs["copy-flow-genie-modal"].show();
+      });
     },
   },
 };
