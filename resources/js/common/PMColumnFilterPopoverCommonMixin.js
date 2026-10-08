@@ -160,9 +160,40 @@ const PMColumnFilterCommonMixin = {
     },
     onClear(index) {
       this.advancedFilter[index] = [];
+      // Inbox/tasks: clearing Status restores the default tray filter (In Progress, etc.)
+      // so Clear does not leave "no status" (all tasks) or fail to persist.
+      if (index === "status" && this.shouldRestoreDefaultTaskStatusFilter()) {
+        this.advancedFilter.status = [this.buildDefaultTaskStatusFilter()];
+      }
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
       this.fetch(true);
+    },
+    shouldRestoreDefaultTaskStatusFilter() {
+      return typeof this.filterConfiguration === "function"
+        && this.filterConfiguration()?.type === "taskFilter";
+    },
+    getDefaultTaskInboxStatus() {
+      const statusParam = new URL(document.location).searchParams.get("status");
+      switch (statusParam) {
+        case "CLOSED":
+          return "Completed";
+        case "SELF_SERVICE":
+          return "Self Service";
+        default:
+          return "In Progress";
+      }
+    },
+    buildDefaultTaskStatusFilter() {
+      return {
+        subject: {
+          type: "Status",
+        },
+        operator: "=",
+        value: this.getDefaultTaskInboxStatus(),
+        _column_field: "status",
+        _column_label: "Status",
+      };
     },
     onChangeSort(value, field) {
       this.setOrderByProps(field, value);
@@ -182,6 +213,7 @@ const PMColumnFilterCommonMixin = {
       Object.keys(filterCopy).forEach((key) => {
         if (filterCopy[key].length === 0) {
           delete filterCopy[key];
+          return;
         }
         const label = this.tableHeaders.find(column => column.field === key)?.label;
         this.addAliases(filterCopy[key], key, label);
