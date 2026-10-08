@@ -5,12 +5,15 @@ namespace ProcessMaker\Jobs;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\DevLinkRemoteBundleException;
+use ProcessMaker\Exception\DevLinkRemoteValidationException;
+use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\Jobs\ImportV2;
 use ProcessMaker\Models\Bundle;
@@ -20,6 +23,10 @@ use Throwable;
 class DevLinkInstall implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    private const REMOTE_ERROR_MESSAGE = 'The remote instance could not complete the DevLink request. Check the source instance logs and try again.';
+
+    private const UNEXPECTED_ERROR_MESSAGE = 'The DevLink operation could not be completed. Check the target instance logs and try again.';
 
     const TYPE_INSTALL_BUNDLE = 'install_bundle';
 
@@ -95,11 +102,27 @@ class DevLinkInstall implements ShouldQueue
     public function failed(Throwable $exception): void
     {
         $logger = new Logger($this->userId, $this->operationId);
-        if ($exception instanceof DevLinkRemoteBundleException) {
-            Log::error($exception->getMessage(), ['exception' => $exception]);
-            $logger->error($exception->getMessage());
+
+        Log::error('DevLink operation failed.', [
+            'exception' => $exception,
+            'operation_id' => $this->operationId,
+            'dev_link_id' => $this->devLinkId,
+            'type' => $this->type,
+        ]);
+
+        if (
+            $exception instanceof DevLinkRemoteBundleException
+            || $exception instanceof DevLinkRemoteValidationException
+            || $exception instanceof ValidationException
+        ) {
+            $message = $exception instanceof ValidationException
+                ? collect($exception->errors())->flatten()->first(fn ($message) => is_string($message))
+                : $exception->getMessage();
+            $logger->error($message ?: $exception->getMessage());
+        } elseif ($exception instanceof RequestException) {
+            $logger->error(__(self::REMOTE_ERROR_MESSAGE));
         } else {
-            $logger->exception($exception);
+            $logger->error(__(self::UNEXPECTED_ERROR_MESSAGE));
         }
 
         // Unlock the job
