@@ -15,5 +15,5 @@ concurrency:
 jobs:
   run:
     name: Run PM4-workflow
-    uses: processmaker/.github/.github/workflows/deploy-pm4.yml@bd3f69771e14d4bcdc21fc7df7aa10bc41f69d22
+    uses: processmaker/.github/.github/workflows/deploy-pm4.yml@task/FOUR-33523-B
     secrets: inherit
