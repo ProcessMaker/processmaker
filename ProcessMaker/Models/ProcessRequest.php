@@ -185,6 +185,28 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     }
 
     /**
+     * Determine if the model existed in the search index prior to an update.
+     * Prevents unnecessary RemoveFromSearch jobs when indexed search is disabled.
+     *
+     * @return bool
+     */
+    public function wasSearchableBeforeUpdate()
+    {
+        return $this->shouldBeSearchable();
+    }
+
+    /**
+     * Determine if the model existed in the search index prior to deletion.
+     * Prevents unnecessary RemoveFromSearch jobs when indexed search is disabled.
+     *
+     * @return bool
+     */
+    public function wasSearchableBeforeDelete()
+    {
+        return $this->shouldBeSearchable();
+    }
+
+    /**
      * Get the indexable data array for the model.
      *
      * @return array
@@ -401,6 +423,17 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     public function tokens()
     {
         return $this->hasMany(ProcessRequestToken::class);
+    }
+
+    /**
+     * Active task tokens for this request.
+     */
+    public function activeTasks()
+    {
+        return $this->hasMany(ProcessRequestToken::class)
+            ->select(['id', 'element_name', 'status', 'user_id', 'process_request_id'])
+            ->where('status', 'ACTIVE')
+            ->where('element_type', 'task');
     }
 
     /**
@@ -1088,6 +1121,10 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
     public function getProcessVersionAlternativeAttribute(): string | null
     {
+        if (array_key_exists('process_version_alternative', $this->attributes)) {
+            return $this->attributes['process_version_alternative'] ?? 'A';
+        }
+
         return $this->processVersion?->alternative ?? 'A';
     }
 

@@ -37,7 +37,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Query\SyntaxError;
-use ProcessMaker\RetryProcessRequest;
+use ProcessMaker\Repositories\ProcessRequestListingRawRepository;
 use ProcessMaker\Traits\ProcessMapTrait;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Throwable;
@@ -117,7 +117,7 @@ class ProcessRequestController extends Controller
         $query = ProcessRequest::forUser($user);
         $includes = $request->input('include', '');
         foreach (array_filter(explode(',', $includes)) as $include) {
-            if (in_array($include, ProcessRequest::$allowedIncludes)) {
+            if (in_array($include, ProcessRequest::$allowedIncludes) && $include !== 'process') {
                 $query->with($include);
             }
         }
@@ -176,6 +176,7 @@ class ProcessRequestController extends Controller
                     ->withAggregate('processVersion', 'alternative')
                     ->paginate($request->input('per_page', 10));
                 $total = $response->total();
+                app(ProcessRequestListingRawRepository::class)->hydrate($response, $includes);
             }
         } catch (QueryException $e) {
             throw $e;
@@ -899,7 +900,14 @@ class ProcessRequestController extends Controller
 
         // Apply ordering only if a valid order_by field is provided
         $query->applyOrdering($request);
-        $response = $query->applyPagination($request);
+        $response = $query
+            ->select('process_requests.*')
+            ->withAggregate('processVersion', 'alternative')
+            ->applyPagination($request);
+        app(ProcessRequestListingRawRepository::class)->hydrate(
+            $response,
+            $request->input('include', '')
+        );
 
         // Get activeTasks and participants
         $response = $response->map(function ($processRequest) use ($request) {
