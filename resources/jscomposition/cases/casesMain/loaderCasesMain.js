@@ -10,4 +10,3 @@ setupMain();
 screenBuilderNext();
 
 window.ProcessMaker.packages = window.temporal.packages;
-window.ProcessMaker.user = window.temporal.user;
