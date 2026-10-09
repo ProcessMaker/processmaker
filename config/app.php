@@ -47,6 +47,9 @@ return [
     // The timeout length for API calls, in milliseconds (0 for no timeout)
     'api_timeout' => env('API_TIMEOUT', 5000),
 
+    // Faster V1.1 task show: skips duplicate request data include (API_FAST_TASK)
+    'api_fast_task' => env('API_FAST_TASK', false),
+
     // Hide server headers for security (prevents information disclosure)
     'hide_server_headers' => env('HIDE_SERVER_HEADERS', true),
 

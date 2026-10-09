@@ -15,6 +15,7 @@ use ProcessMaker\Http\Resources\V1_1\TaskScreen;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\ProcessTranslations\TranslationManager;
+use ProcessMaker\Repositories\TaskV11ShowFastRepository;
 
 class TaskController extends Controller
 {
@@ -92,9 +93,39 @@ class TaskController extends Controller
 
     public function show(ProcessRequestToken $task)
     {
+        if (config('app.api_fast_task')) {
+            return $this->showFast($task);
+        }
+
         $resource = TaskResource::preprocessInclude(request(), ProcessRequestToken::where('id', $task->id));
 
         return $resource->toArray(request());
+    }
+
+    public function showFast(ProcessRequestToken $task)
+    {
+        $httpRequest = request();
+        $this->removeDataFromIncludeQuery($httpRequest);
+
+        $token = app(TaskV11ShowFastRepository::class)->findForShow($task->id);
+        $resource = TaskResource::fromTokenWithIncludes($token, $httpRequest);
+
+        return $resource->toArray($httpRequest);
+    }
+
+    private function removeDataFromIncludeQuery(Request $request): void
+    {
+        $include = $request->query('include');
+        if (!is_string($include) || $include === '') {
+            return;
+        }
+
+        $parts = array_values(array_filter(
+            explode(',', $include),
+            static fn (string $part) => trim($part) !== 'data'
+        ));
+
+        $request->query->set('include', implode(',', $parts));
     }
 
     public function showScreen($taskId)

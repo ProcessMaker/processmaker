@@ -3,6 +3,7 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -117,13 +118,25 @@ class DataManager
             if ($whenTokenSaved) {
                 $data = $token->data ?: [];
             } else {
-                $instance = $token->getInstance();
-                if ($instance) {
-                    $data = $instance->getDataStore()->getData();
+                $processRequest = $token->processRequest;
+                if ($processRequest && $processRequest->getKey()
+                    && !array_key_exists('data', $processRequest->getAttributes())) {
+                    $data = $this->resolveRequestDataFromToken($token);
                 } else {
-                    $data = $token->processRequest->data ?: [];
+                    $data = null;
+                    $instance = $token->getInstance();
+                    if ($instance) {
+                        $data = $instance->getDataStore()->getData();
+                    }
+                    if ($data === null) {
+                        $data = $this->resolveRequestDataFromToken($token);
+                    }
                 }
             }
+        }
+
+        if (!is_array($data)) {
+            $data = [];
         }
 
         // Magic Variable: _user
@@ -149,6 +162,30 @@ class DataManager
         }
 
         return $data;
+    }
+
+    private function resolveRequestDataFromToken(ProcessRequestToken $token): array
+    {
+        $processRequest = $token->processRequest;
+        if (!$processRequest || !$processRequest->getKey()) {
+            return [];
+        }
+
+        if (array_key_exists('data', $processRequest->getAttributes())) {
+            $data = $processRequest->data;
+
+            return is_array($data) ? $data : [];
+        }
+
+        $raw = DB::table('process_requests')->where('id', $processRequest->getKey())->value('data');
+        if (is_array($raw)) {
+            return $raw;
+        }
+        if (is_string($raw)) {
+            return json_decode($raw, true) ?? [];
+        }
+
+        return [];
     }
 
     /**
