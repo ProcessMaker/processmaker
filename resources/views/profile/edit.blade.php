@@ -148,11 +148,13 @@
             'timezone',
             'datetime_format',
             'status',
+            'delegation_user_id',
             'avatar',
             'preferences_2fa',
             'connected_accounts',
             'valpassword',
         ];
+        const isSelfServiceProfile = @json(!(Auth::user()->is_administrator || Auth::user()->hasPermission('edit-users')));
         let formVueInstance = new Vue({
             el: '#editProfile',
             mixins:addons,
@@ -310,7 +312,8 @@
                     if (this.image === false) {
                         this.formData.avatar = false;
                     }
-                    ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
+                    const payload = isSelfServiceProfile ? this.profilePayload() : this.formData;
+                    ProcessMaker.apiClient.put('users/' + this.formData.id, payload)
                         .then((response) => {
                             // reset the slack configuration error
                             this.slackConfigurationError = false;

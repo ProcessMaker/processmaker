@@ -960,7 +960,6 @@ class UsersTest extends TestCase
         $originalFirstname = $this->user->firstname;
         $disallowedFields = [
             'manager_id' => User::factory()->create()->id,
-            'delegation_user_id' => User::factory()->create()->id,
             'schedule' => ['monday' => []],
             'force_change_password' => true,
             'is_administrator' => true,
@@ -986,6 +985,54 @@ class UsersTest extends TestCase
             'delegation_user_id' => null,
             'force_change_password' => false,
             'is_administrator' => false,
+        ]);
+    }
+
+    public function testSelfServiceUpdateCanSetOutOfOfficeAndDelegation(): void
+    {
+        $this->user = User::factory()->create(['is_administrator' => false, 'status' => 'ACTIVE']);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+        $delegate = User::factory()->create(['status' => 'ACTIVE']);
+
+        $response = $this->apiCall(
+            'PUT',
+            self::API_TEST_URL . '/' . $this->user->id,
+            $this->getSelfServiceUpdateData($this->user, [
+                'status' => 'OUT_OF_OFFICE',
+                'delegation_user_id' => $delegate->id,
+            ])
+        );
+
+        $response->assertStatus(204);
+        $this->assertDatabaseHas('users', [
+            'id' => $this->user->id,
+            'status' => 'OUT_OF_OFFICE',
+            'delegation_user_id' => $delegate->id,
+        ]);
+    }
+
+    public function testSelfServiceUpdateRejectsBlockedAndScheduledStatuses(): void
+    {
+        $this->user = User::factory()->create(['is_administrator' => false, 'status' => 'ACTIVE']);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+
+        foreach (['BLOCKED', 'SCHEDULED'] as $status) {
+            $response = $this->apiCall(
+                'PUT',
+                self::API_TEST_URL . '/' . $this->user->id,
+                $this->getSelfServiceUpdateData($this->user, ['status' => $status])
+            );
+
+            $response->assertStatus(422)->assertJsonValidationErrors('status');
+        }
+
+        $this->assertDatabaseHas('users', [
+            'id' => $this->user->id,
+            'status' => 'ACTIVE',
         ]);
     }
 
