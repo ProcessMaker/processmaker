@@ -116,12 +116,13 @@ trait TaskResourceIncludes
 
     private function includeRequestData()
     {
-        $dataManager = new DataManager();
-        $data = new StdClass();
-        if ($this->processRequest->data) {
-            $task = $this->resource->loadTokenInstance();
-            $data = $dataManager->getData($task);
+        if (!$this->processRequest || !$this->processRequest->getKey()) {
+            return ['request_data' => new StdClass()];
         }
+
+        $dataManager = new DataManager();
+        $task = $this->resource->loadTokenInstance();
+        $data = $dataManager->getData($task);
 
         return ['request_data' => $data];
     }
@@ -138,7 +139,9 @@ trait TaskResourceIncludes
 
     private function includeBpmnTagName()
     {
-        return ['bpmn_tag_name' => $this->getBpmnDefinition()->localName];
+        $definition = $this->getBpmnDefinition();
+
+        return ['bpmn_tag_name' => $definition ? $definition->localName : null];
     }
 
     private function includeProcess()
