@@ -334,4 +334,6 @@ return [
         'claim_timeout_minutes' => env('SCHEDULER_CLAIM_TIMEOUT_MINUTES', 5),
         'bpmn_timer_overlap_minutes' => env('SCHEDULER_BPMN_TIMER_OVERLAP_MINUTES', 5),
     ],
+
+    'hostname' => env('HOSTNAME', ''),
 ];

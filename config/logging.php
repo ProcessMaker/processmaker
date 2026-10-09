@@ -31,7 +31,10 @@ return [
     |
     */
 
-    'deprecations' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
+    'deprecations' => [
+        'channel' => 'deprecations',
+        'trace' => false,
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -134,6 +137,11 @@ return [
             'path' => base_path('storage/logs/data-source.log'),
             'level' => 'debug',
             'days' => env('DATA_SOURCE_CLEAR_LOG', 7),
+        ],
+        'deprecations' => [
+            'driver' => 'monolog',
+            'handler' => NullHandler::class,
+            'level' => 'emergency',
         ],
     ],
 
