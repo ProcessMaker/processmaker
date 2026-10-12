@@ -61,8 +61,8 @@ class ProfileController extends Controller
         $currentUser->preferences_2fa = $currentUser->getValid2FAPreferences();
         $is2FAEnabledForGroup = $currentUser->in2FAGroupOrIndependent();
 
-        $addons = $this->getPluginAddons('edit', []);
-        $addonsSettings = $this->getPluginAddons('edit.settings', []);
+        $addons = $this->getPluginAddons('edit', ['user' => $currentUser]);
+        $addonsSettings = $this->getPluginAddons('edit.settings', ['user' => $currentUser]);
 
         return view('profile.edit',
             compact('currentUser', 'states', 'timezones', 'countries', 'datetimeFormats',
