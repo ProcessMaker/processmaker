@@ -1,14 +1,14 @@
 import Vue from "vue";
-import Process from "./components/Process";
-import ProcessesCatalogue from "./components/ProcessesCatalogue";
-import ProcessListing from "./components/ProcessListing";
+import VueRouter from "vue-router";
+import Process from "./components/Process.vue";
+import ProcessesCatalogue from "./components/ProcessesCatalogue.vue";
+import ProcessListing from "./components/ProcessListing.vue";
 
-export const EventBus = new Vue();
 Vue.use(VueRouter);
+
 const router = new VueRouter({
   mode: "history",
   base: "/process-browser",
-  //See https://v3.router.vuejs.org/guide/
   routes: [
     {
       name: "index",
@@ -16,9 +16,9 @@ const router = new VueRouter({
       component: ProcessListing,
       props(route) {
         return {
-          categoryId: route.query.categoryId || 'recent',
+          categoryId: route.query.categoryId || "recent",
         };
-      }
+      },
     },
     {
       name: "show",
@@ -26,12 +26,12 @@ const router = new VueRouter({
       component: Process,
       props(route) {
         return {
-          processId: parseInt(route.params.processId) || null,
+          processId: parseInt(route.params.processId, 10) || null,
           process: route.params.process || null,
         };
-      }
+      },
     },
-  ]
+  ],
 });
 
 new Vue({
@@ -45,7 +45,5 @@ new Vue({
       filteredCategories: null,
       mobileSearchVisible: false,
     };
-  },
-  methods: {
   },
 });

@@ -200,7 +200,7 @@ class RequestController extends Controller
         $addons = $this->getPluginAddons('edit', compact(['request']));
         $dataActionsAddons = $this->getPluginAddons('edit.dataActions', []);
 
-        $isProcessManager = $request->process?->manager_id === Auth::user()->id;
+        $isProcessManager = in_array(Auth::user()->id, $request->process?->manager_id ?? []);
 
         $eligibleRollbackTask = null;
         $errorTask = RollbackProcessRequest::getErrorTask($request);
@@ -269,7 +269,9 @@ class RequestController extends Controller
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
 
-        return view('requests.preview', compact('request', 'screen', 'manager', 'data'));
+        $type = strtoupper($screen->type ?? 'FORM');
+
+        return view('requests.preview', compact('request', 'screen', 'manager', 'data', 'type'));
     }
 
     /**

@@ -2,7 +2,7 @@ import Vue from "vue";
 import AssetLinkFields from "./components/AssetLinkFields.vue";
 import DoNotUpdateSwitch from "./components/DoNotUpdateSwitch.vue";
 
-const initial = window.ProcessMaker.EnvironmentVariableEdit || {};
+const initial = window.temporal.EnvironmentVariableEdit || {};
 
 new Vue({
   el: "#editEnvironmentVariable",

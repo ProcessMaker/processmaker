@@ -518,7 +518,8 @@ class UserController extends Controller
             session()->forget('login-error');
         }
         $original = $user->getOriginal();
-        $isLdapUser = $user->meta?->authenticationType === 'ldap';
+        $isLdapUser = isset($user->meta?->authenticationType)
+            && $user->meta->authenticationType === 'ldap';
         $user->fill($fields);
         if (array_key_exists('cell', $fields)) {
             $response = $this->validateCellPhoneNumber($user, $fields['cell']);

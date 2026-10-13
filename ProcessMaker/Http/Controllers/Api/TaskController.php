@@ -158,8 +158,6 @@ class TaskController extends Controller
 
         $this->excludeNonVisibleTasks($query, $request);
 
-        $this->applyColumnOrdering($query, $request);
-
         $this->applyStatusFilter($query, $request);
 
         // Apply process manager filter BEFORE PMQL to avoid conflicts with is_self_service filtering
@@ -175,6 +173,8 @@ class TaskController extends Controller
 
         // Apply filter overdue
         $query->overdue($request->input('overdue'));
+
+        $this->applyColumnOrdering($query, $request);
 
         // If only the total is being requested (by a Saved Search), send it now
         if ($getTotal === true) {

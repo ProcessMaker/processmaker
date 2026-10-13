@@ -178,7 +178,8 @@
       centered
       content-class="modal-style"
       title="Publish New Version"
-      @ok="executeIncrease"
+      :ok-disabled="publishing"
+      @ok.prevent="executeIncrease"
     >
       <p v-html="confirmPublishNewVersionText" />
     </b-modal>
@@ -212,6 +213,7 @@ const updateAvailable = ref(false);
 const remoteAvailable = ref(null);
 const selected = ref(null);
 const confirmPublishNewVersion = ref(null);
+const publishing = ref(false);
 
 const loadAssets = async () => {
   loading.value = true;
@@ -243,7 +245,7 @@ const updateBundle = () => {
 };
 
 const confirmPublishNewVersionText = computed(() => vue.$t(
-  "Are you sure you increase the version of <strong>{{ bundleName }}</strong>?",
+  "Are you sure you want to increase the version of <strong>{{ bundleName }}</strong>?",
   { bundleName: bundle.value?.name },
 ));
 
@@ -276,10 +278,23 @@ const publishBundle = () => {
 };
 
 const executeIncrease = () => {
+  if (publishing.value) {
+    return;
+  }
+
+  publishing.value = true;
   ProcessMaker.apiClient
     .post(`devlink/local-bundles/${selected.value.id}/increase-version`)
     .then(() => {
       confirmPublishNewVersion.value.hide();
+      loadAssets();
+    })
+    .catch((error) => {
+      const message = error.response?.data?.error?.message || error.message;
+      window.ProcessMaker.alert(vue.$t(message), "warning");
+    })
+    .finally(() => {
+      publishing.value = false;
     });
 };
 

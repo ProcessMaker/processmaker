@@ -33,6 +33,10 @@ class ProcessRequestPolicy
      */
     public function view(User $user, ProcessRequest $processRequest)
     {
+        if (in_array($user->id, $processRequest->process?->manager_id ?? [])) {
+            return true;
+        }
+
         // Policy defined in ForUserScope
         return ProcessRequest::forUser($user)
             ->where('process_requests.id', $processRequest->id)

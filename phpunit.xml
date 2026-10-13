@@ -34,6 +34,7 @@
       <env name="APP_ENV" value="testing" />
       <env name="APP_URL" value="http://localhost" />
       <env name="TESTING_VERBOSE" value="false" />
+      <env name="PHPUNIT_REALTIME_OUTPUT" value="false" />
       <env name="POPULATE_DATABASE" value="true" />
       <env name="TELESCOPE_ENABLED" value="false" />
       <env name="LOG_AUTH_EVENTS" value="false" />
