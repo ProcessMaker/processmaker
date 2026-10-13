@@ -724,16 +724,20 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             if (app()->bound('workflow.UserManager') && $assignmentProcess) {
                 $config = json_decode($activity->getProperty('config', '{}'), true);
                 $escalateToManager = $config['escalateToManager'] ?? false;
+                $assignee = User::find($user);
                 if ($escalateToManager) {
-                    $user = WorkflowUserManager::escalateToManager($token, $user);
+                    $assignedUserId = WorkflowUserManager::escalateToManager($token, $user);
                 } else {
                     $res = (new WorkflowManagerDefault)->runProcess($assignmentProcess, 'assign', [
                         'user_id' => $user,
                         'process_id' => $this->id,
                         'request_id' => $token->getInstance()->getId(),
                     ]);
-                    $user = $res['assign_to'];
+                    $assignedUserId = $res['assign_to'] ?? null;
                 }
+                $user = $assignee
+                    ? $assignee->acceptResolvedAssignee($assignedUserId)
+                    : $assignedUserId;
             }
         }
 
@@ -806,9 +810,9 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $outOfOffice = User::whereIn('id', array_unique($assignedUsers))->where('status', 'OUT_OF_OFFICE')->get();
 
         foreach ($outOfOffice as $user) {
-            $delegation = $user->delegationUser()->pluck('id')->toArray();
-            if ($delegation) {
-                $users[] = $delegation[0];
+            $delegationId = $user->activeDelegationUserId();
+            if ($delegationId) {
+                $users[] = $delegationId;
             }
         }
 

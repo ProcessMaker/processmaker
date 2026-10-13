@@ -1323,7 +1323,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 'process_id' => $this->process_id,
                 'request_id' => $this->process_request_id,
             ]);
-            $this->user_id = $res['assign_to'];
+            $assignedUserId = $res['assign_to'] ?? null;
+            $assignee = User::find($userId);
+            $this->user_id = $assignee
+                ? $assignee->acceptResolvedAssignee($assignedUserId)
+                : $assignedUserId;
         }
 
         return $this;
