@@ -114,7 +114,7 @@ class ScriptExecutorController extends Controller
     public function store(Request $request, ScriptMicroserviceService $service)
     {
         $this->checkAuth($request);
-        $request->validate(ScriptExecutor::rules());
+        $request->validate(ScriptExecutor::rules(), ScriptExecutor::messages());
 
         $scriptExecutor = ScriptExecutor::create(
             $request->only((new ScriptExecutor())->getFillable())
@@ -180,7 +180,7 @@ class ScriptExecutorController extends Controller
     public function update(Request $request, ScriptExecutor $scriptExecutor, ScriptMicroserviceService $service)
     {
         $this->checkAuth($request);
-        $request->validate(ScriptExecutor::rules());
+        $request->validate(ScriptExecutor::rules($scriptExecutor), ScriptExecutor::messages());
 
         $original = $scriptExecutor->getAttributes();
 
