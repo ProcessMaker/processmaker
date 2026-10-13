@@ -36,6 +36,14 @@ class ProcessVariableControllerTest extends TestCase
         $this->configureVariableFinder();
     }
 
+    protected function tearDown(): void
+    {
+        ProcessVariableController::mock(false);
+        ProcessVariableController::useVarFinder(true);
+
+        parent::tearDown();
+    }
+
     /**
      * Choose mock data or Variable Finder without creating processes.
      * Process::factory() compiles BPMN, so it stays out of this hook.
@@ -383,8 +391,9 @@ class ProcessVariableControllerTest extends TestCase
         $this->assertFalse($filteredFields->contains('data.var_1_1'));
         $this->assertFalse($filteredFields->contains('data.var_1_2'));
 
-        // Check that the total count matches the actual number of variables
-        $this->assertEquals(10, $responseData['meta']['total']); // Total number of variables
+        // Total excludes columns already active on the saved search (10 seeded − 2 active).
+        $this->assertCount($responseData['meta']['total'], $responseData['data']);
+        $this->assertEquals(8, $responseData['meta']['total']);
     }
 
     /**
