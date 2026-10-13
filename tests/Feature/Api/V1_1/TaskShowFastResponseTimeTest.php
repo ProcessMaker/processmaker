@@ -89,6 +89,21 @@ class TaskShowFastResponseTimeTest extends TestCase
         return ($samples[$middle - 1] + $samples[$middle]) / 2;
     }
 
+    public function testShowFastWithIncludeDataOnlyReturns200(): void
+    {
+        [$task] = $this->createTaskWithLargeRequestData(10, 10);
+
+        config(['app.api_fast_task' => true]);
+        $response = $this->apiCall(
+            'GET',
+            route('api.1.1.tasks.show', $task->id) . '?include=data'
+        );
+
+        $response->assertStatus(200);
+        $this->assertArrayHasKey('id', $response->json());
+        $this->assertArrayNotHasKey('data', $response->json());
+    }
+
     public function testShowFastRequestDataMatchesLegacyShow(): void
     {
         [$task, $includes] = $this->createTaskWithLargeRequestData(500, 40);

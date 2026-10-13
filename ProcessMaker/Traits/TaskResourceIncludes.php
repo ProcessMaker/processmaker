@@ -116,13 +116,12 @@ trait TaskResourceIncludes
 
     private function includeRequestData()
     {
-        if (!$this->processRequest || !$this->processRequest->getKey()) {
-            return ['request_data' => new StdClass()];
-        }
-
         $dataManager = new DataManager();
-        $task = $this->resource->loadTokenInstance();
-        $data = $dataManager->getData($task);
+        $data = new StdClass();
+        if ($this->processRequest->data) {
+            $task = $this->resource->loadTokenInstance();
+            $data = $dataManager->getData($task);
+        }
 
         return ['request_data' => $data];
     }

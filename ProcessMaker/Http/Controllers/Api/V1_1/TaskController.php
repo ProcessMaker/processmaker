@@ -107,7 +107,13 @@ class TaskController extends Controller
         $httpRequest = request();
         $this->removeDataFromIncludeQuery($httpRequest);
 
-        $token = app(TaskV11ShowFastRepository::class)->findForShow($task->id);
+        $repository = app(TaskV11ShowFastRepository::class);
+        $token = $repository->findForShow($task->id);
+
+        if ($this->queryIncludesRequestData($httpRequest)) {
+            $repository->hydrateProcessRequestData($token);
+        }
+
         $resource = TaskResource::fromTokenWithIncludes($token, $httpRequest);
 
         return $resource->toArray($httpRequest);
@@ -121,11 +127,31 @@ class TaskController extends Controller
         }
 
         $parts = array_values(array_filter(
-            explode(',', $include),
-            static fn (string $part) => trim($part) !== 'data'
+            array_map('trim', explode(',', $include)),
+            static fn (string $part) => $part !== '' && $part !== 'data'
         ));
 
-        $request->query->set('include', implode(',', $parts));
+        if ($parts === []) {
+            $request->query->remove('include');
+        } else {
+            $request->query->set('include', implode(',', $parts));
+        }
+    }
+
+    private function queryIncludesRequestData(Request $request): bool
+    {
+        $include = $request->query('include', '');
+        if (!is_string($include) || $include === '') {
+            return false;
+        }
+
+        foreach (array_map('trim', explode(',', $include)) as $part) {
+            if ($part === 'requestData') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function showScreen($taskId)

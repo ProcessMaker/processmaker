@@ -62,4 +62,32 @@ class TaskV11ShowFastRepository
 
         return $token;
     }
+
+    /**
+     * Load process_requests.data onto the lean processRequest relation (fast show only).
+     */
+    public function hydrateProcessRequestData(ProcessRequestToken $token): void
+    {
+        $processRequest = $token->processRequest;
+        if (!$processRequest || !$processRequest->getKey()) {
+            return;
+        }
+
+        if (array_key_exists('data', $processRequest->getAttributes())) {
+            return;
+        }
+
+        $raw = DB::table('process_requests')
+            ->where('id', $processRequest->getKey())
+            ->value('data');
+
+        $data = [];
+        if (is_array($raw)) {
+            $data = $raw;
+        } elseif (is_string($raw)) {
+            $data = json_decode($raw, true) ?? [];
+        }
+
+        $processRequest->setAttribute('data', $data);
+    }
 }
