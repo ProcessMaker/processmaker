@@ -1,10 +1,9 @@
-import { setupMain } from "../../js/next/setupMain.js";
 import * as ScreenBuilder from "@processmaker/screen-builder";
+import { setupMain } from "../../js/next/setupMain.js";
 import vueFormElements from "../../js/next/libraries/vueFormElements";
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.ScreenBuilder = ScreenBuilder;
-
 setupMain();
 window.Vue.use(ScreenBuilder.default);
 

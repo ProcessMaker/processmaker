@@ -130,7 +130,6 @@
 @endforeach
 <!--javascript!-->
 
-PORE
 @yield('js')
 </body>
 
