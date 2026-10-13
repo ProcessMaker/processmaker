@@ -117,7 +117,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "7aeb4322",
+            "build": "47ea114c",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.12",
