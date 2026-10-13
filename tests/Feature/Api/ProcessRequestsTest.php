@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\Api;
 
-use PHPUnit\Framework\Attributes\Group as TestGroup;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\Group as TestGroup;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Comment;
@@ -23,7 +23,6 @@ use Tests\TestCase;
 
 /**
  * Tests routes related to processes / CRUD related methods
- *
  */
 #[TestGroup('process_tests')]
 class ProcessRequestsTest extends TestCase

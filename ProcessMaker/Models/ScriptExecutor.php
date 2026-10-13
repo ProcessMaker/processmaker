@@ -198,8 +198,8 @@ class ScriptExecutor extends ProcessMakerModel
     public static function messages(): array
     {
         return [
-            'title.unique' => __("The Name for language :language has already been taken.",
-                ['language' => config("script-runners")[request('language')]["name"] ?? request('language')]),
+            'title.unique' => __('The Name for language :language has already been taken.',
+                ['language' => config('script-runners')[request('language')]['name'] ?? request('language')]),
         ];
     }
 
