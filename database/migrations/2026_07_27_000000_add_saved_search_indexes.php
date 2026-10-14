@@ -77,12 +77,19 @@ return new class extends Migration {
 
     private function addIndex(string $table, string $name, array $columns): void
     {
-        if (Schema::hasIndex($table, $name)) {
+        if (Schema::hasIndex($table, $name) || $this->hasCoveringIndex($table, $columns)) {
             return;
         }
 
         Schema::table($table, function (Blueprint $table) use ($name, $columns) {
             $table->index($columns, $name);
+        });
+    }
+
+    private function hasCoveringIndex(string $table, array $columns): bool
+    {
+        return collect(Schema::getIndexes($table))->contains(function (array $index) use ($columns) {
+            return array_slice($index['columns'], 0, count($columns)) === $columns;
         });
     }
 
