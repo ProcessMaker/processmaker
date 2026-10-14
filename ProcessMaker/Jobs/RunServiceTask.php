@@ -48,7 +48,6 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         } else {
             $pmConfig = [];
         }
-        $this->onQueue($pmConfig['queue'] ?? 'bpmn');
         $this->definitionsId = $definitions->getKey();
         $this->instanceId = $instance->getKey();
         $this->tokenId = $token->getKey();
