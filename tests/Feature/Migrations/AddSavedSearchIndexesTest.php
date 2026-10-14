@@ -85,6 +85,7 @@ class AddSavedSearchIndexesTest extends TestCase
         $migration->down();
         $this->dropManualIndexes();
         $this->addManualIndexes();
+        $rollbackIndex = $this->addProcessVersionsRollbackIndex();
 
         try {
             $migration->up();
@@ -96,12 +97,18 @@ class AddSavedSearchIndexesTest extends TestCase
                 );
             }
 
+            $this->assertFalse(
+                Schema::hasIndex('process_versions', $rollbackIndex),
+                "Rollback index {$rollbackIndex} still exists on process_versions."
+            );
+
             $migration->down();
 
             foreach (self::MANUAL_INDEXES as $index) {
                 $this->assertTrue(Schema::hasIndex($index['table'], $index['name']));
             }
         } finally {
+            $this->addProcessVersionsRollbackIndex();
             $this->dropManualIndexes();
             $migration->up();
         }
@@ -159,5 +166,27 @@ class AddSavedSearchIndexesTest extends TestCase
                 $table->dropIndex($index['name']);
             });
         }
+    }
+
+    private function addProcessVersionsRollbackIndex(): string
+    {
+        $table = 'process_versions';
+        $columns = ['process_id'];
+        $name = $this->rollbackIndexName($table, $columns);
+
+        if (!Schema::hasIndex($table, $name)) {
+            Schema::table($table, function (Blueprint $table) use ($columns, $name) {
+                $table->index($columns, $name);
+            });
+        }
+
+        return $name;
+    }
+
+    private function rollbackIndexName(string $table, array $columns): string
+    {
+        $suffix = '_four27824_rb_' . substr(sha1(implode(',', $columns)), 0, 8);
+
+        return substr($table, 0, 64 - strlen($suffix)) . $suffix;
     }
 }

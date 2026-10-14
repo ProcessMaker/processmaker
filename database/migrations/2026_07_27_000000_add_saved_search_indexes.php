@@ -83,6 +83,7 @@ return new class extends Migration {
         }
 
         if ($this->hasCoveringIndex($table, $columns)) {
+            $this->dropRollbackIndexes($table, $columns);
             return;
         }
 
