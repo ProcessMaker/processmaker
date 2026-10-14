@@ -77,19 +77,26 @@ return new class extends Migration {
 
     private function addIndex(string $table, string $name, array $columns): void
     {
-        if (Schema::hasIndex($table, $name) || $this->hasCoveringIndex($table, $columns)) {
+        if (Schema::hasIndex($table, $name)) {
+            $this->dropRollbackIndexes($table, $columns);
+            return;
+        }
+
+        if ($this->hasCoveringIndex($table, $columns)) {
             return;
         }
 
         Schema::table($table, function (Blueprint $table) use ($name, $columns) {
             $table->index($columns, $name);
         });
+
+        $this->dropRollbackIndexes($table, $columns);
     }
 
     private function hasCoveringIndex(string $table, array $columns): bool
     {
         return collect(Schema::getIndexes($table))->contains(function (array $index) use ($columns) {
-            return array_slice($index['columns'], 0, count($columns)) === $columns;
+            return $this->columnsStartWith($index['columns'], $columns);
         });
     }
 
@@ -99,10 +106,68 @@ return new class extends Migration {
             return;
         }
 
-        try {
-            DB::statement("ALTER TABLE `{$table}` DROP INDEX `{$name}`");
-        } catch (Exception $e) {
-            // Ignore so rollback continues (e.g. index required by a foreign key).
+        $this->ensureForeignKeysRemainIndexed($table, $name);
+
+        DB::statement("ALTER TABLE `{$table}` DROP INDEX `{$name}`");
+    }
+
+    private function ensureForeignKeysRemainIndexed(string $table, string $name): void
+    {
+        $indexes = collect(Schema::getIndexes($table));
+        $index = $indexes->firstWhere('name', strtolower($name));
+
+        if (!$index) {
+            return;
         }
+
+        foreach (Schema::getForeignKeys($table) as $foreignKey) {
+            if (!$this->columnsStartWith($index['columns'], $foreignKey['columns'])) {
+                continue;
+            }
+
+            $hasReplacement = $indexes->contains(function (array $candidate) use ($index, $foreignKey) {
+                return $candidate['name'] !== $index['name']
+                    && $this->columnsStartWith($candidate['columns'], $foreignKey['columns']);
+            });
+
+            if ($hasReplacement) {
+                continue;
+            }
+
+            $replacementName = $this->rollbackIndexName($table, $foreignKey['columns']);
+
+            Schema::table($table, function (Blueprint $table) use ($foreignKey, $replacementName) {
+                $table->index($foreignKey['columns'], $replacementName);
+            });
+
+            $indexes = collect(Schema::getIndexes($table));
+        }
+    }
+
+    private function dropRollbackIndexes(string $table, array $columns): void
+    {
+        foreach (Schema::getForeignKeys($table) as $foreignKey) {
+            if (!$this->columnsStartWith($columns, $foreignKey['columns'])) {
+                continue;
+            }
+
+            $name = $this->rollbackIndexName($table, $foreignKey['columns']);
+
+            if (Schema::hasIndex($table, $name)) {
+                DB::statement("ALTER TABLE `{$table}` DROP INDEX `{$name}`");
+            }
+        }
+    }
+
+    private function rollbackIndexName(string $table, array $columns): string
+    {
+        $suffix = '_four27824_rb_' . substr(sha1(implode(',', $columns)), 0, 8);
+
+        return substr($table, 0, 64 - strlen($suffix)) . $suffix;
+    }
+
+    private function columnsStartWith(array $indexColumns, array $columns): bool
+    {
+        return array_slice($indexColumns, 0, count($columns)) === $columns;
     }
 };
