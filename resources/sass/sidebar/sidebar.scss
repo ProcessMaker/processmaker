@@ -72,6 +72,17 @@
     width: 150px;
   }
 
+  .logo-closed {
+    display: list-item !important;
+    margin: 16px auto 24px auto;
+  }
+
+  .logo-closed img {
+    margin: 0px 9px;
+    height: 40px;
+    width: 40px;
+  }
+
   .nav-item:hover {
     background-color: $hover;
   }
@@ -87,16 +98,6 @@
   .nav-link {
     font-size: 18px;
     color: $light;
-  }
-
-  .logo-closed {
-    margin: 16px auto 24px auto;
-  }
-
-  .logo-closed img {
-    margin: 0px 9px;
-    height: 40px;
-    width: 40px;
   }
 
   .nav-item:hover {

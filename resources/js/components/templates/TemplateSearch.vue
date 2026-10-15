@@ -19,7 +19,7 @@
         </b-input-group-append>
       </b-input-group>
     </div>
-    <div class="cards-container" :class="type !== 'wizard' ? 'fixed-height' : '' ">
+    <div class="cards-container fixed-height">
       <b-card-group v-if="showTemplateOptionsActionBar && component === 'template-select-card' " id="template-options" deck class="d-flex small-deck-margin">
         <button-card
           class="col-4 p-0"
@@ -51,7 +51,7 @@
       </b-card-group>
 
       <div class="pb-2 template-container">
-        <template v-if="noResults && type !== 'wizard'">
+        <template v-if="noResults">
           <div class="no-data-icon d-flex d-block justify-content-center pb-2">
             <i class="fas fa-umbrella-beach mt-5" />
           </div>
@@ -59,23 +59,8 @@
             {{ $t('No Data Available') }}
           </div>
         </template>
-        <template v-else-if="noResults && type == 'wizard'">
-          <div class="d-flex justify-content-center my-5">
-            <img
-              class="image d-flex"
-              src="/img/processes-catalogue-empty.svg"
-              alt="recent projects"
-            >
-          </div>
-          <h4 class="text-center">
-            {{ $t("Currently, there are no Guided Templates available.") }}
-          </h4>
-          <p class="text-center">
-            {{ $t('Please check back soon.') }}
-          </p>
-        </template>
         <template v-else>
-          <b-card-group id="template-options" deck class="small-deck-margin template-options" :class="type !== 'wizard' ?  'd-flex' : ''">
+          <b-card-group id="template-options" deck class="small-deck-margin template-options d-flex">
             <template-select-card
               v-show="component === 'template-select-card'"
               v-for="(template, index) in templates"
@@ -87,7 +72,6 @@
           </b-card-group>
         </template>
         <template-details v-if="component === 'template-details'" :template="template"></template-details>
-        <wizard-template-details v-if="showWizardTemplateDetails" ref="wizardTemplateDetails" :template="template"></wizard-template-details>
       </div>
     </div>
     <template v-if="component !== 'template-details'">
@@ -124,10 +108,9 @@ import TemplateSelectCard from "./TemplateSelectCard.vue";
 import TemplateDetails from "./TemplateDetails.vue";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
-import WizardTemplateDetails from "./WizardTemplateDetails.vue";
 
 export default {
-  components: { ButtonCard, TemplateSelectCard, TemplateDetails, WizardTemplateDetails },
+  components: { ButtonCard, TemplateSelectCard, TemplateDetails },
   mixins: [datatableMixin, dataLoadingMixin],
   props: {
     type: String,
@@ -165,13 +148,7 @@ export default {
         svgIcon: "../../../img/process-intelligence-logo-black.png",
         svgIconStyle: "width: 20%; height: auto; margin-left: auto; margin-right: auto; object-fit: contain;",
       },
-      showWizardTemplateDetails: false,
     };
-  },
-  computed: {
-    hasGuidedTemplateParams() {
-      return window.location.search.includes('?categoryId=guided_templates');
-    }
   },
   watch: {
     currentPage() {
@@ -184,12 +161,6 @@ export default {
   methods: {
     async loadData() {
       await this.fetch();
-
-      // After fetch is completed, check if guided template params exist in the URL.
-      // This is used when the URL is directly loaded, and we need to target the specified template to show.
-      if (this.hasGuidedTemplateParams) {
-        this.showDetails();
-      }
     },
     async fetch() {
       this.loading = true;
@@ -201,10 +172,6 @@ export default {
               ? "templates/" + this.type.toLowerCase() +"?"
               : "templates/" + this.type.toLowerCase() + "?status=" + this.status + "&";
 
-      // If the type is 'wizard', override the URL to fetch guided templates
-      if (this.type === 'wizard') {
-        url = 'wizard-templates?';
-      }
       // Load from our api client
       await ProcessMaker.apiClient
         .get(
@@ -249,29 +216,9 @@ export default {
         if (templateId) {
           this.loadTemplateDetails(templateId);
         }
-      } else if ($event && $event.type === "wizard") {  // Handle different scenarios based on $event type 
-        // Add template parameter to the URL if guided templates are selected
-        let url = new URL(window.location.href);
-        if (url.search.includes('?categoryId=guided_templates')) {
-          url.searchParams.append('guided_templates', true);
-          url.searchParams.append('template', $event.template.unique_template_id);
-          history.pushState(null, '', url); // Update the URL without triggering a page reload
-        }
-
-        // Direct selection of a wizard template card
-        this.loadTemplateDetails($event.template.unique_template_id);
       } else {
-        // Direct selection of a default template card
         this.emitTemplateDetails($event.template);
       }
-    },
-    loadTemplateDetails(uniqueTemplateId) {
-      this.template = this.templates.find(template => template.unique_template_id === uniqueTemplateId);
-      this.showWizardTemplateDetails = true;
-
-      this.$nextTick(() => {
-        this.$refs.wizardTemplateDetails.show();
-      });
     },
     emitTemplateDetails(template) {
       this.$emit('show-details', {

@@ -3,6 +3,7 @@
  * pagination transformers, etc.
  *
  */
+import _ from "lodash";
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import Pagination from "../../../components/common/Pagination";
 import FilterTableBodyMixin from "../../shared/FilterTableBodyMixin";

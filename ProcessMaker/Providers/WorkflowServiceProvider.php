@@ -9,6 +9,8 @@ use ProcessMaker\Assets\ScreensInProcess;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\Assets\ScriptsInProcess;
 use ProcessMaker\Assets\ScriptsInScreen;
+use ProcessMaker\Assets\DataSourcesInScreen;
+use ProcessMaker\Assets\DataSourcesInProcess;
 use ProcessMaker\Bpmn\MustacheOptions;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\TimerExpressionInterface;
@@ -195,6 +197,8 @@ class WorkflowServiceProvider extends ServiceProvider
             $instance->addDependencyManager(ScreensInScreen::class);
             $instance->addDependencyManager(ScriptsInProcess::class);
             $instance->addDependencyManager(ScriptsInScreen::class);
+            $instance->addDependencyManager(DataSourcesInScreen::class);
+            $instance->addDependencyManager(DataSourcesInProcess::class);
 
             return $instance;
         });

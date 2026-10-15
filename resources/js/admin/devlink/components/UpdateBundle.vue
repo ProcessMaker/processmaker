@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, getCurrentInstance, defineEmits, defineExpose } from 'vue';
 import InstallProgress from './InstallProgress.vue';
+import createOperationId from '../createOperationId';
 
 const vue = getCurrentInstance().proxy;
 const confirmUpdateVersion = ref(null);
@@ -8,9 +9,9 @@ const selected = ref(null);
 const selectedOption = ref('update');
 const showInstallModal = ref(false);
 const installationInProgress = ref(false);
-const installationAttempt = ref(0);
 const requestError = ref("");
 const reinstall = ref(false);
+const operationId = ref('');
 const title = computed(() => {
   if (reinstall.value) {
     return 'Reinstall Bundle';
@@ -48,8 +49,8 @@ const executeUpdate = (updateType) => {
   }
 
   installationInProgress.value = true;
-  installationAttempt.value += 1;
   requestError.value = "";
+  operationId.value = createOperationId();
   showInstallModal.value = true;
   let url;
   if (reinstall.value) {
@@ -61,6 +62,7 @@ const executeUpdate = (updateType) => {
   ProcessMaker.apiClient
     .post(url, {
       updateType,
+      operation_id: operationId.value,
     })
     .catch((error) => {
       const message = error?.response?.data?.message || error?.message;
@@ -125,7 +127,9 @@ const handleInstallationComplete = () => {
       no-close-on-esc
     >
       <install-progress
-        :key="installationAttempt"
+        v-if="operationId"
+        :key="operationId"
+        :operation-id="operationId"
         :request-error="requestError"
         @installation-complete="handleInstallationComplete"
       />

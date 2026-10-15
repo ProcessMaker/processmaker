@@ -1,12 +1,19 @@
 <template>
   <div class="data-table">
-    <div>
+    <data-loading
+      v-show="loading"
+      :empty="$t('No Data Available')"
+      :empty-desc="$t('')"
+      empty-icon="noData"
+    />
+    <div v-show="!loading" class="card card-body table-card">
       <vuetable
         :no-data-template="$t('No Data Available')"
         :data-manager="dataManager"
         :sort-order="sortOrder"
         :css="css"
         :api-mode="false"
+        @vuetable:pagination-data="onPaginationData"
         :fields="fields"
         :data="data"
         data-path="data"
@@ -64,6 +71,14 @@
           />
         </template>
       </vuetable>
+      <pagination
+        :single="$t('Task')"
+        :plural="$t('Tasks')"
+        :perPageSelectEnabled="true"
+        @changePerPage="changePerPage"
+        @vuetable-pagination:change-page="onPageChange"
+        ref="pagination"
+      >      </pagination>
     </div>
   </div>
 </template>
@@ -71,8 +86,10 @@
 <script>
 import moment from "moment";
 import datatableMixin from "../../components/common/mixins/datatable";
+import DataLoading from "../../components/common/DataLoading";
 
 export default {
+  components: { DataLoading },
   mixins: [datatableMixin],
   props: ["processRequestId", "status", "isAdmin", "isProcessManager"],
   data() {
@@ -189,7 +206,34 @@ export default {
         .then((response) => {
           this.data = this.transform(response.data);
           this.loading = false;
+        })
+        .catch((error) => {
+          this.loading = false;
         });
+    },
+    changePerPage(value) {
+        this.perPage = value;
+        if (this.page * value > this.$refs.pagination.tablePagination.total) {
+            this.page = Math.floor(this.$refs.pagination.tablePagination.total / value) + 1;
+        }
+        this.fetch();
+    },
+    onPageChange(page) {
+      if (page == "next") {
+        this.page = this.page + 1;
+      } else if (page == "prev") {
+        this.page = this.page - 1;
+      } else {
+        this.page = page;
+      }
+      if (this.page <= 0) {
+        this.page = 1;
+      }
+      let meta = this.$refs.pagination.tablePagination;
+      if (this.page > meta.last_page) {
+        this.page = meta.last_page;
+      }
+      this.fetch();
     },
     /**
      * Get the fields parameter for the API request

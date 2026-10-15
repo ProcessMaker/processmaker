@@ -104,7 +104,7 @@
             :visible="isAgentsActive"
           >
             <RouterLink
-              to="/agents"
+              to="/agents/monitoring"
               class="
                 tw-mt-1
                 tw-flex
@@ -116,9 +116,26 @@
                 tw-text-base
                 tw-cursor-pointer
               "
-              :class="agentsLinkClasses"
+              :class="monitoringLinkClasses"
             >
-              <span class="tw-inline-flex tw-items-center tw-gap-2">FlowGenie Agents logs</span>
+              <span class="tw-inline-flex tw-items-center tw-gap-2">{{ $t('Monitoring') }}</span>
+            </RouterLink>
+            <RouterLink
+              to="/agents/design"
+              class="
+                tw-mt-1
+                tw-flex
+                tw-items-center
+                tw-justify-between
+                tw-rounded-lg
+                tw-px-3
+                tw-py-2
+                tw-text-base
+                tw-cursor-pointer
+              "
+              :class="agentsLogsLinkClasses"
+            >
+              <span class="tw-inline-flex tw-items-center tw-gap-2">{{ $t('FlowGenie Agents logs') }}</span>
             </RouterLink>
           </b-collapse>
         </div>
@@ -153,13 +170,25 @@ export default {
     isAgentsActive() {
       return this.$route.path.startsWith("/agents");
     },
-    emailLinkClasses() {
-      return this.isEmailActive
-        ? "tw-bg-blue-50 tw-font-semibold tw-text-blue-500"
-        : "tw-font-medium tw-text-zinc-700 hover:tw-bg-zinc-50";
+    isAgentsLogsActive() {
+      return this.$route.path === '/agents/design' || this.$route.path === '/agents/execution';
     },
-    agentsLinkClasses() {
-      return this.isAgentsActive
+    isMonitoringActive() {
+      return this.$route.path.startsWith('/agents/monitoring');
+    },
+    emailLinkClasses() {
+      return this.linkClasses(this.isEmailActive);
+    },
+    agentsLogsLinkClasses() {
+      return this.linkClasses(this.isAgentsLogsActive);
+    },
+    monitoringLinkClasses() {
+      return this.linkClasses(this.isMonitoringActive);
+    },
+  },
+  methods: {
+    linkClasses(isActive) {
+      return isActive
         ? "tw-bg-blue-50 tw-font-semibold tw-text-blue-500"
         : "tw-font-medium tw-text-zinc-700 hover:tw-bg-zinc-50";
     },

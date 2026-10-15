@@ -139,7 +139,7 @@ const navbar = new Vue({
       sessionTime: "",
       sessionWarnSeconds: "",
       sessionIsRenewing: false,
-      taskTitle: "",
+      taskTitle: window.temporal.taskTitle || "",
       isMobile: false,
       isMobileDevice: mobileApp,
       isNavbarExpanded: false,

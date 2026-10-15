@@ -23,6 +23,9 @@
         <template slot="username" slot-scope="props">
           <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.username }}</span>
         </template>
+        <template slot="fullname" slot-scope="props">
+          <span>{{ props.rowData.fullname }}</span>
+        </template>
         <template slot="avatar" slot-scope="props">
           <avatar-image size="25" :input-data="props.rowData" hide-name="true"></avatar-image>
         </template>
@@ -56,10 +59,12 @@
 
 
 <script>
+import escapeHtml from "lodash/escape";
+import { createUniqIdsMixin } from "vue-uniq-ids";
+
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../../components/AvatarImage";
-import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 Vue.component("avatar-image", AvatarImage);
 
@@ -93,7 +98,7 @@ export default {
         },
         {
           title: () => this.$t("Full Name"),
-          name: "fullname",
+          name: "__slot:fullname",
           sortField: "fullname"
         },
         {
@@ -169,7 +174,7 @@ export default {
 
       ProcessMaker.confirmModal(
         this.$t('Caution!'),
-        this.$t('Are you sure you want to restore the user {{item}}?', {item: data.fullname}),
+        this.$t('Are you sure you want to restore the user {{item}}?', {item: escapeHtml(data.fullname)}),
         "",
         () => {
           ProcessMaker.apiClient.put('users/restore', $body).then(response => {

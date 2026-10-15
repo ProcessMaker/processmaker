@@ -150,8 +150,4 @@ export default {
   margin-top: 10px;
   padding-left: 15px;
 }
-.icon-wizard-class {
-  border-left: 1px solid rgba(0, 0, 0, 0.125);
-  z-index: 5;
-}
 </style>

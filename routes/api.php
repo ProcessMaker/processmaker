@@ -43,7 +43,6 @@ use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Api\UserConfigurationController;
 use ProcessMaker\Http\Controllers\Api\UserController;
 use ProcessMaker\Http\Controllers\Api\UserTokenController;
-use ProcessMaker\Http\Controllers\Api\WizardTemplateController;
 use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 
@@ -377,10 +376,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->p
     Route::post('template/{type}/{id}/publish', [TemplateController::class, 'publishTemplate'])->name('template.publishTemplate')->middleware('can:publish-screen-templates');
     Route::post('template/{type}/{id}/apply', [TemplateController::class, 'applyTemplate'])->name('template.applyTemplate')->middleware('template-authorization');
     Route::get('screen-builder/{type}/{id}', [TemplateController::class, 'show'])->name('screenBuilder.template.show')->middleware('template-authorization');
-
-    // Wizard Templates
-    Route::get('wizard-templates', [WizardTemplateController::class, 'index'])->name('wizard-templates.index');
-    Route::get('wizard-templates/{template_uuid}/get-helper-process', [WizardTemplateController::class, 'getHelperProcess'])->name('wizard-templates.getHelperProcess');
 
     // debugging javascript errors
     Route::post('debug', [DebugController::class, 'store'])->name('debug.store')->middleware('throttle');

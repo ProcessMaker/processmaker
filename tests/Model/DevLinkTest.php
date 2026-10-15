@@ -4,6 +4,7 @@ namespace Tests\Model;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Exception\DevLinkRemoteBundleException;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Screen;
@@ -22,6 +23,10 @@ class DevLinkTest extends TestCase
     private const FIRST_MENU_DESCRIPTION = 'First menu description';
 
     private const SECOND_MENU_DESCRIPTION = 'Second menu description';
+
+    private const LOCAL_BUNDLE_API_PATH = 'local-bundles/123';
+
+    private const EXPORT_LOCAL_BUNDLE_API_PATH = 'export-local-bundle/123';
 
     public function testGetClientUrl()
     {
@@ -86,8 +91,8 @@ class DevLinkTest extends TestCase
         $bundle->delete();
 
         Http::fake([
-            self::remoteApiUrl('local-bundles/123') => Http::response(self::remoteBundleResponse('5')),
-            self::remoteApiUrl('export-local-bundle/123') => Http::response([
+            self::remoteApiUrl(self::LOCAL_BUNDLE_API_PATH) => Http::response(self::remoteBundleResponse('5')),
+            self::remoteApiUrl(self::EXPORT_LOCAL_BUNDLE_API_PATH) => Http::response([
                 'payloads' => $exports,
             ]),
             self::remoteApiUrl('export-local-bundle/123/settings') => Http::response([
@@ -121,6 +126,40 @@ class DevLinkTest extends TestCase
         $gzPath = $media[0]->getPath();
         $payloads = json_decode(gzdecode(file_get_contents($gzPath)), true);
         $this->assertCount(3, $payloads);
+    }
+
+    public function testInstallRemoteBundleReportsUnavailableRemoteAssets()
+    {
+        Http::preventStrayRequests();
+        Http::fake([
+            self::remoteApiUrl(self::LOCAL_BUNDLE_API_PATH) => Http::response(self::remoteBundleResponse('5')),
+            self::remoteApiUrl(self::EXPORT_LOCAL_BUNDLE_API_PATH) => Http::response([
+                'error' => [
+                    'code' => 422,
+                    'message' => 'The bundle contains unavailable assets.',
+                ],
+                'errors' => [
+                    'assets' => [[
+                        'bundle_asset_id' => 34,
+                        'asset_type' => 'ProcessMaker\Plugins\Collections\Models\Collection',
+                        'asset_id' => 20,
+                        'integrity_status' => 'missing',
+                    ]],
+                ],
+            ], 422),
+        ]);
+
+        $devLink = DevLink::factory()->create([
+            'url' => self::REMOTE_INSTANCE_URL,
+        ]);
+
+        $this->expectException(DevLinkRemoteBundleException::class);
+        $this->expectExceptionMessage(
+            'The remote bundle contains unavailable assets: Collection #20 (bundle asset #34). ' .
+            'Repair the bundle on the source instance and try again.'
+        );
+
+        $devLink->installRemoteBundle(123, 'update');
     }
 
     public function testInstallRemoteBundleImportsAndReinstallsEverySelectedMenu()
@@ -310,13 +349,13 @@ class DevLinkTest extends TestCase
         ]);
 
         Http::fake([
-            self::remoteApiUrl('local-bundles/123') => Http::sequence()
+            self::remoteApiUrl(self::LOCAL_BUNDLE_API_PATH) => Http::sequence()
                 ->push(self::remoteBundleResponse('2'), 200)
                 ->push(self::remoteBundleResponse('3'), 200)
                 ->push(self::remoteBundleResponse('4'), 200)
                 ->push(self::remoteBundleResponse('8'), 200)
                 ->push(self::remoteBundleResponse('9'), 200),
-            self::remoteApiUrl('export-local-bundle/123') => Http::sequence()
+            self::remoteApiUrl(self::EXPORT_LOCAL_BUNDLE_API_PATH) => Http::sequence()
                 ->push([
                     'payloads' => $exports,
                 ], 200)

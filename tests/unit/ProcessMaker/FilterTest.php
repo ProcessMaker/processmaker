@@ -7,6 +7,7 @@ use ProcessMaker\Filters\Filter;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\Feature\Shared\RequestHelper;
 
 class FilterTest extends TestCase
@@ -32,7 +33,7 @@ class FilterTest extends TestCase
         ]);
 
         $this->assertEquals(
-            "select * from `process_requests` where (json_unquote(json_extract(`data`, '\$.\"form_input_1\"')) = 'abc')",
+            "select * from `process_requests` where (json_unquote(json_extract(`data`, '\$.\\\"form_input_1\\\"')) = 'abc')",
             $sql
         );
     }
@@ -51,6 +52,64 @@ class FilterTest extends TestCase
             'select * from `process_request_tokens` where (`due_at` > NOW())',
             $sql
         );
+    }
+
+    public function testRawIntervalValue()
+    {
+        $sql = $this->filter([
+            [
+                'subject' => ['type' => 'Field', 'value' => 'due_at'],
+                'operator' => '<=',
+                'value' => 'raw(NOW() + INTERVAL 1 DAY)',
+            ],
+        ], ProcessRequestToken::class);
+
+        $this->assertStringContainsString('`due_at` <= NOW() + INTERVAL 1 DAY', $sql);
+    }
+
+    public function testRawBetweenValues()
+    {
+        $sql = $this->filter([
+            [
+                'subject' => ['type' => 'Field', 'value' => 'due_at'],
+                'operator' => 'between',
+                'value' => ['raw(NOW())', 'raw(NOW() + INTERVAL 1 DAY)'],
+            ],
+        ], ProcessRequestToken::class);
+
+        $this->assertStringContainsString(
+            '`due_at` between NOW() and NOW() + INTERVAL 1 DAY',
+            $sql
+        );
+    }
+
+    public function testRejectsUntrustedRawExpression()
+    {
+        try {
+            $this->filter([
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'due_at'],
+                    'operator' => '=',
+                    'value' => 'raw((SELECT password FROM users LIMIT 1))',
+                ],
+            ], ProcessRequestToken::class);
+            $this->fail('Expected a 422 HttpException for an invalid raw expression.');
+        } catch (HttpException $e) {
+            $this->assertEquals(422, $e->getStatusCode());
+        }
+    }
+
+    public function testAllowsRawExpressionForJsonField()
+    {
+        $sql = $this->filter([
+            [
+                'subject' => ['type' => 'Field', 'value' => 'data.expiration_date'],
+                'operator' => '>=',
+                'value' => 'raw(NOW())',
+            ],
+        ]);
+
+        $this->assertStringContainsString('NOW()', $sql);
     }
 
     public function testCompareDataInteger()
@@ -87,6 +146,76 @@ class FilterTest extends TestCase
 
         $this->assertCount(1, $results);
         $this->assertEquals($task1->id, $results[0]['id']);
+    }
+
+    public function testRejectsSqlInjectionInJsonFieldName()
+    {
+        // Payload from the security report: a single quote in the field name would
+        // previously break out of the JSON-path string literal and inject SQL.
+        $payload = 'data.x"\')) OR SLEEP(5) OR ((\'a';
+
+        try {
+            $this->filter([
+                [
+                    'subject' => ['type' => 'Field', 'value' => $payload],
+                    'operator' => '=',
+                    'value' => '1',
+                ],
+            ]);
+            $this->fail('Expected a 422 HttpException for an invalid filter field.');
+        } catch (HttpException $e) {
+            $this->assertEquals(422, $e->getStatusCode());
+        }
+    }
+
+    public function testJsonFieldNameIsBoundNotInterpolated()
+    {
+        $query = ProcessRequest::query();
+        Filter::filter($query, json_encode([
+            [
+                'subject' => ['type' => 'Field', 'value' => 'data.form_input_1'],
+                'operator' => '=',
+                'value' => 'abc',
+            ],
+        ]));
+
+        // The JSON path must be a bound parameter, never interpolated into the SQL string.
+        $this->assertStringContainsString('json_extract(`data`, ?)', $query->toSql());
+        $this->assertContains('$."form_input_1"', $query->getBindings());
+    }
+
+    public function testJsonFieldNameIsBoundForLikeOperator()
+    {
+        $query = ProcessRequest::query();
+        Filter::filter($query, json_encode([
+            [
+                'subject' => ['type' => 'Field', 'value' => 'data.form_input_1'],
+                'operator' => 'contains',
+                'value' => 'abc',
+            ],
+        ]));
+
+        $this->assertStringContainsString('cast(json_unquote(json_extract(`data`, ?)) as CHAR) like', $query->toSql());
+        $this->assertContains('$."form_input_1"', $query->getBindings());
+    }
+
+    public function testAcceptsNestedAndUnicodeJsonFieldNames()
+    {
+        $expected = [
+            'data.parent.child' => '$."parent"."child"',
+            'data.items.0.name' => '$."items"."0"."name"',
+            'data.café' => '$."café"',
+        ];
+
+        foreach ($expected as $value => $path) {
+            $query = ProcessRequest::query();
+            Filter::filter($query, json_encode([
+                ['subject' => ['type' => 'Field', 'value' => $value], 'operator' => '=', 'value' => '1'],
+            ]));
+
+            $this->assertStringContainsString('json_extract(`data`, ?)', $query->toSql());
+            $this->assertContains($path, $query->getBindings());
+        }
     }
 
     public function testNestedOr()

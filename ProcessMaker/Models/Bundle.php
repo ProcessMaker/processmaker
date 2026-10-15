@@ -3,7 +3,9 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use ProcessMaker\Exception\BundleIntegrityException;
 use ProcessMaker\Exception\ExporterNotSupported;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\ImportExport\Importer;
@@ -78,6 +80,8 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     public function export()
     {
+        $this->assertIntegrity();
+
         $exports = [];
 
         foreach ($this->assets as $bundleAsset) {
@@ -91,6 +95,21 @@ class Bundle extends ProcessMakerModel implements HasMedia
         }
 
         return $exports;
+    }
+
+    public function invalidAssets()
+    {
+        return $this->assets->filter(
+            fn (BundleAsset $asset) => $asset->integrity_status !== BundleAsset::INTEGRITY_VALID
+        );
+    }
+
+    public function assertIntegrity(): void
+    {
+        $invalidAssets = $this->invalidAssets();
+        if ($invalidAssets->isNotEmpty()) {
+            throw new BundleIntegrityException($this, $invalidAssets);
+        }
     }
 
     public function exportSettings()
@@ -199,6 +218,13 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     public function syncAssets($assets)
     {
+        return $this->mutateWithLock(function (Bundle $bundle) use ($assets) {
+            return $bundle->syncAssetsWithoutLock($assets);
+        });
+    }
+
+    private function syncAssetsWithoutLock($assets)
+    {
         $assetKeys = [];
         foreach ($assets as $asset) {
             $assetKeys[BundleAsset::makeKey($asset)] = true;
@@ -233,6 +259,13 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     public function addAsset(ProcessMakerModel $asset)
     {
+        return $this->mutateWithLock(function (Bundle $bundle) use ($asset) {
+            return $bundle->addAssetWithoutLock($asset);
+        });
+    }
+
+    private function addAssetWithoutLock(ProcessMakerModel $asset)
+    {
         if (!BundleAsset::canExport($asset)) {
             throw new ExporterNotSupported();
         }
@@ -252,6 +285,13 @@ class Bundle extends ProcessMakerModel implements HasMedia
     }
 
     public function addSettings($setting, $newId, $type = null, $replaceIds = false)
+    {
+        return $this->mutateWithLock(function (Bundle $bundle) use ($setting, $newId, $type, $replaceIds) {
+            return $bundle->addSettingsWithoutLock($setting, $newId, $type, $replaceIds);
+        });
+    }
+
+    private function addSettingsWithoutLock($setting, $newId, $type = null, $replaceIds = false)
     {
         $existingSetting = $this->settings()->where('setting', $setting)->first();
 
@@ -311,7 +351,7 @@ class Bundle extends ProcessMakerModel implements HasMedia
             return;
         }
 
-        $config = json_decode($existingSetting->config, true) ?: ['id' => []];
+        $config = $existingSetting->configAsArray() ?: ['id' => []];
 
         if (!isset($config['id']) || !is_array($config['id'])) {
             $config['id'] = [];
@@ -464,6 +504,13 @@ class Bundle extends ProcessMakerModel implements HasMedia
 
     public function installSettings($settings)
     {
+        return $this->mutateWithLock(function (Bundle $bundle) use ($settings) {
+            return $bundle->installSettingsWithoutLock($settings);
+        });
+    }
+
+    private function installSettingsWithoutLock($settings)
+    {
         $newSettingsKeys = collect($settings)->pluck('setting')->toArray();
 
         $this->settings()
@@ -471,8 +518,21 @@ class Bundle extends ProcessMakerModel implements HasMedia
             ->delete();
 
         foreach ($settings as $setting) {
-            $this->addSettings($setting['setting'], $setting['config']);
+            $this->addSettingsWithoutLock($setting['setting'], $setting['config']);
         }
+    }
+
+    private function mutateWithLock(callable $callback)
+    {
+        $result = DB::transaction(function () use ($callback) {
+            $bundle = static::whereKey($this->getKey())->lockForUpdate()->firstOrFail();
+
+            return $callback($bundle);
+        });
+
+        $this->refresh();
+
+        return $result;
     }
 
     public function installSettingsPayloads(array $payloads, $mode, $logger = null)

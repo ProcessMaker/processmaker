@@ -1,5 +1,6 @@
 /* eslint-disable func-names */
 // Our initial node types to register with our modeler
+import Vue from "vue";
 import {
   association,
   endEvent,
@@ -50,6 +51,8 @@ import ErrorHandlingTimeout from "./processes/modeler/components/inspector/Error
 import ErrorHandlingRetryAttempts from "./processes/modeler/components/inspector/ErrorHandlingRetryAttempts.vue";
 import ErrorHandlingRetryWaitTime from "./processes/modeler/components/inspector/ErrorHandlingRetryWaitTime.vue";
 import NotifyProcessManager from "./processes/modeler/components/inspector/NotifyProcessManager.vue";
+
+const ProcessMaker = window.ProcessMaker;
 
 Vue.component("UserSelect", UserSelect);
 Vue.component("UserById", UserById);

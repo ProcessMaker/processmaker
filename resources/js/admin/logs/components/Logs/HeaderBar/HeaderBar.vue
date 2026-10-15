@@ -30,7 +30,7 @@
 
     <!-- Agents category tabs -->
     <div
-      v-else-if="isAgentsCategory"
+      v-else-if="isAgentsLogsCategory"
       class="tw-flex tw-items-center tw-gap-2 tw-bg-gray-100 tw-rounded-lg tw-p-1"
     >
       <RouterLink
@@ -52,7 +52,10 @@
     <!-- Empty placeholder for other categories -->
     <div v-else />
 
-    <div class="tw-flex tw-flex-1 tw-items-center tw-gap-1 tw-w-auto tw-border tw-border-zinc-200 tw-rounded-lg tw-p-1 tw-px-3">
+    <div
+      v-if="!isMonitoring"
+      class="tw-flex tw-flex-1 tw-items-center tw-gap-1 tw-w-auto tw-border tw-border-zinc-200 tw-rounded-lg tw-p-1 tw-px-3"
+    >
       <div class="tw-relative tw-w-full tw-flex tw-items-center tw-gap-1">
         <i class="fas fa-search" />
         <input
@@ -92,8 +95,11 @@ export default {
     isEmailCategory() {
       return this.$route.path.startsWith('/email');
     },
-    isAgentsCategory() {
-      return this.$route.path.startsWith('/agents');
+    isAgentsLogsCategory() {
+      return this.$route.path === '/agents/design' || this.$route.path === '/agents/execution';
+    },
+    isMonitoring() {
+      return this.$route.path.startsWith('/agents/monitoring');
     },
   },
   watch: {

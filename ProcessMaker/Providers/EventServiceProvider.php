@@ -94,9 +94,6 @@ class EventServiceProvider extends ServiceProvider
         'Illuminate\Auth\Events\Logout' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
-        'Illuminate\Database\Events\MigrationsEnded' => [
-            'ProcessMaker\Listeners\UpdateDataLakeViews',
-        ],
         'Illuminate\Console\Events\CommandStarting' => [
             'ProcessMaker\Listeners\RegisterTenantScheduleTasks',
         ],
