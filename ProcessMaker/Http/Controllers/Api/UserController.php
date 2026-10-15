@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
 use ProcessMaker\Events\UserGroupMembershipUpdated;
@@ -63,6 +64,7 @@ class UserController extends Controller
         'timezone',
         'datetime_format',
         'status',
+        'delegation_user_id',
         'avatar',
         'preferences_2fa',
         'connected_accounts',
@@ -77,6 +79,17 @@ class UserController extends Controller
      */
     private const SELF_SERVICE_META_FIELDS = [
         'disableRecommendations',
+    ];
+
+    /**
+     * Statuses a personal-profile user may set on their own account.
+     *
+     * @var array<string>
+     */
+    private const SELF_SERVICE_STATUSES = [
+        'ACTIVE',
+        'INACTIVE',
+        'OUT_OF_OFFICE',
     ];
 
     /**
@@ -503,8 +516,21 @@ class UserController extends Controller
         $isSelfServiceUpdate = $this->authorizeSelfServiceUpdate($authenticatedUser, $user, $fields);
         $rules = User::rules($user);
         if ($isSelfServiceUpdate) {
+            $fields = $this->forgetUnassignableDelegation($fields);
+            if (array_key_exists('delegation_user_id', $fields)) {
+                $request->json()->set('delegation_user_id', $fields['delegation_user_id']);
+            }
             $rules['meta'] = ['sometimes', 'array'];
             $rules['meta.disableRecommendations'] = ['sometimes', 'boolean'];
+            $rules['status'] = ['required', Rule::in($this->selfServiceStatuses($user))];
+            $rules['delegation_user_id'] = [
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id')->where(function ($query) {
+                    $query->where('is_system', false)->whereNull('deleted_at');
+                }),
+                Rule::notIn([(string) $user->id]),
+            ];
         }
         $request->validate($rules);
         if ($isSelfServiceUpdate) {
@@ -644,6 +670,41 @@ class UserController extends Controller
         }
 
         return true;
+    }
+
+    /**
+     * Statuses this user may submit. An administrator-assigned status that is
+     * not otherwise available stays valid so saving the profile does not
+     * reject the account's current value.
+     *
+     * @return array<string>
+     */
+    private function selfServiceStatuses(User $user): array
+    {
+        $statuses = self::SELF_SERVICE_STATUSES;
+        if ($user->status && !in_array($user->status, $statuses, true)) {
+            $statuses[] = $user->status;
+        }
+
+        return $statuses;
+    }
+
+    /**
+     * A replacement the profile picker can no longer load should not fail the
+     * rest of the save. Clear it and continue.
+     */
+    private function forgetUnassignableDelegation(array $fields): array
+    {
+        if (empty($fields['delegation_user_id'])) {
+            return $fields;
+        }
+
+        $delegate = User::withTrashed()->find($fields['delegation_user_id']);
+        if (!$delegate || $delegate->trashed() || $delegate->is_system) {
+            $fields['delegation_user_id'] = null;
+        }
+
+        return $fields;
     }
 
     /**
