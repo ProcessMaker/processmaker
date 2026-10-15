@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ScheduledTask;
+use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -443,5 +444,75 @@ class BoundaryEventsTest extends TestCase
             ->get();
         $this->assertCount(1, $activeTokens);
         $this->assertEquals('Task 2', $activeTokens[0]->element_name);
+    }
+
+    /**
+     * Tests that an interrupting timer boundary event closes an unclaimed self-service task
+     * and clears its self-service flag
+     *
+     * @group timer_events
+     */
+    public function testTimerBoundaryEventClosesSelfServiceTask()
+    {
+        $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
+        $process = $this->createSelfServiceTimerProcess(true);
+
+        $instance = $this->startProcess($process, 'node_1');
+
+        $selfServiceToken = $instance->tokens()->where('element_id', 'node_2')->firstOrFail();
+        $this->assertEquals('ACTIVE', $selfServiceToken->status);
+        $this->assertEquals(1, $selfServiceToken->is_self_service);
+        $this->assertNull($selfServiceToken->user_id);
+
+        $now->modify('+1 minute');
+        TaskSchedulerManager::fakeToday($now);
+        $this->runScheduledTasks();
+
+        $selfServiceToken->refresh();
+        $this->assertEquals('CLOSED', $selfServiceToken->status);
+        $this->assertEquals(0, $selfServiceToken->is_self_service);
+        $this->assertEquals('COMPLETED', $instance->refresh()->status);
+
+        $route = route('api.tasks.index', [
+            'process_request_id' => $instance->id,
+            'pmql' => 'is_self_service = 1',
+        ]);
+        $response = $this->apiCall('GET', $route);
+        $response->assertStatus(200);
+        $this->assertNotContains($selfServiceToken->id, array_column($response->json('data'), 'id'));
+    }
+
+    /**
+     * Tests that a non-interrupting timer boundary event keeps the self-service task open
+     *
+     * @group timer_events
+     */
+    public function testNonInterruptingTimerBoundaryEventKeepsSelfServiceTaskOpen()
+    {
+        $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
+        $process = $this->createSelfServiceTimerProcess(false);
+
+        $instance = $this->startProcess($process, 'node_1');
+
+        $now->modify('+1 minute');
+        TaskSchedulerManager::fakeToday($now);
+        $this->runScheduledTasks();
+
+        $selfServiceToken = $instance->tokens()->where('element_id', 'node_2')->firstOrFail();
+        $this->assertEquals('ACTIVE', $selfServiceToken->status);
+        $this->assertEquals(1, $selfServiceToken->is_self_service);
+        $this->assertNull($selfServiceToken->user_id);
+    }
+
+    private function createSelfServiceTimerProcess(bool $cancelActivity)
+    {
+        $selfServiceUser = User::factory()->create(['status' => 'ACTIVE']);
+        $bpmn = file_get_contents(__DIR__ . '/processes/Timer_BoundaryEvent_SelfService.bpmn');
+        $bpmn = str_replace('{selfServiceUserId}', $selfServiceUser->id, $bpmn);
+        if (!$cancelActivity) {
+            $bpmn = str_replace('cancelActivity="true"', 'cancelActivity="false"', $bpmn);
+        }
+
+        return $this->createProcess($bpmn);
     }
 }
