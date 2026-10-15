@@ -10,7 +10,7 @@ use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 /**
- * Compare GET api/1.1/tasks/{id} legacy show vs API_FAST_TASK showFast.
+ * Compare GET api/1.1/tasks/{id} legacy show vs optimized showFast (OPTIMIZED_TASKS_START_ENABLED).
  *
  * TASK_SHOW_FAST_MAX_RATIO: fast_ms must be <= legacy_ms * ratio (default 0.58 ≈ 42% faster; use 0.4 for ~60% on heavier DB).
  *
@@ -93,7 +93,7 @@ class TaskShowFastResponseTimeTest extends TestCase
     {
         [$task] = $this->createTaskWithLargeRequestData(10, 10);
 
-        config(['app.api_fast_task' => true]);
+        config(['app.optimized_tasks_start_enabled' => true]);
         $response = $this->apiCall(
             'GET',
             route('api.1.1.tasks.show', $task->id) . '?include=data'
@@ -108,14 +108,14 @@ class TaskShowFastResponseTimeTest extends TestCase
     {
         [$task, $includes] = $this->createTaskWithLargeRequestData(500, 40);
 
-        config(['app.api_fast_task' => false]);
+        config(['app.optimized_tasks_start_enabled' => false]);
         $legacy = $this->apiCall(
             'GET',
             route('api.1.1.tasks.show', $task->id) . '?include=' . urlencode($includes)
         );
         $legacy->assertStatus(200);
 
-        config(['app.api_fast_task' => true]);
+        config(['app.optimized_tasks_start_enabled' => true]);
         $fast = $this->apiCall(
             'GET',
             route('api.1.1.tasks.show', $task->id) . '?include=' . urlencode($includes)
@@ -131,6 +131,8 @@ class TaskShowFastResponseTimeTest extends TestCase
             count($fast->json('request_data'))
         );
         $this->assertArrayNotHasKey('data', $fast->json());
+        $this->assertSame($legacy->json('requestor.username'), $fast->json('requestor.username'));
+        $this->assertSame($legacy->json('requestor.status'), $fast->json('requestor.status'));
     }
 
     public function testShowFastIsFasterThanLegacyShowWithLargeRequestData(): void
@@ -139,14 +141,14 @@ class TaskShowFastResponseTimeTest extends TestCase
         $ratio = $this->maxFastToLegacyRatio();
         $iterations = 3;
 
-        config(['app.api_fast_task' => false]);
+        config(['app.optimized_tasks_start_enabled' => false]);
         $legacySamples = [];
         for ($i = 0; $i < $iterations; $i++) {
             $legacySamples[] = $this->measureTaskShowMs($task, $includes);
         }
         $legacyMs = $this->medianMs($legacySamples);
 
-        config(['app.api_fast_task' => true]);
+        config(['app.optimized_tasks_start_enabled' => true]);
         $fastSamples = [];
         for ($i = 0; $i < $iterations; $i++) {
             $fastSamples[] = $this->measureTaskShowMs($task, $includes);

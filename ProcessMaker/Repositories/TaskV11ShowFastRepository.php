@@ -20,8 +20,6 @@ class TaskV11ShowFastRepository
         'delegation_user_id', 'manager_id', 'schedule', 'avatar',
     ];
 
-    private const REQUESTOR_COLUMNS = ['id', 'firstname', 'lastname', 'email'];
-
     public function findForShow(int $taskId): ProcessRequestToken
     {
         $token = ProcessRequestToken::query()->where('id', $taskId)->firstOrFail();
@@ -47,7 +45,7 @@ class TaskV11ShowFastRepository
         }
 
         if ($processRequest->user_id) {
-            $requestor = User::query()->select(self::REQUESTOR_COLUMNS)->find($processRequest->user_id);
+            $requestor = User::query()->select(self::USER_COLUMNS)->find($processRequest->user_id);
             $processRequest->setRelation('user', $requestor);
         }
 

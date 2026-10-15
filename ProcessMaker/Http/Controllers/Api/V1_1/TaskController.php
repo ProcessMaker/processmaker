@@ -93,7 +93,7 @@ class TaskController extends Controller
 
     public function show(ProcessRequestToken $task)
     {
-        if (config('app.api_fast_task')) {
+        if (config('app.optimized_tasks_start_enabled')) {
             return $this->showFast($task);
         }
 
