@@ -204,6 +204,45 @@ class TaskResource extends ApiResource
         return new static($model);
     }
 
+    /**
+     * Build a resource for an already-loaded token (fast show path).
+     */
+    public static function fromTokenWithIncludes(ProcessRequestToken $token, Request $request): self
+    {
+        $include = $request->query('include', []);
+        if ($include) {
+            $include = explode(',', $include);
+        }
+        $include = array_merge($include, self::$defaultIncludes);
+
+        foreach (self::$includeMethods as $key) {
+            if (!in_array($key, $include)) {
+                continue;
+            }
+
+            if ($key === 'user' && $token->relationLoaded('user')) {
+                continue;
+            }
+            if ($key === 'processRequest' && $token->relationLoaded('processRequest')) {
+                continue;
+            }
+            if ($key === 'process' && $token->relationLoaded('process')) {
+                continue;
+            }
+            if ($key === 'draft' && $token->relationLoaded('draft')) {
+                continue;
+            }
+            if ($key === 'requestor' && $token->relationLoaded('processRequest')
+                && $token->processRequest->relationLoaded('user')) {
+                continue;
+            }
+
+            self::addRelationship($token, $key);
+        }
+
+        return new static($token);
+    }
+
     private function processInclude(Request $request, array $array)
     {
         $include = $request->query('include', []);
