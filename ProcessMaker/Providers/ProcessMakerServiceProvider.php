@@ -360,6 +360,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
     {
         Models\User::observe(Observers\UserObserver::class);
 
+        Models\Group::observe(Observers\GroupObserver::class);
+
         Models\Setting::observe(Observers\SettingObserver::class);
 
         Models\Process::observe(Observers\ProcessObserver::class);

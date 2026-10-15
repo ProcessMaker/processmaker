@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Log;
 use ProcessMaker\Events\GroupMembershipChanged;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\User;
 
 class GroupMemberObserver
 {
@@ -14,6 +15,8 @@ class GroupMemberObserver
      */
     public function created(GroupMember $groupMember): void
     {
+        $this->invalidateSelfServiceGroupCache($groupMember);
+
         // Only handle group-to-group relationships, not user-to-group
         if ($groupMember->member_type === Group::class) {
             $group = Group::find($groupMember->member_id);
@@ -32,6 +35,8 @@ class GroupMemberObserver
      */
     public function updated(GroupMember $groupMember): void
     {
+        $this->invalidateSelfServiceGroupCache($groupMember);
+
         // Only handle group-to-group relationships, not user-to-group
         if ($groupMember->member_type === Group::class) {
             $group = Group::find($groupMember->member_id);
@@ -50,6 +55,8 @@ class GroupMemberObserver
      */
     public function deleted(GroupMember $groupMember): void
     {
+        $this->invalidateSelfServiceGroupCache($groupMember);
+
         // Only handle group-to-group relationships, not user-to-group
         if ($groupMember->member_type === Group::class) {
             $group = Group::find($groupMember->member_id);
@@ -68,6 +75,8 @@ class GroupMemberObserver
      */
     public function restored(GroupMember $groupMember): void
     {
+        $this->invalidateSelfServiceGroupCache($groupMember);
+
         // Only handle group-to-group relationships, not user-to-group
         if ($groupMember->member_type === Group::class) {
             $group = Group::find($groupMember->member_id);
@@ -78,6 +87,19 @@ class GroupMemberObserver
 
                 event(new GroupMembershipChanged($group, $parentGroup, 'added', $groupMember));
             }
+        }
+    }
+
+    private function invalidateSelfServiceGroupCache(GroupMember $groupMember): void
+    {
+        if ($groupMember->member_type === Group::class) {
+            Group::bumpSelfServiceHierarchyVersion();
+
+            return;
+        }
+
+        if ($groupMember->member_type === User::class) {
+            User::flushSelfServiceGroupIdsCache((int) $groupMember->member_id);
         }
     }
 }
