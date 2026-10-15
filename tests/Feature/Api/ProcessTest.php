@@ -7,6 +7,7 @@ use Faker\Generator as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Group;
@@ -14,6 +15,8 @@ use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessLaunchpad;
+use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\WorkflowServiceProvider as PM;
@@ -627,6 +630,332 @@ class ProcessTest extends TestCase
         // The second page should have the modulus of 2+$initialRows
         $response = $this->apiCall('GET', route('api.processes.index', ['per_page' => 5, 'page' => 2]));
         $response->assertJsonCount((2 + $initialRows) % 5, 'data');
+    }
+
+    public function testProcessListingResponseSupportsDesignerTables()
+    {
+        $manager = User::factory()->create();
+        $process = Process::factory()->create([
+            'name' => 'Timer Process Listing Contract',
+            'description' => 'Used by process row actions',
+            'bpmn' => file_get_contents(__DIR__ . '/processes/ProcessStartTimerEvent.bpmn'),
+            'pause_timer_start' => true,
+            'properties' => ['manager_id' => [$manager->id]],
+            'warnings' => [['message' => 'Test warning']],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.processes.index', [
+            'filter' => $process->name,
+            'include' => 'categories,category,user',
+        ]));
+
+        $response->assertOk();
+        $row = collect($response->json('data'))->firstWhere('id', $process->id);
+
+        $this->assertNotNull($row);
+        $this->assertSame($process->description, $row['description']);
+        $this->assertSame([$manager->id], $row['manager_id']);
+        $this->assertTrue($row['has_timer_start_events']);
+        $this->assertTrue((bool) $row['pause_timer_start']);
+        $this->assertArrayHasKey('warnings', $row);
+        $this->assertArrayHasKey('case_retention_tier_adjustment_notice', $row);
+        $this->assertArrayHasKey('user', $row);
+        $this->assertArrayHasKey('categories', $row);
+        $this->assertArrayHasKey('category', $row);
+        $this->assertArrayHasKey('notifications', $row);
+        $this->assertArrayHasKey('task_notifications', $row);
+        $this->assertArrayNotHasKey('events', $row);
+        $this->assertArrayNotHasKey('startEvents', $row);
+        $this->assertArrayNotHasKey('projects', $row);
+        $this->assertArrayNotHasKey('bpmn', $row);
+        $this->assertArrayNotHasKey('svg', $row);
+    }
+
+    public function testProcessListingQueriesAreBoundedByPageSize()
+    {
+        $user = User::factory()->create();
+        $category = ProcessCategory::factory()->create();
+        $attributes = [
+            'user_id' => $user->id,
+            'process_category_id' => $category->id,
+        ];
+        Process::factory()->count(20)->create($attributes);
+
+        $route = route('api.processes.index', [
+            'page' => 1,
+            'per_page' => 15,
+            'include' => 'categories,category,user',
+        ]);
+
+        // Warm schema and application caches before comparing query counts.
+        $this->apiCall('GET', $route);
+        $initialQueries = $this->captureListingQueries($route);
+
+        Process::factory()->count(100)->create($attributes);
+        $queriesWithMoreProcesses = $this->captureListingQueries($route);
+
+        $this->assertCount(15, $this->apiCall('GET', $route)->json('data'));
+        $this->assertCount(count($initialQueries), $queriesWithMoreProcesses);
+
+        $listingQuery = collect($queriesWithMoreProcesses)->first(function ($query) {
+            $sql = strtolower($query['query']);
+
+            return str_contains($sql, 'from `processes`') && str_contains($sql, 'limit 15');
+        });
+
+        $this->assertNotNull($listingQuery, 'The process listing query must apply the requested SQL limit.');
+        $this->assertStringNotContainsString('`processes`.*', $listingQuery['query']);
+        $this->assertStringNotContainsString('`processes`.`bpmn`', $listingQuery['query']);
+        $this->assertStringNotContainsString('`processes`.`svg`', $listingQuery['query']);
+
+        $projectQueries = collect($queriesWithMoreProcesses)->filter(
+            fn ($query) => str_contains($query['query'], 'from `project_assets`')
+        );
+        $notificationQueries = collect($queriesWithMoreProcesses)->filter(
+            fn ($query) => str_contains($query['query'], 'from `process_notification_settings`')
+        );
+        $versionQueries = collect($queriesWithMoreProcesses)->filter(function ($query) {
+            preg_match('/\bfrom\s+`?([^`\s]+)`?/i', $query['query'], $matches);
+
+            return ($matches[1] ?? null) === 'process_versions';
+        });
+
+        $this->assertCount(0, $projectQueries);
+        $this->assertCount(1, $notificationQueries);
+        $this->assertCount(0, $versionQueries);
+    }
+
+    public function testProcessListingSortsByDesignerRelatedFields()
+    {
+        $firstUser = User::factory()->create(['username' => 'aaaa-process-owner']);
+        $lastUser = User::factory()->create(['username' => 'zzzz-process-owner']);
+        $firstCategory = ProcessCategory::factory()->create(['name' => 'AAAA Process Category']);
+        $lastCategory = ProcessCategory::factory()->create(['name' => 'ZZZZ Process Category']);
+        $lastProcess = Process::factory()->create([
+            'name' => 'Related Process Sort Last',
+            'user_id' => $lastUser->id,
+            'process_category_id' => $lastCategory->id,
+        ]);
+        $firstProcess = Process::factory()->create([
+            'name' => 'Related Process Sort First',
+            'user_id' => $firstUser->id,
+            'process_category_id' => $firstCategory->id,
+        ]);
+
+        $parameters = ['filter' => 'Related Process Sort', 'order_direction' => 'asc'];
+        $response = $this->apiCall('GET', route('api.processes.index', [
+            ...$parameters,
+            'order_by' => 'user.username',
+        ]));
+        $response->assertJsonPath('data.0.id', $firstProcess->id);
+
+        $response = $this->apiCall('GET', route('api.processes.index', [
+            ...$parameters,
+            'order_by' => 'category.name',
+        ]));
+        $response->assertJsonPath('data.0.id', $firstProcess->id);
+        $response->assertJsonFragment(['id' => $lastProcess->id]);
+    }
+
+    public function testProcessListingPaginatesPmqlResults()
+    {
+        Process::factory()->count(3)->create(['name' => 'PMQL Pagination Match']);
+        Process::factory()->create(['name' => 'PMQL Pagination Nonmatch']);
+
+        $response = $this->apiCall('GET', route('api.processes.index', [
+            'pmql' => 'name = "PMQL Pagination Match"',
+            'per_page' => 2,
+        ]));
+
+        $response->assertOk();
+        $response->assertJsonCount(2, 'data');
+        $response->assertJsonPath('meta.total', 3);
+        $response->assertJsonPath('meta.last_page', 2);
+    }
+
+    public function testProcessListingLimitsIncludesAndEagerLoadsToCurrentPage()
+    {
+        $bpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
+        $processes = collect(range(1, 5))->map(function ($number) use ($bpmn) {
+            $process = Process::factory()->create([
+                'name' => sprintf('Advanced Page Boundary %02d', $number),
+                'bpmn' => $bpmn,
+            ]);
+            ProcessNotificationSetting::factory()->create([
+                'process_id' => $process->id,
+                'notifiable_type' => 'requester',
+                'notification_type' => 'started',
+            ]);
+
+            return $process;
+        });
+        $parameters = [
+            'filter' => 'Advanced Page Boundary',
+            'order_by' => 'name',
+            'order_direction' => 'asc',
+            'page' => 2,
+            'per_page' => 2,
+            'include' => 'category,user',
+        ];
+        $routeWithoutEvents = route('api.processes.index', $parameters);
+        $routeWithEvents = route('api.processes.index', [
+            ...$parameters,
+            'include' => 'category,user,events',
+        ]);
+
+        $this->apiCall('GET', $routeWithoutEvents);
+        $this->apiCall('GET', $routeWithEvents);
+        $queriesWithoutEvents = $this->captureListingQueries($routeWithoutEvents);
+        $queriesWithEvents = $this->captureListingQueries($routeWithEvents);
+        $response = $this->apiCall('GET', $routeWithEvents);
+        $expectedIds = $processes->slice(2, 2)->pluck('id')->values()->all();
+
+        $response->assertOk();
+        $this->assertSame($expectedIds, collect($response->json('data'))->pluck('id')->all());
+        $this->assertCount(count($queriesWithoutEvents), $queriesWithEvents);
+        foreach ($response->json('data') as $row) {
+            $this->assertCount(1, $row['events']);
+            $this->assertArrayNotHasKey('bpmn', $row);
+            $this->assertArrayNotHasKey('svg', $row);
+        }
+
+        $notificationQuery = collect($queriesWithEvents)->first(
+            fn ($query) => str_contains($query['query'], 'from `process_notification_settings`')
+        );
+
+        $this->assertNotNull($notificationQuery);
+        $this->assertSame(
+            1,
+            preg_match('/`process_id` in \(([^)]+)\)/', $notificationQuery['query'], $matches)
+        );
+        $eagerLoadedProcessIds = array_map('intval', preg_split('/,\s*/', $matches[1]));
+        $this->assertEqualsCanonicalizing(
+            $expectedIds,
+            $eagerLoadedProcessIds
+        );
+    }
+
+    public function testProcessListingSerializesBatchedNotificationSettings()
+    {
+        $process = Process::factory()->create(['name' => 'Advanced Notification Payload']);
+        ProcessNotificationSetting::factory()->create([
+            'process_id' => $process->id,
+            'notifiable_type' => 'requester',
+            'notification_type' => 'started',
+        ]);
+        ProcessNotificationSetting::factory()->create([
+            'process_id' => $process->id,
+            'notifiable_type' => 'manager',
+            'notification_type' => 'error',
+        ]);
+        ProcessNotificationSetting::factory()->create([
+            'process_id' => $process->id,
+            'element_id' => 'AdvancedTask',
+            'notifiable_type' => 'assignee',
+            'notification_type' => 'assigned',
+        ]);
+        ProcessNotificationSetting::factory()->create([
+            'process_id' => $process->id,
+            'element_id' => 'AdvancedTask',
+            'notifiable_type' => 'manager',
+            'notification_type' => 'due',
+        ]);
+        $route = route('api.processes.index', ['filter' => $process->name]);
+
+        $queries = $this->captureListingQueries($route);
+        $response = $this->apiCall('GET', $route);
+
+        $response->assertOk();
+        $response->assertJsonPath('data.0.notifications.requester.started', true);
+        $response->assertJsonPath('data.0.notifications.requester.completed', false);
+        $response->assertJsonPath('data.0.notifications.manager.error', true);
+        $response->assertJsonPath('data.0.task_notifications.AdvancedTask.assignee.assigned', true);
+        $response->assertJsonPath('data.0.task_notifications.AdvancedTask.assignee.due', false);
+        $response->assertJsonPath('data.0.task_notifications.AdvancedTask.manager.due', true);
+        $this->assertArrayNotHasKey('notification_settings', $response->json('data.0'));
+        $this->assertCount(1, collect($queries)->filter(
+            fn ($query) => str_contains($query['query'], 'from `process_notification_settings`')
+        ));
+    }
+
+    public function testProcessListingOnlyRunsOptionalLookupsWhenRequested()
+    {
+        $process = Process::factory()->create(['name' => 'Advanced Optional Lookups']);
+        $bookmark = Bookmark::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $this->user->id,
+        ]);
+        $launchpad = ProcessLaunchpad::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $this->user->id,
+        ]);
+        $defaultRoute = route('api.processes.index', ['filter' => $process->name]);
+
+        $defaultQueries = collect($this->captureListingQueries($defaultRoute));
+        $defaultResponse = $this->apiCall('GET', $defaultRoute);
+
+        $defaultResponse->assertJsonPath('data.0.bookmark_id', 0);
+        $defaultResponse->assertJsonPath('data.0.launchpad', null);
+        $this->assertFalse($defaultQueries->contains(
+            fn ($query) => str_contains($query['query'], 'from `user_process_bookmarks`')
+        ));
+        $this->assertFalse($defaultQueries->contains(
+            fn ($query) => str_contains($query['query'], 'from `process_launchpad`')
+        ));
+
+        $enabledRoute = route('api.processes.index', [
+            'filter' => $process->name,
+            'bookmark' => true,
+            'launchpad' => true,
+        ]);
+        $enabledQueries = collect($this->captureListingQueries($enabledRoute));
+        $enabledResponse = $this->apiCall('GET', $enabledRoute);
+
+        $enabledResponse->assertJsonPath('data.0.bookmark_id', $bookmark->id);
+        $enabledResponse->assertJsonPath('data.0.launchpad.id', $launchpad->id);
+        $this->assertCount(1, $enabledQueries->filter(
+            fn ($query) => str_contains($query['query'], 'from `user_process_bookmarks`')
+        ));
+        $this->assertCount(1, $enabledQueries->filter(
+            fn ($query) => str_contains($query['query'], 'from `process_launchpad`')
+        ));
+    }
+
+    public function testProcessListingDoesNotEagerLoadRelationshipsForEmptyPage()
+    {
+        Process::factory()->count(3)->create(['name' => 'Advanced Empty Page']);
+        $route = route('api.processes.index', [
+            'filter' => 'Advanced Empty Page',
+            'page' => 3,
+            'per_page' => 2,
+            'include' => 'category,user,events',
+        ]);
+
+        $queries = collect($this->captureListingQueries($route));
+        $response = $this->apiCall('GET', $route);
+
+        $response->assertOk();
+        $response->assertJsonCount(0, 'data');
+        $response->assertJsonPath('meta.total', 3);
+        $response->assertJsonPath('meta.current_page', 3);
+        $response->assertJsonPath('meta.last_page', 2);
+        $this->assertFalse($queries->contains(
+            fn ($query) => str_contains($query['query'], 'from `process_notification_settings`')
+        ));
+    }
+
+    private function captureListingQueries(string $route): array
+    {
+        $connection = DB::connection('processmaker');
+        $connection->flushQueryLog();
+        $connection->enableQueryLog();
+
+        $this->apiCall('GET', $route)->assertOk();
+        $queries = $connection->getQueryLog();
+
+        $connection->disableQueryLog();
+
+        return $queries;
     }
 
     /**

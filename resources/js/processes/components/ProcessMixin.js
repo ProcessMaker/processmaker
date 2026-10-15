@@ -91,8 +91,7 @@ export default {
               this.orderBy
             }&order_direction=${
               this.orderDirection
-            }&include=categories,category,user`
-            + "&with=events",
+            }&include=categories,category,user`,
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
