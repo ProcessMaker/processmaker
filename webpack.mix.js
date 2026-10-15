@@ -91,6 +91,8 @@ mix
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
   .js("resources/js/initialLoad.js", "public/js")
+  .js("resources/js/app-core.js", "public/js")
+  .js("resources/js/app-layout-core.js", "public/js")
 
   .js("resources/js/app.js", "public/js");
 // .polyfill({

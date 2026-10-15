@@ -207,6 +207,16 @@ if (!function_exists('hasPackage')) {
     }
 }
 
+if (!function_exists('layoutAssets')) {
+    /**
+     * Resolve layout JavaScript asset requirements for the current or given request.
+     */
+    function layoutAssets(?Illuminate\Http\Request $request = null): array
+    {
+        return app(ProcessMaker\Managers\LayoutAssetManager::class)->forRequest($request);
+    }
+}
+
 if (!function_exists('pmUser')) {
     /**
      * Check both the web and api middleware for an existing user.

@@ -70,7 +70,7 @@ class ScriptMicroserviceServiceTest extends TestCase
                 'file' => 'Test error file',
                 'line' => 'Test line number',
                 'trace' => 'Test trace',
-            ]
+            ],
         ]);
 
         $this->service->handle($request);
