@@ -117,7 +117,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "7aeb4322",
+            "build": "47ea114c",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.12",
@@ -158,7 +158,7 @@
                 "connector-slack": "1.9.7",
                 "docker-executor-node-ssr": "1.7.6",
                 "package-ab-testing": "1.4.3",
-                "package-academic-catalog": "0.0.2",
+                "package-academic-catalog": "0.0.1",
                 "package-actions-by-email": "1.22.18",
                 "package-advanced-user-manager": "1.13.4",
                 "package-ai": "1.16.30",
