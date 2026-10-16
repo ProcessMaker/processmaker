@@ -41,7 +41,12 @@ Artisan::command('check {path}', function ($path) {
     }
 })->purpose('Display an inspiring quote');
 
-Artisan::command('metrics:clear', function () {
+Artisan::command('metrics:clear {--stagger : Random delay before clear (scheduler only)}', function () {
+    if ($this->option('stagger')) {
+        $maxSeconds = (int) config('metrics.clear_interval', 10) * 60;
+        sleep(random_int(0, $maxSeconds));
+    }
+
     ProcessMaker\Facades\Metrics::clearMetrics();
     echo "Metrics cleared.\n";
 })->purpose('Clear all metrics using Metrics::clearMetrics');
