@@ -75,7 +75,7 @@ class Kernel extends ConsoleKernel
             return;
         }
 
-        $clearInterval = (int) config('metrics.clear_interval', 10);
+        $clearInterval = (int) config('metrics.clear_interval', 1440);
 
         $event = $schedule->command('metrics:clear --stagger');
         switch ($clearInterval) {
