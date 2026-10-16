@@ -56,8 +56,9 @@ class Kernel extends ConsoleKernel
             }
         }
 
-        $clearInterval = config('metrics.clear_interval', 10);
-        switch ((int) $clearInterval) {
+        if (config('metrics.enabled', false)) {
+            $clearInterval = config('metrics.clear_interval', 10);
+            switch ((int) $clearInterval) {
             case 1:
                 $schedule->command('metrics:clear')->everyMinute();
                 break;
@@ -85,6 +86,7 @@ class Kernel extends ConsoleKernel
             default:
                 $schedule->command('metrics:clear')->cron("*/{$clearInterval} * * * *");
                 break;
+            }
         }
 
         // evaluate cases retention policy

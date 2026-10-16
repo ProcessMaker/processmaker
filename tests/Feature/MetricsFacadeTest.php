@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Config;
 use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Services\MetricsService;
 use Prometheus\Storage\InMemory;
@@ -18,6 +19,8 @@ class MetricsFacadeTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        Config::set('metrics.enabled', true);
 
         // Simulate the MetricsService with an InMemory adapter
         $adapter = new InMemory();
