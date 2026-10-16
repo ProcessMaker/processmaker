@@ -15,6 +15,8 @@ use ProcessMaker\Services\MetricsService;
  * @method static void counterInc(string $name, string $help = null, array $labels = [])
  * @method static void histogramObserve(string $name, string $help = null, array $labels = [], array $buckets = [0.1, 1, 5, 10], float $executionTime)
  * @method static void clearMetrics()
+ * @method static void collectQueueMetrics()
+ * @method static bool isEnabled()
  */
 class Metrics extends Facade
 {

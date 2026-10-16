@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Metrics;
 
+use Illuminate\Support\Facades\Config;
 use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\User;
@@ -10,6 +11,12 @@ use Tests\TestCase;
 
 class TaskMetricsTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Config::set('metrics.enabled', true);
+    }
+
     public function test_task_metric_was_stored()
     {
         $user = User::factory()->create([
