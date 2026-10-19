@@ -21,10 +21,18 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\ProcessTranslations\TranslationManager;
 use ProcessMaker\Traits\TaskControllerIndexMethods;
+use ProcessMaker\Services\TaskCompletionRawService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
 
 class TaskController extends Controller
 {
     use TaskControllerIndexMethods;
+
+    public function __construct(
+        private readonly TaskCompletionRawService $taskCompletionRawService,
+    ) {
+    }
 
     public $doNotSanitize = [
         'data',
@@ -232,5 +240,27 @@ class TaskController extends Controller
         return response([
             'message' => $message,
         ], 422);
+    }
+
+    /**
+     * Complete a task using the raw-query optimized path.
+     */
+    public function update(Request $request, int $taskId)
+    {
+        if ($request->input('status') !== 'COMPLETED') {
+            abort(422, __('Only task completion is supported on this endpoint. Use PUT /api/1.0/tasks/{id} for other updates.'));
+        }
+
+        try {
+            $task = $this->taskCompletionRawService->completeTask(
+                $taskId,
+                json_optimize_decode($request->getContent(), true) ?: [],
+                $request->user(),
+            );
+        } catch (NotFoundHttpException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 404);
+        }
+
+        return response()->json($task);
     }
 }
