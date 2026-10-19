@@ -286,7 +286,7 @@ class ScheduledTaskDuplicationTest extends TestCase
 
         // Set a fake "today" to control time precisely
         $fakeToday = Carbon::create(2026, 1, 12, 12, 0, 0, 'UTC');
-        TaskSchedulerManager::fakeToday($fakeToday);
+        (new TaskSchedulerManager())->fakeToday($fakeToday);
 
         // Create a task that was executed 5 minutes ago with 60-minute interval
         // Next execution should be at 12:55 (55 minutes in the future)
@@ -317,7 +317,7 @@ class ScheduledTaskDuplicationTest extends TestCase
         $this->assertGreaterThan($today->getTimestamp(), $nextDate->getTimestamp());
 
         // Reset fake today
-        TaskSchedulerManager::fakeToday(null);
+        (new TaskSchedulerManager())->fakeToday(null);
     }
 
     /**
@@ -329,7 +329,7 @@ class ScheduledTaskDuplicationTest extends TestCase
 
         // Set a fake "today" to control time precisely
         $fakeToday = Carbon::create(2026, 1, 12, 12, 30, 0, 'UTC');
-        TaskSchedulerManager::fakeToday($fakeToday);
+        (new TaskSchedulerManager())->fakeToday($fakeToday);
 
         // Create a task with last execution at 12:00, 1-minute interval
         // Next execution should be at 12:01, which is 29 minutes in the past
@@ -360,7 +360,7 @@ class ScheduledTaskDuplicationTest extends TestCase
         $this->assertLessThanOrEqual($today->getTimestamp(), $nextDate->getTimestamp());
 
         // Reset fake today
-        TaskSchedulerManager::fakeToday(null);
+        (new TaskSchedulerManager())->fakeToday(null);
     }
 
     /**

@@ -110,14 +110,14 @@ class IntermediateTimerEventTest extends TestCase
     public function testConnectedTimerEvents()
     {
         // Mock current date for TaskSchedulerManager
-        $now = TaskSchedulerManager::fakeToday('2018-10-01T00:00:00Z');
+        $now = (new TaskSchedulerManager())->fakeToday('2018-10-01T00:00:00Z');
 
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/TimerEvents_Intermediate_Start.bpmn'));
 
         $now->modify('+1 day');
         //$now->modify('+1 minute');
-        TaskSchedulerManager::fakeToday($now);
+        (new TaskSchedulerManager())->fakeToday($now);
         $this->runScheduledTasks();
 
         // One process request is started by the timer event
@@ -134,7 +134,7 @@ class IntermediateTimerEventTest extends TestCase
 
         // Increase 4 hours, nothing must change
         $now->modify('+4 hour');
-        TaskSchedulerManager::fakeToday($now);
+        (new TaskSchedulerManager())->fakeToday($now);
         $this->runScheduledTasks();
         $activeTokens = $instance->tokens()->where('status', 'ACTIVE')->get();
         $this->assertCount(1, $activeTokens);
@@ -142,7 +142,7 @@ class IntermediateTimerEventTest extends TestCase
 
         // Trigger first intermediate timer event
         $now->modify('+4 hour');
-        TaskSchedulerManager::fakeToday($now);
+        (new TaskSchedulerManager())->fakeToday($now);
         $this->runScheduledTasks();
 
         // "every day 8:30 -4:00" must be active
@@ -153,7 +153,7 @@ class IntermediateTimerEventTest extends TestCase
         // Increase 4:30 hours, "every day 8:30 -4:00" is reached (12:30 UTC)
         $now->modify('+4 hour');
         $now->modify('+30 minute');
-        TaskSchedulerManager::fakeToday($now);
+        (new TaskSchedulerManager())->fakeToday($now);
         $this->runScheduledTasks();
 
         // "wait 4 hours" must be active (16:00)
@@ -163,7 +163,7 @@ class IntermediateTimerEventTest extends TestCase
 
         // Increase 4 hours
         $now->modify('+4 hour');
-        TaskSchedulerManager::fakeToday($now);
+        (new TaskSchedulerManager())->fakeToday($now);
         $this->runScheduledTasks();
 
         // Process is completed

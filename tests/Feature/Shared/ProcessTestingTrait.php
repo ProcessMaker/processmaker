@@ -163,6 +163,7 @@ trait ProcessTestingTrait
      */
     protected function teardownProcessTestingTrait()
     {
-        TaskSchedulerManager::fakeToday(null);
+        $manager = new TaskSchedulerManager();
+        $manager->fakeToday(null);
     }
 }

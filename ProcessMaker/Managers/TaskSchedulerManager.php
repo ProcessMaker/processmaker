@@ -39,7 +39,7 @@ use stdClass;
 
 class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 {
-    private static $today = null;
+    private $today = null;
 
     protected $registerStartEvents = false;
 
@@ -814,7 +814,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      */
     public function today()
     {
-        return self::$today ?: (Carbon::now())->setTimezone(new DateTimeZone('UTC'));
+        // Use createFromTimestamp to get the real current time,
+        // avoiding Carbon::setTestNow() global state (Octane data leak).
+        return $this->today ?: Carbon::createFromTimestamp(time(), new DateTimeZone('UTC'));
     }
 
     /**
@@ -824,18 +826,18 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      *
      * @return DateTime
      */
-    public static function fakeToday($today)
+    public function fakeToday($today)
     {
         if ($today === null) {
             Carbon::setTestNow(null);
 
-            return self::$today = $today;
+            return $this->today = $today;
         }
         $fake = $today instanceof DateTime ? clone $today : (new DateTime($today))->setTimezone(new DateTimeZone('UTC'));
-        self::$today = new Carbon($fake->format('c'));
+        $this->today = new Carbon($fake->format('c'));
         Carbon::setTestNow($fake->format('c'));
 
-        return clone self::$today;
+        return clone $this->today;
     }
 
     /**
