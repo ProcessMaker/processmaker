@@ -527,7 +527,9 @@ class UserController extends Controller
                 'nullable',
                 'integer',
                 Rule::exists('users', 'id')->where(function ($query) {
-                    $query->where('is_system', false)->whereNull('deleted_at');
+                    $query->where('is_system', false)
+                        ->whereNull('deleted_at')
+                        ->where('status', 'ACTIVE');
                 }),
                 Rule::notIn([(string) $user->id]),
             ];
@@ -691,7 +693,7 @@ class UserController extends Controller
 
     /**
      * A replacement the profile picker can no longer load should not fail the
-     * rest of the save. Clear it and continue.
+     * rest of the save. Clear missing, deleted, system, and non-ACTIVE users.
      */
     private function forgetUnassignableDelegation(array $fields): array
     {
@@ -700,7 +702,12 @@ class UserController extends Controller
         }
 
         $delegate = User::withTrashed()->find($fields['delegation_user_id']);
-        if (!$delegate || $delegate->trashed() || $delegate->is_system) {
+        if (
+            !$delegate
+            || $delegate->trashed()
+            || $delegate->is_system
+            || $delegate->status !== 'ACTIVE'
+        ) {
             $fields['delegation_user_id'] = null;
         }
 

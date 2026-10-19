@@ -726,7 +726,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 $escalateToManager = $config['escalateToManager'] ?? false;
                 $assignee = User::find($user);
                 if ($escalateToManager) {
-                    $assignedUserId = WorkflowUserManager::escalateToManager($token, $user);
+                    $user = WorkflowUserManager::escalateToManager($token, $user);
                 } else {
                     $res = (new WorkflowManagerDefault)->runProcess($assignmentProcess, 'assign', [
                         'user_id' => $user,
@@ -734,10 +734,10 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                         'request_id' => $token->getInstance()->getId(),
                     ]);
                     $assignedUserId = $res['assign_to'] ?? null;
+                    $user = $assignee
+                        ? $assignee->acceptResolvedAssignee($assignedUserId)
+                        : $assignedUserId;
                 }
-                $user = $assignee
-                    ? $assignee->acceptResolvedAssignee($assignedUserId)
-                    : $assignedUserId;
             }
         }
 

@@ -988,6 +988,34 @@ class UsersTest extends TestCase
         ]);
     }
 
+    public function testSelfServiceUpdateClearsStaleInactiveDelegationOnSave(): void
+    {
+        $this->user = User::factory()->create(['is_administrator' => false, 'status' => 'ACTIVE']);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $inactiveDelegate = User::factory()->create(['status' => 'INACTIVE']);
+        $this->user->delegation_user_id = $inactiveDelegate->id;
+        $this->user->status = 'OUT_OF_OFFICE';
+        $this->user->save();
+        $this->user->refresh();
+        $this->flushSession();
+
+        $response = $this->apiCall(
+            'PUT',
+            self::API_TEST_URL . '/' . $this->user->id,
+            $this->getSelfServiceUpdateData($this->user, [
+                'status' => 'OUT_OF_OFFICE',
+                'delegation_user_id' => $inactiveDelegate->id,
+            ])
+        );
+
+        $response->assertStatus(204);
+        $this->assertDatabaseHas('users', [
+            'id' => $this->user->id,
+            'status' => 'OUT_OF_OFFICE',
+            'delegation_user_id' => null,
+        ]);
+    }
+
     public function testSelfServiceUpdateCanSetOutOfOfficeAndDelegation(): void
     {
         $this->user = User::factory()->create(['is_administrator' => false, 'status' => 'ACTIVE']);
