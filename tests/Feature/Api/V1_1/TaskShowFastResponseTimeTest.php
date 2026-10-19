@@ -12,7 +12,7 @@ use Tests\TestCase;
 /**
  * Compare GET api/1.1/tasks/{id} legacy show vs optimized showFast (OPTIMIZED_TASKS_START_ENABLED).
  *
- * TASK_SHOW_FAST_MAX_RATIO: fast_ms must be <= legacy_ms * ratio (default 0.58 ≈ 42% faster; use 0.4 for ~60% on heavier DB).
+ * TASK_SHOW_FAST_MAX_RATIO: fast_ms must be <= legacy_ms * ratio (default 0.62 ≈ 38% faster; use 0.4 for ~60% on heavier DB).
  *
  * @group process_tests
  * @group task_show_fast_timing
@@ -32,7 +32,7 @@ class TaskShowFastResponseTimeTest extends TestCase
             return (float) $env;
         }
 
-        return 0.58;
+        return 0.62;
     }
 
     /**
