@@ -1,0 +1,29 @@
+name: Nightly Testbench
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # midnight UTC
+  workflow_dispatch:
+    inputs:
+      skip_build:
+        description: Skip Docker image build and reuse Harbor processmaker-develop
+        required: false
+        type: boolean
+        default: false
+      mode:
+        description: Run testbench after deploy, or only delete and redeploy instances
+        required: true
+        type: choice
+        default: Run Now
+        options:
+          - Run Now
+          - Redeploy Only
+
+jobs:
+  run:
+    name: Run nightly testbench
+    uses: processmaker/.github/.github/workflows/nightly-testbench.yml@main
+    secrets: inherit
+    with:
+      skip_build: ${{ inputs.skip_build == true }}
+      redeploy_only: ${{ inputs.mode == 'Redeploy Only' }}

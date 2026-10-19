@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "2026.15.3",
+    "version": "2026.16.1",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -25,7 +25,7 @@
         "guzzlehttp/psr7": "^2.12.3",
         "igaster/laravel-theme": "^2.0",
         "jenssegers/agent": "^2.6",
-        "laravel/framework": "^13.0",
+        "laravel/framework": "^13.30",
         "laravel/horizon": "^5.45",
         "laravel/octane": "^2.17",
         "laravel/pail": "^1.2",
@@ -36,20 +36,20 @@
         "laravel/ui": "^4.6",
         "lavary/laravel-menu": "^1.8",
         "lcobucci/jwt": "^5.6",
-        "league/commonmark": "^2.10.0",
+        "league/commonmark": "^2.10.2",
         "league/flysystem-aws-s3-v3": "^3.25.1",
         "mateusjunges/laravel-kafka": "^2.11",
         "mittwald/vault-php": "^2.1",
         "mustache/mustache": "^2.14",
         "open-telemetry/api": "^1.8",
         "open-telemetry/exporter-otlp": "^1.3",
-        "open-telemetry/opentelemetry-auto-laravel": "dev-main",
+        "open-telemetry/opentelemetry-auto-laravel": "^1.9.0",
         "open-telemetry/transport-grpc": "^1.1",
         "openai-php/laravel": "^0.19.1",
         "paragonie/sodium_compat": "^2.5.1",
         "php-amqplib/php-amqplib": "^3.7",
         "php-http/promise": "~1.2.0",
-        "phpseclib/phpseclib": "^3.0.54",
+        "phpseclib/phpseclib": "^3.0.57",
         "pion/laravel-chunk-upload": "dev-master",
         "predis/predis": "^2.3",
         "processmaker/docker-executor-lua": "1.0.1",
@@ -117,7 +117,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "384bf4e7",
+            "build": "47ea114c",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.12",
@@ -127,7 +127,6 @@
                 "package-irisbank": "dev-fall",
                 "package-pinnacle": "1.0.9",
                 "package-esign": "dev-fall",
-                "package-thermofisher": "dev-fall",
                 "pps-file-storage": "dev-fall",
                 "package-csi": "dev-fall",
                 "package-jxchange": "dev-fall",
@@ -152,40 +151,41 @@
                 "package-accessibility": "1.0.1"
             },
             "enterprise": {
-                "connector-docusign": "1.11.3",
-                "connector-idp": "1.14.2",
+                "connector-docusign": "1.11.4",
+                "connector-idp": "1.14.3",
                 "connector-pdf-print": "1.23.4",
-                "connector-send-email": "1.32.20",
+                "connector-send-email": "1.32.21",
                 "connector-slack": "1.9.7",
-                "docker-executor-node-ssr": "1.7.5",
-                "package-ab-testing": "1.4.2",
-                "package-actions-by-email": "1.22.17",
+                "docker-executor-node-ssr": "1.7.6",
+                "package-ab-testing": "1.4.3",
+                "package-academic-catalog": "0.0.1",
+                "package-actions-by-email": "1.22.18",
                 "package-advanced-user-manager": "1.13.4",
-                "package-ai": "1.16.28",
+                "package-ai": "1.16.30",
                 "package-analytics-reporting": "1.11.5",
                 "package-auth": "1.24.21",
-                "package-collections": "2.27.14",
-                "package-comments": "1.16.4",
-                "package-conversational-forms": "1.15.2",
+                "package-collections": "2.27.16",
+                "package-comments": "1.16.5",
+                "package-conversational-forms": "1.15.3",
                 "package-data-sources": "1.34.14",
-                "package-decision-engine": "1.16.3",
+                "package-decision-engine": "1.16.6",
                 "package-dynamic-ui": "1.28.7",
-                "package-email-start-event": "1.0.14",
+                "package-email-start-event": "1.0.15",
                 "package-files": "1.23.7",
                 "package-googleplaces": "1.12.1",
-                "package-photo-video": "1.6.3",
-                "package-pm-blocks": "1.12.11",
+                "package-photo-video": "1.6.4",
+                "package-pm-blocks": "1.12.12",
                 "package-process-documenter": "1.12.1",
                 "package-process-optimization": "1.10.2",
                 "package-product-analytics": "1.5.12",
                 "package-projects": "1.12.12",
                 "package-rpa": "1.1.2",
-                "package-savedsearch": "1.43.21",
+                "package-savedsearch": "1.43.23",
                 "package-slideshow": "1.4.3",
-                "package-smart-extract": "1.0.2",
+                "package-smart-extract": "1.0.3",
                 "package-signature": "1.15.6",
                 "package-testing": "1.8.2",
-                "package-translations": "2.14.7",
+                "package-translations": "2.14.8",
                 "package-versions": "1.13.1",
                 "package-vocabularies": "2.17.2",
                 "package-webentry": "2.29.20",
@@ -196,7 +196,7 @@
             "docker-executors": {
                 "docker-executor-java": "1.0.5",
                 "docker-executor-python": "1.0.1",
-                "docker-executor-csharp": "1.0.2"
+                "docker-executor-csharp": "1.0.3"
             },
             "microservices": {
                 "pmai": "fall-2023"
@@ -229,15 +229,7 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/ProcessMaker/contrib-auto-laravel.git"
-        },
-        {
-            "type": "vcs",
             "url": "https://github.com/ProcessMaker/SocialiteProviders"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/ProcessMaker/docusign-esign-php-client.git"
         }
     ],
     "config": {
