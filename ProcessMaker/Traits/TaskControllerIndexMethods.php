@@ -99,24 +99,13 @@ trait TaskControllerIndexMethods
         $query->where(function ($query) use ($key, $column, $fieldFilter) {
             $userColumn = is_string($key) ? $key : $column;
             $query->where($userColumn, $fieldFilter);
-            $query->orWhere(function ($query) use ($userColumn, $fieldFilter) {
-                $query->whereNull($userColumn);
-                $query->where('process_request_tokens.is_self_service', 1);
-                $user = User::find($fieldFilter);
-                $query->where(function ($query) use ($user) {
-                    foreach ($user->groups as $group) {
-                        $query->orWhereJsonContains(
-                            'process_request_tokens.self_service_groups', strval($group->getKey())
-                        ); // backwards compatibility
-                        $query->orWhereJsonContains(
-                            'process_request_tokens.self_service_groups->groups', strval($group->getKey())
-                        );
-                    }
-                    $query->orWhereJsonContains(
-                        'process_request_tokens.self_service_groups->users', strval($user->getKey())
-                    );
-                });
-            });
+            $user = User::find($fieldFilter);
+            if ($user) {
+                $query->orWhereIn(
+                    'process_request_tokens.id',
+                    $user->availableSelfServiceTasksQuery()
+                );
+            }
         });
     }
 

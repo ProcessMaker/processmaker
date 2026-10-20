@@ -154,6 +154,58 @@ class TasksTest extends TestCase
         $this->assertEquals(2, count($response->json()['data']));
     }
 
+    public function testUserFilterIncludesOnlyActiveSelfServiceTasksAndPreservesAssignedHistory()
+    {
+        $eligibleUser = User::factory()->create();
+        $request = ProcessRequest::factory()->create();
+        $selfServiceGroups = ['users' => [(string) $eligibleUser->id], 'groups' => []];
+
+        $activeSelfService = ProcessRequestToken::factory()->create([
+            'process_id' => $request->process_id,
+            'process_request_id' => $request->id,
+            'element_type' => 'task',
+            'status' => 'ACTIVE',
+            'user_id' => null,
+            'is_self_service' => 1,
+            'self_service_groups' => $selfServiceGroups,
+        ]);
+        $closedSelfService = ProcessRequestToken::factory()->create([
+            'process_id' => $request->process_id,
+            'process_request_id' => $request->id,
+            'element_type' => 'task',
+            'status' => 'CLOSED',
+            'user_id' => null,
+            'is_self_service' => 1,
+            'self_service_groups' => $selfServiceGroups,
+        ]);
+        $assignedClosedTask = ProcessRequestToken::factory()->create([
+            'process_id' => $request->process_id,
+            'process_request_id' => $request->id,
+            'element_type' => 'task',
+            'status' => 'CLOSED',
+            'user_id' => $eligibleUser->id,
+            'is_self_service' => 0,
+        ]);
+
+        $scopeQuery = ProcessRequestToken::query();
+        ProcessRequestToken::scopeWhereUserAssigned($scopeQuery, $eligibleUser->id);
+        $scopeIds = $scopeQuery->pluck('id')->all();
+        $this->assertContains($activeSelfService->id, $scopeIds);
+        $this->assertNotContains($closedSelfService->id, $scopeIds);
+        $this->assertContains($assignedClosedTask->id, $scopeIds);
+
+        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', [
+            'user_id' => $eligibleUser->id,
+            'per_page' => 100,
+        ]));
+        $response->assertStatus(200);
+
+        $taskIds = array_column($response->json('data'), 'id');
+        $this->assertContains($activeSelfService->id, $taskIds);
+        $this->assertNotContains($closedSelfService->id, $taskIds);
+        $this->assertContains($assignedClosedTask->id, $taskIds);
+    }
+
     /**
      * Return all tasks if we are only requesting closed tasks and if
      * the user can view the request.
