@@ -33,7 +33,6 @@ use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Throwable;
 
 /**
@@ -1071,24 +1070,9 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     public function getAssignees(array $assignments, array $variables): array
     {
         $result = [];
-        $language = new ExpressionLanguage();
 
         foreach ($assignments as $assignment) {
-            $isTrue = false;
-
-            if (!empty($assignment['expression'])) {
-                try {
-                    $isTrue = $language->evaluate($assignment['expression'], $variables);
-                } catch (Throwable $e) {
-                    $isTrue = false;
-                }
-            }
-
-            if ($isTrue) {
-                $result[] = $assignment['assignee'];
-            }
-
-            if (isset($assignment['default']) && $assignment['default'] === true) {
+            if ($this->isAssignmentRuleMatch($assignment, $variables)) {
                 $result[] = $assignment['assignee'];
             }
         }
@@ -1099,26 +1083,116 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Get the assignees from the expression
      *
-     * @param string $form_data
+     * @param string|array|null $form_data
      * @return array
      */
-    public function getAssigneesFromExpression(string $form_data): array
+    public function getAssigneesFromExpression(string|array|null $form_data = []): array
     {
-        $formData = json_decode($form_data, true);
+        $formData = $this->resolveExpressionVariables($form_data);
 
         $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
         $assignmentRules = $activity->getProperty('assignmentRules', null);
-        $assignments = json_decode($assignmentRules, true);
+        $assignments = json_decode($assignmentRules, true) ?? [];
 
-        $include_ids = $this->getAssignees($assignments, $formData);
+        $userIds = [];
+        $hasExpressionMatch = false;
 
-        // we add the manager to the list of assignees
-        $manager_id = $this->process->manager_id;
-        if ($manager_id) {
-            $include_ids[] = $manager_id;
+        foreach ($assignments as $assignment) {
+            if ($this->isDefaultAssignmentRule($assignment)) {
+                continue;
+            }
+
+            if (!$this->isAssignmentRuleMatch($assignment, $formData)) {
+                continue;
+            }
+
+            $hasExpressionMatch = true;
+            $this->appendAssignmentAssignees($assignment, $userIds);
         }
 
-        return $include_ids;
+        if (!$hasExpressionMatch) {
+            foreach ($assignments as $assignment) {
+                if (!$this->isDefaultAssignmentRule($assignment)) {
+                    continue;
+                }
+
+                $this->appendAssignmentAssignees($assignment, $userIds);
+            }
+        }
+
+        foreach ((array) ($this->process->manager_id ?? []) as $managerId) {
+            if (!empty($managerId) && is_numeric($managerId)) {
+                $userIds[$managerId] = $managerId;
+            }
+        }
+
+        return array_values($userIds);
+    }
+
+    private function resolveExpressionVariables(string|array|null $form_data): array
+    {
+        $formData = is_array($form_data) ? $form_data : json_decode($form_data ?? '', true);
+        $formData = is_array($formData) ? $formData : [];
+
+        unset($formData['_user'], $formData['_request'], $formData['_process']);
+
+        $instance = $this->getInstance();
+        if ($instance) {
+            $variables = $instance->getDataStore()->getData();
+        } else {
+            $variables = $this->processRequest?->data ?? [];
+        }
+
+        $variables = is_array($variables) ? $variables : [];
+
+        if (empty($formData)) {
+            return $variables;
+        }
+
+        return array_merge($variables, $formData);
+    }
+
+    private function isDefaultAssignmentRule(array $assignment): bool
+    {
+        if (isset($assignment['default']) && $assignment['default'] === true) {
+            return true;
+        }
+
+        return array_key_exists('expression', $assignment) && $assignment['expression'] === null;
+    }
+
+    private function appendAssignmentAssignees(array $assignment, array &$userIds): void
+    {
+        if (($assignment['type'] ?? 'user') === 'group') {
+            $groupUsers = [];
+            $this->process->getConsolidatedUsers($assignment['assignee'], $groupUsers);
+            foreach ($groupUsers as $userId) {
+                if (!empty($userId) && is_numeric($userId)) {
+                    $userIds[$userId] = $userId;
+                }
+            }
+
+            return;
+        }
+
+        $userIds[$assignment['assignee']] = $assignment['assignee'];
+    }
+
+    private function isAssignmentRuleMatch(array $assignment, array $variables): bool
+    {
+        if ($this->isDefaultAssignmentRule($assignment)) {
+            return false;
+        }
+
+        if (empty($assignment['expression'])) {
+            return false;
+        }
+
+        try {
+            return (bool) feelExpression($assignment['expression'], $variables);
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
     /**
