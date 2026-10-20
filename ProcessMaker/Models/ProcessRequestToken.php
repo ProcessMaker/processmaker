@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\AssignmentRules\ProcessManagerAssigned;
 use ProcessMaker\Casts\MillisecondsToDateCast;
 use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
 use ProcessMaker\Events\ActivityAssigned;
@@ -1397,10 +1398,41 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 'process_id' => $this->process_id,
                 'request_id' => $this->process_request_id,
             ]);
-            $this->user_id = $res['assign_to'];
+            $assignedUserId = $res['assign_to'] ?? null;
+            $this->user_id = $this->resolveAssignedUserId($userId, $assignedUserId);
+            $this->unsetRelation('user');
         }
 
         return $this;
+    }
+
+    /**
+     * Assignee to store after the assignment process runs. When nobody can
+     * take the task, it falls back to the Process Manager instead of being
+     * left unassigned.
+     *
+     * @param mixed $requestedUserId
+     * @param mixed $assignedUserId
+     * @return mixed
+     */
+    public function resolveAssignedUserId($requestedUserId, $assignedUserId)
+    {
+        $assignee = User::find($requestedUserId);
+        $resolvedUserId = $assignee
+            ? $assignee->acceptResolvedAssignee($assignedUserId)
+            : $assignedUserId;
+
+        return $resolvedUserId ?: $this->processManagerId();
+    }
+
+    /**
+     * @return int
+     */
+    private function processManagerId(): int
+    {
+        $request = $this->processRequest;
+
+        return (new ProcessManagerAssigned())->getNextUser($this->getDefinition(true), $this, $request->process, $request);
     }
 
     /**
@@ -1523,8 +1555,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         }
 
         // Send a notification to the user
-        $notification = new TaskReassignmentNotification($this);
-        $this->user->notify($notification);
+        $this->unsetRelation('user');
+        if ($this->user) {
+            $notification = new TaskReassignmentNotification($this);
+            $this->user->notify($notification);
+        }
         if ($this->element_type === 'task') {
             event(new ActivityAssigned($this));
         }
