@@ -58,7 +58,10 @@ class ScriptRunner
             } else {
                 $class = "ProcessMaker\\ScriptRunners\\{$runner}";
 
-                return app()->make($class, ['scriptExecutor' => $executor]);
+                return app()->make($class, [
+                    'scriptExecutor' => $executor,
+                    'scriptKey' => $this->script->key,
+                ]);
             }
         } else {
             return new ScriptMicroserviceRunner($this->script);
