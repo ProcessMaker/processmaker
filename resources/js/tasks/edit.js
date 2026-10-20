@@ -437,7 +437,11 @@ const main = new Vue({
             );
             this.draftTask = structuredClone(response.data);
           })
-          .catch(() => {
+          .catch((error) => {
+            if (error?.response?.status === 401) {
+              window.location = "/login";
+              return;
+            }
             this.errorAutosave = true;
           })
           .finally(() => {
