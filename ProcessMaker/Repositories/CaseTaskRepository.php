@@ -108,10 +108,16 @@ class CaseTaskRepository
      */
     public function updateTaskStatusInCase(int $caseNumber, string $taskIndex, string $status): void
     {
-        DB::table($this->table)
-            ->where('case_number', $caseNumber)
-            ->update([
-                'tasks' => DB::raw('JSON_SET(tasks, "' . $taskIndex . '.status", "' . $status . '")'),
-            ]);
+        $query = DB::table($this->table)->where('case_number', $caseNumber);
+
+        // Participated rows store user-scoped task lists, so only update
+        // rows that contain this task
+        if ($this->table === 'cases_participated') {
+            $query->whereJsonContains('tasks', ['id' => (string) $this->task->id]);
+        }
+
+        $query->update([
+            'tasks' => DB::raw('JSON_SET(tasks, "' . $taskIndex . '.status", "' . $status . '")'),
+        ]);
     }
 }

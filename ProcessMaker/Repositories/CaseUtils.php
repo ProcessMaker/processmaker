@@ -4,6 +4,7 @@ namespace ProcessMaker\Repositories;
 
 use Illuminate\Support\Collection;
 use ProcessMaker\Constants\CaseStatusConstants;
+use ProcessMaker\Models\ProcessRequestToken;
 
 class CaseUtils
 {
@@ -31,6 +32,7 @@ class CaseUtils
         'process_id' => 'process_id',
         'element_type' => 'element_type',
         'status' => 'status',
+        'user_id' => 'user_id',
     ];
 
     const KEYWORD_FIELDS = [
@@ -142,6 +144,7 @@ class CaseUtils
      *         'name' => string,    // The name of the element
      *         'process_id' => int  // The unique identifier of the process
      *         'element_type' => string  // The type of the element
+     *         'user_id' => int|null // The assignee user id
      *     ]
      * @return Collection
      */
@@ -158,6 +161,57 @@ class CaseUtils
         }
 
         return $tasks->unique('id')->values();
+    }
+
+    /**
+     * Filter tasks to only those assigned to the given user.
+     *
+     * Tasks missing user_id are resolved from process_request_tokens.
+     *
+     * @param Collection|array|null $tasks
+     * @param int $userId
+     * @return Collection
+     */
+    public static function filterTasksByUser(Collection|array|null $tasks, int $userId): Collection
+    {
+        $tasks = collect($tasks);
+        $assigneeByTaskId = self::resolveMissingTaskAssignees($tasks);
+
+        return $tasks
+            ->filter(function ($task) use ($userId, $assigneeByTaskId) {
+                $taskUserId = data_get($task, 'user_id');
+                if ($taskUserId === null) {
+                    $taskUserId = $assigneeByTaskId[(string) data_get($task, 'id')] ?? null;
+                }
+
+                return (int) $taskUserId === $userId;
+            })
+            ->values();
+    }
+
+    /**
+     * Resolve assignees for tasks that do not include user_id in the snapshot.
+     *
+     * @param Collection $tasks
+     * @return array<string, int|null>
+     */
+    private static function resolveMissingTaskAssignees(Collection $tasks): array
+    {
+        $missingIds = $tasks
+            ->filter(fn ($task) => data_get($task, 'user_id') === null && data_get($task, 'id') !== null)
+            ->pluck('id')
+            ->map(fn ($id) => (string) $id)
+            ->unique()
+            ->values();
+
+        if ($missingIds->isEmpty()) {
+            return [];
+        }
+
+        return ProcessRequestToken::whereIn('id', $missingIds)
+            ->pluck('user_id', 'id')
+            ->mapWithKeys(fn ($assigneeId, $taskId) => [(string) $taskId => $assigneeId])
+            ->all();
     }
 
     /**
