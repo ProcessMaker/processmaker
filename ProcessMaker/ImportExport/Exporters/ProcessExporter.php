@@ -5,6 +5,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 use DOMXPath;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\ImportExport\AssignmentRulesReconciliation;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Psudomodels\Signal;
 use ProcessMaker\ImportExport\Utils;
@@ -314,6 +315,15 @@ class ProcessExporter extends ExporterBase
         }
     }
 
+    private function importAssignmentRules(): void
+    {
+        $document = $this->model->getDefinitions(true);
+
+        if (AssignmentRulesReconciliation::reconcileAssignmentRulesInDocument($document)) {
+            $this->model->bpmn = $document->saveXML();
+        }
+    }
+
     private function exportScreens()
     {
         $tags = [
@@ -480,6 +490,7 @@ class ProcessExporter extends ExporterBase
             $this->importScripts();
             $this->importSubprocesses();
             $this->importAssignments();
+            $this->importAssignmentRules();
             $this->importProcessLaunchpad();
             $this->importElementDestination();
         }
