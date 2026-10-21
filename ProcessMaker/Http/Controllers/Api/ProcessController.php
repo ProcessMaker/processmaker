@@ -129,17 +129,21 @@ class ProcessController extends Controller
         $user = Auth::user();
 
         $orderBy = $this->getRequestSortBy($request, 'name');
+        if (!str_contains($orderBy[0], '.')) {
+            $orderBy[0] = 'processes.' . $orderBy[0];
+        }
         $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
+        $relationships = array_values(array_diff($include, ['events']));
         $status = $request->input('status');
         $pmql = $request->input('pmql', '');
 
-        $processes = Process::nonSystem()->notArchived()->with($include);
+        $processes = Process::nonSystem()->notArchived()->with($relationships);
         if ($status === 'archived') {
-            $processes = Process::archived()->with($include);
+            $processes = Process::archived()->with($relationships);
         }
         if ($status === 'all') {
-            $processes = Process::active()->with($include);
+            $processes = Process::active()->with($relationships);
         }
 
         $filter = $request->input('filter', '');
@@ -188,59 +192,28 @@ class ProcessController extends Controller
         // Get with launchpad
         $launchpad = $request->input('launchpad', false);
 
-        $processes = $processes->with('events')
-            ->select('processes.*')
+        $processes = $processes
+            ->with('notification_settings')
+            ->exclude(['bpmn', 'svg'])
             ->leftJoin(\DB::raw('(select id, uuid, name from process_categories) as category'), 'processes.process_category_id', '=', 'category.id')
             ->leftJoin(\DB::raw('(select id, uuid, username, lastname, firstname from users) as user'), 'processes.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
-            ->get()
-            ->collect();
+            ->paginate($perPage);
 
-        foreach ($processes as $key => $process) {
-            // filter the start events that can be used manually (no timer start events);
-            // TODO: startEvents is not a real property on Process.
-            // Move below to $process->getManualStartEvents();
-            $process->startEvents = $process->events->filter(function ($event) {
-                $eventIsTimerStart = collect($event['eventDefinitions'])
-                        ->filter(function ($eventDefinition) {
-                            return $eventDefinition['$type'] == 'timerEventDefinition';
-                        })->count() > 0;
+        foreach ($processes as $process) {
+            $process->setAppends(array_values(array_diff($process->getAppends(), ['projects'])));
+            $process->makeHidden('notification_settings');
 
-                // Filter out web entry start events and email start events
-                $eventIsWebEntry = false;
-                $eventIsEmailStart = false;
-                if (isset($event['config'])) {
-                    $config = json_decode($event['config'], true);
-                    if (isset($config['web_entry']) && $config['web_entry'] !== null) {
-                        $eventIsWebEntry = true;
-                    } elseif (isset($config['email_start']) && $config['email_start'] !== null) {
-                        $eventIsEmailStart = true;
-                    }
-                }
-
-                return !$eventIsTimerStart && !$eventIsWebEntry && !$eventIsEmailStart;
-            })->values();
-
-            // Get the id bookmark related
-            $process->bookmark_id = Bookmark::getBookmarked($bookmark, $process->id, $user->id);
-            // Get the launchpad configuration
-            $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
+            $process->bookmark_id = $bookmark
+                ? Bookmark::getBookmarked($bookmark, $process->id, $user->id)
+                : 0;
+            $process->launchpad = $launchpad
+                ? ProcessLaunchpad::getLaunchpad($launchpad, $process->id)
+                : null;
 
             $process->case_retention_tier_adjustment_notice = false;
             if ($user->is_administrator && config('app.case_retention_policy_enabled')) {
                 $process->case_retention_tier_adjustment_notice = CaseRetentionTierService::adjustmentNoticeIsActive($process);
-            }
-
-            // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
-            if ($request->has('without_event_definitions') && $request->input('without_event_definitions') == 'true') {
-                $startEvents = $process->events->filter(function ($event) {
-                    return collect($event['eventDefinitions'])->isEmpty();
-                });
-            }
-
-            // filter only valid executable processes
-            if (!$process->isValidForExecution()) {
-                $processes->startEvents = [];
             }
         }
 
