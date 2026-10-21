@@ -40,6 +40,7 @@ import TreeView from "./components/TreeView.vue";
 import FilterTable from "./components/shared/FilterTable.vue";
 import PaginationTable from "./components/shared/PaginationTable.vue";
 import PMDropdownSuggest from "./components/PMDropdownSuggest";
+import { installApiClientCache } from "./apiClientCache";
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
@@ -251,6 +252,7 @@ window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
 window.ProcessMaker.apiClient = require("axios");
 
 window.ProcessMaker.apiClient.defaults.withCredentials = true;
+installApiClientCache(window.ProcessMaker.apiClient);
 
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
