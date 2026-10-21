@@ -14,6 +14,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Events\ImportedScreenSaved;
+use ProcessMaker\ImportExport\AssignmentRulesReconciliation;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Process;
@@ -518,6 +519,7 @@ class ImportProcess implements ShouldQueue
             return $new;
         } catch (\Exception $e) {
             Log::error('Import Screen: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -781,6 +783,8 @@ class ImportProcess implements ShouldQueue
      */
     private function saveBpmn($process)
     {
+        AssignmentRulesReconciliation::reconcileAssignmentRulesInDocument($this->definitions);
+
         $this->new['process']->bpmn = $this->definitions->saveXML();
         if (isset($process->cancel_screen_id)) {
             $this->new['process']->cancel_screen_id = $process->cancel_screen_id;
