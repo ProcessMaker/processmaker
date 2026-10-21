@@ -194,25 +194,13 @@ export default {
             "id": id,
           };
         } else if (this.defaultAssignment.groups.length && Object.keys(this.defaultAssignment.groups[0]).length)  {
-          let name = this.defaultAssignment.groups[0].name ? this.defaultAssignment.groups[0].name : this.defaultAssignment.groups[0].assignmentName;
-          let id;
-          if (this.defaultAssignment.groups[0].id) {
-            if (this.defaultAssignment.groups[0].id.includes("group")){
-              id = this.defaultAssignment.groups[0].id.replace("group-", "");
-            } else {
-              id = this.defaultAssignment.groups[0].id;
-            }
-          } else {
-            if (this.defaultAssignment.groups[0].assignee.includes("group")) {
-              id = this.defaultAssignment.groups[0].assignee.replace("group-", "");
-            } else {
-              id = this.defaultAssignment.groups[0].assignee;
-            }
-          }
+          let group = this.defaultAssignment.groups[0];
+          let name = group.name ? group.name : group.assignmentName;
+          let rawId = group.id ? group.id : group.assignee;
           field = {
             "type" : "group",
             "name": name,
-            "id": id,
+            "id": this.normalizeGroupId(rawId),
           };
         }
         
@@ -237,6 +225,12 @@ export default {
     }
   },
   methods: {
+    // Group assignees may be numeric (e.g. after import reconciliation
+    // rebinds a rule) or "group-<id>" strings from the picker; normalize
+    // both to the plain id string before any string operations.
+    normalizeGroupId(groupId) {
+      return String(groupId).replace("group-", "");
+    },
     addSpecialAssignment(editIndex = null) {
         let field;
         if (!this.assignedExpression) {
@@ -252,7 +246,7 @@ export default {
         } else if (this.assignedExpression.groups.length) {
           let id = this.assignedExpression.groups[0].id;
           if (this.assignedExpression.groups[0].id) {
-            id = this.assignedExpression.groups[0].id.replace('group-', '');
+            id = this.normalizeGroupId(id);
           }
           field = {
             "type" : "group",
@@ -304,7 +298,7 @@ export default {
       } else if (this.specialAssignments[index].type == 'user') {
         assignee.users.push(this.specialAssignments[index].assignee);
       } else if (this.specialAssignments[index].type == 'group') {
-        assignee.groups.push(parseInt(this.specialAssignments[index].assignee.replace("group-", "")));
+        assignee.groups.push(parseInt(this.normalizeGroupId(this.specialAssignments[index].assignee)));
       }
 
       this.assignedExpression = assignee;
@@ -349,9 +343,7 @@ export default {
       if (defaultAssignment[0].type == 'user') {
         this.defaultAssignment.users.push(defaultAssignment[0]);
       } else if (defaultAssignment[0].type == 'group') {
-        if (typeof defaultAssignment[0].assignee != 'number') {
-          defaultAssignment[0].assignee = defaultAssignment[0].assignee.replace("group-", "");
-        }
+        defaultAssignment[0].assignee = this.normalizeGroupId(defaultAssignment[0].assignee);
         this.defaultAssignment.groups.push(defaultAssignment[0]);
       }
     },
