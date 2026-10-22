@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Mockery;
+use ProcessMaker\Exception\MetricsDisabledException;
 use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Services\MetricsService;
 use Prometheus\CollectorRegistry;
@@ -29,6 +30,8 @@ class MetricsServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        Config::set('metrics.enabled', true);
 
         // Use InMemory storage for testing
         $adapter = new InMemory();
@@ -264,5 +267,19 @@ class MetricsServiceTest extends TestCase
 
         // Call clearMetrics which should call wipeStorage on the registry.
         $service->clearMetrics();
+    }
+
+    public function testMetricsDisabledSkipsRegistration(): void
+    {
+        Config::set('metrics.enabled', false);
+
+        $adapter = new InMemory();
+        $service = new MetricsService($adapter);
+
+        $service->counterInc('disabled_counter', 'Should not register', ['foo' => 'bar']);
+        $this->assertSame('', $service->renderMetrics());
+
+        $this->expectException(MetricsDisabledException::class);
+        $service->counter('disabled_counter_direct');
     }
 }
