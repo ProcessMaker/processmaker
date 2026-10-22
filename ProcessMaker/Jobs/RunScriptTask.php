@@ -41,7 +41,6 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
      */
     public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data, $attemptNum = 1)
     {
-        $this->onQueue('bpmn');
         $this->definitionsId = $definitions->getKey();
         $this->instanceId = $instance->getKey();
         $this->tokenId = $token->getKey();
