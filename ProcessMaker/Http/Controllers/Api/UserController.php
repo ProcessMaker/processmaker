@@ -290,25 +290,39 @@ class UserController extends Controller
         }
 
         $include_ids = [];
+        $applyAssignableFilter = false;
         $include_ids_string = $request->input('include_ids', '');
         if (!empty($include_ids_string)) {
             $include_ids = explode(',', $include_ids_string);
+            $applyAssignableFilter = true;
         } elseif ($request->has('assignable_for_task_id')) {
-            $processRequestToken = ProcessRequestToken::findOrFail($request->input('assignable_for_task_id'));
+            $processRequestToken = ProcessRequestToken::with(['process', 'processRequest'])
+                ->findOrFail($request->input('assignable_for_task_id'));
             if (config('app.reassign_restrict_to_assignable_users')) {
+                $applyAssignableFilter = true;
                 $include_ids = $processRequestToken->process->getAssignableUsersByAssignmentType($processRequestToken);
-                $assignmentRule = $processRequestToken->getAssignmentRule();
-                if ($assignmentRule === 'rule_expression' && $request->has('form_data')) {
-                    $include_ids = $processRequestToken->getAssigneesFromExpression($request->input('form_data'));
+                $bpmnAssignment = $processRequestToken->getBpmnDefinition()->getBpmnElementInstance()
+                    ->getProperty('assignment', null);
+                if ($bpmnAssignment === 'rule_expression') {
+                    $include_ids = $processRequestToken->getAssigneesFromExpression($request->input('form_data', []));
                 }
-                if ($assignmentRule === 'process_variable' && $request->has('form_data')) {
+                if ($bpmnAssignment === 'process_variable' && $request->has('form_data')) {
                     $include_ids = $processRequestToken->getUsersFromProcessVariable($request->input('form_data'));
                 }
             }
         }
 
-        if (!empty($include_ids)) {
+        if ($applyAssignableFilter) {
             $query->whereIn('id', $include_ids);
+        }
+
+        // Reassign modal only: assignable_for_task_id is sent by getReassignUsers(), not by other
+        // users_task_count consumers. Without this filter, the authenticated user can appear in the
+        // dropdown and reassign the task to themselves (unnecessary logs and invalid UX). Assignment
+        // rules and assignable user resolution above are unchanged; this only removes the session user
+        // from the final list.
+        if ($request->has('assignable_for_task_id')) {
+            $query->where('id', '!=', $request->user()->id);
         }
 
         $response = $query

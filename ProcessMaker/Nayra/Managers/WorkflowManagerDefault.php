@@ -202,8 +202,10 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     private function canRunInlineTask(Token $token, EntityInterface $element): bool
     {
         $instance = $token->getInstance();
-        $engine = $instance->getEngine();
-        if (!$engine->isInlineTaskExecutionEnabled()) {
+        // A persisted token, such as one copied during rollback, is not attached
+        // to a running engine and must be queued instead of executed inline.
+        $engine = $instance?->getEngine();
+        if ($engine === null || !$engine->isInlineTaskExecutionEnabled()) {
             return false;
         }
 
