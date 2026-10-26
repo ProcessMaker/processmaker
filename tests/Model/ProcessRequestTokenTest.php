@@ -715,10 +715,10 @@ class ProcessRequestTokenTest extends TestCase
         $this->assertEquals([$matchedUser->id], $result);
     }
 
-    public function testGetAssigneesFromExpressionThrowsWhenMatchingRuleIsUnresolved(): void
+    public function testGetAssigneesFromExpressionSkipsUnresolvedMatchingRuleWithoutFallingThroughToDefault(): void
     {
         $defaultUser = User::factory()->create(['status' => 'ACTIVE']);
-        $process = Process::factory()->create();
+        $process = Process::factory()->create(['manager_id' => []]);
         $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
 
         $rules = [
@@ -766,14 +766,16 @@ class ProcessRequestTokenTest extends TestCase
             ->method('getBpmnDefinition')
             ->willReturn($bpmnDefinition);
 
-        $this->expectException(\ProcessMaker\Exception\TaskDoesNotHaveUsersException::class);
+        $result = $token->getAssigneesFromExpression(['TestVar' => 5]);
 
-        $token->getAssigneesFromExpression(['TestVar' => 5]);
+        // Listing must not 500, and must not surface the Default Assignment
+        // as if the unresolved expression rule had been skipped.
+        $this->assertNotContains($defaultUser->id, $result);
     }
 
-    public function testGetAssigneesFromExpressionThrowsWhenDefaultRuleIsUnresolved(): void
+    public function testGetAssigneesFromExpressionSkipsUnresolvedDefaultRule(): void
     {
-        $process = Process::factory()->create();
+        $process = Process::factory()->create(['manager_id' => []]);
         $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
 
         $rules = [
@@ -815,8 +817,9 @@ class ProcessRequestTokenTest extends TestCase
             ->method('getBpmnDefinition')
             ->willReturn($bpmnDefinition);
 
-        $this->expectException(\ProcessMaker\Exception\TaskDoesNotHaveUsersException::class);
+        $result = $token->getAssigneesFromExpression(['TestVar' => 5]);
 
-        $token->getAssigneesFromExpression(['TestVar' => 5]);
+        $this->assertIsArray($result);
+        $this->assertSame([], $result);
     }
 }

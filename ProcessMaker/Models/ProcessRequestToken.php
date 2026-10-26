@@ -16,7 +16,6 @@ use ProcessMaker\Casts\MillisecondsToDateCast;
 use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
-use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\ImportExport\AssignmentRulesReconciliation;
 use ProcessMaker\Managers\DataManager;
@@ -1108,11 +1107,14 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 continue;
             }
 
+            // In reassign picker, skip unresolved rules without
+            // throwing. Runtime assignment still fails via getNextUserByRule.
+            // Mark as matched so we do not fall through to Default Assignment.
+            $hasExpressionMatch = true;
             if (AssignmentRulesReconciliation::isUnresolvedRule($assignment)) {
-                throw new TaskDoesNotHaveUsersException($this->element_name ?: $this->element_id);
+                continue;
             }
 
-            $hasExpressionMatch = true;
             $this->appendAssignmentAssignees($assignment, $userIds);
         }
 
@@ -1123,7 +1125,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 }
 
                 if (AssignmentRulesReconciliation::isUnresolvedRule($assignment)) {
-                    throw new TaskDoesNotHaveUsersException($this->element_name ?: $this->element_id);
+                    continue;
                 }
 
                 $this->appendAssignmentAssignees($assignment, $userIds);
