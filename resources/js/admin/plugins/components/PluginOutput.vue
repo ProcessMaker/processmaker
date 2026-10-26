@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch, onMounted, nextTick } from 'vue';
+import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue';
 
 const commandOutput = ref('');
 const status = ref('idle');
@@ -9,6 +9,18 @@ const props = defineProps({
   userId: {
     type: String,
     required: true,
+  },
+  outputTitle: {
+    type: String,
+    default: "",
+  },
+  successMessage: {
+    type: String,
+    default: "",
+  },
+  errorMessage: {
+    type: String,
+    default: "",
   },
 });
 const emit = defineEmits(['done', 'error', 'running']);
@@ -42,38 +54,55 @@ watch(commandOutput, () => {
   scrollToBottom();
 });
 
+const channelName = computed(
+  () => `ProcessMaker.Models.User.${props.userId}`
+);
+
+let pluginLogChannel = null;
+
+const onPluginLog = (event) => {
+  const statusEvent = event.status;
+  status.value = statusEvent;
+  if (!props.userId) {
+    return;
+  }
+  switch (statusEvent) {
+    case "starting":
+      commandOutput.value = event.message;
+      exitCode.value = 0;
+      emit("running", event);
+      break;
+    case "done":
+      output(event.message);
+      exitCode.value = 0;
+      emit("done", event);
+      break;
+    case "error":
+      output(event.message);
+      exitCode.value = 1;
+      status.value = "done";
+      emit("error", event);
+      break;
+    default:
+      output(event.message);
+      emit("running", event);
+      break;
+  }
+};
+
 onMounted(() => {
-    window.Echo.private(`ProcessMaker.Models.User.${props.userId}`).listen(
-      ".PluginLog",
-      (event) => {
-        const statusEvent = event.status;
-        status.value = statusEvent;
-        if (props.userId){
-            switch (statusEvent) {
-              case "starting":
-                commandOutput.value = event.message;
-                exitCode.value = 0;
-                emit('running', event);
-                break;
-              case "done":
-                output(event.message);
-                exitCode.value = 0;
-                emit('done', event);
-                break;
-              case "error":
-                output(event.message);
-                exitCode.value = 1;
-                status.value = "done";
-                emit('error', event);
-                break;
-              default:
-                output(event.message);
-                emit('running', event);
-                break;
-            }
-        }
-      }
-    );
+  if (!props.userId || !window.Echo) {
+    return;
+  }
+  pluginLogChannel = window.Echo.private(channelName.value);
+  pluginLogChannel.listen(".PluginLog", onPluginLog);
+});
+
+onUnmounted(() => {
+  if (pluginLogChannel) {
+    pluginLogChannel.stopListening(".PluginLog", onPluginLog);
+    pluginLogChannel = null;
+  }
 });
 </script>
 
@@ -90,7 +119,7 @@ onMounted(() => {
 <template>
   <div v-if="commandOutput !== '' || isRunning">
     <p>
-      {{ $t("Plugin Installation Output") }}
+      {{ outputTitle || $t("Plugin Installation Output") }}
       <i v-if="isRunning" class="fas fa-spinner fa-spin"></i>
     </p>
     <pre
@@ -103,11 +132,14 @@ onMounted(() => {
     <div v-if="status === 'done'">
       <p v-if="exitCode === 0">
         {{
-          $t("Plugin Successfully Installed. You can now close this window. ")
+          successMessage ||
+            $t("Plugin Successfully Installed. You can now close this window. ")
         }}
       </p>
       <div v-if="exitCode > 0" class="invalid-feedback d-block" role="alert">
-        {{ $t("Error Installing Plugin. See Output Above.") }}
+        {{
+          errorMessage || $t("Error Installing Plugin. See Output Above.")
+        }}
       </div>
     </div>
   </div>

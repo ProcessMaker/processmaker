@@ -151,6 +151,34 @@
         />
       </b-container>
     </pm-modal>
+
+    <pm-modal
+      ref="pluginProgressModal"
+      id="pluginProgressModal"
+      :title="progressTitle"
+      style="display: none"
+      :set-custom-buttons="true"
+      :custom-buttons="progressModalButtons"
+      @close="hideProgressModal"
+      @hidden="resetProgressModal"
+    >
+      <b-container class="mb-2">
+        <p v-if="progressWaiting" class="text-muted mb-2">
+          <i class="fas fa-spinner fa-spin" />
+          {{ $t("Please wait") }}
+        </p>
+        <plugin-output
+          :key="progressSessionKey"
+          :user-id="userId"
+          :output-title="progressOutputTitle"
+          :success-message="progressSuccessMessage"
+          :error-message="progressErrorMessage"
+          @done="onProgressJobDone"
+          @error="onProgressJobError"
+          @running="onProgressJobRunning"
+        />
+      </b-container>
+    </pm-modal>
   </div>
 </template>
 
@@ -182,6 +210,7 @@ const instance = getCurrentInstance();
 const $t = (...args) => instance?.proxy?.$t(...args);
 
 const createPlugin = ref(null);
+const pluginProgressModal = ref(null);
 const pagination = ref(null);
 
 const plugin = reactive({
@@ -446,6 +475,15 @@ const hidePluginModal = () => {
 };
 
 const pendingVerb = ref("installed");
+const progressTitle = ref("");
+const progressOutputTitle = ref("");
+const progressSuccessMessage = ref("");
+const progressErrorMessage = ref("");
+const progressSessionKey = ref(0);
+const progressIsRunning = ref(false);
+const progressIsDone = ref(false);
+const progressWaiting = ref(false);
+const progressModalButtons = ref([]);
 
 const save = () => {
   if (disabled.value) {
@@ -484,6 +522,9 @@ const onPluginJobRunning = () => {
 };
 
 const onPluginJobDone = () => {
+  if (!isRunning.value) {
+    return;
+  }
   isRunning.value = false;
   isDone.value = true;
   disabled.value = false;
@@ -491,6 +532,9 @@ const onPluginJobDone = () => {
 };
 
 const onPluginJobError = () => {
+  if (!isRunning.value) {
+    return;
+  }
   isRunning.value = false;
   isDone.value = true;
   disabled.value = false;
@@ -499,6 +543,114 @@ const onPluginJobError = () => {
 const reloadAfterPluginChange = (message) => {
   ProcessMaker.alert(message, "success", 5, true);
   window.location.reload();
+};
+
+const initProgressModalButtons = () => {
+  progressModalButtons.value = [
+    {
+      content: "Close",
+      action: "close",
+      variant: "secondary",
+      disabled: true,
+      hidden: false,
+    },
+  ];
+};
+
+const openPluginProgressModal = ({
+  title,
+  outputTitle,
+  successMessage,
+  errorMessage,
+  verb,
+}) => {
+  pendingVerb.value = verb;
+  progressTitle.value = title;
+  progressOutputTitle.value = outputTitle;
+  progressSuccessMessage.value = successMessage;
+  progressErrorMessage.value = errorMessage;
+  progressSessionKey.value += 1;
+  progressIsRunning.value = false;
+  progressIsDone.value = false;
+  progressWaiting.value = true;
+  initProgressModalButtons();
+  pluginProgressModal.value?.show();
+};
+
+const enableProgressModalClose = () => {
+  if (progressModalButtons.value.length) {
+    progressModalButtons.value[0].disabled = false;
+  }
+};
+
+const onProgressJobRunning = () => {
+  progressWaiting.value = false;
+  progressIsRunning.value = true;
+  progressIsDone.value = false;
+};
+
+const onProgressJobDone = () => {
+  progressWaiting.value = false;
+  progressIsRunning.value = false;
+  progressIsDone.value = true;
+  enableProgressModalClose();
+  reloadAfterPluginChange($t("The plugin was ") + pendingVerb.value + ".");
+};
+
+const onProgressJobError = () => {
+  progressWaiting.value = false;
+  progressIsRunning.value = false;
+  progressIsDone.value = true;
+  enableProgressModalClose();
+};
+
+const hideProgressModal = () => {
+  if (!progressIsDone.value) {
+    return;
+  }
+  pluginProgressModal.value?.hide();
+  fetch();
+};
+
+const resetProgressModal = () => {
+  progressTitle.value = "";
+  progressOutputTitle.value = "";
+  progressSuccessMessage.value = "";
+  progressErrorMessage.value = "";
+  progressIsRunning.value = false;
+  progressIsDone.value = false;
+  progressWaiting.value = false;
+  initProgressModalButtons();
+};
+
+const onPluginProgressApiError = (error, fallbackMessage) => {
+  progressWaiting.value = false;
+  progressIsRunning.value = false;
+  progressIsDone.value = true;
+  enableProgressModalClose();
+  const message =
+    _.get(error, "response.data.errors.delete.0") ||
+    _.get(error, "response.data.message") ||
+    fallbackMessage;
+  if (message) {
+    ProcessMaker.alert(message, "danger");
+  }
+};
+
+const confirmDeletePlugin = (item, onConfirm) => {
+  const showConfirm = ProcessMaker.confirmModal;
+  if (typeof showConfirm !== "function") {
+    ProcessMaker.alert($t("Unable to open confirmation dialog. Please refresh the page."), "danger");
+    return;
+  }
+  showConfirm(
+    $t("Caution!"),
+    $t("Are you sure you want to delete the plugin {{ name }}?", {
+      name: item.name,
+    }),
+    "",
+    onConfirm
+  );
 };
 
 const resetValues = () => {
@@ -553,48 +705,51 @@ const onNavigate = (action, row) => {
 };
 
 const doToggle = (item) => {
-  pendingVerb.value = "toggled";
+  openPluginProgressModal({
+    title: $t("Toggle Plugin") + `: ${item.name}`,
+    outputTitle: $t("Plugin Toggle Output"),
+    successMessage: $t(
+      "Plugin successfully updated. You can now close this window."
+    ),
+    errorMessage: $t("Error toggling plugin. See output above."),
+    verb: "toggled",
+  });
   ProcessMaker.apiClient
     .patch(`/plugins/${item.name}/toggle`, null, {
       baseURL: "/api/1.0/",
       timeout: 0,
     })
     .then(() => {
-      ProcessMaker.alert($t("Plugin toggle queued."), "success");
+      progressIsRunning.value = true;
     })
     .catch((error) => {
-      const message = _.get(error, "response.data.message", $t("Unable to toggle plugin."));
-      ProcessMaker.alert(message, "danger");
+      onPluginProgressApiError(error, $t("Unable to toggle plugin."));
     });
 };
 
 const doDelete = (item) => {
-  ProcessMaker.confirmModal(
-    $t("Caution!"),
-    $t("Are you sure you want to delete the plugin {{ name }}?", {
-      name: item.name,
-    }),
-    "",
-    () => {
-      pendingVerb.value = "deleted";
-      ProcessMaker.apiClient
-        .delete(`/plugins/${item.name}`, {
-          baseURL: "/api/1.0/",
-          timeout: 0,
-        })
-        .then(() => {
-          ProcessMaker.alert($t("Plugin uninstallation queued."), "success");
-        })
-        .catch((error) => {
-          const msg =
-            _.get(error, "response.data.errors.delete.0") ||
-            _.get(error, "response.data.message");
-          if (msg) {
-            ProcessMaker.alert(msg, "danger");
-          }
-        });
-    }
-  );
+  confirmDeletePlugin(item, () => {
+    openPluginProgressModal({
+      title: $t("Uninstall Plugin") + `: ${item.name}`,
+      outputTitle: $t("Plugin Uninstallation Output"),
+      successMessage: $t(
+        "Plugin successfully uninstalled. You can now close this window."
+      ),
+      errorMessage: $t("Error uninstalling plugin. See output above."),
+      verb: "deleted",
+    });
+    ProcessMaker.apiClient
+      .delete(`/plugins/${item.name}`, {
+        baseURL: "/api/1.0/",
+        timeout: 0,
+      })
+      .then(() => {
+        progressIsRunning.value = true;
+      })
+      .catch((error) => {
+        onPluginProgressApiError(error, $t("Unable to delete plugin."));
+      });
+  });
 };
 
 watch(isRunning, (val) => {
@@ -643,6 +798,7 @@ onMounted(() => {
   };
   ProcessMaker.EventBus.$on("api-data-loading", onApiDataLoading);
   ProcessMaker.EventBus.$on("api-data-no-results", onApiDataNoResults);
+  initProgressModalButtons();
   fetch();
 });
 
