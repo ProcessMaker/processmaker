@@ -11,6 +11,7 @@ const props = defineProps({
     required: true,
   },
 });
+const emit = defineEmits(['done', 'error', 'running']);
 
 const isRunning = computed(() => {
   return ["started", "starting", "saving", "running"].includes(status.value);
@@ -52,18 +53,22 @@ onMounted(() => {
               case "starting":
                 commandOutput.value = event.message;
                 exitCode.value = 0;
+                emit('running', event);
                 break;
               case "done":
                 output(event.message);
                 exitCode.value = 0;
+                emit('done', event);
                 break;
               case "error":
                 output(event.message);
                 exitCode.value = 1;
                 status.value = "done";
+                emit('error', event);
                 break;
               default:
                 output(event.message);
+                emit('running', event);
                 break;
             }
         }

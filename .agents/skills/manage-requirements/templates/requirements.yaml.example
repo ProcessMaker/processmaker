@@ -1,0 +1,23 @@
+specId: example-feature
+kind: component
+title: Example feature
+description: Short summary of what this catalog covers.
+config:
+  props:
+    - readonly
+    - allowedActions
+dependsOn: []
+requirements:
+  - id: FR-001
+    requirementType: Functional
+    title: Example behavior
+    statement: The component must expose the configured behavior without hard-coding a specific screen.
+    priority: High
+    status: Draft
+    tags: [example, reusable]
+    acceptanceCriteria:
+      - given: The component is configured with readonly true
+        when: The user opens the feature
+        then: Editing controls are disabled
+    traceability:
+      testCases: []

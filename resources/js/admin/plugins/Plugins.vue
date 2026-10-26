@@ -143,7 +143,12 @@
           <b-form-input v-model="plugin.tag" name="tag" :state="!getError('tag')" />
           <b-form-text>{{ $t("Tag must be a valid tag name") }}</b-form-text>
         </b-form-group>
-        <plugin-output :user-id="userId" />
+        <plugin-output
+          :user-id="userId"
+          @done="onPluginJobDone"
+          @error="onPluginJobError"
+          @running="onPluginJobRunning"
+        />
       </b-container>
     </pm-modal>
   </div>
@@ -440,35 +445,55 @@ const hidePluginModal = () => {
   fetch();
 };
 
+const pendingVerb = ref("installed");
+
 const save = () => {
   if (disabled.value) {
     return;
   }
   disabled.value = true;
   isRunning.value = true;
-  let method = "POST";
-  let url = "/plugins/install";
-  let verb = "installed";
-  if (plugin.description) {
-    verb = "toggled";
-  }
+  isDone.value = false;
+  pendingVerb.value = plugin.description ? "toggled" : "installed";
   ProcessMaker.apiClient({
-    method,
-    url,
+    method: "POST",
+    url: "/plugins/install",
     baseURL: "/api/1.0/",
+    timeout: 0,
     data: { ...plugin },
   })
     .then(() => {
-      reloadAfterPluginChange($t("The plugin was ") + verb + ".");
+      // Completion is driven by PluginLog events from the queued job.
+      isRunning.value = true;
     })
     .catch((error) => {
       disabled.value = false;
-      errors.value = _.get(error, "response.data.errors", {});
-    })
-    .finally(() => {
       isRunning.value = false;
       isDone.value = true;
+      errors.value = _.get(error, "response.data.errors", {});
+      const message = _.get(error, "response.data.message");
+      if (message) {
+        ProcessMaker.alert(message, "danger");
+      }
     });
+};
+
+const onPluginJobRunning = () => {
+  isRunning.value = true;
+  isDone.value = false;
+};
+
+const onPluginJobDone = () => {
+  isRunning.value = false;
+  isDone.value = true;
+  disabled.value = false;
+  reloadAfterPluginChange($t("The plugin was ") + pendingVerb.value + ".");
+};
+
+const onPluginJobError = () => {
+  isRunning.value = false;
+  isDone.value = true;
+  disabled.value = false;
 };
 
 const reloadAfterPluginChange = (message) => {
@@ -528,10 +553,18 @@ const onNavigate = (action, row) => {
 };
 
 const doToggle = (item) => {
+  pendingVerb.value = "toggled";
   ProcessMaker.apiClient
-    .patch(`/plugins/${item.name}/toggle`, { baseURL: "/api/1.0/" })
+    .patch(`/plugins/${item.name}/toggle`, null, {
+      baseURL: "/api/1.0/",
+      timeout: 0,
+    })
     .then(() => {
-      reloadAfterPluginChange($t("The plugin was toggled."));
+      ProcessMaker.alert($t("Plugin toggle queued."), "success");
+    })
+    .catch((error) => {
+      const message = _.get(error, "response.data.message", $t("Unable to toggle plugin."));
+      ProcessMaker.alert(message, "danger");
     });
 };
 
@@ -543,13 +576,19 @@ const doDelete = (item) => {
     }),
     "",
     () => {
+      pendingVerb.value = "deleted";
       ProcessMaker.apiClient
-        .delete(`/plugins/${item.name}`, { baseURL: "/api/1.0/" })
+        .delete(`/plugins/${item.name}`, {
+          baseURL: "/api/1.0/",
+          timeout: 0,
+        })
         .then(() => {
-          reloadAfterPluginChange($t("The plugin was deleted."));
+          ProcessMaker.alert($t("Plugin uninstallation queued."), "success");
         })
         .catch((error) => {
-          const msg = _.get(error, "response.data.errors.delete.0");
+          const msg =
+            _.get(error, "response.data.errors.delete.0") ||
+            _.get(error, "response.data.message");
           if (msg) {
             ProcessMaker.alert(msg, "danger");
           }

@@ -137,11 +137,13 @@ class PluginManager
         // Use absolute path: web SAPI (php-fpm) cwd is not the app root, so plain "artisan" fails.
         //TODO: Change artisan_binary() for base_path('artisan')
         $artisan = base_path('artisan');
-        $result = Process::env($this->artisanEnvironment())->run(array_filter([
-            php_binary(),
-            $artisan,
-            $command,
-        ]));
+        $result = Process::env($this->artisanEnvironment())
+            ->timeout(300)
+            ->run(array_filter([
+                php_binary(),
+                $artisan,
+                $command,
+            ]));
 
         if (!$result->successful()) {
             if (str_contains($result->output(), 'is not defined')) {
@@ -424,7 +426,7 @@ class PluginManager
         // Handle GITHUB_TOKEN if present
         $url = $this->prepareGitUrl($repoUrl);
 
-        $process = Process::run("git clone {$url} {$destination}");
+        $process = Process::timeout(300)->run(['git', 'clone', $url, $destination]);
 
         if (!$process->successful()) {
             $this->logError('Failed to clone repository: ' . $process->errorOutput(), $repoName, $userId);
@@ -441,7 +443,7 @@ class PluginManager
      */
     protected function pullRepository(string $pluginPath, string $repoName, ?int $userId = null): void
     {
-        $process = Process::path($pluginPath)->run('git pull');
+        $process = Process::path($pluginPath)->timeout(300)->run(['git', 'pull']);
 
         if (!$process->successful()) {
             $this->logError('Failed to pull repository: ' . $process->errorOutput(), $repoName, $userId);
@@ -459,7 +461,7 @@ class PluginManager
      */
     protected function checkoutBranch(string $pluginPath, string $branch, string $repoName, ?int $userId = null): void
     {
-        $process = Process::path($pluginPath)->run("git checkout {$branch}");
+        $process = Process::path($pluginPath)->timeout(120)->run(['git', 'checkout', $branch]);
 
         if (!$process->successful()) {
             $this->logError('Failed to checkout branch: ' . $process->errorOutput(), $repoName, $userId);
@@ -477,7 +479,7 @@ class PluginManager
      */
     protected function checkoutTag(string $pluginPath, string $tag, string $repoName, ?int $userId = null): void
     {
-        $process = Process::path($pluginPath)->run("git checkout tags/{$tag}");
+        $process = Process::path($pluginPath)->timeout(120)->run(['git', 'checkout', "tags/{$tag}"]);
 
         if (!$process->successful()) {
             $this->logError('Failed to checkout tag: ' . $process->errorOutput(), $repoName, $userId);
@@ -577,7 +579,7 @@ class PluginManager
      */
     protected function fetchBranches(string $pluginPath, string $repoName, ?int $userId = null): void
     {
-        $process = Process::path($pluginPath)->run('git branch -a');
+        $process = Process::path($pluginPath)->timeout(60)->run(['git', 'branch', '-a']);
         if (!$process->successful()) {
             $this->logError('Failed to fetch branches: ' . $process->errorOutput(), $repoName, $userId);
             throw new RuntimeException('Failed to fetch branches: ' . $process->errorOutput());
@@ -594,8 +596,12 @@ class PluginManager
     protected function runComposerInstall(string $pluginPath, string $repoName, ?int $userId = null): void
     {
         set_time_limit(0);
-        //TODO: Check if needs to be export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin
-        $process = Process::path($pluginPath)->run('export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin && composer install --no-interaction');
+        $process = Process::path($pluginPath)
+            ->forever()
+            ->env([
+                'PATH' => '/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:' . (getenv('PATH') ?: ''),
+            ])
+            ->run(['composer', 'install', '--no-interaction']);
 
         if (!$process->successful()) {
             $this->logError('Failed to run composer install: ' . $process->errorOutput(), $repoName, $userId);

@@ -24,7 +24,9 @@
         "stats": "STATS=1 NODE_OPTIONS=\"--max-old-space-size=8000\" mix",
         "vite:dev": "vite",
         "vite:build": "vite build",
-        "build:all": "npm run development && npm run vite:build"
+        "build:all": "npm run development && npm run vite:build",
+        "check:requirements": "node .agents/skills/manage-requirements/scripts/check-requirements.js",
+        "validate:requirements": "node .agents/skills/manage-requirements/scripts/validate-requirements.js"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.15.8",

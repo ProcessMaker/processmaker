@@ -1,0 +1,5 @@
+# Optional local/CI extras for the Laya quality job.
+# Schema/heuristic gates use requirements-schema.txt (pinned PyYAML).
+PyYAML==6.0.3
+laya>=0.3.21,<0.4
+laya-evals>=0.1.0

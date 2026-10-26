@@ -5,8 +5,10 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Jobs\InstallPlugin;
+use ProcessMaker\Jobs\TogglePlugin;
+use ProcessMaker\Jobs\UninstallPlugin;
 use ProcessMaker\Managers\PluginManager;
-use RuntimeException;
 
 class PluginController extends Controller
 {
@@ -30,44 +32,48 @@ class PluginController extends Controller
             'tag' => 'prohibits:branch|nullable|string',
         ]);
 
-        try {
-            if ($request->hasFile('zip')) {
-                $zipFile = $request->file('zip');
-                $tmpPath = $zipFile->store('plugin-uploads', 'local');
-                $fullPath = storage_path('app/' . $tmpPath);
-                $this->manager->installFromZip($fullPath, $request->user()->id);
-            } else {
-                $this->manager->install($request->input('url'), $request->input('branch'), $request->input('tag'), $request->user()->id);
-            }
+        $userId = $request->user()->id;
 
-            return response()->json(['message' => 'Plugin installed successfully']);
-        } catch (RuntimeException $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
+        if ($request->hasFile('zip')) {
+            $tmpPath = $request->file('zip')->store('plugin-uploads', 'local');
+            $fullPath = storage_path('app/' . $tmpPath);
+
+            InstallPlugin::dispatch(
+                userId: $userId,
+                zipPath: $fullPath,
+            );
+        } else {
+            InstallPlugin::dispatch(
+                userId: $userId,
+                url: $request->input('url'),
+                branch: $request->input('branch'),
+                tag: $request->input('tag'),
+            );
         }
+
+        return response()->json([
+            'queued' => true,
+            'message' => 'Plugin installation queued',
+        ]);
     }
 
     public function destroy(string $name, Request $request): JsonResponse
     {
-        try {
-            $this->manager->uninstall($name, $request->user()->id);
+        UninstallPlugin::dispatch($name, $request->user()->id);
 
-            return response()->json(['message' => 'Plugin uninstalled successfully']);
-        } catch (RuntimeException $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
-        }
+        return response()->json([
+            'queued' => true,
+            'message' => 'Plugin uninstallation queued',
+        ]);
     }
 
-    public function toggle(string $name): JsonResponse
+    public function toggle(string $name, Request $request): JsonResponse
     {
-        try {
-            $enabled = $this->manager->toggle($name);
+        TogglePlugin::dispatch($name, $request->user()->id);
 
-            return response()->json([
-                'enabled' => $enabled,
-                'message' => $enabled ? 'Plugin enabled' : 'Plugin disabled',
-            ]);
-        } catch (RuntimeException $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
-        }
+        return response()->json([
+            'queued' => true,
+            'message' => 'Plugin toggle queued',
+        ]);
     }
 }
