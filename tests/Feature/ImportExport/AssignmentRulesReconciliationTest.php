@@ -55,16 +55,28 @@ class AssignmentRulesReconciliationTest extends TestCase
     {
         $target = User::factory()->create(['username' => 'ignacio', 'status' => 'INACTIVE']);
 
-        $rule = (object) [
-            'type' => 'user',
-            'assignee' => 999,
-            'expression' => 'x==true',
-            'assignmentName' => 'ignacio aranda (ignacio - Inactive)',
-        ];
+        foreach ([
+            'ignacio aranda (ignacio - Inactive)',
+            'ignacio aranda (ignacio - inactivo)',
+            'ignacio aranda (ignacio - inactif)',
+            'ignacio aranda (ignacio - Inaktiv)',
+        ] as $assignmentName) {
+            $rule = (object) [
+                'type' => 'user',
+                'assignee' => 999,
+                'expression' => 'x==true',
+                'assignmentName' => $assignmentName,
+            ];
 
-        $reconciled = AssignmentRulesReconciliation::reconcileRuleAfterImport($rule);
+            $reconciled = AssignmentRulesReconciliation::reconcileRuleAfterImport($rule);
 
-        $this->assertSame($target->id, $reconciled->assignee);
+            $this->assertSame(
+                $target->id,
+                $reconciled->assignee,
+                "Failed to rebind from assignmentName: {$assignmentName}"
+            );
+            $this->assertFalse(property_exists($reconciled, 'unresolved'));
+        }
     }
 
     public function testReconcileMarksUnresolvedWhenUsernameNotFound(): void
@@ -138,10 +150,22 @@ class AssignmentRulesReconciliationTest extends TestCase
 
     public function testUsernameFromAssignmentName(): void
     {
+        AssignmentRulesReconciliation::clearInactiveStatusLabelCache();
+
         $this->assertSame('ignacio', AssignmentRulesReconciliation::usernameFromAssignmentName('ignacio aranda (ignacio)'));
         $this->assertSame('agus', AssignmentRulesReconciliation::usernameFromAssignmentName('agus ara pelle (agus)'));
+        $this->assertSame('ignacio', AssignmentRulesReconciliation::usernameFromAssignmentName('ignacio aranda (ignacio - Inactive)'));
+        // SelectUserGroup uses $t('Inactive'); Spanish/French/German bake the
+        // translated suffix into assignmentName at design time.
+        $this->assertSame('ignacio', AssignmentRulesReconciliation::usernameFromAssignmentName('ignacio aranda (ignacio - inactivo)'));
+        $this->assertSame('ignacio', AssignmentRulesReconciliation::usernameFromAssignmentName('ignacio aranda (ignacio - inactif)'));
+        $this->assertSame('ignacio', AssignmentRulesReconciliation::usernameFromAssignmentName('ignacio aranda (ignacio - Inaktiv)'));
         $this->assertNull(AssignmentRulesReconciliation::usernameFromAssignmentName('Ignacio Aranda'));
         $this->assertNull(AssignmentRulesReconciliation::usernameFromAssignmentName(null));
+
+        $labels = AssignmentRulesReconciliation::inactiveStatusLabels();
+        $this->assertContains('Inactive', $labels);
+        $this->assertContains('inactivo', $labels);
     }
 
     public function testIsUnresolvedRule(): void

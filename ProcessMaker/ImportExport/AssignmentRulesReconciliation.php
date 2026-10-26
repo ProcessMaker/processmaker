@@ -26,6 +26,13 @@ class AssignmentRulesReconciliation
     private const HUMAN_TASK_TAGS = ['task', 'userTask', 'manualTask'];
 
     /**
+     * Cached labels for SelectUserGroup's inactive suffix ($t('Inactive')).
+     *
+     * @var array<int, string>|null
+     */
+    private static ?array $inactiveStatusLabels = null;
+
+    /**
      * @return array<int, object|array<string, mixed>>
      */
     public static function decodeRules(?string $json): array
@@ -96,7 +103,9 @@ class AssignmentRulesReconciliation
 
     /**
      * Extract the username from "Full Name (username)", tolerating the
-     * " - Inactive" suffix SelectUserGroup appends for inactive users.
+     * inactive suffix SelectUserGroup appends via $t('Inactive')
+     * The assignmentName was written in whatever locale the designer used,
+     * so import must recognize every available translation of that key.
      */
     public static function usernameFromAssignmentName(mixed $assignmentName): ?string
     {
@@ -104,9 +113,55 @@ class AssignmentRulesReconciliation
             return null;
         }
 
-        $username = trim(preg_replace('/\s+-\s+Inactive$/i', '', trim($matches[1])));
+        $username = self::stripInactiveStatusSuffix(trim($matches[1]));
 
         return $username !== '' ? $username : null;
+    }
+
+    /**
+     * Labels used by SelectUserGroup for inactive users: " - " + $t('Inactive').
+     *
+     * @return array<int, string>
+     */
+    public static function inactiveStatusLabels(): array
+    {
+        if (self::$inactiveStatusLabels !== null) {
+            return self::$inactiveStatusLabels;
+        }
+
+        $labels = ['Inactive'];
+        foreach (glob(resource_path('lang/*.json')) ?: [] as $file) {
+            $locale = basename($file, '.json');
+            $translated = trans('Inactive', [], $locale);
+            if (is_string($translated) && $translated !== '') {
+                $labels[] = $translated;
+            }
+        }
+
+        self::$inactiveStatusLabels = array_values(array_unique($labels));
+
+        return self::$inactiveStatusLabels;
+    }
+
+    /**
+     * Reset cached inactive labels (for tests).
+     */
+    public static function clearInactiveStatusLabelCache(): void
+    {
+        self::$inactiveStatusLabels = null;
+    }
+
+    private static function stripInactiveStatusSuffix(string $username): string
+    {
+        foreach (self::inactiveStatusLabels() as $label) {
+            $quoted = preg_quote($label, '/');
+            $stripped = preg_replace('/\s+-\s+' . $quoted . '$/iu', '', $username);
+            if (is_string($stripped) && $stripped !== $username) {
+                return trim($stripped);
+            }
+        }
+
+        return $username;
     }
 
     /**
