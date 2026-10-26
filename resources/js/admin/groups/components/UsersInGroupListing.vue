@@ -15,6 +15,9 @@
             >   <template slot="username" slot-scope="props">
                   <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.username }}</span>
                 </template>
+                <template slot="fullname" slot-scope="props">
+                  <span>{{ props.rowData.fullname }}</span>
+                </template>
                 <template slot="actions" slot-scope="props">
                     <div class="actions">
                         <div class="popout">
@@ -44,8 +47,10 @@
 </template>
 
 <script>
-  import datatableMixin from "../../../components/common/mixins/datatable";
+  import escapeHtml from "lodash/escape";
   import { createUniqIdsMixin } from "vue-uniq-ids";
+
+  import datatableMixin from "../../../components/common/mixins/datatable";
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
@@ -74,7 +79,7 @@
           },
           {
             title: () => this.$t("Full Name"),
-            name: "fullname",
+            name: "__slot:fullname",
             sortField: "firstname"
           },
           {
@@ -114,7 +119,7 @@
         let that = this;
         ProcessMaker.confirmModal(
           this.$t("Caution!"),
-          this.$t('Are you sure you want to delete {{item}}?', {item: data.fullname}),
+          this.$t('Are you sure you want to delete {{item}}?', {item: escapeHtml(data.fullname)}),
           null,
           function () {
             ProcessMaker.apiClient

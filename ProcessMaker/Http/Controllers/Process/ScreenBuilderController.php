@@ -43,6 +43,7 @@ class ScreenBuilderController extends Controller
 
         return view('processes.screen-builder.screen', [
             'screen' => $screen,
+            'type' => strtoupper($screen->type ?? 'FORM'),
             'manager' => $manager,
             'autoSaveDelay' => config('versions.delay.process', 5000),
             'isVersionsInstalled' => PackageHelper::isPmPackageVersionsInstalled(),

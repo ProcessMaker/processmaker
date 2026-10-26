@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Adapted from database/processes/templates/ScriptTasksWithUser.bpmn for SEQ-01. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" targetNamespace="http://processmaker.com/tests/inline-task-execution">
+  <bpmn:process id="inline_sequential_script_service" name="SEQ-01 Sequential Script and Service Tasks" isExecutable="true">
+    <bpmn:startEvent id="start" name="Start">
+      <bpmn:outgoing>flow_start_user</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="user_task" name="Release Inline Chain" pm:assignment="requester">
+      <bpmn:incoming>flow_start_user</bpmn:incoming>
+      <bpmn:outgoing>flow_user_a</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:scriptTask id="script_a" name="Script A" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_user_a</bpmn:incoming>
+      <bpmn:outgoing>flow_a_b</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['seq_script_a' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="script_b" name="Script B" scriptFormat="application/x-php">
+      <bpmn:incoming>flow_a_b</bpmn:incoming>
+      <bpmn:outgoing>flow_b_c</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php return ['seq_script_b' => true];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:serviceTask id="service_c" name="Service C" implementation="inline-test-service-c">
+      <bpmn:incoming>flow_b_c</bpmn:incoming>
+      <bpmn:outgoing>flow_c_end</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="end" name="End">
+      <bpmn:incoming>flow_c_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_start_user" sourceRef="start" targetRef="user_task" />
+    <bpmn:sequenceFlow id="flow_user_a" sourceRef="user_task" targetRef="script_a" />
+    <bpmn:sequenceFlow id="flow_a_b" sourceRef="script_a" targetRef="script_b" />
+    <bpmn:sequenceFlow id="flow_b_c" sourceRef="script_b" targetRef="service_c" />
+    <bpmn:sequenceFlow id="flow_c_end" sourceRef="service_c" targetRef="end" />
+  </bpmn:process>
+</bpmn:definitions>

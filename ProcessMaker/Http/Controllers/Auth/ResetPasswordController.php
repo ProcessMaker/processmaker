@@ -4,7 +4,6 @@ namespace ProcessMaker\Http\Controllers\Auth;
 
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\User;
@@ -108,7 +107,10 @@ class ResetPasswordController extends Controller
             'token' => 'required',
             'email' => 'required|email',
             'username' => 'required|string',
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'password' => array_merge(
+                array_filter(User::passwordRules()),
+                ['confirmed']
+            ),
         ];
     }
 

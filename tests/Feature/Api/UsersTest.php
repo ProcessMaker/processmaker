@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
@@ -70,6 +71,18 @@ class UsersTest extends TestCase
             'birthdate' => $faker->dateTimeThisCentury()->format('Y-m-d'),
             'password' => $this->makePassword(),
         ];
+    }
+
+    private function getSelfServiceUpdateData(User $user, array $overrides = []): array
+    {
+        return array_merge([
+            'username' => $user->username,
+            'firstname' => $user->firstname,
+            'lastname' => $user->lastname,
+            'title' => $user->title,
+            'email' => $user->email,
+            'status' => $user->status,
+        ], $overrides);
     }
 
     protected function withUserSetup()
@@ -444,6 +457,51 @@ class UsersTest extends TestCase
 
         // Check that it has changed
         $this->assertNotEquals($verify, $verify_new);
+    }
+
+    public function testAdministratorCanUpdateNewNonSsoUserMoreThanOnce(): void
+    {
+        $response = $this->apiCall('POST', self::API_TEST_URL, [
+            'username' => 'new-non-sso-user',
+            'firstname' => 'New',
+            'lastname' => 'User',
+            'email' => Faker::create()->email(),
+            'status' => 'ACTIVE',
+            'password' => $this->makePassword(),
+        ]);
+
+        $response->assertStatus(201);
+        $user = User::findOrFail($response->json('id'));
+        $this->assertNull($user->meta);
+        $url = self::API_TEST_URL . '/' . $user->id;
+        $metadata = ['customProfileProperty' => null];
+
+        $response = $this->apiCall(
+            'PUT',
+            $url,
+            $this->getSelfServiceUpdateData($user, ['meta' => $metadata])
+        );
+
+        $response->assertStatus(204);
+        $user->refresh();
+        $this->assertNotNull($user->meta);
+        $this->assertTrue(property_exists($user->meta, 'customProfileProperty'));
+        $this->assertFalse(property_exists($user->meta, 'authenticationType'));
+
+        $response = $this->apiCall(
+            'PUT',
+            $url,
+            $this->getSelfServiceUpdateData($user, [
+                'title' => 'Updated Twice',
+                'meta' => $metadata,
+            ])
+        );
+
+        $response->assertStatus(204);
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'title' => 'Updated Twice',
+        ]);
     }
 
     /**
@@ -823,14 +881,17 @@ class UsersTest extends TestCase
         // Validate the header status code
         $response->assertStatus(403);
 
-        //  With permission
+        // With both permissions
+        $this->user->giveDirectPermission('edit-personal-profile');
         $this->user->giveDirectPermission('edit-user-and-password');
         $this->user->save();
         $this->user->refresh();
         $this->flushSession();
 
-        $updateData = $this->getUpdatedData();
-        $updateData['email'] = $verify['email'];
+        $updateData = $this->getSelfServiceUpdateData($this->user, [
+            'username' => 'newusername',
+            'firstname' => 'Updated',
+        ]);
 
         // Post saved success
         $response = $this->apiCall('PUT', $url, $updateData);
@@ -843,6 +904,418 @@ class UsersTest extends TestCase
 
         // Check that it has changed
         $this->assertNotEquals($verify, $verifyNew);
+    }
+
+    public function testUserWithoutProfilePermissionCannotUpdateTheirOwnProfile(): void
+    {
+        $this->user = User::factory()->create(['is_administrator' => false, 'status' => 'ACTIVE']);
+        $this->flushSession();
+        $originalFirstname = $this->user->firstname;
+
+        $response = $this->apiCall(
+            'PUT',
+            self::API_TEST_URL . '/' . $this->user->id,
+            $this->getSelfServiceUpdateData($this->user, ['firstname' => 'Unauthorized'])
+        );
+
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('users', [
+            'id' => $this->user->id,
+            'firstname' => $originalFirstname,
+        ]);
+    }
+
+    public function testUserWithProfilePermissionCanUpdateAllowedFields(): void
+    {
+        $this->user = User::factory()->create(['is_administrator' => false, 'status' => 'ACTIVE']);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+
+        $response = $this->apiCall(
+            'PUT',
+            self::API_TEST_URL . '/' . $this->user->id,
+            $this->getSelfServiceUpdateData($this->user, [
+                'firstname' => 'Éléazar',
+                'lastname' => 'Reséndez',
+                'title' => 'Research & Development',
+            ])
+        );
+
+        $response->assertStatus(204);
+        $this->assertDatabaseHas('users', [
+            'id' => $this->user->id,
+            'firstname' => 'Éléazar',
+            'lastname' => 'Reséndez',
+            'title' => 'Research & Development',
+        ]);
+    }
+
+    public function testSelfServiceUpdateRejectsDisallowedFieldsWithoutPersistingChanges(): void
+    {
+        $this->user = User::factory()->create(['is_administrator' => false, 'status' => 'ACTIVE']);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+        $originalFirstname = $this->user->firstname;
+        $disallowedFields = [
+            'manager_id' => User::factory()->create()->id,
+            'delegation_user_id' => User::factory()->create()->id,
+            'schedule' => ['monday' => []],
+            'force_change_password' => true,
+            'is_administrator' => true,
+        ];
+
+        foreach ($disallowedFields as $field => $value) {
+            $response = $this->apiCall(
+                'PUT',
+                self::API_TEST_URL . '/' . $this->user->id,
+                $this->getSelfServiceUpdateData($this->user, [
+                    'firstname' => 'Should Not Persist',
+                    $field => $value,
+                ])
+            );
+
+            $response->assertStatus(403);
+        }
+
+        $this->assertDatabaseHas('users', [
+            'id' => $this->user->id,
+            'firstname' => $originalFirstname,
+            'manager_id' => null,
+            'delegation_user_id' => null,
+            'force_change_password' => false,
+            'is_administrator' => false,
+        ]);
+    }
+
+    public function testSelfServiceUpdateRejectsServerManagedMetadataWithoutPersistingChanges(): void
+    {
+        $this->user = User::factory()->create([
+            'is_administrator' => false,
+            'status' => 'ACTIVE',
+            'meta' => [
+                'authenticationType' => 'ldap',
+                'serverManagedSetting' => 'preserve-me',
+            ],
+        ]);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+        $originalFirstname = $this->user->firstname;
+        $originalEmail = $this->user->email;
+
+        foreach (['authenticationType', 'serverManagedSetting'] as $metaField) {
+            $response = $this->apiCall(
+                'PUT',
+                self::API_TEST_URL . '/' . $this->user->id,
+                $this->getSelfServiceUpdateData($this->user, [
+                    'firstname' => 'Should Not Persist',
+                    'email' => 'changed@example.com',
+                    'valpassword' => 'oneOnlyPassword',
+                    'meta' => [
+                        $metaField => null,
+                        'disableRecommendations' => true,
+                    ],
+                ])
+            );
+
+            $response->assertStatus(403);
+        }
+
+        $user = $this->user->fresh();
+        $this->assertSame($originalFirstname, $user->firstname);
+        $this->assertSame($originalEmail, $user->email);
+        $this->assertSame('ldap', $user->meta->authenticationType);
+        $this->assertSame('preserve-me', $user->meta->serverManagedSetting);
+        $this->assertFalse(property_exists($user->meta, 'disableRecommendations'));
+    }
+
+    public function testSelfServiceUpdateOnlyChangesDisableRecommendationsMetadata(): void
+    {
+        $this->user = User::factory()->create([
+            'is_administrator' => false,
+            'status' => 'ACTIVE',
+            'meta' => [
+                'authenticationType' => 'ldap',
+                'serverManagedSetting' => 'preserve-me',
+            ],
+        ]);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+        $url = self::API_TEST_URL . '/' . $this->user->id;
+
+        $response = $this->apiCall(
+            'PUT',
+            $url,
+            $this->getSelfServiceUpdateData($this->user, [
+                'meta' => ['disableRecommendations' => true],
+            ])
+        );
+
+        $response->assertStatus(204);
+        $user = $this->user->fresh();
+        $this->assertTrue($user->meta->disableRecommendations);
+        $this->assertSame('ldap', $user->meta->authenticationType);
+        $this->assertSame('preserve-me', $user->meta->serverManagedSetting);
+
+        $response = $this->apiCall(
+            'PUT',
+            $url,
+            $this->getSelfServiceUpdateData($user, [
+                'meta' => ['disableRecommendations' => false],
+            ])
+        );
+
+        $response->assertStatus(204);
+        $user = $this->user->fresh();
+        $this->assertFalse(property_exists($user->meta, 'disableRecommendations'));
+        $this->assertSame('ldap', $user->meta->authenticationType);
+        $this->assertSame('preserve-me', $user->meta->serverManagedSetting);
+    }
+
+    public function testSelfServiceUpdateWithoutMetaPreservesServerManagedMetadata(): void
+    {
+        $this->user = User::factory()->create([
+            'is_administrator' => false,
+            'status' => 'ACTIVE',
+            'password' => Hash::make('oneOnlyPassword'),
+            'meta' => [
+                'authenticationType' => 'ldap',
+                'serverManagedSetting' => 'preserve-me',
+            ],
+        ]);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+        $url = self::API_TEST_URL . '/' . $this->user->id;
+        $originalEmail = $this->user->email;
+
+        $response = $this->apiCall(
+            'PUT',
+            $url,
+            $this->getSelfServiceUpdateData($this->user, [
+                'firstname' => 'Updated Without Meta',
+            ])
+        );
+
+        $response->assertStatus(204);
+        $user = $this->user->fresh();
+        $this->assertSame('Updated Without Meta', $user->firstname);
+        $this->assertSame('ldap', $user->meta->authenticationType);
+        $this->assertSame('preserve-me', $user->meta->serverManagedSetting);
+
+        $response = $this->apiCall(
+            'PUT',
+            $url,
+            $this->getSelfServiceUpdateData($user, [
+                'email' => 'changed@example.com',
+                'valpassword' => 'oneOnlyPassword',
+            ])
+        );
+
+        $response->assertStatus(422)->assertJsonValidationErrors('email');
+        $user = $this->user->fresh();
+        $this->assertSame($originalEmail, $user->email);
+        $this->assertSame('ldap', $user->meta->authenticationType);
+        $this->assertSame('preserve-me', $user->meta->serverManagedSetting);
+    }
+
+    public function testSelfServiceUpdateValidatesDisableRecommendationsAsBoolean(): void
+    {
+        $this->user = User::factory()->create(['is_administrator' => false, 'status' => 'ACTIVE']);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+
+        $response = $this->apiCall(
+            'PUT',
+            self::API_TEST_URL . '/' . $this->user->id,
+            $this->getSelfServiceUpdateData($this->user, [
+                'meta' => ['disableRecommendations' => 'not-a-boolean'],
+            ])
+        );
+
+        $response->assertStatus(422)->assertJsonValidationErrors('meta.disableRecommendations');
+    }
+
+    public function testLdapUserCannotBypassEmailRestrictionWithAllowedMetadata(): void
+    {
+        $this->user = User::factory()->create([
+            'is_administrator' => false,
+            'status' => 'ACTIVE',
+            'password' => Hash::make('oneOnlyPassword'),
+            'meta' => [
+                'authenticationType' => 'ldap',
+                'serverManagedSetting' => 'preserve-me',
+            ],
+        ]);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+        $originalEmail = $this->user->email;
+
+        $response = $this->apiCall(
+            'PUT',
+            self::API_TEST_URL . '/' . $this->user->id,
+            $this->getSelfServiceUpdateData($this->user, [
+                'email' => 'changed@example.com',
+                'valpassword' => 'oneOnlyPassword',
+                'meta' => ['disableRecommendations' => true],
+            ])
+        );
+
+        $response->assertStatus(422)->assertJsonValidationErrors('email');
+        $user = $this->user->fresh();
+        $this->assertSame($originalEmail, $user->email);
+        $this->assertSame('ldap', $user->meta->authenticationType);
+        $this->assertSame('preserve-me', $user->meta->serverManagedSetting);
+        $this->assertFalse(property_exists($user->meta, 'disableRecommendations'));
+    }
+
+    public function testAdministratorCanUpdateServerManagedMetadata(): void
+    {
+        $targetUser = User::factory()->create([
+            'status' => 'ACTIVE',
+            'meta' => ['authenticationType' => 'ldap'],
+        ]);
+
+        $response = $this->apiCall(
+            'PUT',
+            self::API_TEST_URL . '/' . $targetUser->id,
+            $this->getSelfServiceUpdateData($targetUser, [
+                'meta' => [
+                    'authenticationType' => 'saml',
+                    'serverManagedSetting' => 'updated-by-admin',
+                ],
+            ])
+        );
+
+        $response->assertStatus(204);
+        $targetUser->refresh();
+        $this->assertSame('saml', $targetUser->meta->authenticationType);
+        $this->assertSame('updated-by-admin', $targetUser->meta->serverManagedSetting);
+    }
+
+    public function testUsernameUpdateRequiresCredentialPermission(): void
+    {
+        $this->user = User::factory()->create(['is_administrator' => false, 'status' => 'ACTIVE']);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+        $originalUsername = $this->user->username;
+        $payload = $this->getSelfServiceUpdateData($this->user, ['username' => 'four32745-username']);
+
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/' . $this->user->id, $payload);
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('users', ['id' => $this->user->id, 'username' => $originalUsername]);
+
+        $this->user->giveDirectPermission('edit-user-and-password');
+        $this->user->refresh();
+        $this->flushSession();
+
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/' . $this->user->id, $payload);
+        $response->assertStatus(204);
+        $this->assertDatabaseHas('users', ['id' => $this->user->id, 'username' => 'four32745-username']);
+    }
+
+    public function testPasswordUpdateRequiresCredentialPermission(): void
+    {
+        $this->user = User::factory()->create(['is_administrator' => false, 'status' => 'ACTIVE']);
+        $this->user->giveDirectPermission('edit-personal-profile');
+        $this->user->refresh();
+        $this->flushSession();
+        $password = $this->makePassword();
+        $originalPassword = $this->user->password;
+        $payload = $this->getSelfServiceUpdateData($this->user, ['password' => $password]);
+
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/' . $this->user->id, $payload);
+        $response->assertStatus(403);
+        $this->assertSame($originalPassword, $this->user->fresh()->password);
+
+        $this->user->giveDirectPermission('edit-user-and-password');
+        $this->user->refresh();
+        $this->flushSession();
+
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/' . $this->user->id, $payload);
+        $response->assertStatus(204);
+        $this->assertTrue(Hash::check($password, $this->user->fresh()->password));
+    }
+
+    public function testUserEditorCanUpdateAnotherUserThroughAdministrativeFlow(): void
+    {
+        $this->user = User::factory()->create(['is_administrator' => false, 'status' => 'ACTIVE']);
+        $this->user->giveDirectPermission('edit-users');
+        $this->user->refresh();
+        $this->flushSession();
+        $targetUser = User::factory()->create(['status' => 'ACTIVE']);
+
+        $response = $this->apiCall(
+            'PUT',
+            self::API_TEST_URL . '/' . $targetUser->id,
+            $this->getSelfServiceUpdateData($targetUser, [
+                'firstname' => 'Administrative',
+                'manager_id' => $this->user->id,
+            ])
+        );
+
+        $response->assertStatus(204);
+        $this->assertDatabaseHas('users', [
+            'id' => $targetUser->id,
+            'firstname' => 'Administrative',
+            'manager_id' => $this->user->id,
+        ]);
+    }
+
+    public function testUserProfileMarkupIsRejectedWithoutChangingStoredValues(): void
+    {
+        $user = User::factory()->create([
+            'firstname' => 'Original First',
+            'lastname' => 'Original Last',
+            'title' => 'Original Title',
+            'status' => 'ACTIVE',
+        ]);
+        $payloads = [
+            ['firstname', '<<img>img src=x onerror=alert(document.domain)>'],
+            ['lastname', '<script>alert(document.domain)</script>'],
+            ['title', '<svg onload=alert(document.domain)>'],
+            ['title', '<iframe src=javascript:alert(document.domain)>'],
+            ['title', '<img src=x onerror=alert(document.domain)>'],
+        ];
+
+        foreach ($payloads as [$field, $markup]) {
+            $response = $this->apiCall(
+                'PUT',
+                self::API_TEST_URL . '/' . $user->id,
+                $this->getSelfServiceUpdateData($user, [$field => $markup])
+            );
+
+            $response->assertStatus(422)->assertJsonValidationErrors($field);
+        }
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'firstname' => 'Original First',
+            'lastname' => 'Original Last',
+            'title' => 'Original Title',
+        ]);
+    }
+
+    public function testUserCreationRejectsProfileMarkup(): void
+    {
+        $response = $this->apiCall('POST', self::API_TEST_URL, [
+            'username' => 'four32745qa',
+            'firstname' => '<<img>img src=x onerror=alert(document.domain)>',
+            'lastname' => 'FOUR-32745 QA',
+            'title' => '<svg onload=alert(document.domain)>',
+            'email' => 'four32745qa@example.invalid',
+            'status' => 'ACTIVE',
+            'password' => $this->makePassword(),
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors(['firstname', 'title']);
+        $this->assertDatabaseMissing('users', ['username' => 'four32745qa']);
     }
 
     public function testDisableRecommendations()
@@ -1005,6 +1478,194 @@ class UsersTest extends TestCase
             'filter' => $user->firstname,
         ]);
         $result->assertStatus(200);
+    }
+
+    public function testPostUsersTaskCountExcludesAuthenticatedUserForReassignment()
+    {
+        config(['app.reassign_restrict_to_assignable_users' => true]);
+
+        $admin = $this->user;
+        $otherManager = User::factory()->create(['status' => 'ACTIVE']);
+
+        $bpmn = file_get_contents(__DIR__ . '/processes/AssignmentByProcessVariable.bpmn');
+        $bpmn = str_replace('[ASSIGNMENT]', 'requester', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_USERS]', '', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_GROUPS]', '', $bpmn);
+        $bpmn = str_replace('[IS_SELF_SERVICE]', 'false', $bpmn);
+        $bpmn = str_replace('[ASSIGNMENT_RULES]', '', $bpmn);
+
+        $process = Process::factory()->create([
+            'manager_id' => [$admin->id, $otherManager->id],
+            'bpmn' => $bpmn,
+        ]);
+
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $admin->id,
+        ]);
+
+        $task = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'task1_node',
+            'user_id' => $admin->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        $result = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'assignable_for_task_id' => $task->id,
+        ]);
+
+        $result->assertStatus(200);
+        $userIds = array_column($result->json()['data'], 'id');
+        $this->assertNotContains($admin->id, $userIds);
+        $this->assertContains($otherManager->id, $userIds);
+    }
+
+    public function testPostUsersTaskCountWithRuleExpressionAssignment()
+    {
+        config(['app.reassign_restrict_to_assignable_users' => true]);
+
+        $admin = $this->user;
+        $assignableUser = User::factory()->create(['status' => 'ACTIVE']);
+        $otherUser = User::factory()->create(['status' => 'ACTIVE']);
+
+        $rules = [
+            ['type' => 'user', 'assignee' => $assignableUser->id, 'expression' => 'TestVar < 10'],
+            ['type' => 'user', 'assignee' => $otherUser->id, 'expression' => 'TestVar > 10'],
+        ];
+
+        $bpmn = file_get_contents(__DIR__ . '/processes/AssignmentByProcessVariable.bpmn');
+        $bpmn = str_replace('[ASSIGNMENT]', 'rule_expression', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_USERS]', '', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_GROUPS]', '', $bpmn);
+        $bpmn = str_replace('[IS_SELF_SERVICE]', 'false', $bpmn);
+        $bpmn = str_replace('[ASSIGNMENT_RULES]', htmlspecialchars(json_encode($rules)), $bpmn);
+
+        $process = Process::factory()->create([
+            'user_id' => $admin->id,
+            'manager_id' => $admin->id,
+            'bpmn' => $bpmn,
+        ]);
+
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $admin->id,
+        ]);
+
+        $task = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'task1_node',
+            'user_id' => $assignableUser->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        $result = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'assignable_for_task_id' => $task->id,
+            'form_data' => ['TestVar' => 5],
+        ]);
+
+        $result->assertStatus(200);
+        $userIds = array_column($result->json()['data'], 'id');
+        $this->assertContains($assignableUser->id, $userIds);
+        $this->assertNotContains($otherUser->id, $userIds);
+    }
+
+    public function testPostUsersTaskCountWithRuleExpressionNoMatchReturnsEmptyList()
+    {
+        config(['app.reassign_restrict_to_assignable_users' => true]);
+
+        $assignableUser = User::factory()->create(['status' => 'ACTIVE']);
+        $unrestrictedUser = User::factory()->create(['status' => 'ACTIVE']);
+
+        $rules = [
+            ['type' => 'user', 'assignee' => $assignableUser->id, 'expression' => 'TestVar < 10'],
+        ];
+
+        $bpmn = file_get_contents(__DIR__ . '/processes/AssignmentByProcessVariable.bpmn');
+        $bpmn = str_replace('[ASSIGNMENT]', 'rule_expression', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_USERS]', '', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_GROUPS]', '', $bpmn);
+        $bpmn = str_replace('[IS_SELF_SERVICE]', 'false', $bpmn);
+        $bpmn = str_replace('[ASSIGNMENT_RULES]', htmlspecialchars(json_encode($rules)), $bpmn);
+
+        $process = Process::factory()->create(['bpmn' => $bpmn, 'manager_id' => null]);
+
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'data' => ['TestVar' => 99],
+        ]);
+
+        $task = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'task1_node',
+            'user_id' => $assignableUser->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        $result = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'assignable_for_task_id' => $task->id,
+            'form_data' => ['TestVar' => 99],
+        ]);
+
+        $result->assertStatus(200);
+        $userIds = array_column($result->json()['data'], 'id');
+        $this->assertEmpty($userIds);
+        $this->assertNotContains($unrestrictedUser->id, $userIds);
+    }
+
+    public function testPostUsersTaskCountWithRuleExpressionGroupAssignment()
+    {
+        config(['app.reassign_restrict_to_assignable_users' => true]);
+
+        $groupUser = User::factory()->create(['status' => 'ACTIVE']);
+        $group = Group::factory()->create();
+        GroupMember::factory()->create([
+            'group_id' => $group->id,
+            'member_id' => $groupUser->id,
+            'member_type' => User::class,
+        ]);
+
+        $rules = [
+            ['type' => 'group', 'assignee' => $group->id, 'expression' => 'TestVar<10'],
+        ];
+
+        $bpmn = file_get_contents(__DIR__ . '/processes/AssignmentByProcessVariable.bpmn');
+        $bpmn = str_replace('[ASSIGNMENT]', 'rule_expression', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_USERS]', '', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_GROUPS]', '', $bpmn);
+        $bpmn = str_replace('[IS_SELF_SERVICE]', 'false', $bpmn);
+        $bpmn = str_replace('[ASSIGNMENT_RULES]', htmlspecialchars(json_encode($rules)), $bpmn);
+
+        $process = Process::factory()->create(['bpmn' => $bpmn]);
+
+        $route = route('api.process_events.trigger', [$process->id, 'event' => 'start_node']);
+        $response = $this->apiCall('POST', $route, ['TestVar' => 5]);
+        $requestId = $response->json()['id'];
+
+        $task = ProcessRequestToken::where([
+            'process_request_id' => $requestId,
+            'status' => 'ACTIVE',
+        ])->firstOrFail();
+
+        $result = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'assignable_for_task_id' => $task->id,
+            'form_data' => ['TestVar' => 5],
+        ]);
+
+        $result->assertStatus(200);
+        $userIds = array_column($result->json()['data'], 'id');
+        $this->assertContains($groupUser->id, $userIds);
+
+        $emptyFormDataResult = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'assignable_for_task_id' => $task->id,
+            'form_data' => [],
+        ]);
+
+        $emptyFormDataResult->assertStatus(200);
+        $this->assertContains($groupUser->id, array_column($emptyFormDataResult->json()['data'], 'id'));
     }
 
     /**

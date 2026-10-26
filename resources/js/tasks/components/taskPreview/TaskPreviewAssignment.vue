@@ -57,10 +57,9 @@
 import {
   ref, onMounted, nextTick, computed,
 } from "vue";
+import _ from "lodash";
 import PMDropdownSuggest from "../../../components/PMDropdownSuggest.vue";
 import { getReassignUsers, updateReassignUser, updateComment } from "../../api";
-
-const { _ } = window;
 
 const props = defineProps({
   task: {
@@ -69,10 +68,6 @@ const props = defineProps({
   },
   formData: {
     type: Object,
-    default: null,
-  },
-  currentTaskUserId: {
-    type: Number,
     default: null,
   },
 });
@@ -94,8 +89,7 @@ const loadReassignUsers = async (filter) => {
     const response = await getReassignUsers(
       filter,
       props.task?.id,
-      props.formData,
-      props.currentTaskUserId
+      props.formData
     );
 
     reassignUsers.value = [];

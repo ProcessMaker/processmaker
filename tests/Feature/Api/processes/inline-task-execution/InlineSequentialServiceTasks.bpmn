@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Adapted from database/processes/templates/ServiceTaskProcess.bpmn for SEQ-02. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" targetNamespace="http://processmaker.com/tests/inline-task-execution">
+  <bpmn:process id="inline_sequential_services" name="SEQ-02 Sequential Service Tasks" isExecutable="true">
+    <bpmn:startEvent id="start" name="Start">
+      <bpmn:outgoing>flow_start_a</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="service_a" name="Service A" implementation="inline-test-service-a">
+      <bpmn:incoming>flow_start_a</bpmn:incoming>
+      <bpmn:outgoing>flow_a_b</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="service_b" name="Service B" implementation="inline-test-service-b">
+      <bpmn:incoming>flow_a_b</bpmn:incoming>
+      <bpmn:outgoing>flow_b_c</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="service_c" name="Service C" implementation="inline-test-service-c">
+      <bpmn:incoming>flow_b_c</bpmn:incoming>
+      <bpmn:outgoing>flow_c_end</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="end" name="End">
+      <bpmn:incoming>flow_c_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_start_a" sourceRef="start" targetRef="service_a" />
+    <bpmn:sequenceFlow id="flow_a_b" sourceRef="service_a" targetRef="service_b" />
+    <bpmn:sequenceFlow id="flow_b_c" sourceRef="service_b" targetRef="service_c" />
+    <bpmn:sequenceFlow id="flow_c_end" sourceRef="service_c" targetRef="end" />
+  </bpmn:process>
+</bpmn:definitions>

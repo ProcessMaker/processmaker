@@ -35,6 +35,48 @@ class UserController extends Controller
     public $doNotSanitize = [
         'username', // has alpha_dash rule
         'password',
+        'firstname', // validated as plain text by User::rules()
+        'lastname', // validated as plain text by User::rules()
+        'title', // validated as plain text by User::rules()
+    ];
+
+    /**
+     * Fields accepted when a non-administrative user updates their own profile.
+     *
+     * @var array<string>
+     */
+    private const SELF_SERVICE_UPDATE_FIELDS = [
+        'username',
+        'password',
+        'firstname',
+        'lastname',
+        'title',
+        'email',
+        'address',
+        'city',
+        'state',
+        'postal',
+        'country',
+        'phone',
+        'fax',
+        'cell',
+        'timezone',
+        'datetime_format',
+        'status',
+        'avatar',
+        'preferences_2fa',
+        'connected_accounts',
+        'meta',
+        'valpassword',
+    ];
+
+    /**
+     * Metadata fields accepted during a self-service profile update.
+     *
+     * @var array<string>
+     */
+    private const SELF_SERVICE_META_FIELDS = [
+        'disableRecommendations',
     ];
 
     /**
@@ -248,25 +290,39 @@ class UserController extends Controller
         }
 
         $include_ids = [];
+        $applyAssignableFilter = false;
         $include_ids_string = $request->input('include_ids', '');
         if (!empty($include_ids_string)) {
             $include_ids = explode(',', $include_ids_string);
+            $applyAssignableFilter = true;
         } elseif ($request->has('assignable_for_task_id')) {
-            $processRequestToken = ProcessRequestToken::findOrFail($request->input('assignable_for_task_id'));
+            $processRequestToken = ProcessRequestToken::with(['process', 'processRequest'])
+                ->findOrFail($request->input('assignable_for_task_id'));
             if (config('app.reassign_restrict_to_assignable_users')) {
+                $applyAssignableFilter = true;
                 $include_ids = $processRequestToken->process->getAssignableUsersByAssignmentType($processRequestToken);
-                $assignmentRule = $processRequestToken->getAssignmentRule();
-                if ($assignmentRule === 'rule_expression' && $request->has('form_data')) {
-                    $include_ids = $processRequestToken->getAssigneesFromExpression($request->input('form_data'));
+                $bpmnAssignment = $processRequestToken->getBpmnDefinition()->getBpmnElementInstance()
+                    ->getProperty('assignment', null);
+                if ($bpmnAssignment === 'rule_expression') {
+                    $include_ids = $processRequestToken->getAssigneesFromExpression($request->input('form_data', []));
                 }
-                if ($assignmentRule === 'process_variable' && $request->has('form_data')) {
+                if ($bpmnAssignment === 'process_variable' && $request->has('form_data')) {
                     $include_ids = $processRequestToken->getUsersFromProcessVariable($request->input('form_data'));
                 }
             }
         }
 
-        if (!empty($include_ids)) {
+        if ($applyAssignableFilter) {
             $query->whereIn('id', $include_ids);
+        }
+
+        // Reassign modal only: assignable_for_task_id is sent by getReassignUsers(), not by other
+        // users_task_count consumers. Without this filter, the authenticated user can appear in the
+        // dropdown and reassign the task to themselves (unnecessary logs and invalid UX). Assignment
+        // rules and assignable user resolution above are unchanged; this only removes the session user
+        // from the final list.
+        if ($request->has('assignable_for_task_id')) {
+            $query->where('id', '!=', $request->user()->id);
         }
 
         $response = $query
@@ -452,12 +508,22 @@ class UserController extends Controller
      */
     public function update(User $user, Request $request)
     {
-        if (!Auth::user()->can('edit', $user)) {
+        $authenticatedUser = Auth::user();
+        if (!$authenticatedUser->can('edit', $user)) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
-        $request->validate(User::rules($user));
         $fields = $request->json()->all();
+        $isSelfServiceUpdate = $this->authorizeSelfServiceUpdate($authenticatedUser, $user, $fields);
+        $rules = User::rules($user);
+        if ($isSelfServiceUpdate) {
+            $rules['meta'] = ['sometimes', 'array'];
+            $rules['meta.disableRecommendations'] = ['sometimes', 'boolean'];
+        }
+        $request->validate($rules);
+        if ($isSelfServiceUpdate) {
+            $fields = $this->normalizeSelfServiceMeta($user, $fields);
+        }
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
             $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
@@ -466,6 +532,8 @@ class UserController extends Controller
             session()->forget('login-error');
         }
         $original = $user->getOriginal();
+        $isLdapUser = isset($user->meta?->authenticationType)
+            && $user->meta->authenticationType === 'ldap';
         $user->fill($fields);
         if (array_key_exists('cell', $fields)) {
             $response = $this->validateCellPhoneNumber($user, $fields['cell']);
@@ -474,28 +542,24 @@ class UserController extends Controller
             }
         }
         if ($fields['email'] !== $original['email']) {
+            $ssoUser = $isLdapUser;
             if (class_exists(SsoUser::class)) {
                 // Check if the user is an SSO user (including SAML)
-                $ssoUser = SsoUser::where('user_id', $user->id)->exists();
-
-                // Check if the user is an LDAP user
-                if (isset($user->meta?->authenticationType) && $user->meta->authenticationType === 'ldap') {
-                    $ssoUser = true;
-                }
-                if ($ssoUser) {
-                    return response([
-                        'message' => __(
-                            "The email can't be edited. This action is only available for SSO-synced users."
-                        ),
-                        'errors' => [
-                            'email' => [
-                                __(
-                                    "The email can't be edited. This action is only available for SSO-synced users."
-                                ),
-                            ],
+                $ssoUser = $ssoUser || SsoUser::where('user_id', $user->id)->exists();
+            }
+            if ($ssoUser) {
+                return response([
+                    'message' => __(
+                        "The email can't be edited. This action is only available for SSO-synced users."
+                    ),
+                    'errors' => [
+                        'email' => [
+                            __(
+                                "The email can't be edited. This action is only available for SSO-synced users."
+                            ),
                         ],
-                    ], 422);
-                }
+                    ],
+                ], 422);
             }
             if (!isset($fields['valpassword'])) {
                 return response([
@@ -562,6 +626,59 @@ class UserController extends Controller
         RecommendationEngine::handleUserSettingChanges($user, $original);
 
         return response([], 204);
+    }
+
+    /**
+     * Authorize and constrain self-service profile updates.
+     */
+    private function authorizeSelfServiceUpdate(User $authenticatedUser, User $targetUser, array $fields): bool
+    {
+        $isSelfServiceUpdate = $authenticatedUser->id === $targetUser->id
+            && !$authenticatedUser->is_administrator
+            && !$authenticatedUser->hasPermission('edit-users');
+
+        if (!$isSelfServiceUpdate) {
+            return false;
+        }
+
+        if (!$authenticatedUser->hasPermission('edit-personal-profile')) {
+            throw new AuthorizationException(__('Not authorized to update this user.'));
+        }
+
+        $disallowedFields = array_diff(array_keys($fields), self::SELF_SERVICE_UPDATE_FIELDS);
+        if ($disallowedFields !== []) {
+            throw new AuthorizationException(__('Not authorized to update one or more user fields.'));
+        }
+
+        if (isset($fields['meta']) && is_array($fields['meta'])) {
+            $disallowedMetaFields = array_diff(array_keys($fields['meta']), self::SELF_SERVICE_META_FIELDS);
+            if ($disallowedMetaFields !== []) {
+                throw new AuthorizationException(__('Not authorized to update one or more user fields.'));
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Merge self-service metadata into the persisted server-managed values.
+     */
+    private function normalizeSelfServiceMeta(User $user, array $fields): array
+    {
+        $meta = (array) $user->meta;
+        if (
+            array_key_exists('meta', $fields)
+            && array_key_exists('disableRecommendations', $fields['meta'])
+        ) {
+            if ($fields['meta']['disableRecommendations']) {
+                $meta['disableRecommendations'] = true;
+            } else {
+                unset($meta['disableRecommendations']);
+            }
+        }
+        $fields['meta'] = $meta ?: null;
+
+        return $fields;
     }
 
     /**

@@ -122,7 +122,7 @@
                     @click="eraseDraft()"
                   >
                     <img
-                      src="/img/smartinbox-images/eraser.svg"
+                      :src="eraserImage"
                       :alt="$t('No Image')"
                     >
                   </b-button>
@@ -136,7 +136,7 @@
                     @click="showQuickFillPreview = true"
                   >
                     <img
-                      src="/img/smartinbox-images/fill.svg"
+                      :src="fillImage"
                       :alt="$t('No Image')"
                     >
                   </b-button>
@@ -202,7 +202,6 @@
             v-if="showReassignment"
             :task="task"
             :form-data="formData"
-            :current-task-user-id="currentTaskUserId"
             @on-cancel-reassign="showReassignment = false"
             @on-reassign-user="e=> reassignUser(e,false)"
           />
@@ -286,6 +285,8 @@ export default {
   props: ["tooltipButton", "propPreview"],
   data() {
     return {
+      eraserImage: '/img/smartinbox-images/eraser.svg',
+      fillImage: '/img/smartinbox-images/fill.svg',
     };
   },
   watch: {

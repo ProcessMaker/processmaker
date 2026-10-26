@@ -40,7 +40,8 @@
 </template>
 
 <script>
-  import { FormErrorsMixin, Modal } from "SharedComponents";
+  import FormErrorsMixin from "../shared/FormErrorsMixin.js";
+  import Modal from "../shared/Modal.vue";
 
   export default {
     components: { Modal },

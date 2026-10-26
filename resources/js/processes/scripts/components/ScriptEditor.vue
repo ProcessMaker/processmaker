@@ -405,8 +405,7 @@
 import MonacoEditor from "vue-monaco";
 import _ from "lodash";
 import TopMenu from "../../../components/Menu.vue";
-// eslint-disable-next-line no-unused-vars
-import customFilters from "../customFilters";
+import { formatScriptBoilerplate } from "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
 import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 import AiTab from "./AiTab.vue";
@@ -885,28 +884,9 @@ export default {
     },
     loadBoilerplateTemplate() {
       if (this.script.code === "[]") {
-        switch (this.script.language) {
-          case "php":
-          case "php-nayra":
-            this.code = Vue.filter("php")(this.boilerPlateTemplate);
-            break;
-          case "lua":
-            this.code = Vue.filter("lua")(this.boilerPlateTemplate);
-            break;
-          case "javascript":
-            this.code = Vue.filter("javascript")(this.boilerPlateTemplate);
-            break;
-          case "csharp":
-            this.code = Vue.filter("csharp")(this.boilerPlateTemplate);
-            break;
-          case "java":
-            this.code = Vue.filter("java")(this.boilerPlateTemplate);
-            break;
-          case "python":
-            this.code = Vue.filter("python")(this.boilerPlateTemplate);
-            break;
-          default:
-            break;
+        const formatted = formatScriptBoilerplate(this.language, this.boilerPlateTemplate);
+        if (formatted !== this.boilerPlateTemplate) {
+          this.code = formatted;
         }
 
         // Save boilerplate template to avoid issues when script code is [].

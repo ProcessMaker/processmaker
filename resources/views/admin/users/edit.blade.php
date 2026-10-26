@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Edit Users')}}
@@ -171,12 +171,18 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/users/edit.js')}}"></script>
-
     <script>
+      window.temporal = window.temporal || {};
+      window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+      window.packages = window.temporal.packages;
+    </script>
+    @vite(['resources/js/loader/loaderMinimal.js'])
+    @vite(['resources/js/admin/users/edit.js'])
+    <script>
+      window.addEventListener("load", function () {
       var modalVueInstance = new Vue({
         el: '#updateAvatarModal',
-        mixins:addons,
+        mixins: typeof addons !== 'undefined' ? addons : [],
         data() {
           return {
             image: "",
@@ -240,11 +246,8 @@
           }
         }
       });
-    </script>
-
-    <script>
       var formVueInstance = new Vue({
-        mixins:addons,
+        mixins: typeof addons !== 'undefined' ? addons : [],
         el: '#editUser',
         data() {
           return {
@@ -263,6 +266,7 @@
               username: null,
               firstname: null,
               lastname: null,
+              title: null,
               email: null,
               password: null,
               status: null,
@@ -444,6 +448,7 @@
               username: null,
               firstname: null,
               lastname: null,
+              title: null,
               email: null,
               password: null,
               status: null
@@ -607,6 +612,7 @@
           },
         }
       });
+    });  
     </script>
 @endsection
 
