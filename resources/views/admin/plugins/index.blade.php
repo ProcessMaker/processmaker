@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{__('Plugins')}}
@@ -21,5 +21,11 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/plugins/index.js')}}"></script>
+    @vite('resources/js/loader/loaderMinimal.js')
+    <script>
+        window.temporal = window.temporal || {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+    </script>
+    @vite(['resources/js/admin/plugins/index.js'])
 @endsection
