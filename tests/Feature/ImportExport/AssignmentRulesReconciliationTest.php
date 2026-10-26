@@ -4,6 +4,7 @@ namespace Tests\Feature\ImportExport;
 
 use ProcessMaker\ImportExport\AssignmentRulesReconciliation;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
@@ -203,5 +204,55 @@ class AssignmentRulesReconciliationTest extends TestCase
         $this->assertFalse(property_exists($rules[0], 'unresolved'));
         $this->assertNull($rules[1]->assignee);
         $this->assertTrue($rules[1]->unresolved);
+    }
+
+    public function testSaveModelOnlyTemplateImportRebindsAssignmentRulesByUsername(): void
+    {
+        $this->addGlobalSignalProcess();
+
+        $sourceUser = User::factory()->create(['username' => 'ignacio']);
+        // Local user whose ID collides with the exported assignee — must not
+        // win over username matching when editing a saveModelOnly template.
+        $wrongUserAtSameId = User::factory()->create(['username' => 'wronguser']);
+
+        $process = $this->createProcess('process-with-different-kinds-of-assignments', [
+            'name' => 'TemplateAssignmentRulesImport',
+        ]);
+        Utils::setAttributeAtXPath($process, self::TASK_1, 'pm:assignment', 'rule_expression');
+        Utils::setAttributeAtXPath($process, self::TASK_1, 'pm:assignmentRules', json_encode([
+            [
+                'type' => 'user',
+                'assignee' => $wrongUserAtSameId->id,
+                'expression' => 'form_checkbox_1==true',
+                'assignmentName' => 'ignacio aranda (ignacio)',
+            ],
+        ]));
+        $process->save();
+
+        $payload = $this->export($process, ProcessExporter::class, null, true);
+
+        $process->forceDelete();
+        $sourceUser->forceDelete();
+        // Keep $wrongUserAtSameId so an unreconciled import would bind them.
+
+        $targetUser = User::factory()->create(['username' => 'ignacio']);
+
+        // Per-process options: global saveModelOnly would also hit non-BPMN
+        // assets and break Manifest::updateBPMNDefinitions.
+        $this->import($payload, new Options([
+            $payload['root'] => [
+                'mode' => 'copy',
+                'saveAssetsMode' => 'saveModelOnly',
+                'isTemplate' => true,
+            ],
+        ]));
+
+        $imported = Process::where('name', 'TemplateAssignmentRulesImport')->firstOrFail();
+        $raw = Utils::getAttributeAtXPath($imported, self::TASK_1, 'pm:assignmentRules');
+        $rules = AssignmentRulesReconciliation::decodeRules($raw);
+
+        $this->assertSame($targetUser->id, $rules[0]->assignee);
+        $this->assertNotSame($wrongUserAtSameId->id, $rules[0]->assignee);
+        $this->assertFalse(property_exists($rules[0], 'unresolved'));
     }
 }

@@ -128,6 +128,11 @@ class ProcessExporter extends ExporterBase
 
         $this->importAssetsByMode();
 
+        // Assignment rules are embedded in BPMN (not separate assets), so they
+        // must be reconciled for saveModelOnly template editing as well as
+        // saveAllAssets imports.
+        $this->importAssignmentRules();
+
         $process->save();
 
         $process->notification_settings()->delete();
@@ -490,7 +495,6 @@ class ProcessExporter extends ExporterBase
             $this->importScripts();
             $this->importSubprocesses();
             $this->importAssignments();
-            $this->importAssignmentRules();
             $this->importProcessLaunchpad();
             $this->importElementDestination();
         }
