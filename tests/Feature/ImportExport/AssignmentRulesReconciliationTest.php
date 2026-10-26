@@ -143,6 +143,27 @@ class AssignmentRulesReconciliationTest extends TestCase
         $this->assertNull(AssignmentRulesReconciliation::usernameFromAssignmentName(null));
     }
 
+    public function testIsUnresolvedRule(): void
+    {
+        $this->assertTrue(AssignmentRulesReconciliation::isUnresolvedRule((object) [
+            'type' => 'user',
+            'assignee' => null,
+            'unresolved' => true,
+        ]));
+        $this->assertTrue(AssignmentRulesReconciliation::isUnresolvedRule([
+            'type' => 'group',
+            'assignee' => null,
+        ]));
+        $this->assertFalse(AssignmentRulesReconciliation::isUnresolvedRule((object) [
+            'type' => 'user',
+            'assignee' => 5,
+        ]));
+        $this->assertFalse(AssignmentRulesReconciliation::isUnresolvedRule((object) [
+            'type' => 'self_service',
+            'assignee' => null,
+        ]));
+    }
+
     public function testProcessExporterImportRebindsAssignmentRulesByUsername(): void
     {
         $sourceUser = User::factory()->create(['username' => 'ignacio']);

@@ -714,4 +714,109 @@ class ProcessRequestTokenTest extends TestCase
 
         $this->assertEquals([$matchedUser->id], $result);
     }
+
+    public function testGetAssigneesFromExpressionThrowsWhenMatchingRuleIsUnresolved(): void
+    {
+        $defaultUser = User::factory()->create(['status' => 'ACTIVE']);
+        $process = Process::factory()->create();
+        $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
+
+        $rules = [
+            [
+                'type' => 'user',
+                'assignee' => null,
+                'expression' => 'TestVar<10',
+                'assignmentName' => 'missing user (missing)',
+                'unresolved' => true,
+            ],
+            [
+                'type' => 'user',
+                'assignee' => $defaultUser->id,
+                'expression' => null,
+                'assignmentName' => 'default user',
+                'default' => true,
+            ],
+        ];
+
+        $activity = $this->createMock(\ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface::class);
+        $activity->method('getProperty')
+            ->willReturnCallback(function ($key, $default) use ($rules) {
+                if ($key === 'assignmentRules') {
+                    return json_encode($rules);
+                }
+
+                return $default;
+            });
+
+        $bpmnDefinition = $this->createMock(\ProcessMaker\Nayra\Storage\BpmnElement::class);
+        $bpmnDefinition->method('getBpmnElementInstance')
+            ->willReturn($activity);
+
+        $token = $this->getMockBuilder(ProcessRequestToken::class)
+            ->onlyMethods(['getBpmnDefinition'])
+            ->getMock();
+
+        $token->process_id = $process->id;
+        $token->process_request_id = $request->id;
+        $token->process = $process;
+        $token->element_name = 'Form Task';
+        $token->setRelation('processRequest', $request);
+
+        $token->expects($this->atLeastOnce())
+            ->method('getBpmnDefinition')
+            ->willReturn($bpmnDefinition);
+
+        $this->expectException(\ProcessMaker\Exception\TaskDoesNotHaveUsersException::class);
+
+        $token->getAssigneesFromExpression(['TestVar' => 5]);
+    }
+
+    public function testGetAssigneesFromExpressionThrowsWhenDefaultRuleIsUnresolved(): void
+    {
+        $process = Process::factory()->create();
+        $request = ProcessRequest::factory()->create(['process_id' => $process->id]);
+
+        $rules = [
+            [
+                'type' => 'user',
+                'assignee' => null,
+                'expression' => null,
+                'assignmentName' => 'agus ara pelle (agus)',
+                'default' => true,
+                'unresolved' => true,
+            ],
+        ];
+
+        $activity = $this->createMock(\ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface::class);
+        $activity->method('getProperty')
+            ->willReturnCallback(function ($key, $default) use ($rules) {
+                if ($key === 'assignmentRules') {
+                    return json_encode($rules);
+                }
+
+                return $default;
+            });
+
+        $bpmnDefinition = $this->createMock(\ProcessMaker\Nayra\Storage\BpmnElement::class);
+        $bpmnDefinition->method('getBpmnElementInstance')
+            ->willReturn($activity);
+
+        $token = $this->getMockBuilder(ProcessRequestToken::class)
+            ->onlyMethods(['getBpmnDefinition'])
+            ->getMock();
+
+        $token->process_id = $process->id;
+        $token->process_request_id = $request->id;
+        $token->process = $process;
+        $token->element_name = 'Form Task';
+        $token->setRelation('processRequest', $request);
+
+        $token->expects($this->atLeastOnce())
+            ->method('getBpmnDefinition')
+            ->willReturn($bpmnDefinition);
+
+        $this->expectException(\ProcessMaker\Exception\TaskDoesNotHaveUsersException::class);
+
+        $token->getAssigneesFromExpression(['TestVar' => 5]);
+    }
 }

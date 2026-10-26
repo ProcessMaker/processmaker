@@ -122,6 +122,28 @@ class AssignmentRulesReconciliation
     }
 
     /**
+     * Whether a rule was left unbound after import (or equivalent).
+     * Matching unresolved rules must not assign or fall through to the Process Manager.
+     *
+     * @param object|array<string, mixed> $rule
+     */
+    public static function isUnresolvedRule(object|array $rule): bool
+    {
+        if (self::ruleGet($rule, self::KEY_UNRESOLVED) === true) {
+            return true;
+        }
+
+        $type = self::ruleGet($rule, 'type');
+        if ($type !== 'user' && $type !== 'group') {
+            return false;
+        }
+
+        $assignee = self::ruleGet($rule, 'assignee');
+
+        return $assignee === null || $assignee === '';
+    }
+
+    /**
      * @return iterable<int, array{element: DOMElement, path: string, rules: array<int, object|array<string, mixed>>}>
      */
     public static function collectAssignmentRulesFromDocument(\DOMDocument $document): iterable

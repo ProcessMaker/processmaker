@@ -10,7 +10,9 @@ use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
 use ProcessMaker\AssignmentRules\ProcessManagerAssigned;
 use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
+use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\ThereIsNoProcessManagerAssignedException;
+use ProcessMaker\ImportExport\AssignmentRulesReconciliation;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\Group;
@@ -602,6 +604,11 @@ class ProcessExecutionRawRepository
             $formalExp->setBody($item->expression);
             if (!$formalExp($instanceData)) {
                 continue;
+            }
+
+            // Unresolved import assignees must not assign or escalate to the Process Manager.
+            if (AssignmentRulesReconciliation::isUnresolvedRule($item)) {
+                throw new TaskDoesNotHaveUsersException($activity->getName());
             }
 
             switch ($item->type) {

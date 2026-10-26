@@ -16,7 +16,9 @@ use ProcessMaker\Casts\MillisecondsToDateCast;
 use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
+use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowUserManager;
+use ProcessMaker\ImportExport\AssignmentRulesReconciliation;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\MustacheExpressionEvaluator;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
@@ -1106,6 +1108,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 continue;
             }
 
+            if (AssignmentRulesReconciliation::isUnresolvedRule($assignment)) {
+                throw new TaskDoesNotHaveUsersException($this->element_name ?: $this->element_id);
+            }
+
             $hasExpressionMatch = true;
             $this->appendAssignmentAssignees($assignment, $userIds);
         }
@@ -1114,6 +1120,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             foreach ($assignments as $assignment) {
                 if (!$this->isDefaultAssignmentRule($assignment)) {
                     continue;
+                }
+
+                if (AssignmentRulesReconciliation::isUnresolvedRule($assignment)) {
+                    throw new TaskDoesNotHaveUsersException($this->element_name ?: $this->element_id);
                 }
 
                 $this->appendAssignmentAssignees($assignment, $userIds);
