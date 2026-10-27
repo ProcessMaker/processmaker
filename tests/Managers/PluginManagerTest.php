@@ -303,6 +303,49 @@ class PluginManagerTest extends TestCase
         $this->assertProcessRanCommand('horizon:terminate');
     }
 
+    public function testLocalInstallReplacesLeftoverSymlinkWithCopy(): void
+    {
+        $this->setUpTestPluginManager();
+
+        $pluginName = 'local-symlink-plugin-' . uniqid();
+        $sourceDir = sys_get_temp_dir() . '/' . $pluginName;
+        $pluginPath = $this->pluginsDir . '/' . $pluginName;
+
+        mkdir($sourceDir, 0755, true);
+        mkdir($sourceDir . '/src', 0755, true);
+        file_put_contents($sourceDir . '/composer.json', json_encode([
+            'name' => 'processmaker/' . $pluginName,
+            'autoload' => [
+                'psr-4' => [
+                    'ProcessMaker\\Plugins\\SymlinkTest\\' => 'src/',
+                ],
+            ],
+        ], JSON_PRETTY_PRINT));
+        file_put_contents($sourceDir . '/source-only.marker', 'source');
+
+        $this->assertTrue(symlink($sourceDir, $pluginPath));
+        $this->assertTrue(is_link($pluginPath));
+
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+        Event::fake([PluginLog::class]);
+
+        $manager = new PluginManager();
+        $manager->install($sourceDir, null, null, 1);
+
+        $this->assertFalse(is_link($pluginPath));
+        $this->assertTrue(is_dir($pluginPath));
+        $this->assertFileExists($pluginPath . '/source-only.marker');
+
+        if (is_dir($pluginPath)) {
+            $this->deleteDirectory($pluginPath);
+        }
+        if (is_dir($sourceDir)) {
+            $this->deleteDirectory($sourceDir);
+        }
+    }
+
     public function testRunCommandLogsSuccessfulOutputOnce()
     {
         Process::fake([

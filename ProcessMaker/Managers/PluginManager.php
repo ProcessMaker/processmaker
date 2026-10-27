@@ -44,7 +44,12 @@ class PluginManager
             $resolvedLocalPath = realpath($localPath);
             $resolvedPluginPath = realpath($pluginPath);
 
-            if ($resolvedLocalPath && $resolvedPluginPath && $resolvedLocalPath === $resolvedPluginPath) {
+            $alreadyAtTarget = $resolvedLocalPath
+                && $resolvedPluginPath
+                && $resolvedLocalPath === $resolvedPluginPath
+                && !is_link($pluginPath);
+
+            if ($alreadyAtTarget) {
                 $this->logRunning('Plugin is already installed at the target path', $repoName, $userId);
             } else {
                 if (!is_dir(storage_path('plugins'))) {
