@@ -41,13 +41,27 @@ class PluginManager
 
             $this->logRunning("Starting installation of plugin from local path: {$repoName}", $repoName, $userId);
 
-            // Create symlink if target doesn't exist
-            if (is_link($pluginPath) || is_dir($pluginPath)) {
-                // throw new RuntimeException("Plugin directory or symlink already exists: {$pluginPath}");
-                $this->logRunning("Plugin directory or symlink already exists: {$pluginPath}", $repoName, $userId);
+            $resolvedLocalPath = realpath($localPath);
+            $resolvedPluginPath = realpath($pluginPath);
+
+            if ($resolvedLocalPath && $resolvedPluginPath && $resolvedLocalPath === $resolvedPluginPath) {
+                $this->logRunning('Plugin is already installed at the target path', $repoName, $userId);
             } else {
-                $this->logRunning('Creating symlink to local path...', $repoName, $userId);
-                $this->createSymlink($localPath, $pluginPath, $repoName, $userId);
+                if (!is_dir(storage_path('plugins'))) {
+                    mkdir(storage_path('plugins'), 0755, true);
+                }
+
+                if (is_link($pluginPath)) {
+                    if (!@unlink($pluginPath)) {
+                        throw new RuntimeException("Failed to remove existing plugin symlink: {$pluginPath}");
+                    }
+                } elseif (is_dir($pluginPath)) {
+                    $this->logRunning('Removing existing plugin directory...', $repoName, $userId);
+                    $this->deleteDirectory($pluginPath, $repoName, $userId);
+                }
+
+                $this->logRunning('Copying plugin from local path...', $repoName, $userId);
+                $this->copyDirectory($localPath, $pluginPath, $repoName, $userId);
             }
         } else {
             // Extract repository name from URL
@@ -87,7 +101,10 @@ class PluginManager
         $this->runComposerInstall($pluginPath, $repoName, $userId);
 
         // Run plugin install command if it exists
+     
         $installCommand = "{$repoName}:install";
+
+        $this->logRunning('installCommand: ' . $installCommand, $repoName, $userId);
 
         $this->logRunning('Running plugin install command...', $repoName, $userId);
         $this->runCommand($installCommand, $repoName, $userId);
@@ -110,9 +127,9 @@ class PluginManager
         $pluginPath = "{$pluginDir}/{$pluginName}";
         $pluginDisabledPath = "{$pluginDir}/_{$pluginName}";
 
-        if (is_dir($pluginDisabledPath)) {
+        if (is_dir($pluginDisabledPath) || is_link($pluginDisabledPath)) {
             $pluginPath = $pluginDisabledPath;
-        } elseif (!is_dir($pluginPath)) {
+        } elseif (!is_dir($pluginPath) && !is_link($pluginPath)) {
             throw new RuntimeException("Plugin not found: {$pluginName}");
         }
 
@@ -123,9 +140,8 @@ class PluginManager
         $this->logRunning('Running plugin uninstall command...', $pluginName, $userId);
         $this->runCommand($uninstallCommand, $pluginName, $userId);
 
-        // Delete the plugin directory
         $this->logRunning('Removing plugin directory...', $pluginName, $userId);
-        $this->deleteDirectory($pluginPath, $pluginName, $userId);
+        $this->removePluginPath($pluginPath, $pluginName, $userId);
 
         $this->refreshRuntimeAfterPluginChange($pluginName, $userId);
 
@@ -641,6 +657,26 @@ class PluginManager
     }
 
     /**
+     * Remove a plugin from storage/plugins without deleting symlink targets.
+     *
+     * @throws RuntimeException
+     */
+    protected function removePluginPath(string $pluginPath, string $pluginName, ?int $userId = null): void
+    {
+        if (is_link($pluginPath)) {
+            $this->logRunning('Removing plugin symlink (source directory is kept)...', $pluginName, $userId);
+            if (!@unlink($pluginPath)) {
+                $this->logError('Failed to remove plugin symlink: ' . $pluginPath, $pluginName, $userId);
+                throw new RuntimeException("Failed to remove plugin symlink: {$pluginPath}");
+            }
+
+            return;
+        }
+
+        $this->deleteDirectory($pluginPath, $pluginName, $userId);
+    }
+
+    /**
      * Delete a directory recursively.
      *
      * @param string $directory
@@ -649,6 +685,15 @@ class PluginManager
      */
     protected function deleteDirectory(string $directory, string $repoName, ?int $userId = null): void
     {
+        if (is_link($directory)) {
+            if (!@unlink($directory)) {
+                $this->logError('Failed to remove symlink: ' . $directory, $repoName, $userId);
+                throw new RuntimeException("Failed to remove symlink: {$directory}");
+            }
+
+            return;
+        }
+
         if (!is_dir($directory)) {
             return;
         }
@@ -707,29 +752,6 @@ class PluginManager
         }
 
         return null;
-    }
-
-    /**
-     * Create a symlink from source to destination.
-     *
-     * @param string $source
-     * @param string $destination
-     * @return void
-     * @throws RuntimeException
-     */
-    protected function createSymlink(string $source, string $destination, string $repoName, ?int $userId = null): void
-    {
-        // Ensure the plugins directory exists
-        $pluginsDir = dirname($destination);
-        if (!is_dir($pluginsDir)) {
-            mkdir($pluginsDir, 0755, true);
-        }
-
-        // Create symlink
-        if (!symlink($source, $destination)) {
-            $this->logError('Failed to create symlink from ' . $source . ' to ' . $destination, $repoName, $userId);
-            throw new RuntimeException("Failed to create symlink from {$source} to {$destination}");
-        }
     }
 
     /**
