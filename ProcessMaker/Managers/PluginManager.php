@@ -101,7 +101,7 @@ class PluginManager
         $this->runComposerInstall($pluginPath, $repoName, $userId);
 
         // Run plugin install command if it exists
-     
+
         $installCommand = "{$repoName}:install";
 
         $this->logRunning('installCommand: ' . $installCommand, $repoName, $userId);
