@@ -1,0 +1,22 @@
+# Example feature
+
+Narrative for humans and agents. Do not duplicate every FR statement here.
+
+## Purpose
+
+What this feature does and who uses it.
+
+## Kind and reuse
+
+- `kind`: component | screen | script
+- Configurable via `config` in `requirements.yaml`
+- Screens compose components through `dependsOn`
+
+## Related assets
+
+- Vue / BPMN / script paths as applicable
+- Legacy design or edge-case docs during migration
+
+## Configuration
+
+Describe how consumers configure this feature (props, ports, section order).
