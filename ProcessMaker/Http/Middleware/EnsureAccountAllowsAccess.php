@@ -16,12 +16,15 @@ class EnsureAccountAllowsAccess
     private const DENIED_STATUSES = ['BLOCKED', 'INACTIVE'];
 
     /**
-     * If any active guard has a blocked/inactive user, log out and return the appropriate response.
-     * Used by the web middleware group and by ProcessMakerAuthenticate (covers all auth:api routes, including packages).
+     * If an authenticated user for one of the supplied guards is blocked/inactive, log out and return the appropriate response.
+     *
+     * @param array<string|null> $guards
      */
-    public static function blockingResponseForRequest(Request $request): ?Response
+    public static function blockingResponseForRequest(Request $request, array $guards = []): ?Response
     {
-        foreach (['web', 'api'] as $guard) {
+        foreach ($guards ?: [config('auth.defaults.guard')] as $guard) {
+            $guard = $guard ?: config('auth.defaults.guard');
+
             if (!Auth::guard($guard)->check()) {
                 continue;
             }
@@ -40,7 +43,7 @@ class EnsureAccountAllowsAccess
 
     public function handle(Request $request, Closure $next): Response
     {
-        $blocked = self::blockingResponseForRequest($request);
+        $blocked = self::blockingResponseForRequest($request, ['web']);
         if ($blocked !== null) {
             return $blocked;
         }
