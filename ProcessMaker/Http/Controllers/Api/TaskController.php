@@ -136,7 +136,7 @@ class TaskController extends Controller
     public function index(Request $request, $getTotal = false, User $user = null)
     {
         if (config('app.processmaker_optimized_tasks_enabled')) {
-            return (new V1_1TaskController())->indexOptimized($request, $getTotal, $user);
+            return app(V1_1TaskController::class)->indexOptimized($request, $getTotal, $user);
         }
         // If a specific user is specified, use it; otherwise use the authorized user
         // This is necessary to produce accurate counts for Saved Searches

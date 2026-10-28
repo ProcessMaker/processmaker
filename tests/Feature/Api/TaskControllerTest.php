@@ -249,6 +249,15 @@ class TaskControllerTest extends TestCase
         $this->assertEquals($data2['form_text_area_1'], $responseData[1]['taskData']['form_text_area_1']);
     }
 
+    public function testIndexResolvesOptimizedV11ControllerFromContainer()
+    {
+        config(['app.processmaker_optimized_tasks_enabled' => true]);
+
+        $response = $this->apiCall('GET', '/tasks');
+
+        $response->assertOk();
+    }
+
     public function testShowTaskIncludesNewProperty()
     {
         $user = User::factory()->create();
