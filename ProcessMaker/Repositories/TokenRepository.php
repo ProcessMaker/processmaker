@@ -10,6 +10,7 @@ use ProcessMaker\Jobs\CaseUpdate;
 use ProcessMaker\Mail\TaskActionByEmail;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\FeelExpressionEvaluator;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
@@ -184,10 +185,7 @@ class TokenRepository implements TokenRepositoryInterface
 
         CaseUpdate::dispatchSync($request, $token);
 
-        if (!is_null($user)) {
-            // Review if the task has enable the action by email
-            $this->validateAndSendActionByEmail($activity, $token, $user->email);
-        }
+        $this->validateAndSendActionByEmail($activity, $token, $user);
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
 
@@ -196,15 +194,42 @@ class TokenRepository implements TokenRepositoryInterface
      *
      * @param ActivityInterface $activity
      * @param TokenInterface $token
-     * @param string $to
+     * @param User|null $user
      *
      * @return void
      */
-    private function validateAndSendActionByEmail(ActivityInterface $activity, TokenInterface $token, string $to)
+    private function validateAndSendActionByEmail(ActivityInterface $activity, TokenInterface $token, ?User $user)
     {
         try {
             $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
             Log::Info('Activity isActionsByEmail: ' . $isActionsByEmail);
+            $to = $user && $user->email ? $user->email : '';
+            if ($to === '' && $token->is_self_service && is_array($token->self_service_groups)) {
+                $userIds = array_map('intval', array_filter(
+                    $token->self_service_groups['users'] ?? [],
+                    fn ($id) => is_numeric($id) && (int) $id > 0
+                ));
+                $groupIds = array_values(array_filter(
+                    $token->self_service_groups['groups'] ?? [],
+                    fn ($id) => $id !== '' && $id !== null
+                ));
+                if ($groupIds !== []) {
+                    $fromGroups = [];
+                    $token->getInstance()->getProcess()->getOwnerDocument()->getModel()
+                        ->getConsolidatedUsers($groupIds, $fromGroups);
+                    $userIds = array_unique(array_merge($userIds, $fromGroups));
+                }
+                if ($userIds !== []) {
+                    $to = User::query()
+                        ->whereIn('id', $userIds)
+                        ->whereNotIn('status', Process::NOT_ASSIGNABLE_USER_STATUS)
+                        ->whereNotNull('email')
+                        ->where('email', '!=', '')
+                        ->pluck('email')
+                        ->unique()
+                        ->implode(', ');
+                }
+            }
             // If the actionByEmail is enable
             if ($isActionsByEmail === 'true' && !empty($to)) {
                 $configEmail = json_decode($activity->getProperty('configEmail'), true);
