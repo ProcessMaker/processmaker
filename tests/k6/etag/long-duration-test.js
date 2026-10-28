@@ -1,7 +1,7 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Trend } from 'k6/metrics';
-import { config, headers } from './config.js';
+import { config, getHeaders, validateConfiguration } from './config.js';
 
 // Metrics to track response durations.
 let duration200 = new Trend('duration_200');
@@ -18,8 +18,13 @@ export let options = {
   },
 };
 
+export function setup() {
+  validateConfiguration();
+}
+
 export default function () {
   const url = config.endpoints.startProcesses;
+  const headers = getHeaders();
   let res = http.get(url, { headers });
   duration200.add(res.timings.duration);
   check(res, {
