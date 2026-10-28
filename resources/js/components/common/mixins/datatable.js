@@ -117,6 +117,7 @@ export default {
     },
     // Handler to change the page based on events fired from our pagination component
     onPageChange(page) {
+      const previousPage = this.page;
       if (page === "next") {
         this.page += 1;
       } else if (page === "prev") {
@@ -129,6 +130,10 @@ export default {
       }
       if (this.page > this.data.meta.last_page) {
         this.page = this.data.meta.last_page;
+      }
+      // Skip fetch when nav is disabled (already on first/last) or page is unchanged
+      if (this.page === previousPage) {
+        return;
       }
       this.fetch();
     },
