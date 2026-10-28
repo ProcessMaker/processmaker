@@ -5,6 +5,7 @@ namespace Tests\Feature\Http\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mockery;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ProcessMaker\Http\Middleware\EnsureAccountAllowsAccess;
 use ProcessMaker\Http\Middleware\ProcessMakerAuthenticate;
 use ProcessMaker\Models\User;
@@ -32,9 +33,7 @@ class EnsureAccountAllowsAccessTest extends TestCase
         $this->assertSame('allowed', $response->getContent());
     }
 
-    /**
-     * @dataProvider deniedWebStatuses
-     */
+    #[DataProvider('deniedWebStatuses')]
     public function test_web_middleware_denies_users_with_a_disallowed_status(string $status): void
     {
         $user = new User(['status' => $status]);
@@ -52,7 +51,7 @@ class EnsureAccountAllowsAccessTest extends TestCase
         $this->assertStringEndsWith('/login', $response->headers->get('Location'));
     }
 
-    public function deniedWebStatuses(): array
+    public static function deniedWebStatuses(): array
     {
         return [
             'blocked' => ['BLOCKED'],
@@ -78,9 +77,7 @@ class EnsureAccountAllowsAccessTest extends TestCase
         $this->assertNull($response);
     }
 
-    /**
-     * @dataProvider deniedApiStatuses
-     */
+    #[DataProvider('deniedApiStatuses')]
     public function test_api_account_check_denies_users_with_a_disallowed_status(string $status, string $message): void
     {
         $user = new User(['status' => $status]);
@@ -101,7 +98,7 @@ class EnsureAccountAllowsAccessTest extends TestCase
         $this->assertSame(['message' => $message], json_decode($response->getContent(), true));
     }
 
-    public function deniedApiStatuses(): array
+    public static function deniedApiStatuses(): array
     {
         return [
             'blocked' => ['BLOCKED', 'Account locked after too many failed attempts. Contact administrator.'],
@@ -120,7 +117,7 @@ class EnsureAccountAllowsAccessTest extends TestCase
         Auth::shouldReceive('guard')->never()->with('web');
         Auth::shouldReceive('guard')->with('api')->andReturn($apiGuard);
 
-        $middleware = new class extends ProcessMakerAuthenticate {
+        $middleware = new class(app('auth')) extends ProcessMakerAuthenticate {
             protected function authenticate($request, array $guards)
             {
                 // Authentication is outside the scope of this guard-selection test.
