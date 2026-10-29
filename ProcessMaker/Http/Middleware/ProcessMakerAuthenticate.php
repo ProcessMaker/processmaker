@@ -39,12 +39,7 @@ class ProcessMakerAuthenticate extends Authenticate
             session(['permissions' => $permissions]);
         }
 
-        try {
-            return parent::authenticate($request, $guards);
-        } catch (OAuthServerException $e) {
-            InvalidBearerTokenCache::rememberPassportJwtFailure($request, $guards);
-            throw $e;
-        }
+        return parent::authenticate($request, $guards);
     }
 
     /**
