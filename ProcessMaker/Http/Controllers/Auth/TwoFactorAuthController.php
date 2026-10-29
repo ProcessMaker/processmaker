@@ -59,7 +59,9 @@ class TwoFactorAuthController extends Controller
         }
 
         // Display view
-        return view('auth.2fa.otp');
+        return view('auth.2fa.otp', [
+            'showAuthAppSetup' => $this->twoFactorAuthentication->userCanSetUpAuthApp($user),
+        ]);
     }
 
     public function validateTwoFactorAuthCode(Request $request)
@@ -89,6 +91,10 @@ class TwoFactorAuthController extends Controller
         session()->put(self::TFA_VALIDATED, $validated);
 
         if ($validated) {
+            if ($this->twoFactorAuthentication->isAuthAppCode($code)) {
+                $this->twoFactorAuthentication->markAuthAppConfigured($user);
+            }
+
             // Remove 2fa values in session
             session()->remove(self::TFA_MESSAGE);
             session()->remove(self::TFA_ERROR);
@@ -131,6 +137,10 @@ class TwoFactorAuthController extends Controller
         // If not user not authenticated, redirect to login page
         if (empty($user)) {
             return redirect()->route('login');
+        }
+
+        if (!$this->twoFactorAuthentication->userCanSetUpAuthApp($user)) {
+            return redirect()->route('2fa');
         }
 
         // Generate QR code

@@ -144,6 +144,7 @@ class User extends Authenticatable implements HasMedia
         'loggedin_at' => 'datetime',
         'schedule' => 'array',
         'preferences_2fa' => 'array',
+        'auth_app_configured_at' => 'datetime',
     ];
 
     /**
@@ -168,6 +169,14 @@ class User extends Authenticatable implements HasMedia
         static::deleted(function ($user) {
             $user->status = 'INACTIVE';
             $user->removeFromGroups();
+        });
+
+        static::updating(function (self $user) {
+            // Authenticator secrets include the username, so a rename invalidates
+            // enrolled codes. Clear enrollment so the user can scan a new QR code.
+            if ($user->isDirty('username') && $user->hasAuthAppConfigured()) {
+                $user->auth_app_configured_at = null;
+            }
         });
     }
 
@@ -548,6 +557,11 @@ class User extends Authenticatable implements HasMedia
     public function sessions(): HasMany
     {
         return $this->hasMany(UserSession::class);
+    }
+
+    public function hasAuthAppConfigured(): bool
+    {
+        return $this->auth_app_configured_at !== null;
     }
 
     public function getValid2FAPreferences(): array
