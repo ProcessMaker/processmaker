@@ -5,6 +5,7 @@ namespace Tests\Unit\ProcessMaker\Repositories;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\Repositories\ProcessExecutionRawRepository;
 use Tests\TestCase;
@@ -36,6 +37,26 @@ class ProcessExecutionRawRepositoryTest extends TestCase
 
         $this->assertIsArray($hydrated->data);
         $this->assertSame('persisted', $hydrated->data['marker']);
+    }
+
+    public function testTaskHasDraftRawReturnsFalseWhenNoDraftExists(): void
+    {
+        $task = ProcessRequestToken::factory()->create();
+
+        $repository = new ProcessExecutionRawRepository();
+
+        $this->assertFalse($repository->taskHasDraftRaw($task->id));
+    }
+
+    public function testHydrateModelFromRowRawPreservesAttributes(): void
+    {
+        $user = User::factory()->create();
+
+        $repository = new ProcessExecutionRawRepository();
+        $hydrated = $repository->hydrateModelFromRowRaw(User::class, (object) $user->getAttributes());
+
+        $this->assertSame($user->id, $hydrated->id);
+        $this->assertTrue($hydrated->exists);
     }
 
     public function testRawGroupAssignmentResolvesActiveNestedGroups(): void

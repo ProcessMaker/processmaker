@@ -4,21 +4,41 @@ declare(strict_types=1);
 
 namespace ProcessMaker\Http\Controllers\Api\V1_1;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Cache\Screens\ScreenCacheFactory;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Resources\TaskCollection;
 use ProcessMaker\Http\Resources\V1_1\TaskInterstitialResource;
 use ProcessMaker\Http\Resources\V1_1\TaskResource;
 use ProcessMaker\Http\Resources\V1_1\TaskScreen;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\User;
 use ProcessMaker\ProcessTranslations\TranslationManager;
 use ProcessMaker\Repositories\TaskV11ShowFastRepository;
+use ProcessMaker\Traits\TaskControllerIndexMethods;
+use ProcessMaker\Services\TaskCompletionRawService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TaskController extends Controller
 {
+    use TaskControllerIndexMethods;
+
+    public function __construct(
+        private readonly TaskCompletionRawService $taskCompletionRawService,
+    ) {
+    }
+
+    public $doNotSanitize = [
+        'data',
+        'pmql',
+    ];
+
     protected $defaultFields = [
         'id',
         'element_id',
@@ -29,6 +49,56 @@ class TaskController extends Controller
         'user_id',
         'process_request_id',
     ];
+
+    public function indexOptimized(Request $request, $getTotal = false, ?User $user = null)
+    {
+        if (!$user) {
+            $user = Auth::user();
+        }
+
+        $request->merge(['optimized' => true]);
+
+        $query = $this->indexOptimizedBaseQuery($request);
+        $this->applyIndexFieldSelection($query, $request);
+        $this->applyFilters($query, $request);
+        $this->excludeNonVisibleTasks($query, $request);
+        $this->applyColumnOrdering($query, $request);
+        $this->applyStatusFilter($query, $request);
+
+        if ($request->input('processesIManage') === 'true') {
+            $this->applyProcessManager($query, $user, $request);
+        } else {
+            $this->applyForCurrentUser($query, $user);
+        }
+
+        $this->applyPmql($query, $request, $user);
+        $this->applyAdvancedFilter($query, $request);
+        $query->overdue($request->input('overdue'));
+
+        if ($getTotal === true) {
+            return $query->count();
+        }
+
+        try {
+            $response = $query->paginate($request->input('per_page', 10));
+        } catch (QueryException $e) {
+            return $this->handleQueryException($e);
+        }
+
+        $response = $this->applyUserFilter($response, $request, $user);
+
+        if ($response->total() > 0 && $request->input('processesIManage') === 'true') {
+            $this->enableUserManager($user);
+        }
+
+        $inOverdueQuery = ProcessRequestToken::query()
+            ->whereIn('id', $response->pluck('id'))
+            ->where('due_at', '<', Carbon::now());
+
+        $response->inOverdue = $inOverdueQuery->count();
+
+        return new TaskCollection($response);
+    }
 
     /**
      * Display a listing of the resource.
@@ -207,5 +277,46 @@ class TaskController extends Controller
         $response = response($response->toArray(request())['screen'], 200);
 
         return $response;
+    }
+
+    private function handleQueryException(QueryException $e)
+    {
+        $regex = '~Column not found: 1054 Unknown column \'(.*?)\' in \'where clause\'~';
+
+        preg_match($regex, $e->getMessage(), $m);
+
+        $message = __('PMQL Is Invalid.');
+
+        if (count($m) > 1) {
+            $message .= ' ' . __('Column not found: ') . '"' . $m[1] . '"';
+        }
+
+        \Log::error($e->getMessage());
+
+        return response([
+            'message' => $message,
+        ], 422);
+    }
+
+    /**
+     * Complete a task using the raw-query optimized path.
+     */
+    public function update(Request $request, int $taskId)
+    {
+        if ($request->input('status') !== 'COMPLETED') {
+            abort(422, __('Only task completion is supported on this endpoint. Use PUT /api/1.0/tasks/{id} for other updates.'));
+        }
+
+        try {
+            $task = $this->taskCompletionRawService->completeTask(
+                $taskId,
+                json_optimize_decode($request->getContent(), true) ?: [],
+                $request->user(),
+            );
+        } catch (NotFoundHttpException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 404);
+        }
+
+        return response()->json($task);
     }
 }

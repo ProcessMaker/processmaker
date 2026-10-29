@@ -1,6 +1,6 @@
 {
     "name": "@processmaker/processmaker",
-    "version": "2026.16.1",
+    "version": "2026.17.1-p2",
     "description": "ProcessMaker 4",
     "author": "DevOps <devops@processmaker.com>",
     "license": "ISC",
@@ -68,10 +68,10 @@
         "@fortawesome/free-solid-svg-icons": "^5.15.1",
         "@fortawesome/vue-fontawesome": "^0.1.9",
         "@panter/vue-i18next": "^0.15.2",
-        "@processmaker/modeler": "1.69.50",
+        "@processmaker/modeler": "1.69.41-branch-bc19cd1c",
         "@processmaker/processmaker-bpmn-moddle": "0.16.3",
-        "@processmaker/screen-builder": "3.8.45",
-        "@processmaker/vue-form-elements": "0.65.13",
+        "@processmaker/screen-builder": "3.8.43-branch-5932fbd7",
+        "@processmaker/vue-form-elements": "0.65.11-branch-2c6a640",
         "@processmaker/vue-multiselect": "2.3.3",
         "@tinymce/tinymce-vue": "2.0.0",
         "axios": "^0.27.2",
@@ -163,6 +163,10 @@
         "node": ">=16"
     },
     "overrides": {
-        "webpack": "5.88.2"
+        "webpack": "5.88.2",
+        "@processmaker/modeler": {
+            "@processmaker/screen-builder": "3.8.43-branch-5932fbd7",
+            "@processmaker/vue-form-elements": "0.65.11-branch-2c6a640"
+        }
     }
 }
