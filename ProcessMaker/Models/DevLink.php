@@ -7,6 +7,7 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use ProcessMaker\Exception\DevLinkRemoteBundleException;
+use ProcessMaker\Exception\DevLinkRemoteValidationException;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Options;
@@ -163,6 +164,18 @@ class DevLink extends ProcessMakerModel
             $invalidAssets = $exception->response->json('errors.assets');
             if (is_array($invalidAssets) && $invalidAssets !== []) {
                 throw new DevLinkRemoteBundleException($invalidAssets, $exception);
+            }
+
+            $invalidDependencies = $exception->response->json('errors.dependencies');
+            $validationMessage = $exception->response->json('error.message');
+            if (
+                $exception->response->status() === 422
+                && is_array($invalidDependencies)
+                && $invalidDependencies !== []
+                && is_string($validationMessage)
+                && trim($validationMessage) !== ''
+            ) {
+                throw new DevLinkRemoteValidationException($validationMessage, $exception);
             }
 
             throw $exception;
