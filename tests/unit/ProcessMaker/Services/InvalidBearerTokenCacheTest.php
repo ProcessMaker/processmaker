@@ -41,7 +41,7 @@ class InvalidBearerTokenCacheTest extends TestCase
         $this->assertTrue(InvalidBearerTokenCache::isInNegativeCache($token));
     }
 
-    public function testGuardBeforePassportThrowsWhenTokenWasCached(): void
+    public function testPrepareApiBearerBeforePassportThrowsWhenTokenWasCached(): void
     {
         $request = Request::create('/api/1.0/tasks', 'GET');
         $request->headers->set('Authorization', 'Bearer aaa.bbb.ccc');
@@ -50,74 +50,74 @@ class InvalidBearerTokenCacheTest extends TestCase
 
         $this->expectException(AuthenticationException::class);
 
-        InvalidBearerTokenCache::guardBeforePassport($request, ['api']);
+        InvalidBearerTokenCache::prepareApiBearerBeforePassport($request, ['api']);
     }
 
-    public function testGuardBeforePassportRejectsBearerWithoutJwtShape(): void
+    public function testPrepareApiBearerBeforePassportRejectsBearerWithoutJwtShape(): void
     {
         $request = $this->requestWithAuthorization('Bearer FAKE_JWT');
 
         $this->expectException(AuthenticationException::class);
 
-        InvalidBearerTokenCache::guardBeforePassport($request, ['api']);
+        InvalidBearerTokenCache::prepareApiBearerBeforePassport($request, ['api']);
     }
 
-    public function testGuardBeforePassportAllowsJwtShapedBearerThrough(): void
+    public function testPrepareApiBearerBeforePassportAllowsJwtShapedBearerThrough(): void
     {
         $request = $this->requestWithAuthorization('Bearer aaa.bbb.ccc');
 
-        InvalidBearerTokenCache::guardBeforePassport($request, ['api']);
+        InvalidBearerTokenCache::prepareApiBearerBeforePassport($request, ['api']);
         $this->addToAssertionCount(1);
     }
 
-    public function testGuardBeforePassportIgnoresEmptyBearer(): void
+    public function testPrepareApiBearerBeforePassportIgnoresEmptyBearer(): void
     {
-        InvalidBearerTokenCache::guardBeforePassport(
+        InvalidBearerTokenCache::prepareApiBearerBeforePassport(
             $this->requestWithAuthorization('Bearer '),
             ['api']
         );
         $this->addToAssertionCount(1);
     }
 
-    public function testGuardBeforePassportIgnoresWhitespaceOnlyBearer(): void
+    public function testPrepareApiBearerBeforePassportIgnoresWhitespaceOnlyBearer(): void
     {
-        InvalidBearerTokenCache::guardBeforePassport(
+        InvalidBearerTokenCache::prepareApiBearerBeforePassport(
             $this->requestWithAuthorization('Bearer    '),
             ['api']
         );
         $this->addToAssertionCount(1);
     }
 
-    public function testGuardBeforePassportAppliesWhenApiGuardAmongMultiple(): void
+    public function testPrepareApiBearerBeforePassportAppliesWhenApiGuardAmongMultiple(): void
     {
-        InvalidBearerTokenCache::guardBeforePassport(
+        InvalidBearerTokenCache::prepareApiBearerBeforePassport(
             $this->requestWithAuthorization('Bearer aaa.bbb.ccc'),
             ['web', 'api']
         );
         $this->addToAssertionCount(1);
     }
 
-    public function testGuardBeforePassportSkipsNonApiGuard(): void
+    public function testPrepareApiBearerBeforePassportSkipsNonApiGuard(): void
     {
-        InvalidBearerTokenCache::guardBeforePassport(
+        InvalidBearerTokenCache::prepareApiBearerBeforePassport(
             $this->requestWithAuthorization('Bearer FAKE_JWT'),
             ['web']
         );
         $this->addToAssertionCount(1);
     }
 
-    public function testGuardBeforePassportSkipsWithoutBearerHeader(): void
+    public function testPrepareApiBearerBeforePassportSkipsWithoutBearerHeader(): void
     {
-        InvalidBearerTokenCache::guardBeforePassport(
+        InvalidBearerTokenCache::prepareApiBearerBeforePassport(
             Request::create('/api/1.0/tasks', 'GET'),
             ['api']
         );
         $this->addToAssertionCount(1);
     }
 
-    public function testGuardBeforePassportSkipsNonBearerScheme(): void
+    public function testPrepareApiBearerBeforePassportSkipsNonBearerScheme(): void
     {
-        InvalidBearerTokenCache::guardBeforePassport(
+        InvalidBearerTokenCache::prepareApiBearerBeforePassport(
             $this->requestWithAuthorization('Basic dXNlcjpwYXNz'),
             ['api']
         );
@@ -138,7 +138,7 @@ class InvalidBearerTokenCacheTest extends TestCase
     {
         $request = Request::create('/api/1.0/tasks', 'GET');
         $request->headers->set('Authorization', 'Bearer aaa.bbb.ccc');
-        InvalidBearerTokenCache::saveJwtBearerBeforePassportClearsHeader($request);
+        InvalidBearerTokenCache::prepareApiBearerBeforePassport($request, ['api']);
         $request->headers->remove('Authorization');
 
         InvalidBearerTokenCache::rememberPassportJwtFailure($request, ['api']);

@@ -20,7 +20,7 @@ class InvalidBearerTokenCache
 
     private static ?int $ttlSecondsForTesting = null;
 
-    public static function guardBeforePassport(Request $request, array $guards): void
+    public static function prepareApiBearerBeforePassport(Request $request, array $guards): void
     {
         if (!self::isApiBearerRequest($request, $guards)) {
             return;
@@ -35,16 +35,10 @@ class InvalidBearerTokenCache
         if ($rawBearer !== null && !self::looksLikeJwt($rawBearer)) {
             throw new AuthenticationException('Unauthenticated.', $guards);
         }
-    }
 
-    public static function saveJwtBearerBeforePassportClearsHeader(Request $request): void
-    {
-        $rawBearer = self::bearerFromAuthorizationHeader($request);
-        if ($rawBearer === null || !self::looksLikeJwt($rawBearer)) {
-            return;
+        if ($rawBearer !== null && self::looksLikeJwt($rawBearer)) {
+            $request->attributes->set(self::ATTR_STASHED_JWT, $rawBearer);
         }
-
-        $request->attributes->set(self::ATTR_STASHED_JWT, $rawBearer);
     }
 
     public static function rememberPassportJwtFailure(Request $request, array $guards = []): void
