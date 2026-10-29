@@ -270,6 +270,15 @@ export default {
           ],
         },
         {
+          value: "copy-item",
+          content: "Copy",
+          icon: "fas fa-copy",
+          permission: [
+            "create-flow_genies",
+            "view-additional-asset-actions",
+          ],
+        },
+        {
           value: "add-to-project",
           content: "Add to Project",
           icon: "fas fa-folder-plus",
