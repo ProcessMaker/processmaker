@@ -30,6 +30,79 @@ class PluginManagerTest extends TestCase
         }
     }
 
+    public function testInstallExistingRepositoryChecksOutRequestedBranchWithoutMain()
+    {
+        $this->setUpTestPluginManager();
+
+        $repoUrl = 'https://github.com/ProcessMaker/plugin-develop.git';
+        $pluginName = 'plugin-develop';
+        $pluginPath = $this->pluginsDir . '/' . $pluginName;
+
+        $this->tempPluginDir = $pluginPath;
+        mkdir($this->tempPluginDir, 0755, true);
+        file_put_contents(
+            $this->tempPluginDir . '/composer.json',
+            json_encode([
+                'name' => 'processmaker/plugin-develop',
+                'autoload' => [
+                    'psr-4' => [
+                        'ProcessMaker\\Plugins\\Develop\\' => 'src/',
+                    ],
+                ],
+            ], JSON_PRETTY_PRINT)
+        );
+
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+
+        Event::fake([PluginLog::class]);
+
+        $manager = new PluginManager();
+        $manager->install($repoUrl, 'develop', null, 1);
+
+        Process::assertRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'fetch', '--all', '--tags']));
+        Process::assertRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'checkout', 'develop']));
+        Process::assertRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'pull', 'origin', 'develop']));
+        Process::assertNotRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'checkout', 'main']));
+    }
+
+    public function testInstallExistingRepositoryWithTagSkipsBranchCheckoutAndPull()
+    {
+        $this->setUpTestPluginManager();
+
+        $repoUrl = 'https://github.com/ProcessMaker/plugin-tagged.git';
+        $pluginName = 'plugin-tagged';
+        $pluginPath = $this->pluginsDir . '/' . $pluginName;
+
+        $this->tempPluginDir = $pluginPath;
+        mkdir($this->tempPluginDir, 0755, true);
+        file_put_contents(
+            $this->tempPluginDir . '/composer.json',
+            json_encode([
+                'name' => 'processmaker/plugin-tagged',
+                'autoload' => [
+                    'psr-4' => [
+                        'ProcessMaker\\Plugins\\Tagged\\' => 'src/',
+                    ],
+                ],
+            ], JSON_PRETTY_PRINT)
+        );
+
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+
+        Event::fake([PluginLog::class]);
+
+        $manager = new PluginManager();
+        $manager->install($repoUrl, null, 'v1.0.0', 1);
+
+        Process::assertRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'checkout', 'tags/v1.0.0']));
+        Process::assertNotRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'checkout', 'main']));
+        Process::assertNotRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'pull']));
+    }
+
     public function testInstallClonesRepositoryAndValidatesPlugin()
     {
         $this->setUpTestPluginManager();
@@ -371,6 +444,15 @@ class PluginManagerTest extends TestCase
 
             return str_contains($command, $artisanCommand);
         });
+    }
+
+    private function processRunsGitCommand($process, array $expectedCommand): bool
+    {
+        if (!is_array($process->command)) {
+            return false;
+        }
+
+        return $process->command === $expectedCommand;
     }
 
     private function deleteDirectory($dir)

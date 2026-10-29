@@ -159,6 +159,8 @@
       style="display: none"
       :set-custom-buttons="true"
       :custom-buttons="progressModalButtons"
+      :hide-header-close="true"
+      :no-close-on-esc="true"
       @close="hideProgressModal"
       @hidden="resetProgressModal"
     >
@@ -594,7 +596,6 @@ const onProgressJobDone = () => {
   progressIsRunning.value = false;
   progressIsDone.value = true;
   enableProgressModalClose();
-  reloadAfterPluginChange($t("The plugin was ") + pendingVerb.value + ".");
 };
 
 const onProgressJobError = () => {

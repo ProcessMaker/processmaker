@@ -75,25 +75,19 @@ class PluginManager
 
             $this->logRunning("Starting installation of plugin: {$repoName}", $repoName, $userId);
 
-            // Clone or pull the repository
             if (is_dir($pluginPath)) {
-                // Fetch branches
-                $this->logRunning('Plugin directory exists, checking out main branch...', $repoName, $userId);
-                $this->checkoutBranch($pluginPath, 'main', $repoName, $userId);
-                $this->logRunning('Pulling latest changes from main branch...', $repoName, $userId);
-                $this->pullRepository($pluginPath, $repoName, $userId);
+                $this->updateExistingRepository($pluginPath, $repoName, $branch, $tag, $userId);
             } else {
                 $this->logRunning('Cloning repository...', $repoName, $userId);
                 $this->cloneRepository($repoUrl, $pluginPath, $repoName, $userId);
-            }
 
-            // Checkout branch or tag if specified
-            if ($branch) {
-                $this->logRunning("Checking out branch: {$branch}", $repoName, $userId);
-                $this->checkoutBranch($pluginPath, $branch, $repoName, $userId);
-            } elseif ($tag) {
-                $this->logRunning("Checking out tag: {$tag}", $repoName, $userId);
-                $this->checkoutTag($pluginPath, $tag, $repoName, $userId);
+                if ($branch) {
+                    $this->logRunning("Checking out branch: {$branch}", $repoName, $userId);
+                    $this->checkoutBranch($pluginPath, $branch, $repoName, $userId);
+                } elseif ($tag) {
+                    $this->logRunning("Checking out tag: {$tag}", $repoName, $userId);
+                    $this->checkoutTag($pluginPath, $tag, $repoName, $userId);
+                }
             }
         }
 
@@ -462,9 +456,81 @@ class PluginManager
      * @return void
      * @throws RuntimeException
      */
-    protected function pullRepository(string $pluginPath, string $repoName, ?int $userId = null): void
+    /**
+     * Fetch remotes and check out the requested ref when the plugin clone already exists.
+     */
+    protected function updateExistingRepository(
+        string $pluginPath,
+        string $repoName,
+        ?string $branch,
+        ?string $tag,
+        ?int $userId = null
+    ): void {
+        $this->logRunning('Plugin directory exists, fetching from remote...', $repoName, $userId);
+        $this->fetchRepository($pluginPath, $repoName, $userId);
+
+        if ($tag) {
+            $this->logRunning("Checking out tag: {$tag}", $repoName, $userId);
+            $this->checkoutTag($pluginPath, $tag, $repoName, $userId);
+
+            return;
+        }
+
+        $branchToCheckout = $branch ?? $this->resolveRemoteDefaultBranch($pluginPath, $repoName, $userId);
+        $this->logRunning("Checking out branch: {$branchToCheckout}", $repoName, $userId);
+        $this->checkoutBranch($pluginPath, $branchToCheckout, $repoName, $userId);
+        $this->logRunning("Pulling latest changes for branch {$branchToCheckout}...", $repoName, $userId);
+        $this->pullRepository($pluginPath, $repoName, $userId, $branchToCheckout);
+    }
+
+    protected function fetchRepository(string $pluginPath, string $repoName, ?int $userId = null): void
     {
-        $process = Process::path($pluginPath)->timeout(300)->run(['git', 'pull']);
+        $process = Process::path($pluginPath)->timeout(300)->run(['git', 'fetch', '--all', '--tags']);
+
+        if (!$process->successful()) {
+            $this->logError('Failed to fetch repository: ' . $process->errorOutput(), $repoName, $userId);
+            throw new RuntimeException('Failed to fetch repository: ' . $process->errorOutput());
+        }
+    }
+
+    protected function resolveRemoteDefaultBranch(string $pluginPath, string $repoName, ?int $userId = null): string
+    {
+        $process = Process::path($pluginPath)->timeout(60)->run(['git', 'rev-parse', '--abbrev-ref', 'origin/HEAD']);
+
+        if ($process->successful()) {
+            $ref = trim($process->output());
+            if (str_starts_with($ref, 'origin/')) {
+                return substr($ref, strlen('origin/'));
+            }
+            if ($ref !== '' && $ref !== 'HEAD') {
+                return $ref;
+            }
+        }
+
+        foreach (['main', 'master', 'develop'] as $fallbackBranch) {
+            $check = Process::path($pluginPath)->run([
+                'git',
+                'show-ref',
+                '--verify',
+                '--quiet',
+                "refs/remotes/origin/{$fallbackBranch}",
+            ]);
+            if ($check->successful()) {
+                return $fallbackBranch;
+            }
+        }
+
+        $this->logError('Could not determine default branch for plugin repository', $repoName, $userId);
+        throw new RuntimeException('Could not determine default branch for plugin repository');
+    }
+
+    protected function pullRepository(string $pluginPath, string $repoName, ?int $userId = null, ?string $branch = null): void
+    {
+        $command = $branch === null
+            ? ['git', 'pull']
+            : ['git', 'pull', 'origin', $branch];
+
+        $process = Process::path($pluginPath)->timeout(300)->run($command);
 
         if (!$process->successful()) {
             $this->logError('Failed to pull repository: ' . $process->errorOutput(), $repoName, $userId);

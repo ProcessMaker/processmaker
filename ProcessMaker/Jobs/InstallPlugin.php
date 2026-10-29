@@ -16,7 +16,7 @@ class InstallPlugin implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $tries = 1;
+    public $tries = 5;
 
     public $maxExceptions = 1;
 
