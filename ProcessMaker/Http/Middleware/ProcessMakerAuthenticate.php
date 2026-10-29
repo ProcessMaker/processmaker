@@ -30,9 +30,9 @@ class ProcessMakerAuthenticate extends Authenticate
 
     protected function authenticate($request, array $guards)
     {
-        InvalidBearerTokenCache::prepareApiBearerBeforePassport($request, $guards);
-
         $this->addAcceptJsonHeaderIfApiCall($request, $guards);
+
+        InvalidBearerTokenCache::prepareApiBearerBeforePassport($request, $guards);
 
         if (auth()->check() && !$request->ajax()) {
             $permissions = $request->user()->loadPermissions();
