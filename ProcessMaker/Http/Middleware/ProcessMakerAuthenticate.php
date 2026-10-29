@@ -3,8 +3,11 @@
 namespace ProcessMaker\Http\Middleware;
 
 use Closure;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Str;
+use League\OAuth2\Server\Exception\OAuthServerException;
+use ProcessMaker\Services\InvalidBearerTokenCache;
 
 class ProcessMakerAuthenticate extends Authenticate
 {
@@ -29,7 +32,8 @@ class ProcessMakerAuthenticate extends Authenticate
     {
         $this->addAcceptJsonHeaderIfApiCall($request, $guards);
 
-        // Load permissions into the session
+        InvalidBearerTokenCache::prepareApiBearerBeforePassport($request, $guards);
+
         if (auth()->check() && !$request->ajax()) {
             $permissions = $request->user()->loadPermissions();
             session(['permissions' => $permissions]);
@@ -39,9 +43,15 @@ class ProcessMakerAuthenticate extends Authenticate
     }
 
     /**
-     * @param array $guards
-     * @param \Illuminate\Http\Request $request
+     * {@inheritdoc}
      */
+    protected function unauthenticated($request, array $guards)
+    {
+        InvalidBearerTokenCache::rememberPassportJwtFailure($request, $guards);
+
+        throw new AuthenticationException('Unauthenticated.', $guards);
+    }
+
     private function addAcceptJsonHeaderIfApiCall(\Illuminate\Http\Request $request, array $guards): void
     {
         if (in_array('api', $guards) && !$this->requestHasAcceptJsonHeader($request)) {
@@ -49,10 +59,6 @@ class ProcessMakerAuthenticate extends Authenticate
         }
     }
 
-    /**
-     * @param \Illuminate\Http\Request $request
-     * @return bool
-     */
     private function requestHasAcceptJsonHeader(\Illuminate\Http\Request $request): bool
     {
         return Str::contains($request->header('accept'), ['/json', '+json']);
