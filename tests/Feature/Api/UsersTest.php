@@ -127,6 +127,41 @@ class UsersTest extends TestCase
         $response->assertStatus(201);
     }
 
+    public function testCreateUserAcceptsNamesUpTo255Characters(): void
+    {
+        $faker = Faker::create();
+        $response = $this->apiCall('POST', self::API_TEST_URL, [
+            'username' => 'longname255user',
+            'firstname' => str_repeat('f', 255),
+            'lastname' => str_repeat('l', 255),
+            'email' => $faker->unique()->safeEmail(),
+            'status' => 'ACTIVE',
+            'password' => $this->makePassword(),
+        ]);
+
+        $response->assertStatus(201);
+        $user = User::where('username', 'longname255user')->first();
+        $this->assertNotNull($user);
+        $this->assertSame(255, strlen($user->firstname));
+        $this->assertSame(255, strlen($user->lastname));
+    }
+
+    public function testCreateUserRejectsLastnameLongerThan255Characters(): void
+    {
+        $faker = Faker::create();
+        $response = $this->apiCall('POST', self::API_TEST_URL, [
+            'username' => 'longname256user',
+            'firstname' => 'Valid',
+            'lastname' => str_repeat('l', 256),
+            'email' => $faker->unique()->safeEmail(),
+            'status' => 'ACTIVE',
+            'password' => $this->makePassword(),
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors(['lastname']);
+        $this->assertDatabaseMissing('users', ['username' => 'longname256user']);
+    }
+
     /**
      * Create new user and the email task notification needs to enable per default
      */
