@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Middleware;
 
 use Closure;
+use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\User;
@@ -53,11 +54,15 @@ class EnsureAccountAllowsAccess
 
     public static function denyAccess(Request $request, string $guard, User $user): Response
     {
-        Auth::guard($guard)->logout();
+        $authGuard = Auth::guard($guard);
 
-        if ($request->hasSession()) {
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+        if ($authGuard instanceof StatefulGuard) {
+            $authGuard->logout();
+
+            if ($request->hasSession()) {
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
         }
 
         if ($guard === 'api' || $request->expectsJson()) {
