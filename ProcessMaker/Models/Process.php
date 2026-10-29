@@ -22,6 +22,7 @@ use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\ThereIsNoProcessManagerAssignedException;
 use ProcessMaker\Facades\WorkflowUserManager;
+use ProcessMaker\ImportExport\AssignmentRulesReconciliation;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Bpmn\Models\Activity;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -928,6 +929,10 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 $formalExp->setBody($item->expression);
                 $eval = $formalExp($instanceData);
                 if ($eval) {
+                    // Unresolved import assignees must not assign or escalate to the Process Manager.
+                    if (AssignmentRulesReconciliation::isUnresolvedRule($item)) {
+                        throw new TaskDoesNotHaveUsersException($activity->getName());
+                    }
                     switch ($item->type) {
                         case 'user_group':
                             $users = [];
@@ -1005,6 +1010,9 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 $formalExp->setBody($item->expression);
                 $eval = $formalExp($instanceData);
                 if ($eval) {
+                    if (AssignmentRulesReconciliation::isUnresolvedRule($item)) {
+                        throw new TaskDoesNotHaveUsersException($activity->getName());
+                    }
                     if ($item->type === 'group') {
                         $groups[] = $item->assignee;
                     } elseif ($item->type === 'user') {
@@ -1016,6 +1024,9 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             // If no rule was applied, use the default configured user/group
             if (empty($users) && empty($groups)) {
                 foreach ($default as $item) {
+                    if (AssignmentRulesReconciliation::isUnresolvedRule($item)) {
+                        throw new TaskDoesNotHaveUsersException($activity->getName());
+                    }
                     if ($item->type === 'group') {
                         $groups[] = $item->assignee;
                     } elseif ($item->type === 'user') {

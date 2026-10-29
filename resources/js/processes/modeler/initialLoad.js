@@ -46,6 +46,7 @@ import Interstitial from "./components/inspector/Interstitial";
 import TaskInterstitial from "./components/inspector/TaskInterstitial";
 import SelectUserGroup from "../../components/SelectUserGroup";
 import validateScreenRef from "./validateScreenRef";
+import validateUnresolvedAssignmentRules from "./validateUnresolvedAssignmentRules";
 import validateFlowGenieRef from "./validateFlowGenieRef";
 import ErrorHandlingTimeout from "./components/inspector/ErrorHandlingTimeout";
 import ErrorHandlingRetryAttempts from "./components/inspector/ErrorHandlingRetryAttempts";
@@ -523,3 +524,4 @@ ProcessMaker.EventBus.$on(
 
 validateScreenRef();
 validateFlowGenieRef();
+validateUnresolvedAssignmentRules();

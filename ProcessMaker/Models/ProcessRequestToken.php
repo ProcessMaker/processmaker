@@ -17,6 +17,7 @@ use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowUserManager;
+use ProcessMaker\ImportExport\AssignmentRulesReconciliation;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\MustacheExpressionEvaluator;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
@@ -1106,13 +1107,24 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 continue;
             }
 
+            // In reassign picker, skip unresolved rules without
+            // throwing. Runtime assignment still fails via getNextUserByRule.
+            // Mark as matched so we do not fall through to Default Assignment.
             $hasExpressionMatch = true;
+            if (AssignmentRulesReconciliation::isUnresolvedRule($assignment)) {
+                continue;
+            }
+
             $this->appendAssignmentAssignees($assignment, $userIds);
         }
 
         if (!$hasExpressionMatch) {
             foreach ($assignments as $assignment) {
                 if (!$this->isDefaultAssignmentRule($assignment)) {
+                    continue;
+                }
+
+                if (AssignmentRulesReconciliation::isUnresolvedRule($assignment)) {
                     continue;
                 }
 
