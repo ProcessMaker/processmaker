@@ -220,17 +220,136 @@ class ProcessRequestsTest extends TestCase
 
         $token = ProcessRequestToken::factory()->create([
             'process_request_id' => $request->id,
+            'element_type' => 'task',
             'user_id' => $participant->id,
         ]);
 
         $otherToken = ProcessRequestToken::factory()->create([
             'process_request_id' => $otherRequest->id,
+            'element_type' => 'task',
             'user_id' => $otherUser->id,
         ]);
 
         $response = $this->apiCall('GET', self::API_TEST_URL, ['pmql' => "participant = \"{$participant->username}\""]);
         $this->assertEquals(1, $response->json()['meta']['total']);
         $this->assertEquals($request->id, $response->json()['data'][0]['id']);
+    }
+
+    public function testFilterByParticipantIncludesNonTaskTokens()
+    {
+        $participant = User::factory()->create();
+        $otherUser = User::factory()->create();
+
+        $request = ProcessRequest::factory()->create(['status' => 'ACTIVE']);
+        $otherRequest = ProcessRequest::factory()->create(['status' => 'ACTIVE']);
+
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $request->id,
+            'process_id' => $request->process_id,
+            'element_type' => 'callActivity',
+            'user_id' => $participant->id,
+        ]);
+
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $otherRequest->id,
+            'process_id' => $otherRequest->process_id,
+            'element_type' => 'callActivity',
+            'user_id' => $otherUser->id,
+        ]);
+
+        $response = $this->apiCall('GET', self::API_TEST_URL, ['pmql' => "participant = \"{$participant->username}\""]);
+
+        $response->assertStatus(200);
+        $this->assertEquals(1, $response->json()['meta']['total']);
+        $this->assertEquals($request->id, $response->json()['data'][0]['id']);
+    }
+
+    public function testAdvancedFilterByParticipantFullNameIncludesNonTaskTokens()
+    {
+        $participant = User::factory()->create([
+            'firstname' => 'D150',
+            'lastname' => 'workshop',
+        ]);
+        $otherUser = User::factory()->create();
+
+        $request = ProcessRequest::factory()->create([
+            'name' => 'Create-Update records in collections',
+            'status' => 'ACTIVE',
+        ]);
+        $taskRequest = ProcessRequest::factory()->create([
+            'name' => 'Create-Update records in collections',
+            'status' => 'ACTIVE',
+        ]);
+        $otherRequest = ProcessRequest::factory()->create([
+            'name' => 'Create-Update records in collections',
+            'status' => 'ACTIVE',
+        ]);
+        $request->update(['case_title' => 'Inspection Report']);
+        $otherRequest->update(['case_title' => 'Inspection Report']);
+
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $request->id,
+            'process_id' => $request->process_id,
+            'element_type' => 'callActivity',
+            'user_id' => $participant->id,
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $taskRequest->id,
+            'process_id' => $taskRequest->process_id,
+            'element_type' => 'task',
+            'user_id' => $participant->id,
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $otherRequest->id,
+            'process_id' => $otherRequest->process_id,
+            'element_type' => 'callActivity',
+            'user_id' => $otherUser->id,
+        ]);
+
+        $participantFilter = [
+            'subject' => ['type' => 'ParticipantsFullName', 'value' => 'participants'],
+            'operator' => 'contains',
+            'value' => 'D150 workshop',
+        ];
+
+        $response = $this->apiCall('GET', self::API_TEST_URL, [
+            'advanced_filter' => json_encode([$participantFilter]),
+            'include' => 'participants',
+        ]);
+        $json = $response->json();
+
+        $response->assertStatus(200);
+        $this->assertEquals(2, $json['meta']['total']);
+        $this->assertEqualsCanonicalizing(
+            [$request->id, $taskRequest->id],
+            collect($json['data'])->pluck('id')->all()
+        );
+        $requestData = collect($json['data'])->firstWhere('id', $request->id);
+        $this->assertEquals($participant->id, $requestData['participants'][0]['id']);
+
+        $combinedFilter = [
+            [
+                'subject' => ['type' => 'Field', 'value' => 'case_title'],
+                'operator' => '=',
+                'value' => 'Inspection Report',
+            ],
+            [
+                'subject' => ['type' => 'Field', 'value' => 'name'],
+                'operator' => '=',
+                'value' => 'Create-Update records in collections',
+            ],
+            $participantFilter,
+        ];
+
+        $response = $this->apiCall('GET', self::API_TEST_URL, [
+            'advanced_filter' => json_encode($combinedFilter),
+            'include' => 'participants',
+        ]);
+        $json = $response->json();
+
+        $response->assertStatus(200);
+        $this->assertEquals(1, $json['meta']['total']);
+        $this->assertEquals($request->id, $json['data'][0]['id']);
     }
 
     /**
