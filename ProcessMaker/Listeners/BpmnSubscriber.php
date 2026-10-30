@@ -146,22 +146,25 @@ class BpmnSubscriber
         Log::info('Activity completed: ' . json_encode($token->getProperties()));
 
         // Prometheus Metric: Activity Execution Time
-        $startTime = $token->created_at_ms;
-        $completedTime = $token->completed_at_ms;
-        $executionTime = $completedTime->diffInMilliseconds($startTime);
-        Metrics::histogramObserve(
-            'activity_execution_time_seconds',
-            'Activity Execution Time',
-            [
-                'activity_id' => $token->element_id,
-                'activity_name' => $token->element_name,
-                'element_type' => $token->element_type,
-                'process_id' => $token->process_id,
-                'request_id' => $token->process_request_id,
-            ],
-            [1, 10, 3600, 86400],
-            $executionTime,
-        );
+        $startTime = $token->created_at_ms ?? $token->created_at;
+        $completedTime = $token->completed_at_ms ?? $token->completed_at;
+
+        if ($startTime && $completedTime) {
+            $executionTime = $completedTime->diffInMilliseconds($startTime);
+            Metrics::histogramObserve(
+                'activity_execution_time_seconds',
+                'Activity Execution Time',
+                [
+                    'activity_id' => $token->element_id,
+                    'activity_name' => $token->element_name,
+                    'element_type' => $token->element_type,
+                    'process_id' => $token->process_id,
+                    'request_id' => $token->process_request_id,
+                ],
+                [1, 10, 3600, 86400],
+                $executionTime,
+            );
+        }
 
         if ($token->element_type == 'task') {
             $notifiables = $token->getNotifiables('completed');

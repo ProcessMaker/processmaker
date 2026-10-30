@@ -29,6 +29,10 @@ Route::prefix('api/1.1')
             // Route to show the interstitial screen of a task
             Route::get('/{taskId}/interstitial', [TaskController::class, 'showInterstitial'])
                 ->name('show.interstitial');
+
+            // Optimized task completion using raw queries (FOUR-32800).
+            Route::put('/{taskId}', [TaskController::class, 'update'])
+                ->name('update');
         });
 
         // Cases Endpoints
