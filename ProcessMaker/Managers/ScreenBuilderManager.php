@@ -52,8 +52,16 @@ class ScreenBuilderManager
 
     public function addPackageScripts($type = 'DISPLAY')
     {
-        // Depending of the form type we load the correct file with the components to display
-        $extensionsFile = 'screen-builder-' . strtolower($type) . '-components.js';
+        $this->addComposerPackageScripts($type);
+        $this->addStoragePluginScripts($type);
+    }
+
+    /**
+     * Load screen-builder extension scripts from Composer packages under vendor/processmaker/packages.
+     */
+    private function addComposerPackageScripts(string $type): void
+    {
+        $extensionsFile = $this->screenBuilderExtensionsFile($type);
 
         $directories = glob('vendor/processmaker/packages/*', GLOB_ONLYDIR);
         $installed = app(PackageManifest::class)->list();
@@ -64,10 +72,96 @@ class ScreenBuilderManager
         }));
         foreach ($directories as $directory) {
             $extensionsFullName = $directory . '/js/' . $extensionsFile;
-            $files = glob($extensionsFullName);
-            if (count($files) > 0) {
-                $this->addScript('/' . $files[0]);
+            foreach (glob($extensionsFullName) ?: [] as $file) {
+                $publicPath = $this->normalizePublicScriptPath($file);
+                if ($publicPath !== null) {
+                    $this->addScript($publicPath);
+                }
             }
         }
+    }
+
+    /**
+     * Load screen-builder extension scripts for enabled plugins in storage/plugins when
+     * assets were published to public/vendor/processmaker/packages/{name}/js/.
+     */
+    private function addStoragePluginScripts(string $type): void
+    {
+        $extensionsFile = $this->screenBuilderExtensionsFile($type);
+        $pluginsFolder = storage_path('plugins');
+
+        if (!is_dir($pluginsFolder)) {
+            return;
+        }
+
+        foreach (glob($pluginsFolder . '/*', GLOB_ONLYDIR) ?: [] as $pluginPath) {
+            $folderName = basename($pluginPath);
+            if (str_starts_with($folderName, '_')) {
+                continue;
+            }
+
+            $packageName = $this->resolvePluginPackageName($pluginPath, $folderName);
+            $relativePath = '/vendor/processmaker/packages/' . $packageName . '/js/' . $extensionsFile;
+
+            if (file_exists(public_path($relativePath))) {
+                $this->addScript($relativePath);
+            }
+        }
+    }
+
+    private function screenBuilderExtensionsFile(string $type): string
+    {
+        return 'screen-builder-' . strtolower($type) . '-components.js';
+    }
+
+    /**
+     * Resolve the web package folder name (e.g. package-plg) from a plugin directory.
+     */
+    private function resolvePluginPackageName(string $pluginPath, string $folderName): string
+    {
+        $composerPath = $pluginPath . '/composer.json';
+        if (!is_file($composerPath)) {
+            return $folderName;
+        }
+
+        $content = file_get_contents($composerPath);
+        $data = json_decode($content, true);
+        if (!is_array($data)) {
+            return $folderName;
+        }
+
+        $name = $data['name'] ?? null;
+        if (is_string($name) && str_contains($name, '/')) {
+            return substr($name, strrpos($name, '/') + 1);
+        }
+
+        return $folderName;
+    }
+
+    /**
+     * Convert a filesystem path to a public-relative script path with a leading slash.
+     */
+    private function normalizePublicScriptPath(string $filesystemPath): ?string
+    {
+        $path = str_replace('\\', '/', $filesystemPath);
+        if ($path === '') {
+            return null;
+        }
+
+        if (str_starts_with($path, '/')) {
+            $publicRoot = str_replace('\\', '/', realpath(public_path()) ?: public_path());
+            if (str_starts_with($path, $publicRoot)) {
+                return '/' . ltrim(substr($path, strlen($publicRoot)), '/');
+            }
+
+            $baseRoot = str_replace('\\', '/', realpath(base_path()) ?: base_path());
+            if (str_starts_with($path, $baseRoot)) {
+                return '/' . ltrim(substr($path, strlen($baseRoot)), '/');
+            }
+
+            return null;
+        }
+
+        return '/' . ltrim($path, '/');
     }
 }

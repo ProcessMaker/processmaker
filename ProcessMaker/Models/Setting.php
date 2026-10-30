@@ -75,11 +75,11 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
 
     public const SESSION_CONTROL_GROUP = 'Session Control';
 
+    public const READY_KEY = 'readyToUseSettingsDatabase';
+
     private static bool $redisAvailable = false;
 
     private static bool $settingsTableExists = false;
-
-    private static bool $readyToUseSettingsDatabase = false;
 
     /**
      * The attributes that aren't mass assignable.
@@ -535,15 +535,15 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
 
     public static function readyToUseSettingsDatabase()
     {
-        if (!self::$readyToUseSettingsDatabase) {
-            self::$readyToUseSettingsDatabase =
+        if (!app()->has(self::READY_KEY) || !app(self::READY_KEY)) {
+            app()->instance(self::READY_KEY,
                 app('tenant-resolved') &&
                 self::databaseAvailable() &&
                 self::redisAvailable() &&
-                self::settingsTableExists();
+                self::settingsTableExists());
         }
 
-        return self::$readyToUseSettingsDatabase;
+        return app(self::READY_KEY);
     }
 
     private static function databaseAvailable()

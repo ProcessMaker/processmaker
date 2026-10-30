@@ -14,6 +14,8 @@
     :header-class="headerClass"
     :footer-class="footerClass"
     :content-class="contentClass"
+    :no-close-on-esc="noCloseOnEsc"
+    :hide-header-close="hideHeaderClose"
     :size="size"
     :ok-only="okOnly"
     no-close-on-backdrop
@@ -134,7 +136,9 @@
       "titleIcon",
       "headerClass",
       "footerClass",
-      "contentClass"
+      "contentClass",
+      "noCloseOnEsc",
+      "hideHeaderClose"
     ],
     data() {
       return {

@@ -122,6 +122,10 @@ class GenerateMenus
                         'icon' => 'fa-code',
                     ]);
                 }
+                $submenu->add(__('Plugins'), [
+                    'route' => 'plugins.index',
+                    'icon' => 'fa-plug',
+                ]);
 
                 if (config('app.case_retention_policy_enabled')) {
                     $submenu->add(__('Cases Retention Logs'), [

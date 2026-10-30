@@ -1,0 +1,475 @@
+<?php
+
+namespace Tests\Managers;
+
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Process;
+use ProcessMaker\Events\PluginLog;
+use ProcessMaker\Managers\PluginManager;
+use RuntimeException;
+use Tests\TestCase;
+
+class PluginManagerTest extends TestCase
+{
+    private $pluginsDir;
+
+    private $tempPluginDir;
+
+    public function setUpTestPluginManager()
+    {
+        $this->pluginsDir = storage_path('plugins');
+        if (!is_dir($this->pluginsDir)) {
+            mkdir($this->pluginsDir, 0755, true);
+        }
+    }
+
+    public function tearDownTestPluginManager()
+    {
+        if ($this->tempPluginDir && is_dir($this->tempPluginDir)) {
+            $this->deleteDirectory($this->tempPluginDir);
+        }
+    }
+
+    public function testInstallExistingRepositoryChecksOutRequestedBranchWithoutMain()
+    {
+        $this->setUpTestPluginManager();
+
+        $repoUrl = 'https://github.com/ProcessMaker/plugin-develop.git';
+        $pluginName = 'plugin-develop';
+        $pluginPath = $this->pluginsDir . '/' . $pluginName;
+
+        $this->tempPluginDir = $pluginPath;
+        mkdir($this->tempPluginDir, 0755, true);
+        file_put_contents(
+            $this->tempPluginDir . '/composer.json',
+            json_encode([
+                'name' => 'processmaker/plugin-develop',
+                'autoload' => [
+                    'psr-4' => [
+                        'ProcessMaker\\Plugins\\Develop\\' => 'src/',
+                    ],
+                ],
+            ], JSON_PRETTY_PRINT)
+        );
+
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+
+        Event::fake([PluginLog::class]);
+
+        $manager = new PluginManager();
+        $manager->install($repoUrl, 'develop', null, 1);
+
+        Process::assertRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'fetch', '--all', '--tags']));
+        Process::assertRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'checkout', 'develop']));
+        Process::assertRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'pull', 'origin', 'develop']));
+        Process::assertNotRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'checkout', 'main']));
+    }
+
+    public function testInstallExistingRepositoryWithTagSkipsBranchCheckoutAndPull()
+    {
+        $this->setUpTestPluginManager();
+
+        $repoUrl = 'https://github.com/ProcessMaker/plugin-tagged.git';
+        $pluginName = 'plugin-tagged';
+        $pluginPath = $this->pluginsDir . '/' . $pluginName;
+
+        $this->tempPluginDir = $pluginPath;
+        mkdir($this->tempPluginDir, 0755, true);
+        file_put_contents(
+            $this->tempPluginDir . '/composer.json',
+            json_encode([
+                'name' => 'processmaker/plugin-tagged',
+                'autoload' => [
+                    'psr-4' => [
+                        'ProcessMaker\\Plugins\\Tagged\\' => 'src/',
+                    ],
+                ],
+            ], JSON_PRETTY_PRINT)
+        );
+
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+
+        Event::fake([PluginLog::class]);
+
+        $manager = new PluginManager();
+        $manager->install($repoUrl, null, 'v1.0.0', 1);
+
+        Process::assertRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'checkout', 'tags/v1.0.0']));
+        Process::assertNotRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'checkout', 'main']));
+        Process::assertNotRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'pull']));
+    }
+
+    public function testInstallClonesRepositoryAndValidatesPlugin()
+    {
+        $this->setUpTestPluginManager();
+
+        $repoUrl = 'https://github.com/ProcessMaker/plugin-example.git';
+        $pluginName = 'plugin-example';
+        $pluginPath = $this->pluginsDir . '/' . $pluginName;
+
+        // Create temporary plugin directory with valid composer.json
+        $this->tempPluginDir = $pluginPath;
+        mkdir($this->tempPluginDir, 0755, true);
+        $composerJson = [
+            'name' => 'processmaker/plugin-example',
+            'description' => 'Test plugin',
+            'autoload' => [
+                'psr-4' => [
+                    'ProcessMaker\\Plugins\\Example\\' => 'src/',
+                ],
+            ],
+        ];
+        file_put_contents(
+            $this->tempPluginDir . '/composer.json',
+            json_encode($composerJson, JSON_PRETTY_PRINT)
+        );
+
+        // Fake Process to return successful results
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+
+        Event::fake([PluginLog::class]);
+
+        $manager = new PluginManager();
+        $manager->install($repoUrl, null, null, 1);
+
+        Event::assertDispatched(PluginLog::class, function ($event) {
+            return str_contains($event->message, 'installed successfully');
+        });
+        $this->assertProcessRanCommand('horizon:terminate');
+    }
+
+    public function testInstallValidatesComposerJsonNamespace()
+    {
+        $this->setUpTestPluginManager();
+
+        $repoUrl = 'https://github.com/ProcessMaker/invalid-plugin.git';
+        $pluginName = 'invalid-plugin';
+        $pluginPath = $this->pluginsDir . '/' . $pluginName;
+
+        // Create temporary plugin directory with invalid composer.json
+        $this->tempPluginDir = $pluginPath;
+        mkdir($this->tempPluginDir, 0755, true);
+        $composerJson = [
+            'name' => 'invalid/plugin',
+            'autoload' => [
+                'psr-4' => [
+                    'Invalid\\Namespace\\' => 'src/',
+                ],
+            ],
+        ];
+        file_put_contents(
+            $this->tempPluginDir . '/composer.json',
+            json_encode($composerJson, JSON_PRETTY_PRINT)
+        );
+
+        // Fake Process to return successful results
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+
+        Event::fake([PluginLog::class]);
+
+        $manager = new PluginManager();
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("Plugin PSR-4 namespace must start with 'ProcessMaker\\Plugins\\'");
+
+        $manager->install($repoUrl);
+    }
+
+    public function testUninstallRemovesPluginDirectory()
+    {
+        $this->setUpTestPluginManager();
+
+        $pluginName = 'test-plugin';
+        $pluginPath = $this->pluginsDir . '/' . $pluginName;
+
+        // Create temporary plugin directory
+        $this->tempPluginDir = $pluginPath;
+        mkdir($this->tempPluginDir, 0755, true);
+        file_put_contents($this->tempPluginDir . '/test.txt', 'test');
+
+        Event::fake([PluginLog::class]);
+
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+
+        $manager = new PluginManager();
+        $manager->uninstall($pluginName, 1);
+
+        $this->assertFalse(is_dir($pluginPath));
+        Event::assertDispatched(PluginLog::class, function ($event) {
+            return str_contains($event->message, 'uninstalled successfully');
+        });
+        $this->assertProcessRanCommand('horizon:terminate');
+    }
+
+    public function testUninstallThrowsExceptionForNonExistentPlugin()
+    {
+        $this->setUpTestPluginManager();
+
+        $manager = new PluginManager();
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Plugin not found: non-existent-plugin');
+
+        $manager->uninstall('non-existent-plugin');
+    }
+
+    public function testListReturnsInstalledPlugins()
+    {
+        $this->setUpTestPluginManager();
+
+        // Create test plugin directories
+        $plugin1Path = $this->pluginsDir . '/plugin-one';
+        $plugin2Path = $this->pluginsDir . '/plugin-two';
+        $this->tempPluginDir = $this->pluginsDir;
+
+        mkdir($plugin1Path, 0755, true);
+        mkdir($plugin2Path, 0755, true);
+
+        $composerJson1 = [
+            'name' => 'test/plugin-one',
+            'description' => 'First test plugin',
+            'autoload' => [
+                'psr-4' => [
+                    'ProcessMaker\\Plugins\\One\\' => 'src/',
+                ],
+            ],
+        ];
+
+        $composerJson2 = [
+            'name' => 'test/plugin-two',
+            'description' => 'Second test plugin',
+            'autoload' => [
+                'psr-4' => [
+                    'ProcessMaker\\Plugins\\Two\\' => 'src/',
+                ],
+            ],
+        ];
+
+        file_put_contents(
+            $plugin1Path . '/composer.json',
+            json_encode($composerJson1, JSON_PRETTY_PRINT)
+        );
+        file_put_contents(
+            $plugin2Path . '/composer.json',
+            json_encode($composerJson2, JSON_PRETTY_PRINT)
+        );
+
+        // Mock git commands to return null (no git repo)
+        Process::fake([
+            '*' => Process::result(''),
+        ]);
+
+        $manager = new PluginManager();
+        $plugins = $manager->list();
+
+        $this->assertCount(2, $plugins);
+        $this->assertEquals('plugin-one', $plugins[0]['name']);
+        $this->assertEquals('First test plugin', $plugins[0]['description']);
+        $this->assertEquals('plugin-two', $plugins[1]['name']);
+        $this->assertEquals('Second test plugin', $plugins[1]['description']);
+    }
+
+    public function testListIncludesDisabledPlugins()
+    {
+        $this->setUpTestPluginManager();
+
+        $validPluginPath = $this->pluginsDir . '/valid-plugin';
+        $hiddenPluginPath = $this->pluginsDir . '/_hidden-plugin';
+        $this->tempPluginDir = $this->pluginsDir;
+
+        mkdir($validPluginPath, 0755, true);
+        mkdir($hiddenPluginPath, 0755, true);
+
+        $composerJson = [
+            'name' => 'test/plugin',
+            'description' => 'Test plugin',
+            'autoload' => [
+                'psr-4' => [
+                    'ProcessMaker\\Plugins\\Test\\' => 'src/',
+                ],
+            ],
+        ];
+
+        file_put_contents(
+            $validPluginPath . '/composer.json',
+            json_encode($composerJson, JSON_PRETTY_PRINT)
+        );
+        file_put_contents(
+            $hiddenPluginPath . '/composer.json',
+            json_encode($composerJson, JSON_PRETTY_PRINT)
+        );
+
+        Process::fake();
+
+        $manager = new PluginManager();
+        $plugins = $manager->list();
+        $pluginsByName = collect($plugins)->keyBy('name');
+
+        $this->assertCount(2, $plugins);
+        $this->assertEquals('Enabled', $pluginsByName['valid-plugin']['enabled']);
+        $this->assertEquals('Disabled', $pluginsByName['hidden-plugin']['enabled']);
+    }
+
+    public function testArtisanEnvironmentIncludesCurrentTenant()
+    {
+        config(['app.multitenancy' => true]);
+        $this->app->instance('currentTenant', (object) ['id' => 7]);
+
+        $method = new \ReflectionMethod(PluginManager::class, 'artisanEnvironment');
+        $environment = $method->invoke(new PluginManager());
+
+        $this->assertSame(['TENANT' => '7'], $environment);
+    }
+
+    public function testToggleRebuildsRouteCacheAndTerminatesHorizon()
+    {
+        $this->setUpTestPluginManager();
+
+        $pluginName = 'toggle-plugin';
+        $pluginPath = $this->pluginsDir . '/' . $pluginName;
+        $this->tempPluginDir = $this->pluginsDir . '/_' . $pluginName;
+        mkdir($pluginPath, 0755, true);
+
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+
+        $manager = new PluginManager();
+        $enabled = $manager->toggle($pluginName);
+
+        $this->assertFalse($enabled);
+        $this->assertFalse(is_dir($pluginPath));
+        $this->assertTrue(is_dir($this->pluginsDir . '/_' . $pluginName));
+
+        $this->assertProcessRanCommand('route:cache');
+        $this->assertProcessRanCommand('horizon:terminate');
+    }
+
+    public function testToggleEnableTerminatesHorizon()
+    {
+        $this->setUpTestPluginManager();
+
+        $pluginName = 'toggle-plugin';
+        $disabledPath = $this->pluginsDir . '/_' . $pluginName;
+        $this->tempPluginDir = $this->pluginsDir . '/' . $pluginName;
+        mkdir($disabledPath, 0755, true);
+
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+
+        $manager = new PluginManager();
+        $enabled = $manager->toggle($pluginName);
+
+        $this->assertTrue($enabled);
+        $this->assertTrue(is_dir($this->pluginsDir . '/' . $pluginName));
+        $this->assertProcessRanCommand('horizon:terminate');
+    }
+
+    public function testLocalInstallReplacesLeftoverSymlinkWithCopy(): void
+    {
+        $this->setUpTestPluginManager();
+
+        $pluginName = 'local-symlink-plugin-' . uniqid();
+        $sourceDir = sys_get_temp_dir() . '/' . $pluginName;
+        $pluginPath = $this->pluginsDir . '/' . $pluginName;
+
+        mkdir($sourceDir, 0755, true);
+        mkdir($sourceDir . '/src', 0755, true);
+        file_put_contents($sourceDir . '/composer.json', json_encode([
+            'name' => 'processmaker/' . $pluginName,
+            'autoload' => [
+                'psr-4' => [
+                    'ProcessMaker\\Plugins\\SymlinkTest\\' => 'src/',
+                ],
+            ],
+        ], JSON_PRETTY_PRINT));
+        file_put_contents($sourceDir . '/source-only.marker', 'source');
+
+        $this->assertTrue(symlink($sourceDir, $pluginPath));
+        $this->assertTrue(is_link($pluginPath));
+
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+        Event::fake([PluginLog::class]);
+
+        $manager = new PluginManager();
+        $manager->install($sourceDir, null, null, 1);
+
+        $this->assertFalse(is_link($pluginPath));
+        $this->assertTrue(is_dir($pluginPath));
+        $this->assertFileExists($pluginPath . '/source-only.marker');
+
+        if (is_dir($pluginPath)) {
+            $this->deleteDirectory($pluginPath);
+        }
+        if (is_dir($sourceDir)) {
+            $this->deleteDirectory($sourceDir);
+        }
+    }
+
+    public function testRunCommandLogsSuccessfulOutputOnce()
+    {
+        Process::fake([
+            '*' => Process::result("Routes cached successfully.\n", exitCode: 0),
+        ]);
+        Event::fake([PluginLog::class]);
+
+        $method = new \ReflectionMethod(PluginManager::class, 'runCommand');
+        $method->invoke(new PluginManager(), 'route:cache', 'test-plugin', 1);
+
+        Event::assertDispatchedTimes(PluginLog::class, 1);
+        Event::assertDispatched(PluginLog::class, function (PluginLog $event) {
+            return str_contains($event->message, 'Plugin route:cache command output');
+        });
+    }
+
+    private function assertProcessRanCommand(string $artisanCommand): void
+    {
+        Process::assertRan(function ($process) use ($artisanCommand) {
+            $command = is_array($process->command)
+                ? implode(' ', $process->command)
+                : (string) $process->command;
+
+            return str_contains($command, $artisanCommand);
+        });
+    }
+
+    private function processRunsGitCommand($process, array $expectedCommand): bool
+    {
+        if (!is_array($process->command)) {
+            return false;
+        }
+
+        return $process->command === $expectedCommand;
+    }
+
+    private function deleteDirectory($dir)
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        $files = array_diff(scandir($dir), ['.', '..']);
+        foreach ($files as $file) {
+            $path = $dir . '/' . $file;
+            if (is_dir($path)) {
+                $this->deleteDirectory($path);
+            } else {
+                unlink($path);
+            }
+        }
+        rmdir($dir);
+    }
+}

@@ -1,0 +1,2 @@
+# Pinned deps for the schema/heuristic CI job (wheels only via --only-binary).
+PyYAML==6.0.3

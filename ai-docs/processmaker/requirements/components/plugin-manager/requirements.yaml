@@ -1,0 +1,243 @@
+specId: plugin-manager
+kind: component
+title: Plugin manager
+description: >-
+  Install, uninstall, and toggle ProcessMaker plugins asynchronously with
+  progress events for the requesting operator.
+config:
+  sources:
+    - url
+    - zip
+  gitRefOptions:
+    - branch
+    - tag
+  progressEvent: PluginLog
+  queue:
+    timeoutSeconds: 600
+    withoutOverlapping: true
+  permission: manage-plugins
+dependsOn: []
+requirements:
+  - id: FR-001
+    requirementType: Functional
+    title: Queue plugin install from repository URL
+    statement: >-
+      When an authorized operator requests install from a repository URL, the
+      component must enqueue the install work and return immediately without
+      waiting for clone or dependency installation to finish.
+    priority: Critical
+    status: Draft
+    tags: [plugins, install, queue]
+    acceptanceCriteria:
+      - given: An operator with manage-plugins permission submits a valid repository URL
+        when: The install request is accepted
+        then: An install job is queued and the HTTP response indicates the work was queued
+      - given: An install job is queued with an optional branch or tag
+        when: The worker runs the job
+        then: The plugin is cloned or updated and the requested git reference is checked out before dependency install
+    traceability:
+      testCases: []
+
+  - id: FR-002
+    requirementType: Functional
+    title: Queue plugin install from zip archive
+    statement: >-
+      When an authorized operator uploads a zip archive, the component must
+      persist the archive for the worker, enqueue install, and return without
+      blocking on extraction or dependency installation.
+    priority: High
+    status: Draft
+    tags: [plugins, install, zip, queue]
+    acceptanceCriteria:
+      - given: An operator uploads a valid plugin zip file
+        when: The install request is accepted
+        then: The zip is stored for the worker, an install job is queued, and the response indicates queued status
+      - given: A queued zip install job runs
+        when: Extraction and validation succeed
+        then: The plugin is copied into the plugins directory and dependencies are installed
+    traceability:
+      testCases: []
+
+  - id: FR-003
+    requirementType: Functional
+    title: Queue plugin uninstall
+    statement: >-
+      When an authorized operator requests uninstall by plugin name, the
+      component must enqueue uninstallation and return without waiting for the
+      uninstall command or directory removal to finish.
+    priority: High
+    status: Draft
+    tags: [plugins, uninstall, queue]
+    acceptanceCriteria:
+      - given: An installed plugin exists by name
+        when: The operator requests uninstall
+        then: An uninstall job is queued and the response indicates queued status
+      - given: An uninstall job runs for a known plugin
+        when: The job completes successfully
+        then: The plugin directory is removed and a done progress event is emitted
+    traceability:
+      testCases: []
+
+  - id: FR-004
+    requirementType: Functional
+    title: Queue plugin enable and disable toggle
+    statement: >-
+      When an authorized operator toggles a plugin, the component must enqueue
+      the enable or disable rename and return without waiting for runtime refresh.
+    priority: High
+    status: Draft
+    tags: [plugins, toggle, queue]
+    acceptanceCriteria:
+      - given: A plugin directory exists in enabled or disabled form
+        when: The operator requests toggle
+        then: A toggle job is queued and the response indicates queued status
+      - given: A toggle job disables an enabled plugin
+        when: The job completes
+        then: The plugin folder is renamed with a leading underscore and a done progress event is emitted
+    traceability:
+      testCases: []
+
+  - id: FR-005
+    requirementType: Functional
+    title: Broadcast install progress to the requesting operator
+    statement: >-
+      During queued plugin operations the component must emit progress events
+      to the requesting operator so the client can show running, done, and error
+      states without polling the HTTP install endpoint.
+    priority: Critical
+    status: Draft
+    tags: [plugins, progress, broadcast]
+    acceptanceCriteria:
+      - given: A plugin job is running for a known user id
+        when: The manager logs a running step
+        then: A PluginLog progress event is broadcast on that user's private channel
+      - given: A plugin job fails with an exception
+        when: The failure is handled
+        then: An error progress event with a failure message is broadcast to the requesting user
+    traceability:
+      testCases: []
+
+  - id: FR-006
+    requirementType: Functional
+    title: Validate plugin composer structure before install completes
+    statement: >-
+      The component must reject plugins whose composer.json is missing, invalid,
+      or whose PSR-4 namespace does not start with an allowed ProcessMaker plugin
+      or package prefix.
+    priority: High
+    status: Draft
+    tags: [plugins, validation]
+    acceptanceCriteria:
+      - given: A cloned or extracted plugin lacks a valid composer.json PSR-4 prefix
+        when: Validation runs during install
+        then: Install fails with an error progress event and the plugin is not marked installed successfully
+      - given: A plugin composer.json uses an allowed ProcessMaker Plugins or Package namespace
+        when: Validation runs
+        then: Validation succeeds and dependency installation may proceed
+    traceability:
+      testCases: []
+
+  - id: FR-007
+    requirementType: Functional
+    title: Refresh runtime after plugin code changes
+    statement: >-
+      After a successful install, uninstall, or toggle, the component must
+      rebuild the route cache for the current tenant context and signal queue
+      workers to restart so new plugin code is loaded.
+    priority: High
+    status: Draft
+    tags: [plugins, runtime, cache]
+    acceptanceCriteria:
+      - given: A plugin install job finishes successfully
+        when: Runtime refresh runs
+        then: Route cache is rebuilt and queue workers are signaled to terminate after the current job
+      - given: Multitenancy is enabled and a tenant is active
+        when: Artisan subprocesses run for refresh
+        then: The tenant id is passed in the subprocess environment
+    traceability:
+      testCases: []
+
+  - id: FR-008
+    requirementType: Functional
+    title: List installed plugins including disabled ones
+    statement: >-
+      The component must list plugins from the plugins directory, including
+      disabled folders, with name, description, version, reference, and enabled
+      state derived from folder naming.
+    priority: Medium
+    status: Draft
+    tags: [plugins, list]
+    acceptanceCriteria:
+      - given: Enabled and underscore-prefixed disabled plugin folders exist
+        when: The list operation runs
+        then: Both appear with enabled state reflecting the underscore prefix
+      - given: A folder under plugins is not a valid plugin
+        when: The list operation runs
+        then: The invalid folder is skipped without failing the whole list
+    traceability:
+      testCases: []
+
+  - id: NFR-001
+    requirementType: NonFunctional
+    title: Install request returns within API timeout budget
+    statement: >-
+      The HTTP install, uninstall, and toggle endpoints must acknowledge the
+      queued operation quickly so clients are not blocked by git clone or
+      composer install duration.
+    priority: Critical
+    status: Draft
+    category: Performance
+    tags: [plugins, latency, queue]
+    metrics:
+      - name: queue_ack_latency
+        operator: "<="
+        value: 5
+        unit: seconds
+    verificationMethod: Test
+    acceptanceCriteria:
+      - given: A valid install request is submitted while the queue is available
+        when: The endpoint responds
+        then: The response is returned in at most five seconds without waiting for composer install
+
+  - id: NFR-002
+    requirementType: NonFunctional
+    title: Plugin jobs allow long-running dependency install
+    statement: >-
+      Queued plugin jobs must allow sufficient wall-clock time for git and
+      composer operations, and subprocess timeouts must not be shorter than the
+      job budget for those steps.
+    priority: Critical
+    status: Draft
+    category: Reliability
+    tags: [plugins, timeout, composer]
+    metrics:
+      - name: job_timeout
+        operator: ">="
+        value: 600
+        unit: seconds
+    verificationMethod: Inspection
+    acceptanceCriteria:
+      - given: A plugin install job is configured
+        when: Job timeout settings are inspected
+        then: The job timeout is at least 600 seconds and composer subprocesses are not capped at the default 60-second process timeout
+
+  - id: NFR-003
+    requirementType: NonFunctional
+    title: Serialize concurrent plugin mutations
+    statement: >-
+      Concurrent install, uninstall, or toggle jobs must not overlap mutating
+      the plugins directory for the same deployment context.
+    priority: High
+    status: Draft
+    category: Reliability
+    tags: [plugins, concurrency]
+    metrics:
+      - name: overlapping_plugin_mutations
+        operator: "="
+        value: 0
+        unit: count
+    verificationMethod: Test
+    acceptanceCriteria:
+      - given: A plugin install job is already running
+        when: Another plugin mutation job is dispatched
+        then: The second job waits or is deferred until the overlapping lock is released

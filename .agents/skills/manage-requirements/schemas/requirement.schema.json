@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "requirement.schema.json",
+  "title": "Requirement",
+  "type": "object",
+  "required": [
+    "id",
+    "requirementType",
+    "title",
+    "statement",
+    "priority",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^(FR|NFR)-[0-9]{3,}$"
+    },
+    "requirementType": {
+      "type": "string",
+      "enum": ["Functional", "NonFunctional"]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3
+    },
+    "statement": {
+      "type": "string",
+      "minLength": 10
+    },
+    "description": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["Critical", "High", "Medium", "Low"]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Draft",
+        "Proposed",
+        "Approved",
+        "Implemented",
+        "Verified",
+        "Deprecated"
+      ]
+    },
+    "source": {
+      "type": "string"
+    },
+    "rationale": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "category": {
+      "type": "string"
+    },
+    "acceptanceCriteria": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/acceptanceCriterion"
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/metric"
+      }
+    },
+    "verificationMethod": {
+      "type": "string",
+      "enum": ["Test", "Inspection", "Analysis", "Demonstration", "Audit"]
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "traceability": {
+      "$ref": "#/$defs/traceability"
+    }
+  },
+  "$defs": {
+    "acceptanceCriterion": {
+      "type": "object",
+      "required": ["given", "when", "then"],
+      "properties": {
+        "given": {
+          "type": "string"
+        },
+        "when": {
+          "type": "string"
+        },
+        "then": {
+          "type": "string"
+        }
+      }
+    },
+    "metric": {
+      "type": "object",
+      "required": ["name", "operator", "value"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "operator": {
+          "type": "string",
+          "enum": ["<", "<=", "=", ">=", ">"]
+        },
+        "value": {
+          "type": ["number", "string"]
+        },
+        "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "traceability": {
+      "type": "object",
+      "properties": {
+        "businessObjectives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "epics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "testCases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "requirementType": {
+            "const": "Functional"
+          }
+        }
+      },
+      "then": {
+        "required": ["acceptanceCriteria"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "requirementType": {
+            "const": "NonFunctional"
+          }
+        }
+      },
+      "then": {
+        "required": ["category", "metrics", "verificationMethod"]
+      }
+    }
+  ]
+}
