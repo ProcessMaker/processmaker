@@ -6,6 +6,7 @@ import {
   attachSessionRenewalInterceptor,
   getCsrfToken,
 } from "../../common/csrfToken";
+import { installApiClientCache } from "../../apiClientCache";
 
 export default () => {
   const token = document.head.querySelector("meta[name=\"csrf-token\"]");
@@ -26,6 +27,7 @@ export default () => {
    */
 
   const apiClient = axios;
+  installApiClientCache(apiClient);
 
   // Laravel web sessions / CSRF with cookie requires axios to send cookies.
   apiClient.defaults.withCredentials = true;
