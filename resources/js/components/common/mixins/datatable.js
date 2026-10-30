@@ -137,6 +137,12 @@ export default {
       }
       this.fetch();
     },
+    // Explicit refresh after mutations (delete/archive).
+    // onPageChange skips fetch when already on page 1.
+    refreshListing() {
+      this.page = 1;
+      this.fetch();
+    },
   },
   data() {
     return {
