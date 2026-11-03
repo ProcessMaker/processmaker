@@ -4,8 +4,10 @@ namespace Tests;
 
 use Facades\ProcessMaker\RollbackProcessRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Bus;
 use Mockery;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -82,6 +84,25 @@ class RollbackProcessRequestTest extends TestCase
         $this->assertEquals('ACTIVE', $this->processRequest->refresh()->status);
     }
 
+    public function testServiceTaskWithoutEngineIsQueued(): void
+    {
+        Bus::fake();
+
+        $token = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'serviceTask',
+            'element_id' => 'node_2',
+        ]);
+        $serviceTask = Mockery::mock(ServiceTaskInterface::class);
+        $serviceTask->shouldReceive('getId')->andReturn('node_2');
+
+        WorkflowManager::runServiceTask($serviceTask, $token);
+
+        Bus::assertDispatched(RunServiceTask::class, function (RunServiceTask $job) use ($token) {
+            return $job->tokenId === $token->id;
+        });
+    }
+
     private function mockRunScriptTask()
     {
         $mocksScriptTask = Mockery::mock(ScriptTaskInterface::class);
@@ -91,7 +112,7 @@ class RollbackProcessRequestTest extends TestCase
             ->andReturn($mocksScriptTask);
         WorkflowManager::shouldReceive('runScripTask')
             ->withArgs(function ($scriptTask, $task) use ($mocksScriptTask) {
-                return $scriptTask === $mocksScriptTask && $task->element_id = 'node_5';
+                return $scriptTask === $mocksScriptTask && $task->element_id === 'node_5';
             });
 
         return $mockProcessDefinitions;
@@ -106,7 +127,7 @@ class RollbackProcessRequestTest extends TestCase
             ->andReturn($mockServiceTask);
         WorkflowManager::shouldReceive('runServiceTask')
             ->withArgs(function ($serviceTask, $task) use ($mockServiceTask) {
-                return $serviceTask === $mockServiceTask && $task->element_id = 'node_5';
+                return $serviceTask === $mockServiceTask && $task->element_id === 'node_5';
             });
 
         return $mockProcessDefinitions;

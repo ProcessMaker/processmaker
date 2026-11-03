@@ -266,6 +266,7 @@
               username: null,
               firstname: null,
               lastname: null,
+              title: null,
               email: null,
               password: null,
               status: null,
@@ -448,6 +449,7 @@
               username: null,
               firstname: null,
               lastname: null,
+              title: null,
               email: null,
               password: null,
               status: null
