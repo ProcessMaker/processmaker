@@ -76,7 +76,7 @@ class TwoFactorAuthController extends Controller
         // If empty code return error message
         if (empty($code)) {
             // Set error message
-            session()->put(self::TFA_ERROR, _('Invalid code.'));
+            session()->put(self::TFA_ERROR, __('Invalid code.'));
 
             // Return to 2fa page
             return redirect()->route('2fa');
@@ -98,7 +98,7 @@ class TwoFactorAuthController extends Controller
             $route = 'login';
         } else {
             // Set error message
-            session()->put(self::TFA_ERROR, _('Invalid code.'));
+            session()->put(self::TFA_ERROR, __('Invalid code.'));
 
             // Return to 2fa page
             $route = '2fa';
@@ -153,7 +153,7 @@ class TwoFactorAuthController extends Controller
         if (count($enabled) === 0) {
             $message = [
                 'status' => 'error',
-                'message' => __('The two-step method must be selected.')
+                'message' => __('The two-step method must be selected.'),
             ];
             $status = 500;
         }
@@ -237,6 +237,7 @@ class TwoFactorAuthController extends Controller
     {
         try {
             $user = Auth::user();
+
             return $user->in2FAGroupOrIndependent();
         } catch (Exception $e) {
             session()->put(self::TFA_ERROR, $e->getMessage());
