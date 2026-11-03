@@ -145,6 +145,9 @@
     <p>{{__('Something went wrong. Try refreshing the application')}}</p>
   </div>
 </div>
+@php
+    $layoutAssets = layoutAssets();
+@endphp
 <!-- Scripts -->
 @if(config('broadcasting.default') == 'redis')
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
@@ -152,9 +155,11 @@
 <script src="{{ mix('js/manifest.js') }}"></script>
 <script src="{{ mix('js/vue-vendor.js') }}"></script>
 <script src="{{ mix('js/bootstrap-vendor.js') }}"></script>
+@if($layoutAssets['modeler_vendor'])
 <script src="{{ mix('js/modeler-vendor.js') }}"></script>
+@endif
 <script src="{{ mix('js/fortawesome-vendor.js') }}"></script>
-<script src="{{ mix('js/app.js') }}"></script>
+<script src="{{ mix($layoutAssets['app']) }}"></script>
 <script>
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   window.ProcessMaker.ai = {
@@ -163,8 +168,10 @@
     microserviceHost: @json(config('app.ai_microservice_host'))
   };
 </script>
-<script src="{{ mix('js/app-layout.js') }}"></script>
+<script src="{{ mix($layoutAssets['app_layout']) }}"></script>
+@if($layoutAssets['monaco'])
 @include('shared.monaco')
+@endif
 @foreach(GlobalScripts::getScripts() as $script)
   <script src="{{$script}}"></script>
 @endforeach

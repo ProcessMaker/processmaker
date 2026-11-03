@@ -265,6 +265,32 @@
     color: #51585E;
   }
 
+  .password-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #51585E;
+    cursor: pointer;
+    line-height: 0;
+  }
+
+  .password-toggle-btn svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+  }
+
+  .password-toggle-btn svg[hidden] {
+    display: none;
+  }
+
   .password-container {
     position: relative;
   }
