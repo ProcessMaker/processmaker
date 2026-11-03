@@ -78,6 +78,7 @@
         "symfony/expression-language": "^8.1.9",
         "symfony/filesystem": "^7.1",
         "symfony/http-foundation": "^8.1.9",
+        "symfony/mime": "^8.1.10",
         "symfony/yaml": "^7.4.18",
         "textalk/websocket": "^1.5",
         "twilio/sdk": "^8.3",
