@@ -40,7 +40,7 @@ class CaseApiRepository implements CaseApiRepositoryInterface
     protected $sortableFields = [
         'case_number',
         'case_title',
-        'status',
+        'case_status',
         'initiated_at',
         'completed_at',
     ];
