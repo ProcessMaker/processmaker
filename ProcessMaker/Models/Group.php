@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\EmptyModel;
 use ProcessMaker\Query\Traits\PMQL;
@@ -155,5 +157,64 @@ class Group extends ProcessMakerModel
     public function assigned()
     {
         return $this->morphMany(ProcessTaskAssignment::class, 'assigned', 'assignment_type', 'assignment_id');
+    }
+
+    /**
+     * Parent group IDs for the given groups (one walk up, not one query per group).
+     */
+    public static function ancestorIdsFor(iterable $groupIds): Collection
+    {
+        $ids = collect($groupIds)->filter()->map(fn ($id) => (int) $id)->unique()->values();
+        if ($ids->isEmpty()) {
+            return collect();
+        }
+
+        return collect(static::computeAncestorIds($ids->all()));
+    }
+
+    public const SELF_SERVICE_HIERARCHY_VERSION_KEY = 'self_service:hierarchy_version';
+
+    public static function selfServiceHierarchyVersion(): int
+    {
+        return (int) Cache::get(self::SELF_SERVICE_HIERARCHY_VERSION_KEY, 1);
+    }
+
+    public static function bumpSelfServiceHierarchyVersion(): void
+    {
+        if (!Cache::has(self::SELF_SERVICE_HIERARCHY_VERSION_KEY)) {
+            Cache::forever(self::SELF_SERVICE_HIERARCHY_VERSION_KEY, 1);
+        }
+        Cache::increment(self::SELF_SERVICE_HIERARCHY_VERSION_KEY);
+    }
+
+    /**
+     * @return array<int>
+     */
+    private static function computeAncestorIds(array $groupIds): array
+    {
+        $ancestors = [];
+        $queue = $groupIds;
+        $visited = array_fill_keys($groupIds, true);
+
+        while ($queue) {
+            $parents = GroupMember::query()
+                ->where('member_type', self::class)
+                ->whereIn('member_id', $queue)
+                ->pluck('group_id')
+                ->all();
+
+            $queue = [];
+            foreach ($parents as $parentId) {
+                $parentId = (int) $parentId;
+                if (isset($visited[$parentId])) {
+                    continue;
+                }
+                $visited[$parentId] = true;
+                $ancestors[] = $parentId;
+                $queue[] = $parentId;
+            }
+        }
+
+        return $ancestors;
     }
 }
