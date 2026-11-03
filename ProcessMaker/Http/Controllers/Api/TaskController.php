@@ -16,6 +16,7 @@ use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Filters\Filter;
+use ProcessMaker\Http\Controllers\Api\V1_1\TaskController as V1_1TaskController;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Task as Resource;
@@ -134,6 +135,9 @@ class TaskController extends Controller
      */
     public function index(Request $request, $getTotal = false, User $user = null)
     {
+        if (config('app.processmaker_optimized_tasks_enabled')) {
+            return (new V1_1TaskController())->indexOptimized($request, $getTotal, $user);
+        }
         // If a specific user is specified, use it; otherwise use the authorized user
         // This is necessary to produce accurate counts for Saved Searches
         if (!$user) {

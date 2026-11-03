@@ -12,6 +12,10 @@ Route::prefix('api/1.1')
     ->group(function () {
         // Tasks Endpoints
         Route::name('tasks.')->prefix('tasks')->group(function () {
+            // Route to list optimized tasks
+            Route::get('/tasksOptimized', [TaskController::class, 'indexOptimized'])
+                ->name('indexOptimized');
+
             // Route to list tasks
             Route::get('/', [TaskController::class, 'index'])
                 ->name('index');
