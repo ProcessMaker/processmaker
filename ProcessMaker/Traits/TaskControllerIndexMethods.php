@@ -157,11 +157,12 @@ trait TaskControllerIndexMethods
         return $response;
     }
 
-    private function excludeNonVisibleTasks($query, $request)
+    private function excludeNonVisibleTasks($query, $request, $resolveManagedProcessVisibility = false)
     {
         $nonSystem = filter_var($request->input('non_system'), FILTER_VALIDATE_BOOLEAN);
         $allTasks = filter_var($request->input('all_tasks'), FILTER_VALIDATE_BOOLEAN);
         $hitlEnabled = app(SmartExtractConfiguration::class)->hitlEnabled();
+        $resolveManagedProcessVisibility = $resolveManagedProcessVisibility && $nonSystem && !$hitlEnabled;
         $includeScreen = filter_var($request->input('includeScreen'), FILTER_VALIDATE_BOOLEAN);
         $query->when(!$allTasks, function ($query) use ($includeScreen) {
             $query->where(function ($query) use ($includeScreen) {
@@ -177,7 +178,7 @@ trait TaskControllerIndexMethods
                 });
             });
         })
-            ->when($nonSystem, function ($query) use ($hitlEnabled) {
+            ->when($nonSystem && !$resolveManagedProcessVisibility, function ($query) use ($hitlEnabled) {
                 if (!$hitlEnabled) {
                     $query->nonSystem();
 
@@ -192,6 +193,8 @@ trait TaskControllerIndexMethods
                     });
                 });
             });
+
+        return $resolveManagedProcessVisibility;
     }
 
     private function applyColumnOrdering($query, $request)
@@ -531,7 +534,7 @@ trait TaskControllerIndexMethods
         });
     }
 
-    public function applyProcessManager($query, $user, $request)
+    public function applyProcessManager($query, $user, $request, $resolveManagedProcessVisibility = false)
     {
         $ids = Process::select(['id'])
             ->where(function ($subQuery) use ($user) {
@@ -540,6 +543,12 @@ trait TaskControllerIndexMethods
                     ->orWhereRaw("JSON_CONTAINS(JSON_EXTRACT(properties, '$.manager_id'), CAST(? AS JSON))", [$user->id]);
             })
             ->where('status', 'ACTIVE')
+            ->when($resolveManagedProcessVisibility, function ($query) {
+                // Match token nonSystem(): at least one category must be non-system.
+                $query->whereHas('categories', function ($query) {
+                    $query->where('is_system', false);
+                });
+            })
             ->pluck('id')
             ->toArray();
 
