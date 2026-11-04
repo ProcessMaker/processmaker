@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Jobs\InstallPlugin;
+use ProcessMaker\Jobs\ReinstallPlugin;
 use ProcessMaker\Jobs\TogglePlugin;
 use ProcessMaker\Jobs\UninstallPlugin;
 use ProcessMaker\Managers\PluginManager;
@@ -54,6 +55,16 @@ class PluginController extends Controller
         return response()->json([
             'queued' => true,
             'message' => 'Plugin installation queued',
+        ]);
+    }
+
+    public function reinstall(string $name, Request $request): JsonResponse
+    {
+        ReinstallPlugin::dispatch($name, $request->user()->id);
+
+        return response()->json([
+            'queued' => true,
+            'message' => 'Plugin reinstall queued',
         ]);
     }
 

@@ -91,26 +91,37 @@ class PluginManager
             }
         }
 
-        // Validate composer.json
-        $this->logRunning('Validating plugin...', $repoName, $userId);
-        $this->validatePlugin($pluginPath, $repoName, $userId);
-
-        // Run composer install
-        $this->logRunning('Installing dependencies...', $repoName, $userId);
-        $this->runComposerInstall($pluginPath, $repoName, $userId);
-
-        // Run plugin install command if it exists
-
-        $installCommand = "{$repoName}:install";
-
-        $this->logRunning('installCommand: ' . $installCommand, $repoName, $userId);
-
-        $this->logRunning('Running plugin install command...', $repoName, $userId);
-        $this->runCommand($installCommand, $repoName, $userId);
-
-        $this->refreshRuntimeAfterPluginChange($repoName, $userId);
+        $this->finishPluginSetup($pluginPath, $repoName, $userId);
 
         $this->logDone('Plugin installed successfully', $repoName, $userId);
+    }
+
+    /**
+     * Pull latest changes on the plugin's current git branch and re-run setup.
+     *
+     * @throws RuntimeException
+     */
+    public function reinstall(string $pluginName, ?int $userId = null): void
+    {
+        $pluginPath = $this->resolveInstalledPluginPath($pluginName);
+
+        if (!is_dir($pluginPath . '/.git')) {
+            throw new RuntimeException(
+                "Plugin {$pluginName} is not a git repository and cannot be reinstalled from remote"
+            );
+        }
+
+        $branch = $this->resolveCurrentBranch($pluginPath);
+        if ($branch === null) {
+            throw new RuntimeException(
+                'Cannot reinstall: plugin is not on a named branch (detached HEAD or unknown state)'
+            );
+        }
+
+        $this->logRunning("Starting reinstall of plugin: {$pluginName} on branch {$branch}", $pluginName, $userId);
+        $this->updateExistingRepository($pluginPath, $pluginName, $branch, null, $userId);
+        $this->finishPluginSetup($pluginPath, $pluginName, $userId);
+        $this->logDone('Plugin reinstalled successfully', $pluginName, $userId);
     }
 
     /**
@@ -296,16 +307,7 @@ class PluginManager
             // Copy extracted directory to plugins folder
             $this->copyDirectory($pluginSourceDir, $pluginPath, $repoName, $userId);
 
-            // Run composer install
-            $this->logRunning('Installing dependencies...', $repoName, $userId);
-            $this->runComposerInstall($pluginPath, $repoName, $userId);
-
-            // Run plugin install command if it exists
-            $installCommand = "{$repoName}:install";
-            $this->logRunning('Running plugin install command...', $repoName, $userId);
-            $this->runCommand($installCommand, $repoName, $userId);
-
-            $this->refreshRuntimeAfterPluginChange($repoName, $userId);
+            $this->finishPluginSetup($pluginPath, $repoName, $userId);
 
             $this->logDone('Plugin installed successfully', $repoName, $userId);
         } finally {
@@ -398,6 +400,7 @@ class PluginManager
                     'description' => $plugin->getDescription() ?? 'No description',
                     'version' => $composerJson['version'] ?? null,
                     'branch' => $reference,
+                    'source' => $plugin->isGitRepository() ? 'git' : 'filesystem',
                     'enabled' => !$isDisabled ? 'Enabled' : 'Disabled',
                 ];
             } catch (\Exception $e) {
@@ -449,13 +452,56 @@ class PluginManager
         }
     }
 
-    /**
-     * Pull latest changes from repository.
-     *
-     * @param string $pluginPath
-     * @return void
-     * @throws RuntimeException
-     */
+    protected function finishPluginSetup(string $pluginPath, string $repoName, ?int $userId = null): void
+    {
+        $this->logRunning('Validating plugin...', $repoName, $userId);
+        $this->validatePlugin($pluginPath, $repoName, $userId);
+
+        $this->logRunning('Installing dependencies...', $repoName, $userId);
+        $this->runComposerInstall($pluginPath, $repoName, $userId);
+
+        $installCommand = "{$repoName}:install";
+        $this->logRunning('installCommand: ' . $installCommand, $repoName, $userId);
+        $this->logRunning('Running plugin install command...', $repoName, $userId);
+        $this->runCommand($installCommand, $repoName, $userId);
+
+        $this->refreshRuntimeAfterPluginChange($repoName, $userId);
+    }
+
+    protected function resolveInstalledPluginPath(string $pluginName): string
+    {
+        $pluginDir = storage_path('plugins');
+        $pluginPath = "{$pluginDir}/{$pluginName}";
+        $pluginDisabledPath = "{$pluginDir}/_{$pluginName}";
+
+        if (is_dir($pluginDisabledPath) || is_link($pluginDisabledPath)) {
+            return $pluginDisabledPath;
+        }
+
+        if (is_dir($pluginPath) || is_link($pluginPath)) {
+            return $pluginPath;
+        }
+
+        throw new RuntimeException("Plugin not found: {$pluginName}");
+    }
+
+    protected function resolveCurrentBranch(string $pluginPath): ?string
+    {
+        $process = Process::path($pluginPath)->run(['git', 'rev-parse', '--abbrev-ref', 'HEAD']);
+
+        if (!$process->successful()) {
+            return null;
+        }
+
+        $branch = trim($process->output());
+
+        if ($branch === '' || $branch === 'HEAD') {
+            return null;
+        }
+
+        return $branch;
+    }
+
     /**
      * Fetch remotes and check out the requested ref when the plugin clone already exists.
      */

@@ -67,6 +67,41 @@ class PluginManagerTest extends TestCase
         Process::assertNotRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'checkout', 'main']));
     }
 
+    public function testReinstallUsesCurrentBranchForGitPull()
+    {
+        $this->setUpTestPluginManager();
+
+        $pluginName = 'plugin-reinstall-' . uniqid();
+        $pluginPath = $this->pluginsDir . '/' . $pluginName;
+        $this->tempPluginDir = $pluginPath;
+
+        mkdir($pluginPath, 0755, true);
+        mkdir($pluginPath . '/.git', 0755, true);
+        file_put_contents(
+            $pluginPath . '/composer.json',
+            json_encode([
+                'name' => 'processmaker/' . $pluginName,
+                'autoload' => [
+                    'psr-4' => [
+                        'ProcessMaker\\Plugins\\Reinstall\\' => 'src/',
+                    ],
+                ],
+            ], JSON_PRETTY_PRINT)
+        );
+
+        Process::fake([
+            '*' => Process::result("develop\n", 0),
+        ]);
+
+        Event::fake([PluginLog::class]);
+
+        $manager = new PluginManager();
+        $manager->reinstall($pluginName, 1);
+
+        Process::assertRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'rev-parse', '--abbrev-ref', 'HEAD']));
+        Process::assertRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'pull', 'origin', 'develop']));
+    }
+
     public function testInstallExistingRepositoryWithTagSkipsBranchCheckoutAndPull()
     {
         $this->setUpTestPluginManager();

@@ -51,6 +51,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->p
     // Plugins
     Route::get('plugins', [PluginController::class, 'index'])->name('plugins.index')->middleware('can:manage-plugins');
     Route::post('plugins/install', [PluginController::class, 'install'])->name('plugins.install')->middleware('can:manage-plugins');
+    Route::post('plugins/{name}/reinstall', [PluginController::class, 'reinstall'])->name('plugins.reinstall')->middleware('can:manage-plugins');
     Route::delete('plugins/{name}', [PluginController::class, 'destroy'])->name('plugins.destroy')->middleware('can:manage-plugins');
     Route::patch('plugins/{name}/toggle', [PluginController::class, 'toggle'])->name('plugins.toggle')->middleware('can:manage-plugins');
 

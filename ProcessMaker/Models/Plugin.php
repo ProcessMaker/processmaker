@@ -185,13 +185,43 @@ class Plugin extends ProcessMakerModel
     }
 
     /**
-     * Get the plugin URL.
+     * Get the plugin URL (git remote origin when available).
      *
      * @return string
      */
     public function getUrl(): string
     {
-        return 'https://github.com/ProcessMaker/' . $this->name;
+        return $this->getRemoteUrl() ?? 'https://github.com/ProcessMaker/' . $this->name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRemoteUrl(): ?string
+    {
+        if (!$this->isGitRepository()) {
+            return null;
+        }
+
+        try {
+            $process = Process::path($this->path)
+                ->run(['git', 'remote', 'get-url', 'origin']);
+
+            if ($process->successful()) {
+                $url = trim($process->output());
+
+                return $url !== '' ? $url : null;
+            }
+        } catch (\Exception $e) {
+            // Ignore errors
+        }
+
+        return null;
+    }
+
+    public function isGitRepository(): bool
+    {
+        return is_dir($this->path . '/.git');
     }
 
     /**

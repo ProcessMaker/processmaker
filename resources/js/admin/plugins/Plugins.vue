@@ -60,6 +60,16 @@
             <div class="popout">
               <b-btn
                 variant="link"
+                @click="doReinstall(props.rowData)"
+                v-b-tooltip.hover
+                :title="$t('Update')"
+                :class="props.rowData.source !== 'git' ? 'disabled' : ''"
+                :disabled="props.rowData.source !== 'git'"
+              >
+                <i class="fas fa-sync fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
                 @click="edit(props.rowData)"
                 v-b-tooltip.hover
                 :title="$t('Edit')"
@@ -725,6 +735,32 @@ const doToggle = (item) => {
     })
     .catch((error) => {
       onPluginProgressApiError(error, $t("Unable to toggle plugin."));
+    });
+};
+
+const doReinstall = (item) => {
+  if (item.source !== "git") {
+    return;
+  }
+  openPluginProgressModal({
+    title: $t("Update Plugin") + `: ${item.name}`,
+    outputTitle: $t("Plugin Update Output"),
+    successMessage: $t(
+      "Plugin successfully reinstalled. You can now close this window."
+    ),
+    errorMessage: $t("Error reinstalling plugin. See output above."),
+    verb: "reinstalled",
+  });
+  ProcessMaker.apiClient
+    .post(`/plugins/${item.name}/reinstall`, null, {
+      baseURL: "/api/1.0/",
+      timeout: 0,
+    })
+    .then(() => {
+      progressIsRunning.value = true;
+    })
+    .catch((error) => {
+      onPluginProgressApiError(error, $t("Unable to reinstall plugin."));
     });
 };
 
