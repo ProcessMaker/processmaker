@@ -481,19 +481,20 @@ trait TaskControllerIndexMethods
                 }
 
                 // Manually apply the Self Service filter for process managers
-                $selfServiceTaskIds = ProcessRequestToken::select(['id'])
-                    ->whereIn('process_id', $processManagerIds)
-                    ->where('is_self_service', 1)
-                    ->whereNull('user_id')
-                    ->where('status', 'ACTIVE');
+                $selfServiceTasks = function ($query) use ($processManagerIds) {
+                    $query->whereIn('process_request_tokens.process_id', $processManagerIds)
+                        ->where('process_request_tokens.is_self_service', 1)
+                        ->whereNull('process_request_tokens.user_id')
+                        ->where('process_request_tokens.status', 'ACTIVE');
+                };
 
                 if (!empty($statusFilters)) {
-                    $query->where(function ($query) use ($statusFilters, $selfServiceTaskIds) {
+                    $query->where(function ($query) use ($statusFilters, $selfServiceTasks) {
                         Filter::filter($query, $statusFilters);
-                        $query->orWhereIn('process_request_tokens.id', $selfServiceTaskIds);
+                        $query->orWhere($selfServiceTasks);
                     });
                 } else {
-                    $query->whereIn('process_request_tokens.id', $selfServiceTaskIds);
+                    $query->where($selfServiceTasks);
                 }
             } else {
                 // Normal behavior - apply the filter as-is
