@@ -55,8 +55,8 @@
         <br>
         <small>
             Version {{ $versionNumber }}
-            @if($commit_hash)
-                (Build #{{ $commit_hash }})
+            @if($build_label)
+                ({{ $build_label }})
             @endif
         </small>
       </div>

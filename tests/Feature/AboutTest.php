@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use ProcessMaker\Http\Controllers\AboutController;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -17,6 +18,17 @@ class AboutTest extends TestCase
         }
 
         parent::tearDown();
+    }
+
+    public function testFormatBuildLabelShortensCommitHash(): void
+    {
+        $this->assertSame(
+            'Build #abcdef12',
+            AboutController::formatBuildLabel('abcdef1234567890')
+        );
+        $this->assertSame('Build #short', AboutController::formatBuildLabel('short'));
+        $this->assertSame('', AboutController::formatBuildLabel(null));
+        $this->assertSame('', AboutController::formatBuildLabel(''));
     }
 
     /**
@@ -54,6 +66,9 @@ class AboutTest extends TestCase
 
         // Test the commit hash it reads from composer.json
         $response->assertSeeText('Build #');
+        $response->assertSeeText(
+            AboutController::formatBuildLabel($composer_json->extra->processmaker->build)
+        );
 
         // Copy composer.json over to a new backup file
         $composer_json_file_backup = base_path('composer.json.bak');
@@ -81,5 +96,6 @@ class AboutTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('about.index');
         $response->assertDontSeeText('Build #');
+        $response->assertViewHas('build_label', '');
     }
 }

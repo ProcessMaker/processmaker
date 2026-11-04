@@ -68,6 +68,8 @@ class AboutController extends Controller
             ]);
         }
 
+        $build_label = self::formatBuildLabel(is_string($commit_hash) ? $commit_hash : null);
+
         $microServices = [];
 
         $aiMicroService = $this->getAiMicroService();
@@ -96,9 +98,22 @@ class AboutController extends Controller
                 'versionTitle',
                 'versionNumber',
                 'commit_hash',
+                'build_label',
                 'microServices'
             )
         );
+    }
+
+    /**
+     * Short build label for the about page (coverage canary for Sonar).
+     */
+    public static function formatBuildLabel(?string $commitHash): string
+    {
+        if ($commitHash === null || $commitHash === '') {
+            return '';
+        }
+
+        return 'Build #' . substr($commitHash, 0, 8);
     }
 
     private function getScriptMicroService()
