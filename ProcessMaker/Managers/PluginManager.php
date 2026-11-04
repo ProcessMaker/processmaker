@@ -188,7 +188,7 @@ class PluginManager
     private function refreshRuntimeAfterPluginChange(string $pluginName, ?int $userId = null): void
     {
         $this->rebuildRouteCache($pluginName, $userId);
-        $this->terminateHorizon($pluginName, $userId);
+        $this->restartSupervisorPrograms($pluginName, $userId);
     }
 
     /**
@@ -206,13 +206,38 @@ class PluginManager
         $this->reloadCachedRoutes();
     }
 
-    /**
-     * Always stop current Horizon workers so a new process picks up plugin code.
-     */
-    private function terminateHorizon(string $pluginName, ?int $userId = null): void
+    private function restartSupervisorPrograms(string $pluginName, ?int $userId = null): void
     {
-        $this->logRunning('Restarting queue workers...', $pluginName, $userId);
-        $this->runCommand('horizon:terminate', $pluginName, $userId);
+        $this->logRunning('Restarting supervisor programs...', $pluginName, $userId);
+
+        $command = [
+            config('plugin_manager.supervisorctl_bin', 'supervisorctl'),
+        ];
+
+        $configFile = config('plugin_manager.supervisorctl_config');
+        if ($configFile) {
+            $command[] = '-c';
+            $command[] = $configFile;
+        }
+
+        $command[] = 'restart';
+        $command[] = config('plugin_manager.supervisor_restart_target', 'all');
+
+        $process = Process::timeout(120)->run($command);
+
+        if (!$process->successful()) {
+            $output = trim($process->errorOutput() . "\n" . $process->output());
+            $this->logError("Supervisor restart failed:\n\n{$output}", $pluginName, $userId);
+
+            return;
+        }
+
+        $output = trim($process->output());
+        if ($output !== '') {
+            $this->logRunning("Supervisor restart output:\n\n{$output}", $pluginName, $userId);
+        } else {
+            $this->logRunning('Supervisor programs restarted successfully', $pluginName, $userId);
+        }
     }
 
     /**

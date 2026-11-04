@@ -21,6 +21,12 @@ class PluginManagerTest extends TestCase
         if (!is_dir($this->pluginsDir)) {
             mkdir($this->pluginsDir, 0755, true);
         }
+
+        config([
+            'plugin_manager.supervisorctl_bin' => 'supervisorctl',
+            'plugin_manager.supervisorctl_config' => null,
+            'plugin_manager.supervisor_restart_target' => 'all',
+        ]);
     }
 
     public function tearDownTestPluginManager()
@@ -176,7 +182,7 @@ class PluginManagerTest extends TestCase
         Event::assertDispatched(PluginLog::class, function ($event) {
             return str_contains($event->message, 'installed successfully');
         });
-        $this->assertProcessRanCommand('horizon:terminate');
+        $this->assertSupervisorRestartRan();
     }
 
     public function testInstallValidatesComposerJsonNamespace()
@@ -243,7 +249,7 @@ class PluginManagerTest extends TestCase
         Event::assertDispatched(PluginLog::class, function ($event) {
             return str_contains($event->message, 'uninstalled successfully');
         });
-        $this->assertProcessRanCommand('horizon:terminate');
+        $this->assertSupervisorRestartRan();
     }
 
     public function testUninstallThrowsExceptionForNonExistentPlugin()
@@ -366,7 +372,7 @@ class PluginManagerTest extends TestCase
         $this->assertSame(['TENANT' => '7'], $environment);
     }
 
-    public function testToggleRebuildsRouteCacheAndTerminatesHorizon()
+    public function testToggleDisableRebuildsRouteCacheAndRestartsSupervisor()
     {
         $this->setUpTestPluginManager();
 
@@ -387,10 +393,10 @@ class PluginManagerTest extends TestCase
         $this->assertTrue(is_dir($this->pluginsDir . '/_' . $pluginName));
 
         $this->assertProcessRanCommand('route:cache');
-        $this->assertProcessRanCommand('horizon:terminate');
+        $this->assertSupervisorRestartRan();
     }
 
-    public function testToggleEnableTerminatesHorizon()
+    public function testToggleEnableRestartsSupervisor()
     {
         $this->setUpTestPluginManager();
 
@@ -408,7 +414,32 @@ class PluginManagerTest extends TestCase
 
         $this->assertTrue($enabled);
         $this->assertTrue(is_dir($this->pluginsDir . '/' . $pluginName));
-        $this->assertProcessRanCommand('horizon:terminate');
+        $this->assertSupervisorRestartRan();
+    }
+
+    public function testSupervisorRestartUsesConfigFileWhenSet()
+    {
+        $this->setUpTestPluginManager();
+
+        config([
+            'plugin_manager.supervisorctl_config' => '/tmp/processmaker-supervisord.conf',
+        ]);
+
+        $pluginName = 'supervisor-toggle-' . uniqid();
+        $pluginPath = $this->pluginsDir . '/' . $pluginName;
+        $this->tempPluginDir = $pluginPath;
+        mkdir($pluginPath, 0755, true);
+
+        Process::fake([
+            '*' => Process::result("processmaker-horizon: started\n", 0),
+        ]);
+
+        Event::fake([PluginLog::class]);
+
+        $manager = new PluginManager();
+        $manager->toggle($pluginName);
+
+        $this->assertSupervisorRestartRan('/tmp/processmaker-supervisord.conf');
     }
 
     public function testLocalInstallReplacesLeftoverSymlinkWithCopy(): void
@@ -478,6 +509,25 @@ class PluginManagerTest extends TestCase
                 : (string) $process->command;
 
             return str_contains($command, $artisanCommand);
+        });
+    }
+
+    private function assertSupervisorRestartRan(?string $configFile = null): void
+    {
+        $bin = config('plugin_manager.supervisorctl_bin', 'supervisorctl');
+        $target = config('plugin_manager.supervisor_restart_target', 'all');
+        $configFile = $configFile ?? config('plugin_manager.supervisorctl_config');
+
+        $expected = [$bin];
+        if ($configFile) {
+            $expected[] = '-c';
+            $expected[] = $configFile;
+        }
+        $expected[] = 'restart';
+        $expected[] = $target;
+
+        Process::assertRan(function ($process) use ($expected) {
+            return is_array($process->command) && $process->command === $expected;
         });
     }
 
