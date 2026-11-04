@@ -20,10 +20,10 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\ProcessTranslations\TranslationManager;
+use ProcessMaker\Repositories\TaskV11ShowFastRepository;
 use ProcessMaker\Traits\TaskControllerIndexMethods;
 use ProcessMaker\Services\TaskCompletionRawService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
 
 class TaskController extends Controller
 {
@@ -163,9 +163,65 @@ class TaskController extends Controller
 
     public function show(ProcessRequestToken $task)
     {
+        if (config('app.optimized_tasks_start_enabled')) {
+            return $this->showFast($task);
+        }
+
         $resource = TaskResource::preprocessInclude(request(), ProcessRequestToken::where('id', $task->id));
 
         return $resource->toArray(request());
+    }
+
+    public function showFast(ProcessRequestToken $task)
+    {
+        $httpRequest = request();
+        $this->removeDataFromIncludeQuery($httpRequest);
+
+        $repository = app(TaskV11ShowFastRepository::class);
+        $token = $repository->findForShow($task->id);
+
+        if ($this->queryIncludesRequestData($httpRequest)) {
+            $repository->hydrateProcessRequestData($token);
+        }
+
+        $resource = TaskResource::fromTokenWithIncludes($token, $httpRequest);
+
+        return $resource->toArray($httpRequest);
+    }
+
+    private function removeDataFromIncludeQuery(Request $request): void
+    {
+        $include = $request->query('include');
+        if (!is_string($include) || $include === '') {
+            return;
+        }
+
+        $parts = array_values(array_filter(
+            array_map('trim', explode(',', $include)),
+            static fn (string $part) => $part !== '' && $part !== 'data'
+        ));
+
+        if ($parts === []) {
+            $request->query->remove('include');
+        } else {
+            $request->query->set('include', implode(',', $parts));
+        }
+    }
+
+    private function queryIncludesRequestData(Request $request): bool
+    {
+        $include = $request->query('include', '');
+        if (!is_string($include) || $include === '') {
+            return false;
+        }
+
+        foreach (array_map('trim', explode(',', $include)) as $part) {
+            if ($part === 'requestData') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function showScreen($taskId)
