@@ -751,9 +751,13 @@ export default {
     },
     /**
      * Preview is available for active/self-service tasks (including on saved searches).
-     * Completed tasks remain excluded.
+     * Completed tasks are excluded on normal task lists, but Quick Fill / Inbox Rules
+     * intentionally preview completed tasks (fromButton: previewTask|fullTask|inboxRules).
      */
     shouldShowPreviewButton(row) {
+      if (["previewTask", "fullTask", "inboxRules"].includes(this.fromButton)) {
+        return true;
+      }
       return row?.task_status !== "CLOSED";
     },
     /**
