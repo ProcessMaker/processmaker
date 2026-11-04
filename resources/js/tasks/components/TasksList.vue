@@ -109,7 +109,7 @@
               <div
                 :id="`element-${rowIndex}-${colIndex}`"
                 :class="{ 'pm-table-truncate': header.truncate }"
-                :style="{ maxWidth: header.width + 'px' }"
+                :style="{ maxWidth: header.width + 'px', display: 'inline-block', verticalAlign: 'middle' }"
               >
                 <span
                   v-html="sanitize(getNestedPropertyValue(row, header))"
@@ -169,7 +169,7 @@
                   <div
                     :id="`element-${rowIndex}-${colIndex}`"
                     :class="{ 'pm-table-truncate': header.truncate }"
-                    :style="{ maxWidth: header.width + 'px' }"
+                    :style="{ maxWidth: header.width + 'px', display: 'inline-block', verticalAlign: 'middle' }"
                   >
                     {{ getNestedPropertyValue(row, header) }}
                     <b-tooltip
@@ -216,7 +216,6 @@
       />
     </div>
     <tasks-preview
-      v-if="!verifyURL('saved-searches')"
       ref="preview"
       :tooltip-button="tooltipFromButton"
       @mark-selected-row="markSelectedRow"
@@ -349,21 +348,21 @@ export default {
           click: this.previewTasks,
           icon: "fas fa-eye",
           title: this.$t("Preview"),
-          show: !this.verifyURL("saved-searches") || false,
+          show: (row) => this.shouldShowPreviewButton(row),
         },
         {
           id: "openCaseButton",
           title: this.$t("Open Case"),
           click: this.redirectToRequest,
           imgSrc: "/img/smartinbox-images/open-case.svg",
-          show: !this.verifyURL("saved-searches") || true,
+          show: true,
         },
         {
           id: "openTaskButton",
           title: this.$t("Open Task"),
           click: this.redirectToTask,
           icon: "fas fa-external-link-alt",
-          show: !this.verifyURL("saved-searches") || true,
+          show: true,
         },
       ],
       actions: [
@@ -445,6 +444,7 @@ export default {
             record.process_request,
             record,
           );
+          record.task_status = record.status;
           record.status = this.formatStatus(record);
           record.assignee = this.formatAvatar(record.user);
           record.request = this.formatRequest(record);
@@ -550,7 +550,7 @@ export default {
       return link;
     },
     previewTasks(info, size = null, fromButton = null) {
-      if (!info || !this.$refs.preview) {
+      if (!info || !this.$refs.preview || !this.shouldShowPreviewButton(info)) {
         return;
       }
       this.tooltipFromButton = fromButton;
@@ -589,10 +589,7 @@ export default {
         label = this.$t("Completed");
       }
 
-      return `
-        <span class="badge badge-${color} status-${color}">
-          ${label}
-        </span>`;
+      return `<span class="badge badge-${color} status-${color}">${label}</span>`;
     },
     formatDueDate(date) {
       return date === null ? "-" : moment(date).format("MM/DD/YY HH:mm");
@@ -752,13 +749,12 @@ export default {
       this.sortOrder[0].sortField = by;
       this.sortOrder[0].direction = direction;
     },
-    verifyURL(string) {
-      const currentUrl = window.location.href;
-      let isInUrl = currentUrl.includes(string);
-      if (this.processesIManage) {
-        isInUrl = false;
-      }
-      return isInUrl;
+    /**
+     * Preview is available for active/self-service tasks (including on saved searches).
+     * Completed tasks remain excluded.
+     */
+    shouldShowPreviewButton(row) {
+      return row?.task_status !== "CLOSED";
     },
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
