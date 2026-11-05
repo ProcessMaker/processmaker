@@ -358,6 +358,13 @@ export default {
     }
   },
   watch: {
+    "formData.title"() {
+      this.$delete(this.errors, "title");
+    },
+    "formData.language"() {
+      this.$delete(this.errors, "title");
+      this.$delete(this.errors, "language");
+    },
     commandOutput() {
       this.scrollToBottom();
     },
@@ -470,6 +477,7 @@ export default {
       }
     },
     save() {
+      this.errors = {};
       this.resetProcessInfo();
       this.status = "saving";
       if (this.formData.id) {
