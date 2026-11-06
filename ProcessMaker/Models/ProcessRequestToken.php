@@ -800,7 +800,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 } elseif ($user) {
                     $query->whereIn('process_request_tokens.id', $user->availableSelfServiceTasksQuery());
                 } else {
-                    $query->where('process_request_tokens.is_self_service', 1);
+                    $query->where([
+                        'process_request_tokens.is_self_service' => 1,
+                        'process_request_tokens.status' => 'ACTIVE',
+                        'process_request_tokens.user_id' => null,
+                    ]);
                 }
             } elseif (array_key_exists($value, $statusMap)) {
                 $query->where('process_request_tokens.is_self_service', 0);
@@ -1707,24 +1711,13 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $userColumn = 'user_id';
         $query->where(function ($query) use ($userColumn, $userId) {
             $query->where($userColumn, $userId);
-            $query->orWhere(function ($query) use ($userColumn, $userId) {
-                $query->whereNull($userColumn);
-                $query->where('process_request_tokens.is_self_service', 1);
-                $user = User::find($userId);
-                $query->where(function ($query) use ($user) {
-                    foreach ($user->groups as $group) {
-                        $query->orWhereJsonContains(
-                            'process_request_tokens.self_service_groups', strval($group->getKey())
-                        ); // backwards compatibility
-                        $query->orWhereJsonContains(
-                            'process_request_tokens.self_service_groups->groups', strval($group->getKey())
-                        );
-                    }
-                    $query->orWhereJsonContains(
-                        'process_request_tokens.self_service_groups->users', strval($user->getKey())
-                    );
-                });
-            });
+            $user = User::find($userId);
+            if ($user) {
+                $query->orWhereIn(
+                    'process_request_tokens.id',
+                    $user->availableSelfServiceTasksQuery()
+                );
+            }
         });
 
         return $query;
