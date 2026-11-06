@@ -24,7 +24,7 @@ class ProcessExporterWithScreenDataSourceTest extends TestCase
 
         // Create a script first to consume some IDs
         $script = Script::factory()->create(['title' => 'A Script']);
-        
+
         $category = new $dataSourceCategoryClass();
         $category->name = 'Test Category ' . uniqid();
         $category->save();
@@ -68,12 +68,12 @@ class ProcessExporterWithScreenDataSourceTest extends TestCase
 
         $process = Process::factory()->create([
             'name' => 'Process with screen using data source',
-            'bpmn' => $bpmn
+            'bpmn' => $bpmn,
         ]);
 
         $exportJob = new ExportProcess($process);
         $exportJob->handle();
-        
+
         // Access private package property via reflection
         $reflection = new \ReflectionClass($exportJob);
         $property = $reflection->getProperty('package');
@@ -90,7 +90,7 @@ class ProcessExporterWithScreenDataSourceTest extends TestCase
             $this->assertNotEquals('data_source-' . $dataSource->id, $script['id']);
             $this->assertNotEquals($dataSource->id, $script['id']);
             // Also check that it's not present as a numeric ID if it's the same
-            if (is_numeric($script['id']) && (int)$script['id'] === $dataSource->id) {
+            if (is_numeric($script['id']) && (int) $script['id'] === $dataSource->id) {
                 $this->fail('Data source ID ' . $dataSource->id . ' found in scripts section');
             }
         }

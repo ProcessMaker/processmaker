@@ -68,7 +68,7 @@ class ProcessTranslationReady extends Notification
      *
      * @param mixed $notifiable
      *
-     * @return \Illuminate\Notifications\Messages\BroadcastMessage
+     * @return BroadcastMessage
      */
     public function toBroadcast($notifiable)
     {

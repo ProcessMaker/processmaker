@@ -11,6 +11,7 @@ class OAuthTest extends TestCase
     use RequestHelper;
 
     private const OAUTH_CLIENTS_URL = '/oauth/clients';
+
     private const OAUTH_CLIENT_URL = '/oauth/clients/';
 
     public $json = null;

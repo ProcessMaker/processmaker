@@ -976,7 +976,7 @@ export default {
         const data = item.config || {};
         const rules = {};
 
-        item.inspector.forEach((property) => {
+        (item.inspector || []).forEach((property) => {
           if (property.config.validation) {
             if (
               property.config.validation.includes(

@@ -22,6 +22,6 @@ class MoveScriptExecutorToMicroservice implements ShouldQueue
      */
     public function handle(): void
     {
-        \Artisan::call('processmaker:transition-executors --uuid=' . $this->uuid );
+        \Artisan::call('processmaker:transition-executors --uuid=' . $this->uuid);
     }
 }

@@ -34,7 +34,7 @@ return [
     // Make sure messages are signed
     'messages_signed' => true,
     // Defind what digital algorithm you want to use
-    'digest_algorithm' => \RobRichards\XMLSecLibs\XMLSecurityDSig::SHA1,
+    'digest_algorithm' => RobRichards\XMLSecLibs\XMLSecurityDSig::SHA1,
     // list of all service providers
     'sp' => [
         // Base64 encoded ACS URL
