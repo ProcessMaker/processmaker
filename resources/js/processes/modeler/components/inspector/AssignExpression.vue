@@ -26,6 +26,7 @@
             :hide-users="false"
             :multiple="false"
             :activeTasksCount="true"
+            :error="editAssignmentUnresolvedError"
           />
         </div>
       </div>
@@ -87,6 +88,7 @@
         :multiple="false" 
         :helper="$t('If no evaluations are true')"
         :activeTasksCount="true"
+        :error="defaultAssignmentUnresolvedError"
       />
     </div>
   </div>
@@ -146,7 +148,21 @@ export default {
       });
       let index = this.specialAssignments.indexOf(defaultAssignment[0]);
       return index >= 0 ? index : null;
-    }
+    },
+    defaultAssignmentRule() {
+      return this.specialAssignments.find(assignment => assignment.default) || null;
+    },
+    defaultAssignmentUnresolvedError() {
+      return this.defaultAssignmentRule && this.defaultAssignmentRule.unresolved
+        ? this.$t('This assignee was not found in this environment. Select a user or group.')
+        : null;
+    },
+    editAssignmentUnresolvedError() {
+      const rule = this.editIndex !== null ? this.specialAssignments[this.editIndex] : null;
+      return rule && rule.unresolved
+        ? this.$t('This assignee was not found in this environment. Select a user or group.')
+        : null;
+    },
   },
   watch: {
     specialAssignments: {
@@ -178,25 +194,13 @@ export default {
             "id": id,
           };
         } else if (this.defaultAssignment.groups.length && Object.keys(this.defaultAssignment.groups[0]).length)  {
-          let name = this.defaultAssignment.groups[0].name ? this.defaultAssignment.groups[0].name : this.defaultAssignment.groups[0].assignmentName;
-          let id;
-          if (this.defaultAssignment.groups[0].id) {
-            if (this.defaultAssignment.groups[0].id.includes("group")){
-              id = this.defaultAssignment.groups[0].id.replace("group-", "");
-            } else {
-              id = this.defaultAssignment.groups[0].id;
-            }
-          } else {
-            if (this.defaultAssignment.groups[0].assignee.includes("group")) {
-              id = this.defaultAssignment.groups[0].assignee.replace("group-", "");
-            } else {
-              id = this.defaultAssignment.groups[0].assignee;
-            }
-          }
+          let group = this.defaultAssignment.groups[0];
+          let name = group.name ? group.name : group.assignmentName;
+          let rawId = group.id ? group.id : group.assignee;
           field = {
             "type" : "group",
             "name": name,
-            "id": id,
+            "id": this.normalizeGroupId(rawId),
           };
         }
         
@@ -221,8 +225,18 @@ export default {
     }
   },
   methods: {
+    // Group assignees may be numeric (e.g. after import reconciliation
+    // rebinds a rule) or "group-<id>" strings from the picker; normalize
+    // both to the plain id string before any string operations.
+    normalizeGroupId(groupId) {
+      return String(groupId).replace("group-", "");
+    },
     addSpecialAssignment(editIndex = null) {
         let field;
+        if (!this.assignedExpression) {
+          this.hideAddCard();
+          return;
+        }
         if (this.assignedExpression.users.length) {
           field = {
             "type" : "user",
@@ -232,13 +246,17 @@ export default {
         } else if (this.assignedExpression.groups.length) {
           let id = this.assignedExpression.groups[0].id;
           if (this.assignedExpression.groups[0].id) {
-            id = this.assignedExpression.groups[0].id.replace('group-', '');
+            id = this.normalizeGroupId(id);
           }
           field = {
             "type" : "group",
             "name": this.assignedExpression.groups[0].name,
             "id": id
           };
+        }
+        if (!field) {
+          this.hideAddCard();
+          return;
         }
         let byExpression = {
           type: field.type,
@@ -274,10 +292,13 @@ export default {
         users: [],
         groups: []
       };
-      if (this.specialAssignments[index].type == 'user') {
+      if (this.specialAssignments[index].unresolved) {
+        // Leave the picker empty; the warning above it explains why and
+        // saving requires picking a user/group that exists here.
+      } else if (this.specialAssignments[index].type == 'user') {
         assignee.users.push(this.specialAssignments[index].assignee);
       } else if (this.specialAssignments[index].type == 'group') {
-        assignee.groups.push(parseInt(this.specialAssignments[index].assignee.replace("group-", "")));
+        assignee.groups.push(parseInt(this.normalizeGroupId(this.specialAssignments[index].assignee)));
       }
 
       this.assignedExpression = assignee;
@@ -314,13 +335,15 @@ export default {
       let defaultAssignment = this.specialAssignments.filter(assignment => { return assignment.default;});
       if (defaultAssignment.length == 0) {
         return;
-      } 
+      }
+      if (defaultAssignment[0].unresolved) {
+        // Keep the picker empty so it never fetches the cleared assignee
+        return;
+      }
       if (defaultAssignment[0].type == 'user') {
         this.defaultAssignment.users.push(defaultAssignment[0]);
       } else if (defaultAssignment[0].type == 'group') {
-        if (typeof defaultAssignment[0].assignee != 'number') {
-          defaultAssignment[0].assignee = defaultAssignment[0].assignee.replace("group-", "");
-        }
+        defaultAssignment[0].assignee = this.normalizeGroupId(defaultAssignment[0].assignee);
         this.defaultAssignment.groups.push(defaultAssignment[0]);
       }
     },
