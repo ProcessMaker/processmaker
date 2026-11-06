@@ -71,6 +71,95 @@ class SyncDefaultTemplatesTest extends TestCase
             })
             ->atLeast()
             ->once();
+        $this->assertFalse(Storage::disk('local')->exists(SyncDefaultTemplates::REPO_SHA_FILE));
+        $hashes = json_decode((string) Storage::disk('local')->get(SyncDefaultTemplates::CONTENT_HASHES_FILE), true) ?: [];
+        $this->assertArrayNotHasKey('template-uuid', $hashes);
+    }
+
+    public function test_remote_template_failure_does_not_stamp_success_from_stale_local_bake()
+    {
+        // Local bake exists but is behind GitHub, so remote is preferred.
+        file_put_contents($this->localTemplatesDir . '/.templates-sha', "old-local-sha\n");
+        file_put_contents($this->localTemplatesDir . '/index.json', json_encode([
+            'default' => [
+                [
+                    'uuid' => 'template-uuid',
+                    'name' => 'Stale Template',
+                    'relative_path' => './stale.json',
+                    'hash' => 'stale-hash',
+                ],
+            ],
+        ]));
+        file_put_contents($this->localTemplatesDir . '/stale.json', json_encode([
+            'root' => 'root-node',
+            'export' => [
+                'root-node' => [
+                    'attributes' => [
+                        'process_category_id' => null,
+                    ],
+                ],
+            ],
+        ]));
+
+        Http::fake([
+            'https://api.fake.test/repos/processmaker/repo/git/ref/heads/main' => Http::response([
+                'object' => ['sha' => 'new-remote-sha'],
+            ]),
+            'https://fake.test/repo/main/index.json' => Http::response([
+                'default' => [
+                    [
+                        'uuid' => 'template-uuid',
+                        'name' => 'Updated Template',
+                        'relative_path' => './updated.json',
+                        'hash' => 'remote-hash',
+                    ],
+                ],
+            ]),
+            // Transient raw-content failure; must not fall back to the stale bake and stamp success.
+            'https://fake.test/repo/main/updated.json' => Http::response(null, 500),
+        ]);
+
+        Log::spy();
+
+        (new SyncDefaultTemplates())->handle();
+
+        Log::shouldHaveReceived('warning')
+            ->withArgs(function ($message) {
+                return str_contains($message, 'Skipped template due to failed fetch');
+            })
+            ->atLeast()
+            ->once();
+        $this->assertFalse(Storage::disk('local')->exists(SyncDefaultTemplates::REPO_SHA_FILE));
+        $hashes = json_decode((string) Storage::disk('local')->get(SyncDefaultTemplates::CONTENT_HASHES_FILE), true);
+        $this->assertIsArray($hashes);
+        $this->assertArrayNotHasKey('template-uuid', $hashes);
+    }
+
+    public function test_remote_index_failure_does_not_fall_back_to_stale_local_bake()
+    {
+        file_put_contents($this->localTemplatesDir . '/.templates-sha', "old-local-sha\n");
+        file_put_contents($this->localTemplatesDir . '/index.json', json_encode([
+            'default' => [],
+        ]));
+
+        Http::fake([
+            'https://api.fake.test/repos/processmaker/repo/git/ref/heads/main' => Http::response([
+                'object' => ['sha' => 'new-remote-sha'],
+            ]),
+            'https://fake.test/repo/main/index.json' => Http::response(null, 500),
+        ]);
+
+        Log::spy();
+
+        (new SyncDefaultTemplates())->handle();
+
+        Log::shouldHaveReceived('warning')
+            ->withArgs(function ($message) {
+                return str_contains($message, 'Failed to fetch template index from GitHub');
+            })
+            ->atLeast()
+            ->once();
+        $this->assertFalse(Storage::disk('local')->exists(SyncDefaultTemplates::REPO_SHA_FILE));
     }
 
     public function test_job_skips_when_repo_sha_unchanged()
@@ -183,6 +272,29 @@ class SyncDefaultTemplatesTest extends TestCase
             })
             ->atLeast()
             ->once();
+        $this->assertFalse(Storage::disk('local')->exists(SyncDefaultTemplates::REPO_SHA_FILE));
+    }
+
+    public function test_job_uses_local_bake_when_sha_matches_remote()
+    {
+        file_put_contents($this->localTemplatesDir . '/.templates-sha', "same-sha\n");
+        file_put_contents($this->localTemplatesDir . '/index.json', json_encode([
+            'default' => [],
+        ]));
+
+        Http::fake([
+            'https://api.fake.test/repos/processmaker/repo/git/ref/heads/main' => Http::response([
+                'object' => ['sha' => 'same-sha'],
+            ]),
+            'https://fake.test/*' => Http::response('should-not-fetch-raw-content', 500),
+        ]);
+
+        (new SyncDefaultTemplates())->handle();
+
+        $this->assertSame('same-sha', trim(Storage::disk('local')->get(SyncDefaultTemplates::REPO_SHA_FILE)));
+        Http::assertNotSent(function ($request) {
+            return str_contains($request->url(), 'fake.test/repo/');
+        });
     }
 
     private function removeDirectory(string $dir): void

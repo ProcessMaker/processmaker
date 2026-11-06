@@ -34,9 +34,13 @@ class SyncDefaultTemplates implements ShouldQueue
     }
 
     /**
-     * Fetch default templates from a baked local checkout when present, otherwise GitHub.
-     * Skip the whole sync when the configured branch SHA is unchanged, and skip individual
-     * templates whose index hash matches the last successful sync.
+     * Sync default templates from the configured branch.
+     *
+     * - Skip entirely when the GitHub branch SHA matches the last successful sync.
+     * - Prefer the baked local tree when its SHA matches GitHub (or GitHub is unreachable),
+     *   which is the new-instance / upgrade path.
+     * - When GitHub has moved ahead of the bake, fetch index and bodies from GitHub only.
+     *   Do not fall back to the stale bake and stamp remote success markers.
      */
     public function handle()
     {
@@ -219,6 +223,9 @@ class SyncDefaultTemplates implements ShouldQueue
                 }
                 Log::warning("[SyncDefaultTemplates] Failed to parse local template index: {$indexPath}");
             }
+
+            // Bake was preferred but unreadable; do not pretend a remote fetch succeeded via stale data.
+            return null;
         }
 
         $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/index.json';
@@ -227,32 +234,15 @@ class SyncDefaultTemplates implements ShouldQueue
             if (!$response->successful()) {
                 Log::warning("[SyncDefaultTemplates] Failed to fetch template index from GitHub: {$url} - Status: {$response->status()}");
 
-                // Last resort: local bake even if we preferred remote.
-                return $this->loadLocalIndexOnly($config);
+                return null;
             }
 
             return $response->json();
         } catch (ConnectionException $e) {
             Log::warning("[SyncDefaultTemplates] Timed out fetching template index from GitHub: {$url} - {$e->getMessage()}");
 
-            return $this->loadLocalIndexOnly($config);
-        }
-    }
-
-    private function loadLocalIndexOnly(array $config): ?array
-    {
-        $indexPath = $this->localIndexPath($config);
-        if (!$indexPath) {
             return null;
         }
-        $data = json_decode(file_get_contents($indexPath), true);
-        if (!is_array($data)) {
-            Log::warning("[SyncDefaultTemplates] Failed to parse local template index: {$indexPath}");
-
-            return null;
-        }
-
-        return $data;
     }
 
     private function loadTemplatePayload(array $config, array $template, bool $preferLocal): ?array
@@ -272,6 +262,8 @@ class SyncDefaultTemplates implements ShouldQueue
                 }
                 Log::warning("[SyncDefaultTemplates] Failed to parse local template: {$localFile}");
             }
+
+            return null;
         }
 
         $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/' . $relativePath;
@@ -280,32 +272,15 @@ class SyncDefaultTemplates implements ShouldQueue
             if (!$response->successful()) {
                 Log::warning("[SyncDefaultTemplates] Skipped template due to failed fetch: {$template['name']} ({$template['uuid']}) - Status: {$response->status()}");
 
-                return $this->loadLocalTemplateOnly($config, $relativePath, $template);
+                return null;
             }
 
             return $response->json();
         } catch (ConnectionException $e) {
             Log::warning("[SyncDefaultTemplates] Skipped template due to failed fetch: {$template['name']} ({$template['uuid']}) - {$e->getMessage()}");
 
-            return $this->loadLocalTemplateOnly($config, $relativePath, $template);
-        }
-    }
-
-    private function loadLocalTemplateOnly(array $config, string $relativePath, array $template): ?array
-    {
-        $base = $this->localPath($config);
-        $localFile = $base ? $base . '/' . $relativePath : null;
-        if (!$localFile || !is_file($localFile)) {
             return null;
         }
-        $payload = json_decode(file_get_contents($localFile), true);
-        if (!is_array($payload)) {
-            Log::warning("[SyncDefaultTemplates] Failed to parse local template: {$localFile}");
-
-            return null;
-        }
-
-        return $payload;
     }
 
     private function readStoredSha(): ?string
