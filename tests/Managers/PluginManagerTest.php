@@ -36,11 +36,66 @@ class PluginManagerTest extends TestCase
         app()->instance(PluginRuntimeReload::class, $this->runtimeReload);
     }
 
+    protected function tearDown(): void
+    {
+        $this->tearDownTestPluginManager();
+
+        parent::tearDown();
+    }
+
     public function tearDownTestPluginManager()
     {
-        if ($this->tempPluginDir && is_dir($this->tempPluginDir)) {
-            $this->deleteDirectory($this->tempPluginDir);
+        if (!$this->pluginsDir) {
+            return;
         }
+
+        foreach (array_merge($this->temporaryPluginDirs(), $this->leftoverToggleDirs()) as $dir) {
+            if (is_link($dir)) {
+                unlink($dir);
+                continue;
+            }
+
+            if (is_dir($dir) && realpath($dir) !== realpath($this->pluginsDir)) {
+                $this->deleteDirectory($dir);
+            }
+        }
+    }
+
+    /**
+     * Toggle renames the folder by adding or removing a leading underscore.
+     * Remove whichever path is left.
+     *
+     * @return list<string>
+     */
+    private function temporaryPluginDirs(): array
+    {
+        if (!$this->tempPluginDir || realpath((string) $this->tempPluginDir) === realpath($this->pluginsDir)) {
+            return [
+                $this->pluginsDir . '/plugin-one',
+                $this->pluginsDir . '/plugin-two',
+                $this->pluginsDir . '/valid-plugin',
+                $this->pluginsDir . '/_hidden-plugin',
+            ];
+        }
+
+        $base = basename($this->tempPluginDir);
+        $parent = dirname($this->tempPluginDir);
+        $toggled = str_starts_with($base, '_')
+            ? $parent . '/' . substr($base, 1)
+            : $parent . '/_' . $base;
+
+        return [$this->tempPluginDir, $toggled];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function leftoverToggleDirs(): array
+    {
+        return array_merge(
+            glob($this->pluginsDir . '/supervisor-toggle-*') ?: [],
+            glob($this->pluginsDir . '/_supervisor-toggle-*') ?: []
+        );
     }
 
     public function testInstallExistingRepositoryChecksOutRequestedBranchWithoutMain()
