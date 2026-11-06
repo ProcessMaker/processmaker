@@ -5,8 +5,10 @@ namespace ProcessMaker\Providers;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Events\TenantResolved;
 use RuntimeException;
+use Throwable;
 
 /**
  * Service provider for loading and registering plugins.
@@ -37,7 +39,12 @@ class PluginServiceProvider extends ServiceProvider
             if (str_starts_with(basename($pluginPath), '_')) {
                 continue;
             }
-            $this->loadPlugin($pluginPath);
+
+            try {
+                $this->loadPlugin($pluginPath);
+            } catch (Throwable $exception) {
+                Log::error('Skipping plugin at ' . $pluginPath . ': ' . $exception->getMessage());
+            }
         }
     }
 
@@ -55,7 +62,14 @@ class PluginServiceProvider extends ServiceProvider
         }
 
         $composerJson = $this->loadComposerJson($composerJsonPath);
-        $this->registerAutoloader($pluginPath, $composerJson);
+        if (!$this->registerAutoloader($pluginPath, $composerJson)) {
+            Log::warning(
+                'Skipping plugin at ' . $pluginPath . ': dependencies are not installed.'
+            );
+
+            return;
+        }
+
         $this->registerServiceProviders($composerJson);
     }
 
@@ -84,19 +98,20 @@ class PluginServiceProvider extends ServiceProvider
      *
      * @param string $pluginPath
      * @param array $composerJson
+     * @return bool False when the plugin has no autoload file yet
      */
-    protected function registerAutoloader(string $pluginPath, array $composerJson): void
+    protected function registerAutoloader(string $pluginPath, array $composerJson): bool
     {
         $autoloadPath = $pluginPath . '/vendor/autoload.php';
 
         if (!file_exists($autoloadPath)) {
-            return;
+            return false;
         }
 
         $loader = require_once $autoloadPath;
         if ($loader === true) {
             // Already loaded and presumably registered
-            return;
+            return true;
         }
 
         $psr4Namespaces = Arr::get($composerJson, 'autoload.psr-4', []);
@@ -112,6 +127,8 @@ class PluginServiceProvider extends ServiceProvider
 
             $loader->addPsr4($namespace, $fullPath);
         }
+
+        return true;
     }
 
     /**
@@ -124,6 +141,11 @@ class PluginServiceProvider extends ServiceProvider
         $providers = Arr::get($composerJson, 'extra.laravel.providers', []);
 
         foreach ($providers as $provider) {
+            if (!class_exists($provider)) {
+                Log::warning('Skipping plugin provider ' . $provider . ': class not found.');
+                continue;
+            }
+
             app()->register($provider);
         }
     }

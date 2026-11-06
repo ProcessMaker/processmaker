@@ -61,6 +61,29 @@ class InstallPluginTest extends TestCase
         });
     }
 
+    public function testHandleRevertsAndRethrowsWhenInstallFails(): void
+    {
+        Event::fake([PluginLog::class]);
+
+        $manager = Mockery::mock(PluginManager::class);
+        $manager->shouldReceive('install')
+            ->once()
+            ->andThrow(new \RuntimeException('Git clone exceeded the timeout while installing package-plg.'));
+        $manager->shouldReceive('revertFailedInstall')
+            ->once()
+            ->with(7);
+
+        $job = new InstallPlugin(
+            userId: 7,
+            url: 'https://github.com/ProcessMaker/package-plg.git',
+        );
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('exceeded the timeout');
+
+        $job->handle($manager);
+    }
+
     public function testFailedBroadcastsError(): void
     {
         Event::fake([PluginLog::class]);
@@ -69,11 +92,15 @@ class InstallPluginTest extends TestCase
             userId: 7,
             url: 'https://github.com/ProcessMaker/package-translations.git',
         );
-        $job->failed(new \RuntimeException('composer failed'));
+        $job->failed(new \RuntimeException(
+            "The process \"'git' 'clone' 'https://token:secret@github.com/ProcessMaker/package-plg'\" exceeded the timeout of 300 seconds."
+        ));
 
         Event::assertDispatched(PluginLog::class, function (PluginLog $event) {
             return $event->status === 'error'
-                && str_contains($event->message, 'composer failed')
+                && str_contains($event->message, 'exceeded the timeout')
+                && !str_contains($event->message, 'secret')
+                && str_contains($event->message, 'https://github.com/ProcessMaker/package-plg')
                 && $event->userId === 7;
         });
     }

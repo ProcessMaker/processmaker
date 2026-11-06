@@ -4,8 +4,10 @@ namespace Tests\Managers;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Process;
+use Mockery;
 use ProcessMaker\Events\PluginLog;
 use ProcessMaker\Managers\PluginManager;
+use ProcessMaker\Services\PluginRuntimeReload;
 use RuntimeException;
 use Tests\TestCase;
 
@@ -14,6 +16,8 @@ class PluginManagerTest extends TestCase
     private $pluginsDir;
 
     private $tempPluginDir;
+
+    private $runtimeReload;
 
     public function setUpTestPluginManager()
     {
@@ -27,6 +31,9 @@ class PluginManagerTest extends TestCase
             'plugin_manager.supervisorctl_config' => null,
             'plugin_manager.supervisor_restart_target' => 'all',
         ]);
+
+        $this->runtimeReload = Mockery::spy(PluginRuntimeReload::class);
+        app()->instance(PluginRuntimeReload::class, $this->runtimeReload);
     }
 
     public function tearDownTestPluginManager()
@@ -182,7 +189,7 @@ class PluginManagerTest extends TestCase
         Event::assertDispatched(PluginLog::class, function ($event) {
             return str_contains($event->message, 'installed successfully');
         });
-        $this->assertSupervisorRestartRan();
+        $this->assertRuntimeReloadPublished();
     }
 
     public function testInstallValidatesComposerJsonNamespace()
@@ -224,6 +231,47 @@ class PluginManagerTest extends TestCase
         $manager->install($repoUrl);
     }
 
+    public function testInstallFailureRemovesPluginDirectoryCreatedByTheAttempt(): void
+    {
+        $this->setUpTestPluginManager();
+
+        $sourceName = 'plugin-rollback-' . uniqid();
+        $source = sys_get_temp_dir() . '/' . $sourceName;
+        mkdir($source, 0755, true);
+        file_put_contents($source . '/composer.json', json_encode([
+            'name' => 'invalid/plugin',
+            'autoload' => [
+                'psr-4' => [
+                    'Invalid\\Namespace\\' => 'src/',
+                ],
+            ],
+        ]));
+
+        $pluginPath = $this->pluginsDir . '/' . $sourceName;
+        $this->tempPluginDir = $pluginPath;
+
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+        Event::fake([PluginLog::class]);
+
+        $manager = new PluginManager();
+
+        try {
+            $manager->install($source, null, null, 1);
+            $this->fail('Install was expected to fail validation.');
+        } catch (RuntimeException $exception) {
+            $this->assertStringContainsString('PSR-4', $exception->getMessage());
+        } finally {
+            $this->deleteDirectory($source);
+        }
+
+        $this->assertFalse(is_dir($pluginPath) || is_link($pluginPath));
+        Event::assertDispatched(PluginLog::class, function (PluginLog $event) {
+            return str_contains($event->message, 'Removing the incomplete plugin directory');
+        });
+    }
+
     public function testUninstallRemovesPluginDirectory()
     {
         $this->setUpTestPluginManager();
@@ -249,7 +297,7 @@ class PluginManagerTest extends TestCase
         Event::assertDispatched(PluginLog::class, function ($event) {
             return str_contains($event->message, 'uninstalled successfully');
         });
-        $this->assertSupervisorRestartRan();
+        $this->assertRuntimeReloadPublished();
     }
 
     public function testUninstallThrowsExceptionForNonExistentPlugin()
@@ -393,7 +441,7 @@ class PluginManagerTest extends TestCase
         $this->assertTrue(is_dir($this->pluginsDir . '/_' . $pluginName));
 
         $this->assertProcessRanCommand('route:cache');
-        $this->assertSupervisorRestartRan();
+        $this->assertRuntimeReloadPublished();
     }
 
     public function testToggleEnableRestartsSupervisor()
@@ -414,31 +462,23 @@ class PluginManagerTest extends TestCase
 
         $this->assertTrue($enabled);
         $this->assertTrue(is_dir($this->pluginsDir . '/' . $pluginName));
-        $this->assertSupervisorRestartRan();
+        $this->assertRuntimeReloadPublished();
     }
 
-    public function testSupervisorRestartUsesConfigFileWhenSet()
+    public function testScheduleSupervisorRestartUsesConfigFileWhenSet(): void
     {
-        $this->setUpTestPluginManager();
-
         config([
+            'plugin_manager.supervisorctl_bin' => 'supervisorctl',
             'plugin_manager.supervisorctl_config' => '/tmp/processmaker-supervisord.conf',
+            'plugin_manager.supervisor_restart_target' => 'all',
+            'plugin_manager.supervisor_restart_delay' => 5,
         ]);
-
-        $pluginName = 'supervisor-toggle-' . uniqid();
-        $pluginPath = $this->pluginsDir . '/' . $pluginName;
-        $this->tempPluginDir = $pluginPath;
-        mkdir($pluginPath, 0755, true);
 
         Process::fake([
-            '*' => Process::result("processmaker-horizon: started\n", 0),
+            '*' => Process::result('', exitCode: 0),
         ]);
 
-        Event::fake([PluginLog::class]);
-
-        $manager = new PluginManager();
-        $manager->toggle($pluginName);
-
+        $this->assertTrue((new PluginRuntimeReload())->scheduleSupervisorRestart());
         $this->assertSupervisorRestartRan('/tmp/processmaker-supervisord.conf');
     }
 
@@ -512,6 +552,11 @@ class PluginManagerTest extends TestCase
         });
     }
 
+    private function assertRuntimeReloadPublished(): void
+    {
+        $this->runtimeReload->shouldHaveReceived('publish')->atLeast()->once();
+    }
+
     private function assertSupervisorRestartRan(?string $configFile = null): void
     {
         $bin = config('plugin_manager.supervisorctl_bin', 'supervisorctl');
@@ -526,8 +571,24 @@ class PluginManagerTest extends TestCase
         $expected[] = 'restart';
         $expected[] = $target;
 
-        Process::assertRan(function ($process) use ($expected) {
-            return is_array($process->command) && $process->command === $expected;
+        Process::assertRan(function ($process) use ($expected, $configFile) {
+            if (!is_array($process->command)) {
+                return false;
+            }
+
+            $command = implode(' ', $process->command);
+
+            if (!str_contains($command, 'setsid') || !str_contains($command, 'nohup')) {
+                return false;
+            }
+
+            foreach ($expected as $part) {
+                if (!str_contains($command, $part)) {
+                    return false;
+                }
+            }
+
+            return $configFile === null || str_contains($command, (string) $configFile);
         });
     }
 

@@ -2,18 +2,27 @@
 
 namespace ProcessMaker\Managers;
 
+use Illuminate\Process\Exceptions\ProcessTimedOutException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Process;
 use function Illuminate\Support\php_binary;
 use ProcessMaker\Events\PluginLog;
 use ProcessMaker\Models\Plugin;
+use ProcessMaker\Services\PluginRuntimeReload;
 use RuntimeException;
+use Throwable;
 
 /**
  * Manager for handling plugin installation, uninstallation, and listing.
  */
 class PluginManager
 {
+    /**
+     * Plugin directory created by the current install attempt.
+     * Removed if that attempt fails before setup finishes.
+     */
+    private ?string $incompleteInstallPath = null;
+
     /**
      * Install a plugin from a GitHub repository or local path.
      *
@@ -36,6 +45,23 @@ class PluginManager
             throw new RuntimeException('Cannot specify both --branch and --tag');
         }
 
+        $this->incompleteInstallPath = null;
+
+        try {
+            $this->installPluginFiles($repoUrl, $branch, $tag, $userId, $gitUsername, $gitToken);
+        } catch (Throwable $exception) {
+            $this->revertFailedInstall($userId);
+            throw $exception;
+        }
+    }
+
+    /**
+     * Copy or clone the plugin, then run setup.
+     *
+     * @throws RuntimeException
+     */
+    private function installPluginFiles(string $repoUrl, ?string $branch, ?string $tag, ?int $userId, ?string $gitUsername, ?string $gitToken): void
+    {
         // Check if this is a local path
         $localPath = $this->resolveLocalPath($repoUrl);
         $isLocalPath = $localPath !== null;
@@ -61,6 +87,8 @@ class PluginManager
                 if (!is_dir(storage_path('plugins'))) {
                     mkdir(storage_path('plugins'), 0755, true);
                 }
+
+                $this->markNewInstallForRollback($pluginPath);
 
                 if (is_link($pluginPath)) {
                     if (!@unlink($pluginPath)) {
@@ -94,7 +122,8 @@ class PluginManager
                 );
             } else {
                 $this->logRunning('Cloning repository...', $repoName, $userId);
-                $this->cloneRepository($authenticatedRepoUrl, $pluginPath, $repoName, $userId);
+                $this->markNewInstallForRollback($pluginPath);
+                $this->cloneRepository($repoUrl, $pluginPath, $repoName, $userId);
 
                 if ($branch) {
                     $this->logRunning("Checking out branch: {$branch}", $repoName, $userId);
@@ -203,7 +232,7 @@ class PluginManager
     private function refreshRuntimeAfterPluginChange(string $pluginName, ?int $userId = null): void
     {
         $this->rebuildRouteCache($pluginName, $userId);
-        $this->restartSupervisorPrograms($pluginName, $userId);
+        $this->publishRuntimeReload($pluginName, $userId);
     }
 
     /**
@@ -221,38 +250,27 @@ class PluginManager
         $this->reloadCachedRoutes();
     }
 
-    private function restartSupervisorPrograms(string $pluginName, ?int $userId = null): void
+    private function publishRuntimeReload(string $pluginName, ?int $userId = null): void
     {
-        $this->logRunning('Restarting supervisor programs...', $pluginName, $userId);
+        $this->logRunning('Publishing plugin runtime reload...', $pluginName, $userId);
 
-        $command = [
-            config('plugin_manager.supervisorctl_bin', 'supervisorctl'),
-        ];
-
-        $configFile = config('plugin_manager.supervisorctl_config');
-        if ($configFile) {
-            $command[] = '-c';
-            $command[] = $configFile;
-        }
-
-        $command[] = 'restart';
-        $command[] = config('plugin_manager.supervisor_restart_target', 'all');
-
-        $process = Process::timeout(120)->run($command);
-
-        if (!$process->successful()) {
-            $output = trim($process->errorOutput() . "\n" . $process->output());
-            $this->logError("Supervisor restart failed:\n\n{$output}", $pluginName, $userId);
+        try {
+            $version = app(PluginRuntimeReload::class)->publish($pluginName);
+        } catch (Throwable $exception) {
+            $this->logError(
+                'Could not publish the plugin runtime reload: ' . $exception->getMessage(),
+                $pluginName,
+                $userId
+            );
 
             return;
         }
 
-        $output = trim($process->output());
-        if ($output !== '') {
-            $this->logRunning("Supervisor restart output:\n\n{$output}", $pluginName, $userId);
-        } else {
-            $this->logRunning('Supervisor programs restarted successfully', $pluginName, $userId);
-        }
+        $this->logRunning(
+            'Plugin runtime reload published (version ' . $version . '). Each pod restarts its own supervisor programs.',
+            $pluginName,
+            $userId
+        );
     }
 
     /**
@@ -312,6 +330,8 @@ class PluginManager
             throw new RuntimeException("Failed to create temp directory: {$tmpExtractDir}");
         }
 
+        $this->incompleteInstallPath = null;
+
         try {
             $zip->extractTo($tmpExtractDir);
             $zip->close();
@@ -339,6 +359,8 @@ class PluginManager
                 mkdir(storage_path('plugins'), 0755, true);
             }
 
+            $this->markNewInstallForRollback($pluginPath);
+
             // Remove existing plugin directory if present
             if (is_dir($pluginPath)) {
                 $this->deleteDirectory($pluginPath, $repoName, $userId);
@@ -350,6 +372,9 @@ class PluginManager
             $this->finishPluginSetup($pluginPath, $repoName, $userId);
 
             $this->logDone('Plugin installed successfully', $repoName, $userId);
+        } catch (Throwable $exception) {
+            $this->revertFailedInstall($userId);
+            throw $exception;
         } finally {
             // Always clean up temp directory and zip file
             if (is_dir($tmpExtractDir)) {
@@ -481,7 +506,14 @@ class PluginManager
      */
     protected function cloneRepository(string $repoUrl, string $destination, string $repoName, ?int $userId = null): void
     {
-        $process = Process::timeout(300)->run(['git', 'clone', $repoUrl, $destination]);
+        // Handle GITHUB_TOKEN if present
+        $url = $this->prepareGitUrl($repoUrl);
+
+        try {
+            $process = Process::timeout(3600)->run(['git', 'clone', $url, $destination]);
+        } catch (ProcessTimedOutException) {
+            throw new RuntimeException("Git clone exceeded the timeout while installing {$repoName}.");
+        }
 
         if (!$process->successful()) {
             $this->logError('Failed to clone repository: ' . $process->errorOutput(), $repoName, $userId);
@@ -502,7 +534,52 @@ class PluginManager
         $this->logRunning('Running plugin install command...', $repoName, $userId);
         $this->runCommand($installCommand, $repoName, $userId);
 
+        // Setup finished. Keep the directory even if a later route refresh fails.
+        $this->incompleteInstallPath = null;
+
         $this->refreshRuntimeAfterPluginChange($repoName, $userId);
+    }
+
+    /**
+     * Remember a plugin path that did not exist before this install attempt.
+     */
+    private function markNewInstallForRollback(string $pluginPath): void
+    {
+        if (is_dir($pluginPath) || is_link($pluginPath)) {
+            return;
+        }
+
+        $this->incompleteInstallPath = $pluginPath;
+    }
+
+    /**
+     * Remove a plugin directory left behind by a failed install.
+     */
+    public function revertFailedInstall(?int $userId = null): void
+    {
+        $pluginPath = $this->incompleteInstallPath;
+        $this->incompleteInstallPath = null;
+
+        if ($pluginPath === null || (!is_dir($pluginPath) && !is_link($pluginPath))) {
+            return;
+        }
+
+        $pluginName = basename($pluginPath);
+        $this->logRunning(
+            'Installation failed. Removing the incomplete plugin directory.',
+            $pluginName,
+            $userId
+        );
+
+        try {
+            $this->removePluginPath($pluginPath, $pluginName, $userId);
+        } catch (Throwable $cleanupException) {
+            $this->logError(
+                'Could not remove the incomplete plugin directory: ' . $cleanupException->getMessage(),
+                $pluginName,
+                $userId
+            );
+        }
     }
 
     protected function resolveInstalledPluginPath(string $pluginName): string

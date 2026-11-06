@@ -44,33 +44,49 @@ class InstallPlugin implements ShouldQueue
 
     public function handle(PluginManager $manager): void
     {
-        $label = $this->zipPath ? basename($this->zipPath) : ($this->url ?? 'plugin');
-        event(new PluginLog('Starting queued plugin installation...', 'starting', $label, $this->userId));
+        try {
+            $label = $this->zipPath ? basename($this->zipPath) : ($this->url ?? 'plugin');
+            event(new PluginLog('Starting queued plugin installation...', 'starting', $label, $this->userId));
 
-        if ($this->zipPath) {
-            $manager->installFromZip($this->zipPath, $this->userId);
+            if ($this->zipPath) {
+                $manager->installFromZip($this->zipPath, $this->userId);
 
-            return;
+                return;
+            }
+
+            $manager->install(
+                $this->url,
+                $this->branch,
+                $this->tag,
+                $this->userId,
+                $this->gitUsername,
+                $this->gitToken
+            );
+        } catch (Throwable $exception) {
+            $manager->revertFailedInstall($this->userId);
+
+            throw $exception;
         }
-
-        $manager->install(
-            $this->url,
-            $this->branch,
-            $this->tag,
-            $this->userId,
-            $this->gitUsername,
-            $this->gitToken
-        );
     }
 
     public function failed(Throwable $exception): void
     {
         $label = $this->zipPath ? basename((string) $this->zipPath) : ($this->url ?? 'plugin');
         event(new PluginLog(
-            'Plugin installation failed: ' . $exception->getMessage(),
+            'Plugin installation failed: ' . $this->publicErrorMessage($exception),
             'error',
             $label,
             $this->userId
         ));
+    }
+
+    /**
+     * Drop credentials that a process timeout can embed in its command line.
+     */
+    private function publicErrorMessage(Throwable $exception): string
+    {
+        $message = preg_replace('#://[^/\s:@]+:[^/\s@]+@#', '://', $exception->getMessage());
+
+        return $message ?? $exception->getMessage();
     }
 }
