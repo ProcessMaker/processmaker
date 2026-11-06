@@ -511,6 +511,37 @@ class User extends Authenticatable implements HasMedia
     }
 
     /**
+     * Replacement who can take a task right now. A stored replacement can
+     * become inactive or out of office after it was selected.
+     */
+    public function activeDelegationUserId(): ?int
+    {
+        $delegateId = $this->delegationUser()->where('status', 'ACTIVE')->value('id');
+
+        return $delegateId ? (int) $delegateId : null;
+    }
+
+    /**
+     * Keep a resolved assignee unless it is this user's replacement and that
+     * replacement cannot take a task.
+     *
+     * @param mixed $resolvedUserId
+     * @return mixed
+     */
+    public function acceptResolvedAssignee($resolvedUserId)
+    {
+        if (!$resolvedUserId || (int) $resolvedUserId === (int) $this->id) {
+            return $resolvedUserId;
+        }
+
+        if ((int) $this->delegation_user_id !== (int) $resolvedUserId) {
+            return $resolvedUserId;
+        }
+
+        return $this->activeDelegationUserId() ? $resolvedUserId : null;
+    }
+
+    /**
      * User's Manager are user associations that allow for automatic reassignment based on specific rules in the task assignment.
      *
      * @return User
