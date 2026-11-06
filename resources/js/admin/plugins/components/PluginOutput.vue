@@ -10,6 +10,14 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  /**
+   * Parent sets true while the job is queued / in progress so the output panel
+   * stays visible before the first WebSocket message (Echo can lag or fail).
+   */
+  waiting: {
+    type: Boolean,
+    default: false,
+  },
   outputTitle: {
     type: String,
     default: "",
@@ -26,8 +34,18 @@ const props = defineProps({
 const emit = defineEmits(['done', 'error', 'running']);
 
 const isRunning = computed(() => {
+  if (props.waiting) {
+    return true;
+  }
   return ["started", "starting", "saving", "running"].includes(status.value);
 });
+
+const showEchoMissingHint = computed(
+  () =>
+    props.waiting &&
+    commandOutput.value === "" &&
+    (!props.userId || !window.Echo)
+);
 
 const output = (text) => {
   if (typeof text !== "string") {
@@ -60,6 +78,22 @@ const channelName = computed(
 
 let pluginLogChannel = null;
 
+const unsubscribePluginLog = () => {
+  if (pluginLogChannel) {
+    pluginLogChannel.stopListening(".PluginLog", onPluginLog);
+    pluginLogChannel = null;
+  }
+};
+
+const subscribePluginLog = () => {
+  unsubscribePluginLog();
+  if (!props.userId || !window.Echo) {
+    return;
+  }
+  pluginLogChannel = window.Echo.private(channelName.value);
+  pluginLogChannel.listen(".PluginLog", onPluginLog);
+};
+
 const onPluginLog = (event) => {
   const statusEvent = event.status;
   status.value = statusEvent;
@@ -91,18 +125,22 @@ const onPluginLog = (event) => {
 };
 
 onMounted(() => {
-  if (!props.userId || !window.Echo) {
-    return;
-  }
-  pluginLogChannel = window.Echo.private(channelName.value);
-  pluginLogChannel.listen(".PluginLog", onPluginLog);
+  subscribePluginLog();
 });
 
-onUnmounted(() => {
-  if (pluginLogChannel) {
-    pluginLogChannel.stopListening(".PluginLog", onPluginLog);
-    pluginLogChannel = null;
+watch(channelName, () => {
+  subscribePluginLog();
+});
+
+watch(
+  () => props.userId,
+  () => {
+    subscribePluginLog();
   }
+);
+
+onUnmounted(() => {
+  unsubscribePluginLog();
 });
 </script>
 
@@ -121,6 +159,13 @@ onUnmounted(() => {
     <p>
       {{ outputTitle || $t("Plugin Installation Output") }}
       <i v-if="isRunning" class="fas fa-spinner fa-spin"></i>
+    </p>
+    <p v-if="showEchoMissingHint" class="text-muted small mb-2" role="status">
+      {{
+        $t(
+          "Live log requires your user id and Echo. If this stays empty, check broadcasting (Pusher/Soketi) and that the queue worker is running."
+        )
+      }}
     </p>
     <pre
       ref="pre"

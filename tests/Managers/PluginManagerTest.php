@@ -372,7 +372,7 @@ class PluginManagerTest extends TestCase
         $this->assertSame(['TENANT' => '7'], $environment);
     }
 
-    public function testToggleDisableRebuildsRouteCacheAndRestartsSupervisor()
+    public function testToggleRebuildsRouteCacheAndRestartsSupervisor()
     {
         $this->setUpTestPluginManager();
 

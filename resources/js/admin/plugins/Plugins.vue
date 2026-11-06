@@ -155,6 +155,7 @@
         </b-form-group>
         <plugin-output
           :user-id="userId"
+          :waiting="isRunning"
           @done="onPluginJobDone"
           @error="onPluginJobError"
           @running="onPluginJobRunning"
@@ -182,6 +183,7 @@
         <plugin-output
           :key="progressSessionKey"
           :user-id="userId"
+          :waiting="progressWaiting || progressIsRunning"
           :output-title="progressOutputTitle"
           :success-message="progressSuccessMessage"
           :error-message="progressErrorMessage"
