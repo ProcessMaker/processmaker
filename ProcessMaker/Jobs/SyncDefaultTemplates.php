@@ -46,103 +46,172 @@ class SyncDefaultTemplates implements ShouldQueue
     {
         try {
             $config = config('services.github');
-            if (!$config) {
-                return;
-            }
-
-            $categories = (strpos($config['template_categories'], ',') !== false)
-                ? explode(',', $config['template_categories'])
-                : [$config['template_categories']];
-
-            $remoteSha = $this->fetchRemoteSha($config);
-            $localSha = $this->readLocalSha($config);
-            $currentSha = $remoteSha ?? $localSha;
-            $storedSha = $this->readStoredSha();
-
-            if ($currentSha && $storedSha && hash_equals($storedSha, $currentSha)) {
-                Log::info("[SyncDefaultTemplates] Repo SHA unchanged ({$currentSha}), skipping sync");
-
-                return;
-            }
-
-            // Prefer the baked tree when it matches remote (or remote is unreachable).
-            $preferLocal = $this->localIndexPath($config) !== null
-                && ($remoteSha === null || ($localSha !== null && hash_equals($localSha, $remoteSha)));
-
-            $data = $this->loadIndex($config, $preferLocal);
-            if ($data === null) {
-                return;
-            }
-
-            $processCategoryId = ProcessCategory::firstOrCreate(
-                ['name' => 'Default Templates'],
-                [
-                    'name' => 'Default Templates',
-                    'status' => 'ACTIVE',
-                    'is_system' => 0,
-                ]
-            )->getKey();
-
-            $storedHashes = $this->readStoredHashes();
-            $newHashes = $storedHashes;
-            $hadFailure = false;
-
-            foreach ($data as $templateCategory => $templates) {
-                if (!in_array($templateCategory, $categories) && !in_array('all', $categories)) {
-                    continue;
-                }
-                foreach ($templates as $template) {
-                    $uuid = $template['uuid'] ?? null;
-                    if (!$uuid) {
-                        continue;
-                    }
-
-                    $existingTemplate = ProcessTemplates::where('uuid', $uuid)->first();
-                    // Do not overwrite templates owned by a user.
-                    if (!is_null($existingTemplate) && !is_null($existingTemplate->user_id)) {
-                        continue;
-                    }
-
-                    $hash = $template['hash'] ?? null;
-                    if ($hash && isset($storedHashes[$uuid]) && hash_equals((string) $storedHashes[$uuid], (string) $hash)) {
-                        continue;
-                    }
-
-                    $payload = $this->loadTemplatePayload($config, $template, $preferLocal);
-                    if ($payload === null) {
-                        $hadFailure = true;
-                        continue;
-                    }
-
-                    try {
-                        data_set($payload, 'export.' . $payload['root'] . '.attributes.process_category_id', $processCategoryId);
-                        $options = new Options([
-                            'mode' => 'update',
-                            'isTemplate' => true,
-                            'saveAssetsMode' => 'saveAllAssets',
-                        ]);
-                        $importer = new Importer($payload, $options);
-                        $importer->doImport();
-                    } catch (Throwable $e) {
-                        $hadFailure = true;
-                        Log::warning("[SyncDefaultTemplates] Failed to import template {$template['name']} ({$uuid}): {$e->getMessage()}");
-                        continue;
-                    }
-
-                    if ($hash) {
-                        $newHashes[$uuid] = $hash;
-                    }
-                }
-            }
-
-            $this->writeStoredHashes($newHashes);
-            // Only stamp the repo SHA when every needed template imported cleanly,
-            // so a partial/network failure can retry on the next run.
-            if ($currentSha && !$hadFailure) {
-                $this->writeStoredSha($currentSha);
+            if ($config) {
+                $this->sync($config);
             }
         } catch (Throwable $e) {
             Log::warning("[SyncDefaultTemplates] Sync failed gracefully: {$e->getMessage()}");
+        }
+    }
+
+    private function sync(array $config): void
+    {
+        $categories = $this->parseCategories($config);
+        $remoteSha = $this->fetchRemoteSha($config);
+        $localSha = $this->readLocalSha($config);
+        $currentSha = $remoteSha ?? $localSha;
+
+        if ($this->shaUnchanged($currentSha)) {
+            return;
+        }
+
+        $preferLocal = $this->shouldPreferLocal($config, $remoteSha, $localSha);
+        $data = $this->loadIndex($config, $preferLocal);
+        if ($data === null) {
+            return;
+        }
+
+        $processCategoryId = $this->defaultProcessCategoryId();
+        $result = $this->importTemplates($data, $categories, $config, $preferLocal, $processCategoryId);
+
+        $this->writeStoredHashes($result['hashes']);
+        // Only stamp the repo SHA when every needed template imported cleanly,
+        // so a partial/network failure can retry on the next run.
+        if ($currentSha && !$result['hadFailure']) {
+            $this->writeStoredSha($currentSha);
+        }
+    }
+
+    private function parseCategories(array $config): array
+    {
+        $categories = $config['template_categories'];
+
+        return strpos($categories, ',') !== false ? explode(',', $categories) : [$categories];
+    }
+
+    private function shaUnchanged(?string $currentSha): bool
+    {
+        $storedSha = $this->readStoredSha();
+        if (!$currentSha || !$storedSha || !hash_equals($storedSha, $currentSha)) {
+            return false;
+        }
+
+        Log::info("[SyncDefaultTemplates] Repo SHA unchanged ({$currentSha}), skipping sync");
+
+        return true;
+    }
+
+    private function shouldPreferLocal(array $config, ?string $remoteSha, ?string $localSha): bool
+    {
+        if ($this->localIndexPath($config) === null) {
+            return false;
+        }
+
+        return $remoteSha === null || ($localSha !== null && hash_equals($localSha, $remoteSha));
+    }
+
+    private function defaultProcessCategoryId(): string|int
+    {
+        return ProcessCategory::firstOrCreate(
+            ['name' => 'Default Templates'],
+            [
+                'name' => 'Default Templates',
+                'status' => 'ACTIVE',
+                'is_system' => 0,
+            ]
+        )->getKey();
+    }
+
+    private function importTemplates(
+        array $data,
+        array $categories,
+        array $config,
+        bool $preferLocal,
+        string|int $processCategoryId
+    ): array {
+        $storedHashes = $this->readStoredHashes();
+        $newHashes = $storedHashes;
+        $hadFailure = false;
+
+        foreach ($data as $templateCategory => $templates) {
+            if (!$this->categoryAllowed($templateCategory, $categories)) {
+                continue;
+            }
+            foreach ($templates as $template) {
+                $hash = $this->importOneTemplate($template, $config, $preferLocal, $processCategoryId, $storedHashes);
+                if ($hash === false) {
+                    $hadFailure = true;
+                } elseif (is_string($hash)) {
+                    $newHashes[$template['uuid']] = $hash;
+                }
+            }
+        }
+
+        return ['hashes' => $newHashes, 'hadFailure' => $hadFailure];
+    }
+
+    private function categoryAllowed(string $templateCategory, array $categories): bool
+    {
+        return in_array($templateCategory, $categories) || in_array('all', $categories);
+    }
+
+    /**
+     * Import one template.
+     *
+     * @return string|false|null Hash when imported, false on failure, null when skipped.
+     */
+    private function importOneTemplate(
+        array $template,
+        array $config,
+        bool $preferLocal,
+        string|int $processCategoryId,
+        array $storedHashes
+    ): string|false|null {
+        $uuid = $template['uuid'] ?? null;
+        if (!$uuid || $this->shouldSkipTemplate($uuid, $template['hash'] ?? null, $storedHashes)) {
+            return null;
+        }
+
+        $payload = $this->loadTemplatePayload($config, $template, $preferLocal);
+        if ($payload === null || !$this->runImport($payload, $processCategoryId, $template, $uuid)) {
+            return false;
+        }
+
+        $hash = $template['hash'] ?? null;
+
+        return $hash ? (string) $hash : null;
+    }
+
+    private function shouldSkipTemplate(string $uuid, ?string $hash, array $storedHashes): bool
+    {
+        $existingTemplate = ProcessTemplates::where('uuid', $uuid)->first();
+        // Do not overwrite templates owned by a user.
+        if (!is_null($existingTemplate) && !is_null($existingTemplate->user_id)) {
+            return true;
+        }
+
+        return $hash
+            && isset($storedHashes[$uuid])
+            && hash_equals((string) $storedHashes[$uuid], (string) $hash);
+    }
+
+    private function runImport(array $payload, string|int $processCategoryId, array $template, string $uuid): bool
+    {
+        try {
+            data_set($payload, 'export.' . $payload['root'] . '.attributes.process_category_id', $processCategoryId);
+            $options = new Options([
+                'mode' => 'update',
+                'isTemplate' => true,
+                'saveAssetsMode' => 'saveAllAssets',
+            ]);
+            $importer = new Importer($payload, $options);
+            $importer->doImport();
+
+            return true;
+        } catch (Throwable $e) {
+            Log::warning("[SyncDefaultTemplates] Failed to import template {$template['name']} ({$uuid}): {$e->getMessage()}");
+
+            return false;
         }
     }
 
@@ -201,12 +270,9 @@ class SyncDefaultTemplates implements ShouldQueue
             $sha = $response->json('object.sha');
 
             return is_string($sha) && $sha !== '' ? $sha : null;
-        } catch (ConnectionException $e) {
-            Log::warning("[SyncDefaultTemplates] Timed out fetching repo SHA from GitHub: {$url} - {$e->getMessage()}");
-
-            return null;
         } catch (Throwable $e) {
-            Log::warning("[SyncDefaultTemplates] Error fetching repo SHA from GitHub: {$url} - {$e->getMessage()}");
+            $prefix = $e instanceof ConnectionException ? 'Timed out' : 'Error';
+            Log::warning("[SyncDefaultTemplates] {$prefix} fetching repo SHA from GitHub: {$url} - {$e->getMessage()}");
 
             return null;
         }
@@ -214,20 +280,29 @@ class SyncDefaultTemplates implements ShouldQueue
 
     private function loadIndex(array $config, bool $preferLocal): ?array
     {
-        if ($preferLocal) {
-            $indexPath = $this->localIndexPath($config);
-            if ($indexPath) {
-                $data = json_decode(file_get_contents($indexPath), true);
-                if (is_array($data)) {
-                    return $data;
-                }
-                Log::warning("[SyncDefaultTemplates] Failed to parse local template index: {$indexPath}");
-            }
+        return $preferLocal ? $this->loadLocalIndex($config) : $this->loadRemoteIndex($config);
+    }
 
+    private function loadLocalIndex(array $config): ?array
+    {
+        $indexPath = $this->localIndexPath($config);
+        if (!$indexPath) {
             // Bake was preferred but unreadable; do not pretend a remote fetch succeeded via stale data.
             return null;
         }
 
+        $data = json_decode(file_get_contents($indexPath), true);
+        if (is_array($data)) {
+            return $data;
+        }
+
+        Log::warning("[SyncDefaultTemplates] Failed to parse local template index: {$indexPath}");
+
+        return null;
+    }
+
+    private function loadRemoteIndex(array $config): ?array
+    {
         $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/index.json';
         try {
             $response = Http::timeout(10)->get($url);
@@ -252,20 +327,31 @@ class SyncDefaultTemplates implements ShouldQueue
             return null;
         }
 
-        if ($preferLocal) {
-            $base = $this->localPath($config);
-            $localFile = $base ? $base . '/' . $relativePath : null;
-            if ($localFile && is_file($localFile)) {
-                $payload = json_decode(file_get_contents($localFile), true);
-                if (is_array($payload)) {
-                    return $payload;
-                }
-                Log::warning("[SyncDefaultTemplates] Failed to parse local template: {$localFile}");
-            }
+        return $preferLocal
+            ? $this->loadLocalTemplate($config, $relativePath)
+            : $this->loadRemoteTemplate($config, $template, $relativePath);
+    }
 
+    private function loadLocalTemplate(array $config, string $relativePath): ?array
+    {
+        $base = $this->localPath($config);
+        $localFile = $base ? $base . '/' . $relativePath : null;
+        if (!$localFile || !is_file($localFile)) {
             return null;
         }
 
+        $payload = json_decode(file_get_contents($localFile), true);
+        if (is_array($payload)) {
+            return $payload;
+        }
+
+        Log::warning("[SyncDefaultTemplates] Failed to parse local template: {$localFile}");
+
+        return null;
+    }
+
+    private function loadRemoteTemplate(array $config, array $template, string $relativePath): ?array
+    {
         $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/' . $relativePath;
         try {
             $response = Http::timeout(10)->get($url);
