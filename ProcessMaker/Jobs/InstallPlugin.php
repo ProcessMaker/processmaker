@@ -28,6 +28,8 @@ class InstallPlugin implements ShouldQueue
         public ?string $branch = null,
         public ?string $tag = null,
         public ?string $zipPath = null,
+        public ?string $gitUsername = null,
+        public ?string $gitToken = null,
     ) {
     }
 
@@ -51,7 +53,14 @@ class InstallPlugin implements ShouldQueue
             return;
         }
 
-        $manager->install($this->url, $this->branch, $this->tag, $this->userId);
+        $manager->install(
+            $this->url,
+            $this->branch,
+            $this->tag,
+            $this->userId,
+            $this->gitUsername,
+            $this->gitToken
+        );
     }
 
     public function failed(Throwable $exception): void

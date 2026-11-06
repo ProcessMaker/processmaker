@@ -22,7 +22,9 @@ class InstallPluginTest extends TestCase
                 'https://github.com/ProcessMaker/package-translations.git',
                 'develop',
                 null,
-                7
+                7,
+                null,
+                null,
             );
 
         $job = new InstallPlugin(

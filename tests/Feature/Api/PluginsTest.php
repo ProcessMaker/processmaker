@@ -34,6 +34,8 @@ class PluginsTest extends TestCase
                 && $job->branch === 'develop'
                 && $job->tag === null
                 && $job->zipPath === null
+                && $job->gitUsername === null
+                && $job->gitToken === null
                 && $job->timeout >= 600;
         });
     }

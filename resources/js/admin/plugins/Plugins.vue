@@ -122,37 +122,85 @@
       <b-container class="mb-2">
         <b-form-group
           required
-          :label="$t('Repository URL')"
           :state="!getError('url')"
           :invalid-feedback="getError('url') || ''"
           role="alert"
         >
+          <template #label>
+            <span>
+              <span>{{ $t("Repository URL") }}</span>
+            </span>
+          </template>
+          <div class="d-flex align-items-center">
           <b-form-input
             v-model="plugin.url"
             name="url"
             required
             :aria-required="'true'"
           />
+          <b-button
+                variant="link"
+                class="py-0 ml-1"
+                type="button"
+                :aria-pressed="showGitCredentials ? 'true' : 'false'"
+                :aria-label="$t('Credentials')"
+                @click="showGitCredentials = !showGitCredentials"
+              >
+                <span v-b-tooltip.hover.bottom :title="$t('Credentials')">
+                  <i class="fas fa-key" />
+                </span>
+              </b-button>
+            </div>
           <b-form-text>{{ $t("Repository URL must be a valid URL") }}</b-form-text>
         </b-form-group>
-        <b-form-group
-          :label="$t('Branch')"
-          :state="!getError('branch')"
-          :invalid-feedback="getError('branch') || ''"
-          role="alert"
-        >
-          <b-form-input v-model="plugin.branch" name="branch" :state="!getError('branch')" />
-          <b-form-text>{{ $t("Branch must be a valid branch name") }}</b-form-text>
-        </b-form-group>
-        <b-form-group
-          :label="$t('Tag')"
-          :state="!getError('tag')"
-          :invalid-feedback="getError('tag') || ''"
-          role="alert"
-        >
-          <b-form-input v-model="plugin.tag" name="tag" :state="!getError('tag')" />
-          <b-form-text>{{ $t("Tag must be a valid tag name") }}</b-form-text>
-        </b-form-group>
+        <b-collapse v-model="showGitCredentials" class="mb-3">
+          <b-row>
+            <b-col cols="12" md="6">
+              <b-form-group :label="$t('Username')">
+                <b-form-input
+                  v-model="plugin.gitUsername"
+                  name="git_username"
+                  autocomplete="username"
+                />
+              </b-form-group>
+            </b-col>
+            <b-col cols="12" md="6">
+              <b-form-group :label="$t('Token')">
+                <b-form-input
+                  v-model="plugin.gitToken"
+                  type="password"
+                  name="git_token"
+                  autocomplete="off"
+                  :aria-label="$t('Token')"
+                />
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </b-collapse>
+        <b-row>
+          <b-col cols="12" md="6">
+            <b-form-group
+              :label="$t('Branch')"
+              :state="!getError('branch')"
+              :invalid-feedback="getError('branch') || ''"
+              role="alert"
+            >
+              <b-form-input v-model="plugin.branch" name="branch" :state="!getError('branch')" />
+              <b-form-text>{{ $t("Branch must be a valid branch name") }}</b-form-text>
+            </b-form-group>
+          </b-col>
+          <b-col cols="12" md="6">
+            <b-form-group
+              :label="$t('Tag')"
+              :state="!getError('tag')"
+              :invalid-feedback="getError('tag') || ''"
+              role="alert"
+            >
+              <b-form-input v-model="plugin.tag" name="tag" :state="!getError('tag')" />
+              <b-form-text>{{ $t("Tag must be a valid tag name") }}</b-form-text>
+            </b-form-group>
+          </b-col>
+        </b-row>
         <plugin-output
           :user-id="userId"
           :waiting="isRunning"
@@ -232,7 +280,11 @@ const plugin = reactive({
   url: "",
   branch: "",
   tag: "",
+  gitUsername: "",
+  gitToken: "",
 });
+
+const showGitCredentials = ref(false);
 
 const filter = ref("");
 const errors = ref({});
@@ -512,7 +564,17 @@ const save = () => {
     url: "/plugins/install",
     baseURL: "/api/1.0/",
     timeout: 0,
-    data: { ...plugin },
+    data: {
+      url: plugin.url,
+      branch: plugin.branch,
+      tag: plugin.tag,
+      ...(plugin.gitUsername || plugin.gitToken
+        ? {
+            git_username: plugin.gitUsername || undefined,
+            git_token: plugin.gitToken || undefined,
+          }
+        : {}),
+    },
   })
     .then(() => {
       // Completion is driven by PluginLog events from the queued job.
@@ -673,7 +735,10 @@ const resetValues = () => {
     url: "",
     branch: "",
     tag: "",
+    gitUsername: "",
+    gitToken: "",
   });
+  showGitCredentials.value = false;
   delete plugin.description;
   errors.value = {
     url: null,
@@ -692,6 +757,9 @@ const edit = (item) => {
   }
   title.value = $t("Edit Plugin");
   Object.assign(plugin, _.cloneDeep(item));
+  plugin.gitUsername = "";
+  plugin.gitPassword = "";
+  showGitCredentials.value = false;
   errors.value = {
     url: null,
     branch: null,

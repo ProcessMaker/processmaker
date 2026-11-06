@@ -24,8 +24,14 @@ class PluginManager
      * @return void
      * @throws RuntimeException
      */
-    public function install(string $repoUrl, ?string $branch = null, ?string $tag = null, ?int $userId = null): void
-    {
+    public function install(
+        string $repoUrl,
+        ?string $branch = null,
+        ?string $tag = null,
+        ?int $userId = null,
+        ?string $gitUsername = null,
+        ?string $gitToken = null,
+    ): void {
         if ($branch && $tag) {
             throw new RuntimeException('Cannot specify both --branch and --tag');
         }
@@ -72,14 +78,23 @@ class PluginManager
             // Extract repository name from URL
             $repoName = $this->extractRepoName($repoUrl);
             $pluginPath = storage_path('plugins') . '/' . $repoName;
+            $authenticatedRepoUrl = $this->prepareGitUrl($repoUrl, $gitUsername, $gitToken);
 
             $this->logRunning("Starting installation of plugin: {$repoName}", $repoName, $userId);
 
             if (is_dir($pluginPath)) {
-                $this->updateExistingRepository($pluginPath, $repoName, $branch, $tag, $userId);
+                $this->updateExistingRepository(
+                    $pluginPath,
+                    $repoName,
+                    $branch,
+                    $tag,
+                    $userId,
+                    $repoUrl,
+                    $authenticatedRepoUrl
+                );
             } else {
                 $this->logRunning('Cloning repository...', $repoName, $userId);
-                $this->cloneRepository($repoUrl, $pluginPath, $repoName, $userId);
+                $this->cloneRepository($authenticatedRepoUrl, $pluginPath, $repoName, $userId);
 
                 if ($branch) {
                     $this->logRunning("Checking out branch: {$branch}", $repoName, $userId);
@@ -466,10 +481,7 @@ class PluginManager
      */
     protected function cloneRepository(string $repoUrl, string $destination, string $repoName, ?int $userId = null): void
     {
-        // Handle GITHUB_TOKEN if present
-        $url = $this->prepareGitUrl($repoUrl);
-
-        $process = Process::timeout(300)->run(['git', 'clone', $url, $destination]);
+        $process = Process::timeout(300)->run(['git', 'clone', $repoUrl, $destination]);
 
         if (!$process->successful()) {
             $this->logError('Failed to clone repository: ' . $process->errorOutput(), $repoName, $userId);
@@ -535,23 +547,56 @@ class PluginManager
         string $repoName,
         ?string $branch,
         ?string $tag,
-        ?int $userId = null
+        ?int $userId = null,
+        ?string $canonicalRepoUrl = null,
+        ?string $authenticatedRepoUrl = null,
     ): void {
         $this->logRunning('Plugin directory exists, fetching from remote...', $repoName, $userId);
-        $this->fetchRepository($pluginPath, $repoName, $userId);
 
-        if ($tag) {
-            $this->logRunning("Checking out tag: {$tag}", $repoName, $userId);
-            $this->checkoutTag($pluginPath, $tag, $repoName, $userId);
+        $restoreOriginUrl = $canonicalRepoUrl !== null
+            ? $this->stripEmbeddedCredentialsFromHttpUrl($canonicalRepoUrl)
+            : null;
 
-            return;
+        $previousOriginProcess = Process::path($pluginPath)->timeout(60)->run([
+            'git', 'remote', 'get-url', 'origin',
+        ]);
+        $previousOrigin = $previousOriginProcess->successful()
+            ? trim($previousOriginProcess->output())
+            : '';
+
+        $temporaryAuth = $authenticatedRepoUrl !== null
+            && $restoreOriginUrl !== null
+            && str_starts_with($authenticatedRepoUrl, 'https://');
+
+        if ($temporaryAuth) {
+            Process::path($pluginPath)->timeout(60)->run([
+                'git', 'remote', 'set-url', 'origin', $authenticatedRepoUrl,
+            ]);
         }
 
-        $branchToCheckout = $branch ?? $this->resolveRemoteDefaultBranch($pluginPath, $repoName, $userId);
-        $this->logRunning("Checking out branch: {$branchToCheckout}", $repoName, $userId);
-        $this->checkoutBranch($pluginPath, $branchToCheckout, $repoName, $userId);
-        $this->logRunning("Pulling latest changes for branch {$branchToCheckout}...", $repoName, $userId);
-        $this->pullRepository($pluginPath, $repoName, $userId, $branchToCheckout);
+        try {
+            $this->fetchRepository($pluginPath, $repoName, $userId);
+
+            if ($tag) {
+                $this->logRunning("Checking out tag: {$tag}", $repoName, $userId);
+                $this->checkoutTag($pluginPath, $tag, $repoName, $userId);
+
+                return;
+            }
+
+            $branchToCheckout = $branch ?? $this->resolveRemoteDefaultBranch($pluginPath, $repoName, $userId);
+            $this->logRunning("Checking out branch: {$branchToCheckout}", $repoName, $userId);
+            $this->checkoutBranch($pluginPath, $branchToCheckout, $repoName, $userId);
+            $this->logRunning("Pulling latest changes for branch {$branchToCheckout}...", $repoName, $userId);
+            $this->pullRepository($pluginPath, $repoName, $userId, $branchToCheckout);
+        } finally {
+            if ($temporaryAuth && $restoreOriginUrl !== '') {
+                $fallback = $previousOrigin !== '' ? $previousOrigin : $restoreOriginUrl;
+                Process::path($pluginPath)->timeout(60)->run([
+                    'git', 'remote', 'set-url', 'origin', $fallback,
+                ]);
+            }
+        }
     }
 
     protected function fetchRepository(string $pluginPath, string $repoName, ?int $userId = null): void
@@ -897,21 +942,69 @@ class PluginManager
     }
 
     /**
-     * Prepare git URL with GITHUB_TOKEN if available.
-     *
-     * @param string $url
-     * @return string
+     * Prepare HTTPS git URL: optional UI username/password, else GITHUB_TOKEN for github.com.
      */
-    protected function prepareGitUrl(string $url): string
-    {
-        $token = env('GITHUB_TOKEN');
+    protected function prepareGitUrl(
+        string $url,
+        ?string $username = null,
+        ?string $token = null,
+    ): string {
+        if (!str_starts_with($url, 'https://')) {
+            return $url;
+        }
 
+        $hasUser = $username !== null && trim($username) !== '';
+        $hasToken = $token !== null && $token !== '';
+
+        if ($hasUser || $hasToken) {
+            $parts = parse_url($url);
+            if ($parts === false || !isset($parts['scheme'], $parts['host'])) {
+                return $url;
+            }
+
+            $user = rawurlencode((string) $username);
+            $pass = $hasToken ? rawurlencode((string) $token) : '';
+
+            $auth = $pass !== '' ? "{$user}:{$pass}@" : "{$user}@";
+
+            $path = ($parts['path'] ?? '') . (isset($parts['query']) ? '?' . $parts['query'] : '');
+            $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
+
+            return 'https://' . $auth . $parts['host']
+                . (isset($parts['port']) ? ':' . $parts['port'] : '')
+                . $path
+                . $fragment;
+        }
+
+        $token = env('GITHUB_TOKEN');
         if ($token && str_starts_with($url, 'https://github.com/')) {
-            // Insert token into HTTPS URL
-            $url = str_replace('https://github.com/', "https://{$token}@github.com/", $url);
+            return str_replace('https://github.com/', "https://{$token}@github.com/", $url);
         }
 
         return $url;
+    }
+
+    /**
+     * Remove user:pass from an HTTPS URL (for restoring git remote after authenticated fetch).
+     */
+    protected function stripEmbeddedCredentialsFromHttpUrl(string $url): string
+    {
+        if (!str_starts_with($url, 'https://')) {
+            return $url;
+        }
+
+        $parts = parse_url($url);
+        if ($parts === false || !isset($parts['scheme'], $parts['host'])) {
+            return $url;
+        }
+
+        $path = ($parts['path'] ?? '') . (isset($parts['query']) ? '?' . $parts['query'] : '');
+        $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
+
+        return 'https://' . $parts['host']
+            . (isset($parts['port']) ? ':' . $parts['port'] : '')
+            . $path
+            . $fragment;
     }
 
     /**

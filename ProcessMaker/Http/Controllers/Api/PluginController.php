@@ -31,6 +31,8 @@ class PluginController extends Controller
             'zip' => 'required_without:url|nullable|file|mimes:zip',
             'branch' => 'prohibits:tag|nullable|string',
             'tag' => 'prohibits:branch|nullable|string',
+            'git_username' => 'nullable|string|max:255',
+            'git_token' => 'nullable|string|max:4096',
         ]);
 
         $userId = $request->user()->id;
@@ -49,6 +51,8 @@ class PluginController extends Controller
                 url: $request->input('url'),
                 branch: $request->input('branch'),
                 tag: $request->input('tag'),
+                gitUsername: $request->input('git_username'),
+                gitToken: $request->input('git_token'),
             );
         }
 
