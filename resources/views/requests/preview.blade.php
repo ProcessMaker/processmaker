@@ -35,8 +35,12 @@
       var screenBuilderScripts = @json($manager->getScripts());
     </script>
     @vite(['resources/js/requests/loaderRequestsPreview.js'])
+    @foreach($manager->getScripts() as $script)
+      <script defer src="{{ $script }}"></script>
+    @endforeach
     <script>
-      window.addEventListener('DOMContentLoaded', () => {
+      // Mount on load so deferred package scripts have executed (i.e. SignaturePad).
+      window.addEventListener('load', () => {
         new Vue({
           el: "#request",
           data() {

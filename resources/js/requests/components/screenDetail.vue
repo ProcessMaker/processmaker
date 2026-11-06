@@ -51,9 +51,8 @@
 </template>
 
 <script>
-
-  import Vue from 'vue'
-  import {VueFormRenderer} from '@processmaker/screen-builder';
+  import Vue from 'vue';
+  import { VueFormRenderer } from '@processmaker/screen-builder';
 
   Vue.component('vue-form-renderer', VueFormRenderer);
 
@@ -117,7 +116,7 @@
       window.ProcessMaker.apiClient.requestCount = 0;
       window.ProcessMaker.apiClient.requestCountFlag = true;
       if (this.timeoutOnLoad) {
-        window.addEventListener('load', () => {
+        const startWaitingForPendingRequests = () => {
           setTimeout(() => {
             this.interval = setInterval(this.printWhenNoRequestsArePending, 1000);
           }, 750);
@@ -128,7 +127,12 @@
               this.disabled = false;
             }
           }, 30000);
-        });
+        };
+        if (document.readyState === 'complete') {
+          startWaitingForPendingRequests();
+        } else {
+          window.addEventListener('load', startWaitingForPendingRequests);
+        }
       } else {
           this.disabled = false;
       }
