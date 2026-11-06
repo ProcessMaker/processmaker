@@ -123,7 +123,7 @@ class PluginManager
             } else {
                 $this->logRunning('Cloning repository...', $repoName, $userId);
                 $this->markNewInstallForRollback($pluginPath);
-                $this->cloneRepository($repoUrl, $pluginPath, $repoName, $userId);
+                $this->cloneRepository($authenticatedRepoUrl, $pluginPath, $repoName, $userId);
 
                 if ($branch) {
                     $this->logRunning("Checking out branch: {$branch}", $repoName, $userId);
