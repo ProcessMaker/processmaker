@@ -596,13 +596,8 @@ class ProcessExecutionRawRepository
             return null;
         }
 
-        $list = json_decode($assignmentRules);
-        $list = ($list === null) ? [] : $list;
-        foreach ($list as $item) {
-            $formalExp = new FormalExpression();
-            $formalExp->setLanguage('FEEL');
-            $formalExp->setBody($item->expression);
-            if (!$formalExp($instanceData)) {
+        foreach (json_decode($assignmentRules) ?? [] as $item) {
+            if (!$this->assignmentRuleExpressionMatchesRaw($item->expression ?? null, $instanceData)) {
                 continue;
             }
 
@@ -611,40 +606,13 @@ class ProcessExecutionRawRepository
                 throw new TaskDoesNotHaveUsersException($activity->getName());
             }
 
-            switch ($item->type) {
-                case 'user_group':
-                    $users = [];
-                    foreach ($item->assignee->users as $user) {
-                        $users[$user] = $user;
-                    }
-                    foreach ($item->assignee->groups as $group) {
-                        $this->mergeGroupMemberUserIdsRaw([(int) $group], $users);
-                    }
-                    $userId = $this->getNextUserFromGroupAssignmentRaw($processId, $activity->getId(), array_values($users));
-                    break;
-                case 'group':
-                    $users = [];
-                    $this->mergeGroupMemberUserIdsRaw([(int) $item->assignee], $users);
-                    $userId = $this->getNextUserFromGroupAssignmentRaw($processId, $activity->getId(), array_values($users));
-                    break;
-                case 'user':
-                    $userId = (int) $item->assignee;
-                    break;
-                case 'requester':
-                    $userId = $this->getRequesterUserIdRaw($activity, $token);
-                    break;
-                case 'manual':
-                case 'self_service':
-                    $userId = null;
-                    break;
-                case 'user_by_id':
-                    $mustache = new Mustache_Engine();
-                    $userId = (int) $mustache->render($item->assignee, $instanceData);
-                    break;
-                case 'script':
-                default:
-                    $userId = null;
-            }
+            $userId = $this->resolveAssigneeIdFromMatchedRuleRaw(
+                $item,
+                $processId,
+                $activity,
+                $token,
+                $instanceData
+            );
 
             if (!$userId) {
                 return null;
@@ -654,5 +622,65 @@ class ProcessExecutionRawRepository
         }
 
         return null;
+    }
+
+    private function assignmentRuleExpressionMatchesRaw(?string $expression, array $instanceData): bool
+    {
+        $formalExp = new FormalExpression();
+        $formalExp->setLanguage('FEEL');
+        $formalExp->setBody($expression);
+
+        return (bool) $formalExp($instanceData);
+    }
+
+    /**
+     * @param object $item
+     * @param mixed $activity
+     */
+    private function resolveAssigneeIdFromMatchedRuleRaw(
+        $item,
+        int $processId,
+        $activity,
+        ProcessRequestToken $token,
+        array $instanceData
+    ): ?int {
+        return match ($item->type ?? null) {
+            'user_group' => $this->resolveUserGroupRuleAssigneeRaw($item, $processId, $activity),
+            'group' => $this->resolveGroupRuleAssigneeRaw($item, $processId, $activity),
+            'user' => (int) $item->assignee,
+            'requester' => $this->getRequesterUserIdRaw($activity, $token),
+            'user_by_id' => (int) (new Mustache_Engine())->render($item->assignee, $instanceData),
+            'manual', 'self_service', 'script' => null,
+            default => null,
+        };
+    }
+
+    /**
+     * @param object $item
+     * @param mixed $activity
+     */
+    private function resolveUserGroupRuleAssigneeRaw($item, int $processId, $activity): ?int
+    {
+        $users = [];
+        foreach ($item->assignee->users as $user) {
+            $users[$user] = $user;
+        }
+        foreach ($item->assignee->groups as $group) {
+            $this->mergeGroupMemberUserIdsRaw([(int) $group], $users);
+        }
+
+        return $this->getNextUserFromGroupAssignmentRaw($processId, $activity->getId(), array_values($users));
+    }
+
+    /**
+     * @param object $item
+     * @param mixed $activity
+     */
+    private function resolveGroupRuleAssigneeRaw($item, int $processId, $activity): ?int
+    {
+        $users = [];
+        $this->mergeGroupMemberUserIdsRaw([(int) $item->assignee], $users);
+
+        return $this->getNextUserFromGroupAssignmentRaw($processId, $activity->getId(), array_values($users));
     }
 }

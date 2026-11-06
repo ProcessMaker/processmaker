@@ -1090,26 +1090,39 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     public function getAssigneesFromExpression(string|array|null $form_data = []): array
     {
         $formData = $this->resolveExpressionVariables($form_data);
-
         $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
-        $assignmentRules = $activity->getProperty('assignmentRules', null);
-        $assignments = json_decode($assignmentRules, true) ?? [];
+        $assignments = json_decode($activity->getProperty('assignmentRules', null), true) ?? [];
 
         $userIds = [];
+        $hasExpressionMatch = $this->collectMatchedExpressionAssignees($assignments, $formData, $userIds);
+
+        if (!$hasExpressionMatch) {
+            $this->collectDefaultExpressionAssignees($assignments, $userIds);
+        }
+
+        $this->appendProcessManagerAssignees($userIds);
+
+        return array_values($userIds);
+    }
+
+    /**
+     * Collect assignees from matching non-default expression rules.
+     * Unresolved rules are skipped for listing but still count as matched
+     * so Default Assignment is not used as a fallback.
+     *
+     * @param array<int, array<string, mixed>> $assignments
+     * @param array<string, mixed> $formData
+     * @param array<int|string, mixed> $userIds
+     */
+    private function collectMatchedExpressionAssignees(array $assignments, array $formData, array &$userIds): bool
+    {
         $hasExpressionMatch = false;
 
         foreach ($assignments as $assignment) {
-            if ($this->isDefaultAssignmentRule($assignment)) {
-                continue;
-            }
-
             if (!$this->isAssignmentRuleMatch($assignment, $formData)) {
                 continue;
             }
 
-            // In reassign picker, skip unresolved rules without
-            // throwing. Runtime assignment still fails via getNextUserByRule.
-            // Mark as matched so we do not fall through to Default Assignment.
             $hasExpressionMatch = true;
             if (AssignmentRulesReconciliation::isUnresolvedRule($assignment)) {
                 continue;
@@ -1118,27 +1131,38 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             $this->appendAssignmentAssignees($assignment, $userIds);
         }
 
-        if (!$hasExpressionMatch) {
-            foreach ($assignments as $assignment) {
-                if (!$this->isDefaultAssignmentRule($assignment)) {
-                    continue;
-                }
+        return $hasExpressionMatch;
+    }
 
-                if (AssignmentRulesReconciliation::isUnresolvedRule($assignment)) {
-                    continue;
-                }
-
-                $this->appendAssignmentAssignees($assignment, $userIds);
+    /**
+     * @param array<int, array<string, mixed>> $assignments
+     * @param array<int|string, mixed> $userIds
+     */
+    private function collectDefaultExpressionAssignees(array $assignments, array &$userIds): void
+    {
+        foreach ($assignments as $assignment) {
+            if (!$this->isDefaultAssignmentRule($assignment)) {
+                continue;
             }
-        }
 
+            if (AssignmentRulesReconciliation::isUnresolvedRule($assignment)) {
+                continue;
+            }
+
+            $this->appendAssignmentAssignees($assignment, $userIds);
+        }
+    }
+
+    /**
+     * @param array<int|string, mixed> $userIds
+     */
+    private function appendProcessManagerAssignees(array &$userIds): void
+    {
         foreach ((array) ($this->process->manager_id ?? []) as $managerId) {
             if (!empty($managerId) && is_numeric($managerId)) {
                 $userIds[$managerId] = $managerId;
             }
         }
-
-        return array_values($userIds);
     }
 
     private function resolveExpressionVariables(string|array|null $form_data): array
