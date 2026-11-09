@@ -31,6 +31,12 @@ class TrustHosts extends Middleware
     {
         if ($request->hasHeader('X-Forwarded-Host')) {
             $forwardedHost = $request->header('X-Forwarded-Host');
+            if (is_array($forwardedHost)) {
+                $forwardedHost = $forwardedHost[0] ?? '';
+            }
+
+            // Proxies may send a host chain; Symfony uses the first value.
+            $forwardedHost = trim(explode(',', (string) $forwardedHost, 2)[0]);
             $trusted = false;
 
             foreach ($this->hosts() as $pattern) {
@@ -51,8 +57,14 @@ class TrustHosts extends Middleware
         return parent::handle($request, $next);
     }
 
+    /**
+     * Match a host against a trusted pattern using Symfony's getHost() rules:
+     * lowercase and strip a trailing :port before comparing.
+     */
     protected function hostIsValid(string $host, string $pattern): bool
     {
-        return preg_match('/' . str_replace('/', '\/', $pattern) . '/', $host) === 1;
+        $host = strtolower(preg_replace('/:\d+$/', '', trim($host)));
+
+        return preg_match('/' . str_replace('/', '\/', $pattern) . '/i', $host) === 1;
     }
 } 
