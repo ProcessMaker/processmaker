@@ -40,11 +40,22 @@ class TwoFactorAuthController extends Controller
                 return redirect()->route('login');
             }
 
+            $user->refresh();
+            if (empty($user->two_factor_secret)) {
+                $methods = $user->getValid2FAPreferences();
+                if (in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)
+                    && !in_array(TwoFactorAuthentication::EMAIL, $methods, true)
+                    && !in_array(TwoFactorAuthentication::SMS, $methods, true)
+                ) {
+                    return redirect()->route('2fa.auth_app_qr');
+                }
+            }
+
             // Send code
             if (!session()->has(self::TFA_ERROR) && !session()->has(self::TFA_MESSAGE)) {
                 $this->twoFactorAuthentication->sendCode($user);
             } else {
-                if (!session()->has(self::TFA_MESSAGE)) {
+                if (!session()->has(self::TFA_MESSAGE) || empty($user->two_factor_secret)) {
                     $this->twoFactorAuthentication->sendCode($user);
                 }
             }
@@ -153,7 +164,7 @@ class TwoFactorAuthController extends Controller
         if (count($enabled) === 0) {
             $message = [
                 'status' => 'error',
-                'message' => __('The two-step method must be selected.')
+                'message' => __('The two-step method must be selected.'),
             ];
             $status = 500;
         }
@@ -237,6 +248,7 @@ class TwoFactorAuthController extends Controller
     {
         try {
             $user = Auth::user();
+
             return $user->in2FAGroupOrIndependent();
         } catch (Exception $e) {
             session()->put(self::TFA_ERROR, $e->getMessage());

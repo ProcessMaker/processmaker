@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Tests\Feature\Auth;
 
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use OTPHP\TOTP;
 use ParagonIE\ConstantTime\Base32;
 use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Models\User;
+use ProcessMaker\Notifications\TwoFactorAuthNotification;
 use ProcessMaker\TwoFactorAuthentication;
 use Tests\TestCase;
 
@@ -131,6 +133,31 @@ class TwoFactorPredictableSecretTest extends TestCase
             ->assertRedirect(route('2fa'));
 
         $this->assertNotTrue(session()->get(TwoFactorAuthController::TFA_VALIDATED));
+    }
+
+    public function testLegacyUserProvisioningWhenSecretIsMissing(): void
+    {
+        Notification::fake();
+
+        $authOnly = User::factory()->create([
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [TwoFactorAuthentication::AUTH_APP],
+            'two_factor_secret' => null,
+        ]);
+        $this->actingAs($authOnly, 'web')
+            ->get(route('2fa'))
+            ->assertRedirect(route('2fa.auth_app_qr'));
+
+        config(['password-policies.2fa_method' => [TwoFactorAuthentication::EMAIL]]);
+        $emailUser = User::factory()->create([
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [TwoFactorAuthentication::EMAIL],
+            'two_factor_secret' => null,
+        ]);
+        $this->actingAs($emailUser, 'web')->get(route('2fa'))->assertOk();
+
+        Notification::assertSentTo($emailUser, TwoFactorAuthNotification::class);
+        $this->assertNotEmpty($emailUser->fresh()->two_factor_secret);
     }
 
     public function testVictimSessionAcceptsCodeFromStoredSecret(): void
