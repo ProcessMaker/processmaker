@@ -202,7 +202,6 @@
             v-if="showReassignment"
             :task="task"
             :form-data="formData"
-            :current-task-user-id="currentTaskUserId"
             @on-cancel-reassign="showReassignment = false"
             @on-reassign-user="e=> reassignUser(e,false)"
           />

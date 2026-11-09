@@ -4,6 +4,7 @@ import Required from "../components/shared/Required.vue";
 import CreateProcessModal from "./components/CreateProcessModal.vue";
 import SelectTemplateModal from "../components/templates/SelectTemplateModal.vue";
 import ProcessesListing from "./components/ProcessesListing.vue";
+import isPMQL from "../modules/isPMQL";
 
 // Shared by categories tab modal (`<required>`) loaded later via @append
 Vue.component("Required", Required);

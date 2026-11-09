@@ -412,6 +412,7 @@
   window.temporal.tceEnableCaseNumberScreen = @json($tceEnableCaseNumberScreen);
   window.temporal.userConfiguration = @json($userConfiguration);
   window.temporal.taskDraftsEnabled = @json($taskDraftsEnabled);
+  window.temporal.taskTitle = @json($task->element_name);
 </script>
 @vite('resources/js/tasks/loaderEdit.js')
   <script>

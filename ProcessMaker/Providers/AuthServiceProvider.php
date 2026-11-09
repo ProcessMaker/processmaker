@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Laravel\Passport\Passport;
+use ProcessMaker\Auth\PassportTokenGuardFactory;
 use ProcessMaker\Events\TenantResolved;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Media;
@@ -64,6 +65,8 @@ class AuthServiceProvider extends ServiceProvider
 
         Passport::authorizationView('auth.oauth2.authorize');
 
+        $this->registerPassportGuard();
+
         Gate::before(function ($user) {
             if ($user->is_administrator) {
                 return true;
@@ -111,6 +114,22 @@ class AuthServiceProvider extends ServiceProvider
     {
         Event::listen(TenantResolved::class, function ($tenant) {
             $this->defineGates();
+        });
+    }
+
+    /**
+     * Replace Passport's guard so TokenGuard is resolved from the current app.
+     *
+     * Passport binds the guard with the service provider's root container.
+     * Octane clones a sandbox per request and SwitchTenant swaps APP_KEY on
+     * that sandbox; the root worker still holds the landlord Encrypter.
+     */
+    private function registerPassportGuard(): void
+    {
+        Auth::resolved(function ($auth): void {
+            $auth->extend('passport', function ($app, $name, array $config) {
+                return $app->make(PassportTokenGuardFactory::class)->make($app, $config);
+            });
         });
     }
 }
