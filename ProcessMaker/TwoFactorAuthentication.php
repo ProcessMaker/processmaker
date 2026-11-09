@@ -8,7 +8,6 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Support\Facades\Notification;
 use OTPHP\TOTP;
-use ParagonIE\ConstantTime\Base32;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\TwoFactorAuthNotification;
 use Twilio\Exceptions\TwilioException;
@@ -45,17 +44,27 @@ class TwoFactorAuthentication
         }
     }
 
-    private function generateSecret(User $user): string
+    private function getUserTotpSecret(User $user): string
     {
-        $base = $user->uuid . '_' . $user->username;
+        if (!empty($user->two_factor_secret)) {
+            return $user->two_factor_secret;
+        }
 
-        return trim(Base32::encodeUpper($base), '=');
+        $secret = TOTP::generate()->getSecret();
+
+        if ($user->exists) {
+            $user->two_factor_secret = $secret;
+            $user->saveQuietly();
+        } else {
+            $user->setAttribute('two_factor_secret', $secret);
+        }
+
+        return $secret;
     }
 
     private function createOtpInstance(User $user, bool $forGoogleAuthApp = false)
     {
-        // Get secret
-        $secret = $this->generateSecret($user);
+        $secret = $this->getUserTotpSecret($user);
 
         // Config OTP
         $otp = TOTP::createFromSecret($secret);
