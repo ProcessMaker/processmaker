@@ -31,12 +31,18 @@ class TrustHosts extends Middleware
     {
         if ($request->hasHeader('X-Forwarded-Host')) {
             $forwardedHost = $request->header('X-Forwarded-Host');
-            $trustedPattern = $this->allSubdomainsOfApplicationUrl();
-            
-            if (!$this->hostIsValid($forwardedHost, $trustedPattern)) {
+            $trusted = false;
+
+            foreach ($this->hosts() as $pattern) {
+                if ($this->hostIsValid($forwardedHost, $pattern)) {
+                    $trusted = true;
+                    break;
+                }
+            }
+
+            if (! $trusted) {
                 \Log::warning('Rejected request with untrusted X-Forwarded-Host', [
                     'forwarded_host' => $forwardedHost,
-                    'trusted_pattern' => $trustedPattern
                 ]);
                 abort(400, 'Invalid Host Header');
             }
