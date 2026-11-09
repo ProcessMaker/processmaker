@@ -19,6 +19,8 @@ class McpGuidance
 
     public const SCOPE_PROCESSES = 'processes';
 
+    public const SCOPE_DATA_CONNECTORS = 'data-connectors';
+
     public function systemPrompt(): string
     {
         $value = Setting::configByKey(self::SYSTEM_PROMPT_KEY);

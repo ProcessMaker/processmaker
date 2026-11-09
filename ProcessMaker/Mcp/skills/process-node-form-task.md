@@ -63,7 +63,7 @@ Modeler: Task without `screenRef` → “Please select an input screen”.
 
 1. Screen must be FORM (not DISPLAY — that is Manual Task)
 2. Element type must be `bpmn:Task`
-3. Prefer `${screen:title}` in git BPMN
+3. Prefer `${screen:title}` in **git** BPMN (PLG deploy). For MCP create/update-process use **numeric** screen id from `create-screen` / `list-screens`
 4. Nested JSON in `pm:config` must be XML-escaped
 5. Do not confuse task `pm:screenRef` with Web Entry `web_entry.screen_id` (start-only); task Web Entry uses the task screen
 6. Never enable interstitial (`allowInterstitial="true"`) without `interstitialScreenRef` (DISPLAY). See skill `process-node-start-event`

@@ -224,6 +224,56 @@ Useful full-height CSS many screens share:
 - Props / bindings for external data; never hardcode secrets, tokens, or tenant-private credentials in `contentVue`, `handlerVue`, or component source.
 - Do not invent `components[].key` values. Copy from a reference screen or the real catalog / Custom Vue Components list.
 
+## Domain behavior lives inside the Vue component (mandatory)
+
+**Never** assemble a FORM from native Screen Builder controls (`FileUpload`, `FormSelectList`, `SignaturePad`, `FormInput`, …) as siblings for the main UX. The screen page should mount **one** coherent Vue SFC (via `VueComponentRenderTemplate`). Implement uploads, selects, signature, validation, and submit **inside that SFC** (and its child Vue components).
+
+### 1. Document / file upload — inside Vue
+
+**When:** adjuntar documentación, KYC files, invoices, multi-file packs.
+
+**Do:**
+
+1. Build upload UI in the Vue SFC (child field components OK; e.g. `vue-simple-uploader` posting to the request files API).
+2. Use `meta[name=request-id]` → `/api/1.0/requests/{id}/files` (or `PM4ConfigOverrides.postFileEndpoint`) with query `data_name` = field name; write file id(s) into request data / `v-model`; update `PM4ConfigOverrides.requestFiles` when applicable.
+3. Validate required files before calling `submit()`.
+4. Do **not** fake uploads with checkboxes only.
+5. Do **not** add native SB `FileUpload` controls next to the Vue mount.
+
+### 2. Lookup / catalog lists — Collection + Vue select (**mandatory**)
+
+**When:** any `<select>` / dropdown / radio / checkbox group with **more than two** options (leave types, departments, countries, document types, approval decisions with 3+ values, channels, risk bands, …).
+
+**Hard rule — do this BEFORE building the consumer process screen:**
+
+1. `list-collections` — reuse if a catalog already exists.
+2. Else create Collection CRUD screens (or reuse `Catalog Option Form` / `Catalog Option Display` when present) with fields at least `code`, `label`, `sort_order`, `active`.
+3. `create-collection` (skill `collection-creation-rules`) → keep the **numeric** collection id.
+4. Seed rows with `create-collection-records` (skill `collection-test-data`). Empty catalog → empty select.
+5. Confirm the auto Data Connector for `/collections/{id}/records` via `list-data-connectors` (same name; if missing, create it — queue may not have run).
+6. In the **process Vue SFC**, load options with `ProcessMaker.apiClient.get('collections/{id}/records')` (or the Data Connector), map `data.code` → value and `data.label` → label, and bind a Vue `<select>`. Pass the numeric collection id as a prop from `contentVue` (e.g. `:leave-types-collection-id="2"`).
+7. Gateways / BPMN conditions must use the **code** values from the catalog, not free-typed labels.
+
+**Only** binary never-changing enums (Yes/No, True/False) may be hard-coded in the SFC.
+
+Do **not** hard-code multi-option arrays in Vue as the primary source of truth.  
+Do **not** add native Screen Builder `FormSelectList` for the main UX.
+
+### 3. Signature — inside Vue
+
+**When:** contract sign-off, acknowledge & sign, client signature.
+
+**Do:**
+
+1. Implement a signature pad in the Vue SFC (canvas or `vue-signature-pad`) and persist a data-URL into request data (e.g. `clientSignature`).
+2. Block submit until a non-empty signature exists when signing is mandatory.
+3. Do **not** use checkbox-only “I signed” unless the human explicitly asked for a mock.
+4. Do **not** add native SB `SignaturePad` next to the Vue mount.
+
+### Page composition pattern
+
+`page.items` should contain the Vue Component Editor only (plus optional thin submit `FormButton` if the Vue mount does not own submit). No FileUpload / SignaturePad / FormSelectList siblings for domain UX.
+
 ## Hard don’ts
 
 - Do not put the main UI (forms, layouts, result lists, brand chrome) inline in `contentVue`.
@@ -233,13 +283,18 @@ Useful full-height CSS many screens share:
 - Do not reference a catalog/custom tag in `contentVue` without a matching `{name,key}` copied from a real source.
 - Do not add a new `@/…` SFC under `examples/` (or elsewhere) without also updating `public-screen-components.json`, rebuilding, and publishing assets.
 - Do not put secrets in component config.
+- Do not use native SB `FileUpload` / `SignaturePad` / `FormSelectList` (or other predefined controls) to implement upload, signature, or catalog selects — implement them in the Vue SFC.
+- Do not ship multi-option selects as hard-coded Vue arrays — create/reuse a Collection, seed it, and wire the numeric id.
+- Do not fake uploads or signatures with checkboxes alone.
 
 ## Done checklist
 
 - [ ] Screen exists and id is known
-- [ ] Page items use `VueComponentRenderTemplate`
+- [ ] Page items use **only** `VueComponentRenderTemplate` for the main UI (no domain native siblings)
 - [ ] `contentVue` only mounts named Vue component tag(s)
 - [ ] UI implementation lives in the mounted component (not inline in `contentVue`)
+- [ ] Multi-option selects use a seeded Collection (+ Data Connector) and fetch by numeric id inside the Vue SFC (not hard-coded option arrays)
+- [ ] Upload / signature are implemented **inside** the Vue SFC with working APIs
 - [ ] `handlerVue` returns an object and stays thin
 - [ ] `components` has real copied `{name,key}` entries for every mounted tag
 - [ ] New official `@/…` components are in `public-screen-components.json`

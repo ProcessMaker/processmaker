@@ -62,9 +62,22 @@ Rules:
 6. Do **not** put Form Task assignment values like `pm:assignment="requester"` on a Start Event (start permissions use `user` / `group` / `process_manager` or omit).
 7. Interstitial (“Display Next Assigned Task to Task Assignee”): if you set `pm:allowInterstitial="true"` you **must** also set `pm:interstitialScreenRef` to a **DISPLAY** screen (system key `interstitial` is fine). Enabling interstitial without a screen leaves the UI stuck on loading after start. If you do not need that UX, omit both attributes.
 
-## Portable references (git / deploy)
+## Screen assignment (mandatory)
 
-Prefer named refs over numeric IDs in package BPMN:
+Every Form Task / Manual Task **must** have a real screen assigned before the process is runnable.
+
+### MCP `create-process` / `update-process` (live instance)
+
+These tools **do not** resolve `${screen:title}`. Leaving portable refs means Modeler/runtime show the task as **unassigned**.
+
+1. Create/reuse screens (`list-screens` / `create-screen`) and note each **numeric `id`**.
+2. Set `pm:screenRef="{id}"` on every Form/Manual Task (same for `pm:scriptRef` on Script Tasks).
+3. Call `validate-process` — unresolved `${screen:…}` is an **error** (`unresolved_screen_ref`).
+4. After create/update, `get-process` and confirm every `pm:screenRef` is numeric. Fix with `update-process` if any `${screen:…}` remains.
+
+### Portable references (git / PLG deploy only)
+
+Prefer named refs **in git BPMN** published via package-plg `deploy-process` (resolves titles → ids):
 
 | Attr / field | Portable form |
 |--------------|---------------|
@@ -73,7 +86,7 @@ Prefer named refs over numeric IDs in package BPMN:
 | `calledElement` (CallActivity) | `${process:exact-process-name}` |
 | `web_entry.screen_id` / `completed_screen_id` | `${screen:…}` (supported by PLG deploy) |
 
-Deploy resolves names → instance IDs. Leave other `pm:config` values as Modeler dumps them. Do **not** invent `${…}` inside arbitrary JSON keys.
+Leave other `pm:config` values as Modeler dumps them. Do **not** invent `${…}` inside arbitrary JSON keys.
 
 Publish order: scripts → screens → child processes (CallActivity targets) → parent process.
 
@@ -103,16 +116,20 @@ Never put connector settings in the wrong place: Service Tasks use BPMN `impleme
 ## Workflow
 
 1. Discover — list processes; avoid duplicate `name`.
-2. Ensure assets — upsert every `${script:}` / `${screen:}` / child `${process:}` first.
-3. Author BPMN — start → tasks/gateways → end; load node skills for each element you configure.
-4. Validate — see skill `process-validation` (schema, refs, gateway defaults, screen types).
-5. Create/update — API or PLG `deploy-process`.
-6. Verify — get BPMN; confirm refs, one diagram, runnable path from start to end.
+2. **Catalogs first** — for every multi-option select the screens will need, `list-collections` / `create-collection` + seed (`collection-creation-rules`, `collection-test-data`). Keep **collection id** map; confirm Data Connectors with `list-data-connectors`.
+3. Ensure assets — create/upsert every screen/script/child process; wire collection ids into Vue mounts; keep a **title → id** map.
+4. Author BPMN — start → tasks/gateways → end; for MCP use **numeric** `pm:screenRef` / `pm:scriptRef` from that map; gateway conditions use catalog **codes**.
+5. Validate — see skill `process-validation` (schema, refs, gateway defaults, screen types, no unresolved `${…}`).
+6. Create/update — MCP `create-process`/`update-process`, or PLG `deploy-process` for portable git BPMN.
+7. Verify — `get-process`; every Form/Manual Task has a numeric screen id; runnable path start → end.
 
 ## Do not
 
 - Invent `bpmn:UserTask` for Form Tasks
-- Ship numeric `pm:screenRef` / `pm:scriptRef` into git when portable refs are available
+- Save `${screen:title}` / `${script:title}` via MCP create/update (unresolved → unassigned tasks)
+- Ship numeric `pm:screenRef` / `pm:scriptRef` into **git** when portable refs + PLG deploy are available
 - Leave blank create without a start event
 - Put gateway conditions on the gateway node (they belong on **sequence flows**)
 - Dump unrelated package `implementation` keys without the matching connector installed
+- Stop after creating screens without wiring them into the process BPMN
+- Hard-code multi-option select lists in Vue instead of Collections + seed + numeric id wiring

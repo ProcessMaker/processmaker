@@ -18,6 +18,14 @@ final class McpSystemSkills
 
     public const PROCESS_CREATION_RULES_SLUG = 'process-creation-rules';
 
+    public const DATA_CONNECTOR_CREATION_RULES_ID = 'mcp-system-data-connector-creation-rules';
+
+    public const DATA_CONNECTOR_CREATION_RULES_SLUG = 'data-connector-creation-rules';
+
+    public const COLLECTION_CREATION_RULES_ID = 'mcp-system-collection-creation-rules';
+
+    public const COLLECTION_CREATION_RULES_SLUG = 'collection-creation-rules';
+
     /**
      * Legacy ids/slugs previously stored in local mcp.skills configs.
      *
@@ -32,13 +40,14 @@ final class McpSystemSkills
      */
     private static function catalog(): array
     {
-        $items = [
+        return [
             [
                 'id' => self::SCREEN_CREATION_RULES_ID,
                 'name' => 'Screen creation rules',
                 'slug' => self::SCREEN_CREATION_RULES_SLUG,
                 'when' => 'Before create-screen, update-screen, or validate-screen',
                 'file' => 'screen-creation-rules.md',
+                'scope' => McpGuidance::SCOPE_SCREENS,
             ],
             [
                 'id' => self::PROCESS_CREATION_RULES_ID,
@@ -46,6 +55,7 @@ final class McpSystemSkills
                 'slug' => self::PROCESS_CREATION_RULES_SLUG,
                 'when' => 'Before create-process, update-process, or authoring BPMN',
                 'file' => 'process-creation-rules.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
                 'id' => 'mcp-system-process-planner',
@@ -53,6 +63,7 @@ final class McpSystemSkills
                 'slug' => 'process-planner',
                 'when' => 'When designing a new process from a vague request — before create-process; interview tasks, decisions, assignees',
                 'file' => 'process-planner.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
                 'id' => 'mcp-system-process-node-start-event',
@@ -60,6 +71,7 @@ final class McpSystemSkills
                 'slug' => 'process-node-start-event',
                 'when' => 'When adding or configuring a Start Event (blank, timer, message, signal, conditional)',
                 'file' => 'process-node-start-event.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
                 'id' => 'mcp-system-process-node-end-event',
@@ -67,6 +79,7 @@ final class McpSystemSkills
                 'slug' => 'process-node-end-event',
                 'when' => 'When adding or configuring an End, Terminate, Message, Signal, or Error End Event',
                 'file' => 'process-node-end-event.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
                 'id' => 'mcp-system-process-node-form-task',
@@ -74,6 +87,7 @@ final class McpSystemSkills
                 'slug' => 'process-node-form-task',
                 'when' => 'When adding or configuring a Form Task (bpmn:Task)',
                 'file' => 'process-node-form-task.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
                 'id' => 'mcp-system-process-node-manual-task',
@@ -81,6 +95,7 @@ final class McpSystemSkills
                 'slug' => 'process-node-manual-task',
                 'when' => 'When adding or configuring a Manual Task (bpmn:ManualTask)',
                 'file' => 'process-node-manual-task.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
                 'id' => 'mcp-system-process-node-script-task',
@@ -88,6 +103,7 @@ final class McpSystemSkills
                 'slug' => 'process-node-script-task',
                 'when' => 'When adding or configuring a Script Task (bpmn:ScriptTask)',
                 'file' => 'process-node-script-task.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
                 'id' => 'mcp-system-process-node-call-activity',
@@ -95,6 +111,7 @@ final class McpSystemSkills
                 'slug' => 'process-node-call-activity',
                 'when' => 'When adding or configuring a Call Activity / Sub Process',
                 'file' => 'process-node-call-activity.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
                 'id' => 'mcp-system-process-node-gateways',
@@ -102,6 +119,7 @@ final class McpSystemSkills
                 'slug' => 'process-node-gateways',
                 'when' => 'When adding or configuring Exclusive, Inclusive, Parallel, or Event-based gateways',
                 'file' => 'process-node-gateways.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
                 'id' => 'mcp-system-process-node-sequence-flow',
@@ -109,6 +127,7 @@ final class McpSystemSkills
                 'slug' => 'process-node-sequence-flow',
                 'when' => 'When connecting nodes or configuring gateway conditions on sequence flows',
                 'file' => 'process-node-sequence-flow.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
                 'id' => 'mcp-system-process-node-intermediate-events',
@@ -116,6 +135,7 @@ final class McpSystemSkills
                 'slug' => 'process-node-intermediate-events',
                 'when' => 'When adding intermediate timer, message, signal, or conditional catch/throw events',
                 'file' => 'process-node-intermediate-events.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
                 'id' => 'mcp-system-process-node-boundary-events',
@@ -123,6 +143,7 @@ final class McpSystemSkills
                 'slug' => 'process-node-boundary-events',
                 'when' => 'When attaching boundary timer, message, error, signal, conditional, or escalation events',
                 'file' => 'process-node-boundary-events.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
                 'id' => 'mcp-system-process-node-service-task',
@@ -130,6 +151,7 @@ final class McpSystemSkills
                 'slug' => 'process-node-service-task',
                 'when' => 'When adding a Service Task or package connector (email, AI, data connector, PDF, …)',
                 'file' => 'process-node-service-task.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
                 'id' => 'mcp-system-process-web-entry',
@@ -137,6 +159,7 @@ final class McpSystemSkills
                 'slug' => 'process-web-entry',
                 'when' => 'When configuring Web Entry on a Start Event or Form Task',
                 'file' => 'process-web-entry.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
                 'id' => 'mcp-system-process-validation',
@@ -144,16 +167,41 @@ final class McpSystemSkills
                 'slug' => 'process-validation',
                 'when' => 'Before deploy/create/update of a process, or when validating BPMN',
                 'file' => 'process-validation.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
+            ],
+            [
+                'id' => self::DATA_CONNECTOR_CREATION_RULES_ID,
+                'name' => 'Data Connector creation rules',
+                'slug' => self::DATA_CONNECTOR_CREATION_RULES_SLUG,
+                'when' => 'Before create-data-connector or update-data-connector',
+                'file' => 'data-connector-creation-rules.md',
+                'scope' => McpGuidance::SCOPE_DATA_CONNECTORS,
+            ],
+            [
+                'id' => 'mcp-system-data-connector-in-process',
+                'name' => 'Data Connector in a process',
+                'slug' => 'data-connector-in-process',
+                'when' => 'When wiring a Data Connector into BPMN Service Task pm:config, or configuring process API calls',
+                'file' => 'data-connector-in-process.md',
+                'scope' => McpGuidance::SCOPE_DATA_CONNECTORS,
+            ],
+            [
+                'id' => self::COLLECTION_CREATION_RULES_ID,
+                'name' => 'Collection creation rules',
+                'slug' => self::COLLECTION_CREATION_RULES_SLUG,
+                'when' => 'Before create-collection or update-collection',
+                'file' => 'collection-creation-rules.md',
+                'scope' => McpGuidance::SCOPE_DATA_CONNECTORS,
+            ],
+            [
+                'id' => 'mcp-system-collection-test-data',
+                'name' => 'Collection test data',
+                'slug' => 'collection-test-data',
+                'when' => 'When adding sample/demo records with create-collection-records',
+                'file' => 'collection-test-data.md',
+                'scope' => McpGuidance::SCOPE_DATA_CONNECTORS,
             ],
         ];
-
-        return array_map(static function (array $item): array {
-            $item['scope'] = str_starts_with($item['slug'], 'process')
-                ? McpGuidance::SCOPE_PROCESSES
-                : McpGuidance::SCOPE_SCREENS;
-
-            return $item;
-        }, $items);
     }
 
     /**

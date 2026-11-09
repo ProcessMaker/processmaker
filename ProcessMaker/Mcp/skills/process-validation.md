@@ -35,6 +35,7 @@ Use before create/update/deploy, or when implementing a future `validate-process
 - [ ] Script Task: `pm:scriptRef` set; config JSON valid; script returns array
 - [ ] Call Activity: `calledElement` non-empty; child published first
 - [ ] Service Task: `implementation` known; config JSON valid
+- [ ] MCP create/update: no unresolved `${screen:}` / `${script:}` / `${process:}` on those attrs (`unresolved_screen_ref` / `unresolved_script_ref` / `unresolved_process_ref`)
 
 ### Gateways / flows
 
@@ -49,11 +50,12 @@ Use before create/update/deploy, or when implementing a future `validate-process
 - [ ] completed SCREEN/URL fields complete
 - [ ] Connector packages installed for each `implementation`
 
-### Portable git BPMN (PLG)
+### Portable git BPMN (PLG deploy only)
 
-- [ ] `${screen:}` / `${script:}` / `${process:}` used instead of hard-coded ids where supported
+- [ ] `${screen:}` / `${script:}` / `${process:}` used instead of hard-coded ids in **git**
 - [ ] Filename basename == Process `name`
 - [ ] No unresolved `${…}` titles (deploy → 422)
+- [ ] Do **not** send unresolved portable refs through MCP `create-process` / `update-process`
 
 ## Suggested validate-process tool output (future)
 

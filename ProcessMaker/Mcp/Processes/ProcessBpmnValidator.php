@@ -111,6 +111,7 @@ final class ProcessBpmnValidator
         $this->requireAttr($xpath, '//bpmn:task', 'screenRef', 'missing_screen_ref', 'Form Task requires pm:screenRef.', $errors);
         $this->requireAttr($xpath, '//bpmn:manualTask', 'screenRef', 'missing_screen_ref', 'Manual Task requires pm:screenRef.', $errors);
         $this->requireAttr($xpath, '//bpmn:scriptTask', 'scriptRef', 'missing_script_ref', 'Script Task requires pm:scriptRef.', $errors);
+        $this->rejectUnresolvedPortableRefs($xpath, $errors);
 
         foreach ($xpath->query('//bpmn:callActivity') ?: [] as $node) {
             if (!$node instanceof DOMElement) {
@@ -257,6 +258,57 @@ final class ProcessBpmnValidator
                         'Node is target of sequence flow ' . $flowId . ' but bpmn:incoming does not reference it.',
                     );
                 }
+            }
+        }
+    }
+
+    /**
+     * MCP create/update-process does not resolve ${screen:title} / ${script:title} / ${process:name}.
+     * Those portable refs only resolve via package-plg deploy-process. Leave them as hard errors here.
+     *
+     * @param list<array{nodeId: ?string, code: string, message: string}> $errors
+     */
+    private function rejectUnresolvedPortableRefs(DOMXPath $xpath, array &$errors): void
+    {
+        $checks = [
+            ['//bpmn:task', 'screenRef', 'unresolved_screen_ref', 'Form Task pm:screenRef still uses ${screen:title}. Resolve to a numeric screen id (list-screens / create-screen) before create-process or update-process.'],
+            ['//bpmn:manualTask', 'screenRef', 'unresolved_screen_ref', 'Manual Task pm:screenRef still uses ${screen:title}. Resolve to a numeric screen id before create-process or update-process.'],
+            ['//bpmn:scriptTask', 'scriptRef', 'unresolved_script_ref', 'Script Task pm:scriptRef still uses ${script:title}. Resolve to a numeric script id before create-process or update-process.'],
+            ['//bpmn:callActivity', 'calledElement', 'unresolved_process_ref', 'Call Activity calledElement still uses ${process:name}. Resolve to the child process bpmn id before create-process or update-process.'],
+        ];
+
+        foreach ($checks as [$query, $localName, $code, $message]) {
+            foreach ($xpath->query($query) ?: [] as $node) {
+                if (!$node instanceof DOMElement) {
+                    continue;
+                }
+                $value = $node->getAttributeNS(self::PM_NS, $localName);
+                if ($value === '') {
+                    $value = $node->getAttribute('pm:' . $localName);
+                }
+                if ($value === '' && $localName === 'calledElement') {
+                    $value = $node->getAttribute('calledElement');
+                }
+                if (str_contains($value, '${')) {
+                    $errors[] = $this->issue($node->getAttribute('id') ?: null, $code, $message);
+                }
+            }
+        }
+
+        foreach ($xpath->query('//*[@pm:interstitialScreenRef]') ?: [] as $node) {
+            if (!$node instanceof DOMElement) {
+                continue;
+            }
+            $value = $node->getAttributeNS(self::PM_NS, 'interstitialScreenRef');
+            if ($value === '') {
+                $value = $node->getAttribute('pm:interstitialScreenRef');
+            }
+            if (str_contains($value, '${')) {
+                $errors[] = $this->issue(
+                    $node->getAttribute('id') ?: null,
+                    'unresolved_screen_ref',
+                    'pm:interstitialScreenRef still uses ${screen:title}. Use numeric id or system key interstitial.',
+                );
             }
         }
     }

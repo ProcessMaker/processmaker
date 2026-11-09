@@ -38,7 +38,7 @@ Re-call `plan-process` with answers until `ready` is true, then build screens/BP
 
 Use list-processes to search before creating one.
 create-process requires name and description; bpmn is optional (empty template if omitted — add a start event before running).
-Prefer portable ${screen:title}, ${script:title}, and ${process:name} refs in BPMN.
+For MCP create-process/update-process use numeric pm:screenRef / pm:scriptRef (list-screens after create-screen). Portable ${screen:title} only resolves via package-plg deploy-process.
 Call validate-process before create/update when unsure.
 update-process changes only the fields you send.
 MARKDOWN)]

@@ -35,6 +35,7 @@ create-screen requires title, description, type, and screen_category_id.
 type is usually FORM or DISPLAY.
 config is the screen builder page array; every control in page.items must include `"inspector": []` (or a real inspector list) or the designer crashes.
 create/update reject configs with empty FormSelectList options (missing optionsList).
+Build coherent Vue SFCs only (VueComponentRenderTemplate). Implement file upload, catalog selects (Collections via apiClient), and signature pads inside the Vue component — do not add native FileUpload / FormSelectList / SignaturePad siblings. Load skill screen-creation-rules.
 update-screen changes only the fields you send.
 delete-screen cannot remove a default screen.
 MARKDOWN)]

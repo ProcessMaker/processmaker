@@ -18,7 +18,7 @@ Base inspector is Name only. Packages register palette nodes on `modeler-init` w
 |----------------------|------------------|
 | Send Email | `connector-send-email/processmaker-communication-email-send` |
 | PDF | `connector-pdf-print/processmaker-communication-pdf-print` |
-| Data Connector | `package-data-sources/data-source-task-service` |
+| Data Connector | `package-data-sources/data-source-task-service` (see skill `data-connector-in-process` + Data Connectors MCP) |
 | Decision table | `package-decision-engine/decision-table` |
 | FlowGenie / AI | `package-ai/processmaker-ai-task` |
 | Slack / DocuSign / IDP | package-specific keys |

@@ -174,7 +174,7 @@ class ProcessPlanner
             'screens' => $answers['screens'],
             'next_steps' => [
                 'Create or reuse screens listed under screens (Screens MCP).',
-                'Author BPMN with pm:screenRef and assignment attrs from assignments.',
+                'Author BPMN with numeric pm:screenRef (from create-screen/list-screens ids — MCP does not resolve ${screen:title}) and assignment attrs from assignments.',
                 'Call validate-process, then create-process (or update-process).',
                 'If process_manager is set, ensure the process manager user is assigned on the process after create (Modeler / process settings).',
             ],

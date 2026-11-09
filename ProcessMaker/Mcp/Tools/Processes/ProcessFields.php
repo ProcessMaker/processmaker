@@ -18,7 +18,7 @@ final class ProcessFields
 
     public const CATEGORY = 'Process category id, or comma-separated ids.';
 
-    public const BPMN = 'Full BPMN 2.0 XML for the process. Prefer portable ${screen:title}, ${script:title}, and ${process:name} refs when publishing from git.';
+    public const BPMN = 'Full BPMN 2.0 XML for the process. For MCP create/update use numeric pm:screenRef/pm:scriptRef ids. Portable ${screen:title}/${script:title}/${process:name} only when publishing via package-plg deploy-process.';
 
     public static function id(JsonSchema $schema): IntegerType
     {

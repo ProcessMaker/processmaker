@@ -60,17 +60,36 @@ class McpSystemSkillsSeederTest extends TestCase
         $this->assertStringContainsString('thin mount', $system['content']);
         $this->assertStringContainsString('dump form markup', $system['content']);
         $this->assertStringContainsString('"inspector": []', $system['content']);
+        $this->assertStringContainsString('inside the Vue', $system['content']);
+        $this->assertStringContainsString('Do **not** add native SB', $system['content']);
+        $this->assertStringContainsString('clientSignature', $system['content']);
 
         $processCreation = collect($skills)->firstWhere('slug', McpSystemSkills::PROCESS_CREATION_RULES_SLUG);
         $this->assertNotNull($processCreation);
         $this->assertTrue($processCreation['system']);
         $this->assertStringContainsString('bpmn:Task', $processCreation['content']);
         $this->assertStringContainsString('${screen:', $processCreation['content']);
+        $this->assertStringContainsString('Screen assignment (mandatory)', $processCreation['content']);
+        $this->assertStringContainsString('unresolved_screen_ref', $processCreation['content']);
 
         $slugs = array_column($skills, 'slug');
         $this->assertContains('process-node-form-task', $slugs);
         $this->assertContains('process-validation', $slugs);
         $this->assertContains('process-web-entry', $slugs);
+        $this->assertContains('data-connector-creation-rules', $slugs);
+        $this->assertContains('data-connector-in-process', $slugs);
+        $this->assertContains('collection-creation-rules', $slugs);
+        $this->assertContains('collection-test-data', $slugs);
+
+        $dataConnectorSkill = collect($skills)->firstWhere('slug', McpSystemSkills::DATA_CONNECTOR_CREATION_RULES_SLUG);
+        $this->assertNotNull($dataConnectorSkill);
+        $this->assertSame(McpGuidance::SCOPE_DATA_CONNECTORS, $dataConnectorSkill['scope']);
+        $this->assertStringContainsString('endpoints', $dataConnectorSkill['content']);
+
+        $collectionSkill = collect($skills)->firstWhere('slug', McpSystemSkills::COLLECTION_CREATION_RULES_SLUG);
+        $this->assertNotNull($collectionSkill);
+        $this->assertStringContainsString('select-list catalogs', $collectionSkill['content']);
+        $this->assertStringContainsString('Vue SFC', $collectionSkill['content']);
 
         foreach ($systemDefinitions as $definition) {
             $this->assertNotSame('', $definition['content'], 'Empty content for ' . $definition['slug']);
