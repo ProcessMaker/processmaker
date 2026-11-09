@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Mcp;
 
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Laravel\Mcp\Server\Transport\FakeTransporter;
 use ProcessMaker\Mcp\McpGuidance;
@@ -17,7 +18,6 @@ use ProcessMaker\Mcp\Tools\DataConnectors\ListDataConnectorCategoriesTool;
 use ProcessMaker\Mcp\Tools\DataConnectors\ListDataConnectorsTool;
 use ProcessMaker\Mcp\Tools\DataConnectors\UpdateDataConnectorTool;
 use ProcessMaker\Mcp\Tools\GetMcpGuidanceTool;
-use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Setting;
@@ -32,7 +32,6 @@ use Tests\TestCase;
 class DataConnectorsServerTest extends TestCase
 {
     use RequestHelper;
-
 
     protected function setUp(): void
     {
