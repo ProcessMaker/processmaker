@@ -7,6 +7,7 @@ use Faker\Factory as Faker;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Facades\WorkflowManager;
@@ -467,8 +468,14 @@ class ScriptsTest extends TestCase
      */
     private function actAsUserWithPermissions(array $permissions): void
     {
-        (new PermissionSeeder)->run();
-        (new AuthServiceProvider(app()))->boot();
+        // Seeds permissions, boots AuthServiceProvider and registers the named gates (defineGates)
+        $this->initializePermissions();
+
+        // Make sure a denied request is caused by the missing permission and not by an undefined gate
+        foreach ($permissions as $permission) {
+            $this->assertTrue(Gate::has($permission), "Gate {$permission} is not defined");
+        }
+
         $this->user = User::factory()->create(['is_administrator' => false]);
         foreach ($permissions as $permission) {
             $this->user->giveDirectPermission($permission);
