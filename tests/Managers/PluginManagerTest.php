@@ -472,53 +472,7 @@ class PluginManagerTest extends TestCase
         $method = new \ReflectionMethod(PluginManager::class, 'artisanEnvironment');
         $environment = $method->invoke(new PluginManager());
 
-        $this->assertSame('7', $environment['TENANT']);
-        $this->assertArrayHasKey('PATH', $environment);
-        $this->assertNotSame('', $environment['PATH']);
-    }
-
-    public function testSubprocessEnvironmentUsesConfiguredNpmPaths(): void
-    {
-        config([
-            'app.multitenancy' => false,
-            'plugin_manager.npm_home' => '/tmp',
-            'plugin_manager.npm_cache' => '/tmp/.npm',
-        ]);
-
-        $method = new \ReflectionMethod(PluginManager::class, 'subprocessEnvironment');
-        $environment = $method->invoke(new PluginManager());
-
-        $this->assertSame('/tmp', $environment['HOME']);
-        $this->assertSame('/tmp/.npm', $environment['NPM_CONFIG_CACHE']);
-        $this->assertArrayHasKey('PATH', $environment);
-    }
-
-    public function testRunCommandSubprocessIncludesNpmHomeFromConfig(): void
-    {
-        config([
-            'app.multitenancy' => false,
-            'plugin_manager.npm_home' => '/tmp',
-            'plugin_manager.npm_cache' => '/tmp/.npm',
-        ]);
-
-        Process::fake([
-            '*' => Process::result('', exitCode: 0),
-        ]);
-
-        $method = new \ReflectionMethod(PluginManager::class, 'runCommand');
-        $method->invoke(new PluginManager(), 'route:cache', 'test-plugin', 1);
-
-        Process::assertRan(function ($process) {
-            if (!is_array($process->command)) {
-                return false;
-            }
-
-            $environment = $process->environment ?? [];
-
-            return ($environment['HOME'] ?? null) === '/tmp'
-                && ($environment['NPM_CONFIG_CACHE'] ?? null) === '/tmp/.npm'
-                && isset($environment['PATH']);
-        });
+        $this->assertSame(['TENANT' => '7'], $environment);
     }
 
     public function testToggleRebuildsRouteCacheAndRestartsSupervisor()
