@@ -530,35 +530,13 @@ class UserController extends Controller
         $isSelfServiceUpdate = $this->authorizeSelfServiceUpdate($authenticatedUser, $user, $fields);
         $rules = User::rules($user);
         if ($isSelfServiceUpdate) {
-            $fields = $this->forgetUnassignableDelegation($fields);
-            if (array_key_exists('delegation_user_id', $fields)) {
-                $request->json()->set('delegation_user_id', $fields['delegation_user_id']);
-            }
-            $rules['meta'] = ['sometimes', 'array'];
-            $rules['meta.disableRecommendations'] = ['sometimes', 'boolean'];
-            $rules['status'] = ['required', Rule::in($this->selfServiceStatuses($user))];
-            $rules['delegation_user_id'] = [
-                'nullable',
-                'integer',
-                Rule::exists('users', 'id')->where(function ($query) {
-                    $query->where('is_system', false)
-                        ->whereNull('deleted_at')
-                        ->where('status', 'ACTIVE');
-                }),
-                Rule::notIn([(string) $user->id]),
-            ];
+            [$fields, $rules] = $this->prepareSelfServiceUpdate($user, $request, $fields, $rules);
         }
         $request->validate($rules);
         if ($isSelfServiceUpdate) {
             $fields = $this->normalizeSelfServiceMeta($user, $fields);
         }
-        if (isset($fields['password'])) {
-            $fields['password'] = Hash::make($fields['password']);
-            $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
-
-            // Remove login error message related to password expired if exists
-            session()->forget('login-error');
-        }
+        $fields = $this->hashPasswordFields($fields);
         $original = $user->getOriginal();
         $isLdapUser = isset($user->meta?->authenticationType)
             && $user->meta->authenticationType === 'ldap';
@@ -569,45 +547,9 @@ class UserController extends Controller
                 return $response;
             }
         }
-        if ($fields['email'] !== $original['email']) {
-            $ssoUser = $isLdapUser;
-            if (class_exists(SsoUser::class)) {
-                // Check if the user is an SSO user (including SAML)
-                $ssoUser = $ssoUser || SsoUser::where('user_id', $user->id)->exists();
-            }
-            if ($ssoUser) {
-                return response([
-                    'message' => __(
-                        "The email can't be edited. This action is only available for SSO-synced users."
-                    ),
-                    'errors' => [
-                        'email' => [
-                            __(
-                                "The email can't be edited. This action is only available for SSO-synced users."
-                            ),
-                        ],
-                    ],
-                ], 422);
-            }
-            if (!isset($fields['valpassword'])) {
-                return response([
-                    'message' => __(
-                        'A valid authentication is required for for update the email.'
-                    ),
-                    'errors' => [
-                        'email' => [
-                            __(
-                                'The password is required.'
-                            ),
-                        ],
-                    ],
-                ], 422);
-            } else {
-                $response = $this->validateBeforeChange(Auth::user(), $fields['valpassword']);
-                if ($response) {
-                    return $response;
-                }
-            }
+        $emailChangeResponse = $this->validateEmailChange($user, $fields, $original, $isLdapUser);
+        if ($emailChangeResponse) {
+            return $emailChangeResponse;
         }
         if (Auth::user()->is_administrator && $request->has('is_administrator')) {
             // user must be an admin to make another user an admin
@@ -618,37 +560,18 @@ class UserController extends Controller
             $user->meta = null;
         }
 
-        try {
-            $user->saveOrFail();
-        } catch (\Exception $e) {
-            $slackExceptionClass = 'ProcessMaker\Packages\Connectors\Slack\Exceptions\SlackConfigurationException';
-
-            if (class_exists($slackExceptionClass) && $e instanceof $slackExceptionClass) {
-                return response([
-                    'message' => $e->getMessage(),
-                ], 422);
-            }
-
-            throw $e;
+        $saveResponse = $this->saveUserOrFail($user);
+        if ($saveResponse) {
+            return $saveResponse;
         }
 
         $changes = $user->getChanges();
 
         //Call new Event to store User Changes into LOG
         UserUpdated::dispatch($user, $changes, $original);
-        try {
-            if ($request->has('avatar')) {
-                $this->uploadAvatar($user, $request);
-            }
-        } catch (\Exception $e) {
-            return response([
-                'message' => 'Error uploading avatar',
-                'errors' => [
-                    'avatar' => [
-                        $e->getMessage(),
-                    ],
-                ],
-            ], 422);
+        $avatarResponse = $this->maybeUploadAvatar($user, $request);
+        if ($avatarResponse) {
+            return $avatarResponse;
         }
 
         RecommendationEngine::handleUserSettingChanges($user, $original);
@@ -686,6 +609,149 @@ class UserController extends Controller
         }
 
         return true;
+    }
+
+    /**
+     * Clear stale delegation, sync request JSON, and tighten self-service rules.
+     *
+     * @return array{0: array, 1: array}
+     */
+    private function prepareSelfServiceUpdate(User $user, Request $request, array $fields, array $rules): array
+    {
+        $fields = $this->forgetUnassignableDelegation($fields);
+        if (array_key_exists('delegation_user_id', $fields)) {
+            $request->json()->set('delegation_user_id', $fields['delegation_user_id']);
+        }
+        $rules['meta'] = ['sometimes', 'array'];
+        $rules['meta.disableRecommendations'] = ['sometimes', 'boolean'];
+        $rules['status'] = ['required', Rule::in($this->selfServiceStatuses($user))];
+        $rules['delegation_user_id'] = [
+            'nullable',
+            'integer',
+            Rule::exists('users', 'id')->where(function ($query) {
+                $query->where('is_system', false)
+                    ->whereNull('deleted_at')
+                    ->where('status', 'ACTIVE');
+            }),
+            Rule::notIn([(string) $user->id]),
+        ];
+
+        return [$fields, $rules];
+    }
+
+    /**
+     * Hash an incoming password and clear the expired-password login error.
+     */
+    private function hashPasswordFields(array $fields): array
+    {
+        if (!isset($fields['password'])) {
+            return $fields;
+        }
+
+        $fields['password'] = Hash::make($fields['password']);
+        $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
+
+        // Remove login error message related to password expired if exists
+        session()->forget('login-error');
+
+        return $fields;
+    }
+
+    /**
+     * Block email changes for SSO users, and require password confirmation otherwise.
+     *
+     * @return \Illuminate\Http\Response|false
+     */
+    private function validateEmailChange(User $user, array $fields, array $original, bool $isLdapUser)
+    {
+        if ($fields['email'] === $original['email']) {
+            return false;
+        }
+
+        $ssoUser = $isLdapUser;
+        if (class_exists(SsoUser::class)) {
+            // Check if the user is an SSO user (including SAML)
+            $ssoUser = $ssoUser || SsoUser::where('user_id', $user->id)->exists();
+        }
+        if ($ssoUser) {
+            return response([
+                'message' => __(
+                    "The email can't be edited. This action is only available for SSO-synced users."
+                ),
+                'errors' => [
+                    'email' => [
+                        __(
+                            "The email can't be edited. This action is only available for SSO-synced users."
+                        ),
+                    ],
+                ],
+            ], 422);
+        }
+        if (!isset($fields['valpassword'])) {
+            return response([
+                'message' => __(
+                    'A valid authentication is required for for update the email.'
+                ),
+                'errors' => [
+                    'email' => [
+                        __(
+                            'The password is required.'
+                        ),
+                    ],
+                ],
+            ], 422);
+        }
+
+        return $this->validateBeforeChange(Auth::user(), $fields['valpassword']);
+    }
+
+    /**
+     * Persist the user, mapping Slack config failures to a 422 response.
+     *
+     * @return \Illuminate\Http\Response|null
+     */
+    private function saveUserOrFail(User $user)
+    {
+        try {
+            $user->saveOrFail();
+        } catch (\Exception $e) {
+            $slackExceptionClass = 'ProcessMaker\Packages\Connectors\Slack\Exceptions\SlackConfigurationException';
+
+            if (class_exists($slackExceptionClass) && $e instanceof $slackExceptionClass) {
+                return response([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            throw $e;
+        }
+
+        return null;
+    }
+
+    /**
+     * Upload an avatar when requested, mapping failures to a 422 response.
+     *
+     * @return \Illuminate\Http\Response|null
+     */
+    private function maybeUploadAvatar(User $user, Request $request)
+    {
+        try {
+            if ($request->has('avatar')) {
+                $this->uploadAvatar($user, $request);
+            }
+        } catch (\Exception $e) {
+            return response([
+                'message' => 'Error uploading avatar',
+                'errors' => [
+                    'avatar' => [
+                        $e->getMessage(),
+                    ],
+                ],
+            ], 422);
+        }
+
+        return null;
     }
 
     /**
