@@ -34,6 +34,7 @@ use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use ProcessMaker\Repositories\ProcessExecutionRawRepository;
+use ProcessMaker\Rules\AggregationVariable;
 use ProcessMaker\Rules\BPMNValidation;
 use ProcessMaker\Support\JsonDataPath;
 use ProcessMaker\Traits\Exportable;
@@ -430,6 +431,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             'bpmn' => 'nullable',
             'case_title' => 'nullable|max:200',
             'alternative' => 'nullable|in:A,B',
+            'aggregation' => ['nullable', 'string', 'max:255', new AggregationVariable()],
         ];
     }
 
