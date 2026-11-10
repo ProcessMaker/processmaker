@@ -62,8 +62,10 @@ class PluginManager
      */
     private function installPluginFiles(string $repoUrl, ?string $branch, ?string $tag, ?int $userId, ?string $gitUsername, ?string $gitToken): void
     {
-        // Check if this is a local path
-        $localPath = $this->resolveLocalPath($repoUrl);
+        // Check if this is a local path (CLI only when enabled; API must send https URLs)
+        $localPath = config('plugin_manager.allow_local_install_path', false)
+            ? $this->resolveLocalPath($repoUrl)
+            : null;
         $isLocalPath = $localPath !== null;
 
         if ($isLocalPath) {
@@ -123,7 +125,7 @@ class PluginManager
             } else {
                 $this->logRunning('Cloning repository...', $repoName, $userId);
                 $this->markNewInstallForRollback($pluginPath);
-                $this->cloneRepository($authenticatedRepoUrl, $pluginPath, $repoName, $userId);
+                $this->cloneRepository($authenticatedRepoUrl, $pluginPath, $repoName, $userId, $repoUrl);
 
                 if ($branch) {
                     $this->logRunning("Checking out branch: {$branch}", $repoName, $userId);
@@ -460,7 +462,7 @@ class PluginManager
 
                 $plugins[] = [
                     'name' => $isDisabled ? ltrim($dirName, '_') : $dirName,
-                    'url' => $plugin->getUrl(),
+                    'url' => $this->stripEmbeddedCredentialsFromHttpUrl($plugin->getUrl()),
                     'folder' => $dirName,
                     'description' => $plugin->getDescription() ?? 'No description',
                     'version' => $composerJson['version'] ?? null,
@@ -504,21 +506,27 @@ class PluginManager
      * @return void
      * @throws RuntimeException
      */
-    protected function cloneRepository(string $repoUrl, string $destination, string $repoName, ?int $userId = null): void
-    {
-        // Handle GITHUB_TOKEN if present
-        $url = $this->prepareGitUrl($repoUrl);
-
+    protected function cloneRepository(
+        string $repoUrl,
+        string $destination,
+        string $repoName,
+        ?int $userId = null,
+        ?string $canonicalRepoUrl = null,
+    ): void {
         try {
-            $process = Process::timeout(3600)->run(['git', 'clone', $url, $destination]);
+            $process = Process::timeout(3600)->run(['git', 'clone', $repoUrl, $destination]);
         } catch (ProcessTimedOutException) {
             throw new RuntimeException("Git clone exceeded the timeout while installing {$repoName}.");
         }
 
         if (!$process->successful()) {
-            $this->logError('Failed to clone repository: ' . $process->errorOutput(), $repoName, $userId);
-            throw new RuntimeException('Failed to clone repository: ' . $process->errorOutput());
+            $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
+            $this->logError('Failed to clone repository: ' . $stderr, $repoName, $userId);
+            throw new RuntimeException('Failed to clone repository: ' . $stderr);
         }
+
+        $cleanOrigin = $this->stripEmbeddedCredentialsFromHttpUrl($canonicalRepoUrl ?? $repoUrl);
+        Process::path($destination)->timeout(60)->run(['git', 'remote', 'set-url', 'origin', $cleanOrigin]);
     }
 
     protected function finishPluginSetup(string $pluginPath, string $repoName, ?int $userId = null): void
@@ -667,10 +675,14 @@ class PluginManager
             $this->logRunning("Pulling latest changes for branch {$branchToCheckout}...", $repoName, $userId);
             $this->pullRepository($pluginPath, $repoName, $userId, $branchToCheckout);
         } finally {
-            if ($temporaryAuth && $restoreOriginUrl !== '') {
-                $fallback = $previousOrigin !== '' ? $previousOrigin : $restoreOriginUrl;
+            $cleanOrigin = $restoreOriginUrl ?? '';
+            if ($cleanOrigin === '' && $previousOrigin !== '') {
+                $cleanOrigin = $this->stripEmbeddedCredentialsFromHttpUrl($previousOrigin);
+            }
+
+            if ($cleanOrigin !== '' && is_dir($pluginPath . '/.git')) {
                 Process::path($pluginPath)->timeout(60)->run([
-                    'git', 'remote', 'set-url', 'origin', $fallback,
+                    'git', 'remote', 'set-url', 'origin', $cleanOrigin,
                 ]);
             }
         }
@@ -681,8 +693,9 @@ class PluginManager
         $process = Process::path($pluginPath)->timeout(300)->run(['git', 'fetch', '--all', '--tags']);
 
         if (!$process->successful()) {
-            $this->logError('Failed to fetch repository: ' . $process->errorOutput(), $repoName, $userId);
-            throw new RuntimeException('Failed to fetch repository: ' . $process->errorOutput());
+            $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
+            $this->logError('Failed to fetch repository: ' . $stderr, $repoName, $userId);
+            throw new RuntimeException('Failed to fetch repository: ' . $stderr);
         }
     }
 
@@ -726,8 +739,9 @@ class PluginManager
         $process = Process::path($pluginPath)->timeout(300)->run($command);
 
         if (!$process->successful()) {
-            $this->logError('Failed to pull repository: ' . $process->errorOutput(), $repoName, $userId);
-            throw new RuntimeException('Failed to pull repository: ' . $process->errorOutput());
+            $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
+            $this->logError('Failed to pull repository: ' . $stderr, $repoName, $userId);
+            throw new RuntimeException('Failed to pull repository: ' . $stderr);
         }
     }
 
@@ -744,8 +758,9 @@ class PluginManager
         $process = Process::path($pluginPath)->timeout(120)->run(['git', 'checkout', $branch]);
 
         if (!$process->successful()) {
-            $this->logError('Failed to checkout branch: ' . $process->errorOutput(), $repoName, $userId);
-            throw new RuntimeException("Failed to checkout branch {$branch}: " . $process->errorOutput());
+            $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
+            $this->logError('Failed to checkout branch: ' . $stderr, $repoName, $userId);
+            throw new RuntimeException("Failed to checkout branch {$branch}: " . $stderr);
         }
     }
 
@@ -762,8 +777,9 @@ class PluginManager
         $process = Process::path($pluginPath)->timeout(120)->run(['git', 'checkout', "tags/{$tag}"]);
 
         if (!$process->successful()) {
-            $this->logError('Failed to checkout tag: ' . $process->errorOutput(), $repoName, $userId);
-            throw new RuntimeException("Failed to checkout tag {$tag}: " . $process->errorOutput());
+            $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
+            $this->logError('Failed to checkout tag: ' . $stderr, $repoName, $userId);
+            throw new RuntimeException("Failed to checkout tag {$tag}: " . $stderr);
         }
     }
 
@@ -861,8 +877,9 @@ class PluginManager
     {
         $process = Process::path($pluginPath)->timeout(60)->run(['git', 'branch', '-a']);
         if (!$process->successful()) {
-            $this->logError('Failed to fetch branches: ' . $process->errorOutput(), $repoName, $userId);
-            throw new RuntimeException('Failed to fetch branches: ' . $process->errorOutput());
+            $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
+            $this->logError('Failed to fetch branches: ' . $stderr, $repoName, $userId);
+            throw new RuntimeException('Failed to fetch branches: ' . $stderr);
         }
     }
 
@@ -1085,6 +1102,17 @@ class PluginManager
     }
 
     /**
+     * Remove embedded HTTP(S) credentials from log and error text (user:pass or token-only).
+     */
+    public static function redactHttpUserInfoFromString(string $message): string
+    {
+        $message = preg_replace('#://[^/\s:@]+:[^/\s@]+@#', '://', $message) ?? $message;
+        $message = preg_replace('#://[^/\s@]+@#', '://', $message) ?? $message;
+
+        return $message;
+    }
+
+    /**
      * Log a running status message.
      *
      * @param string $message
@@ -1130,6 +1158,8 @@ class PluginManager
      */
     protected function log(string $message, string $type, string $pluginName, ?int $userId = null): void
     {
+        $message = self::redactHttpUserInfoFromString($message);
+
         if ($type === 'error') {
             \Log::error($message);
         } else {

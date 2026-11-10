@@ -27,7 +27,7 @@ class PluginController extends Controller
     public function install(Request $request): JsonResponse
     {
         $request->validate([
-            'url' => 'required_without:zip|nullable|string',
+            'url' => 'required_without:zip|nullable|string|starts_with:https://',
             'zip' => 'required_without:url|nullable|file|mimes:zip',
             'branch' => 'prohibits:tag|nullable|string',
             'tag' => 'prohibits:branch|nullable|string',

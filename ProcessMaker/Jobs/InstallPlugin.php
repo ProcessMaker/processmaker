@@ -85,8 +85,6 @@ class InstallPlugin implements ShouldQueue
      */
     private function publicErrorMessage(Throwable $exception): string
     {
-        $message = preg_replace('#://[^/\s:@]+:[^/\s@]+@#', '://', $exception->getMessage());
-
-        return $message ?? $exception->getMessage();
+        return PluginManager::redactHttpUserInfoFromString($exception->getMessage());
     }
 }

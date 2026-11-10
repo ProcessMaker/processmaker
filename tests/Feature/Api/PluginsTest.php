@@ -70,6 +70,18 @@ class PluginsTest extends TestCase
         });
     }
 
+    public function testInstallRejectsNonHttpsUrl(): void
+    {
+        Bus::fake([InstallPlugin::class]);
+
+        $response = $this->apiCall('POST', '/plugins/install', [
+            'url' => storage_path('plugins'),
+        ]);
+
+        $response->assertStatus(422);
+        Bus::assertNotDispatched(InstallPlugin::class);
+    }
+
     public function testInstallRejectsBranchAndTagTogether(): void
     {
         Bus::fake([InstallPlugin::class]);

@@ -30,6 +30,7 @@ class PluginManagerTest extends TestCase
             'plugin_manager.supervisorctl_bin' => 'supervisorctl',
             'plugin_manager.supervisorctl_config' => null,
             'plugin_manager.supervisor_restart_target' => 'all',
+            'plugin_manager.allow_local_install_path' => true,
         ]);
 
         $this->runtimeReload = Mockery::spy(PluginRuntimeReload::class);
@@ -594,6 +595,57 @@ class PluginManagerTest extends TestCase
         Event::assertDispatched(PluginLog::class, function (PluginLog $event) {
             return str_contains($event->message, 'Plugin route:cache command output');
         });
+    }
+
+    public function testStripEmbeddedCredentialsFromHttpUrlRemovesTokenUserinfo()
+    {
+        $manager = new PluginManager();
+        $method = new \ReflectionMethod($manager, 'stripEmbeddedCredentialsFromHttpUrl');
+        $method->setAccessible(true);
+
+        $this->assertSame(
+            'https://github.com/org/repo.git',
+            $method->invoke($manager, 'https://ghp_xxx@github.com/org/repo.git')
+        );
+        $this->assertSame(
+            'https://github.com/org/repo.git',
+            $method->invoke($manager, 'https://user:secret@github.com/org/repo.git')
+        );
+    }
+
+    public function testRedactHttpUserInfoFromString()
+    {
+        $dirty = 'clone failed for https://ghp_xxx@github.com/org/repo.git';
+        $this->assertSame(
+            'clone failed for https://github.com/org/repo.git',
+            PluginManager::redactHttpUserInfoFromString($dirty)
+        );
+    }
+
+    public function testCloneRepositorySetsStrippedOriginAfterSuccess()
+    {
+        $this->setUpTestPluginManager();
+
+        $dest = $this->pluginsDir . '/clone-origin-test';
+        mkdir($dest, 0755, true);
+
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+
+        $manager = new PluginManager();
+        $method = new \ReflectionMethod($manager, 'cloneRepository');
+        $method->setAccessible(true);
+
+        $authUrl = 'https://ghp_xxx@github.com/org/repo.git';
+        $canonical = 'https://github.com/org/repo.git';
+
+        $method->invoke($manager, $authUrl, $dest, 'repo', null, $canonical);
+
+        Process::assertRan(fn ($process) => is_array($process->command)
+            && $process->command === ['git', 'clone', $authUrl, $dest]);
+        Process::assertRan(fn ($process) => is_array($process->command)
+            && $process->command === ['git', 'remote', 'set-url', 'origin', $canonical]);
     }
 
     private function assertProcessRanCommand(string $artisanCommand): void
