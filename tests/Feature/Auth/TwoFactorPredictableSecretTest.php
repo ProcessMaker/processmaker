@@ -155,6 +155,11 @@ class TwoFactorPredictableSecretTest extends TestCase
         $this->assertEmpty($authOnly->fresh()->two_factor_secret);
         $this->assertNotEmpty(session(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET));
 
+        $this->actingAs($authOnly, 'web')
+            ->get(route('2fa'))
+            ->assertOk()
+            ->assertViewIs('auth.2fa.otp');
+
         config(['password-policies.2fa_method' => [TwoFactorAuthentication::EMAIL]]);
         $emailUser = User::factory()->create([
             'password' => Hash::make('password'),

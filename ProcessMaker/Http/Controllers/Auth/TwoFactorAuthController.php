@@ -155,6 +155,10 @@ class TwoFactorAuthController extends Controller
             return false;
         }
 
+        if (session()->has(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET)) {
+            return false;
+        }
+
         $methods = $user->getValid2FAPreferences();
 
         return in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)
