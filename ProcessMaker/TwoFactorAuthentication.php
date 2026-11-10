@@ -62,9 +62,29 @@ class TwoFactorAuthentication
         return $secret;
     }
 
+    private function getUserDeliveryTotpSecret(User $user): string
+    {
+        if (!empty($user->two_factor_delivery_secret)) {
+            return $user->two_factor_delivery_secret;
+        }
+
+        $secret = TOTP::generate()->getSecret();
+
+        if ($user->exists) {
+            $user->two_factor_delivery_secret = $secret;
+            $user->saveQuietly();
+        } else {
+            $user->setAttribute('two_factor_delivery_secret', $secret);
+        }
+
+        return $secret;
+    }
+
     private function createOtpInstance(User $user, bool $forGoogleAuthApp = false)
     {
-        $secret = $this->getUserTotpSecret($user);
+        $secret = $forGoogleAuthApp
+            ? $this->getUserTotpSecret($user)
+            : $this->getUserDeliveryTotpSecret($user);
 
         // Config OTP
         $otp = TOTP::createFromSecret($secret);
@@ -91,11 +111,31 @@ class TwoFactorAuthentication
 
     public function validateCode(User $user, string $code)
     {
+        $methods = $user->getValid2FAPreferences();
+
         // The code is for Google Authenticator app?
-        $forGoogleAuthApp = strlen($code) === 6;
+        if (strlen($code) === 6) {
+            if (!in_array(self::AUTH_APP, $methods, true) || empty($user->two_factor_secret)) {
+                return false;
+            }
+
+            // Create OTP instance
+            $otp = $this->createOtpInstance($user, true);
+
+            // Validate code
+            return $otp->verify($code);
+        }
+
+        if (!in_array(self::EMAIL, $methods, true) && !in_array(self::SMS, $methods, true)) {
+            return false;
+        }
+
+        if (empty($user->two_factor_delivery_secret)) {
+            return false;
+        }
 
         // Create OTP instance
-        $otp = $this->createOtpInstance($user, $forGoogleAuthApp);
+        $otp = $this->createOtpInstance($user, false);
 
         // Validate code
         return $otp->verify($code);

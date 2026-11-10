@@ -145,6 +145,7 @@ class User extends Authenticatable implements HasMedia
         'schedule' => 'array',
         'preferences_2fa' => 'array',
         'two_factor_secret' => 'encrypted',
+        'two_factor_delivery_secret' => 'encrypted',
     ];
 
     /**
@@ -240,6 +241,7 @@ class User extends Authenticatable implements HasMedia
     protected $hidden = [
         'password',
         'two_factor_secret',
+        'two_factor_delivery_secret',
         'groupMembersFromMemberable',
         'permissions',
     ];

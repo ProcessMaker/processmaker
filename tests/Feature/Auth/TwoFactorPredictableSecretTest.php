@@ -157,7 +157,36 @@ class TwoFactorPredictableSecretTest extends TestCase
         $this->actingAs($emailUser, 'web')->get(route('2fa'))->assertOk();
 
         Notification::assertSentTo($emailUser, TwoFactorAuthNotification::class);
-        $this->assertNotEmpty($emailUser->fresh()->two_factor_secret);
+        $emailUser->refresh();
+        $this->assertNotEmpty($emailUser->two_factor_delivery_secret);
+        $this->assertEmpty($emailUser->two_factor_secret);
+    }
+
+    public function testAuthAppQrRouteRequiresAuthenticatorEnrollment(): void
+    {
+        config(['password-policies.2fa_method' => [TwoFactorAuthentication::EMAIL]]);
+
+        $emailUser = User::factory()->create([
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [TwoFactorAuthentication::EMAIL],
+        ]);
+
+        $this->actingAs($emailUser, 'web')
+            ->get(route('2fa.auth_app_qr'))
+            ->assertRedirect(route('2fa'));
+
+        $secret = TOTP::generate()->getSecret();
+        $authUser = User::factory()->create([
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [TwoFactorAuthentication::AUTH_APP],
+            'two_factor_secret' => $secret,
+        ]);
+
+        config(['password-policies.2fa_method' => [TwoFactorAuthentication::AUTH_APP]]);
+
+        $this->actingAs($authUser, 'web')
+            ->get(route('2fa.auth_app_qr'))
+            ->assertRedirect(route('2fa'));
     }
 
     public function testVictimSessionAcceptsCodeFromStoredSecret(): void

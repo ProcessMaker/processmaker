@@ -56,7 +56,12 @@ class TwoFactorAuthController extends Controller
             if (!session()->has(self::TFA_ERROR) && !session()->has(self::TFA_MESSAGE)) {
                 $this->twoFactorAuthentication->sendCode($user);
             } else {
-                if (!session()->has(self::TFA_MESSAGE) || empty($user->two_factor_secret)) {
+                $methods = $user->getValid2FAPreferences();
+                $needsProvisioning = in_array(TwoFactorAuthentication::EMAIL, $methods, true)
+                    || in_array(TwoFactorAuthentication::SMS, $methods, true)
+                    ? empty($user->two_factor_delivery_secret)
+                    : empty($user->two_factor_secret);
+                if (!session()->has(self::TFA_MESSAGE) || $needsProvisioning) {
                     $this->twoFactorAuthentication->sendCode($user);
                 }
             }
@@ -141,8 +146,19 @@ class TwoFactorAuthController extends Controller
         $user = $request->user();
 
         // If not user not authenticated, redirect to login page
-        if (empty($user)) {
+        if (empty($user) || !config('password-policies.2fa_enabled', false)) {
             return redirect()->route('login');
+        }
+
+        $user = $user->fresh() ?? $user;
+        $methods = $user->getValid2FAPreferences();
+
+        if (!in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)) {
+            return redirect()->route('2fa');
+        }
+
+        if (!empty($user->two_factor_secret)) {
+            return redirect()->route('2fa');
         }
 
         // Generate QR code

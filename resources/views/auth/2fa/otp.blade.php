@@ -57,8 +57,11 @@
             </a>
         </div>
         <div class="form-group text-right">
-            @if (in_array(\ProcessMaker\TwoFactorAuthentication::AUTH_APP,
-                config('password-policies.2fa_method', [])))
+            @php
+                $twoFactorMethods = auth()->user()->getValid2FAPreferences();
+            @endphp
+            @if (in_array(\ProcessMaker\TwoFactorAuthentication::AUTH_APP, $twoFactorMethods, true)
+                && empty(auth()->user()->two_factor_secret))
             <a href="{{ route('2fa.auth_app_qr') }}">
                 {{ __('Authenticator app') }}
             </a>
