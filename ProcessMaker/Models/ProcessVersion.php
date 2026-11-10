@@ -32,6 +32,15 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
 
     const categoryClass = ProcessCategory::class;
 
+    /**
+     * Version rows are snapshots. An aggregation stored before validation existed must not
+     * stop draft save, publish, or any other write that copies the process attributes.
+     */
+    protected function rejectsInvalidAggregation(): bool
+    {
+        return false;
+    }
+
     protected $connection = 'processmaker';
 
     /**

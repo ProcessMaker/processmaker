@@ -1990,9 +1990,16 @@ class ProcessController extends Controller
 
         $exclude = ['id', 'uuid', 'created_at', 'updated_at'];
         foreach ($process->getAttributes() as $attribute => $value) {
-            if (!in_array($attribute, $exclude)) {
-                $newProcess->{$attribute} = $process->{$attribute};
+            if (in_array($attribute, $exclude)) {
+                continue;
             }
+
+            if ($attribute === 'aggregation') {
+                $newProcess->aggregation = Process::prepareAggregation($process->aggregation, false);
+                continue;
+            }
+
+            $newProcess->{$attribute} = $process->{$attribute};
         }
         if ($request->has('name')) {
             $newProcess->name = $request->input('name');

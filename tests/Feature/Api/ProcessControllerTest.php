@@ -10,6 +10,7 @@ use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessVersion;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -377,6 +378,50 @@ class ProcessControllerTest extends TestCase
 
         $this->expectException(ValidationException::class);
         $process->aggregation = self::AGGREGATION_SQLI_PAYLOAD;
+    }
+
+    /**
+     * A value stored before validation existed is still copied onto a version on every save.
+     * That copy must not reject the save, the draft, or a duplicate.
+     */
+    public function testLegacyAggregationDoesNotBlockSaveDraftOrDuplicate()
+    {
+        $process = Process::factory()->create([
+            'name' => 'Legacy Aggregation Process',
+            'description' => 'Original description',
+            'aggregation' => 'amount',
+        ]);
+        DB::table('processes')->where('id', $process->id)->update([
+            'aggregation' => self::AGGREGATION_SQLI_PAYLOAD,
+        ]);
+        $process->refresh();
+
+        $response = $this->apiCall('PUT', route('api.processes.update', ['process' => $process->id]), [
+            'name' => 'Legacy Aggregation Process',
+            'description' => 'Updated description',
+        ]);
+
+        $response->assertStatus(200);
+        $published = ProcessVersion::where('process_id', $process->id)->orderByDesc('id')->first();
+        $this->assertNotNull($published);
+        $this->assertSame(Process::DEFAULT_AGGREGATION, $published->aggregation);
+        $this->assertSame(
+            self::AGGREGATION_SQLI_PAYLOAD,
+            DB::table('processes')->where('id', $process->id)->value('aggregation')
+        );
+
+        $draft = $process->refresh()->saveDraft();
+        $this->assertSame(Process::DEFAULT_AGGREGATION, $draft->aggregation);
+
+        $response = $this->apiCall('PUT', route('api.processes.duplicate', ['process' => $process->id]), [
+            'name' => 'Legacy Aggregation Copy',
+            'description' => 'Copied description',
+        ]);
+
+        $response->assertStatus(201);
+        $copy = Process::where('name', 'Legacy Aggregation Copy')->first();
+        $this->assertNotNull($copy);
+        $this->assertSame(Process::DEFAULT_AGGREGATION, $copy->aggregation);
     }
 
     /**
