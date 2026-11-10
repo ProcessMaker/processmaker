@@ -153,11 +153,9 @@ class TwoFactorAuthController extends Controller
         $user = $user->fresh() ?? $user;
         $methods = $user->getValid2FAPreferences();
 
-        if (!in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)) {
-            return redirect()->route('2fa');
-        }
-
-        if (!empty($user->two_factor_secret)) {
+        if (!in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)
+            || !empty($user->two_factor_secret)
+        ) {
             return redirect()->route('2fa');
         }
 
