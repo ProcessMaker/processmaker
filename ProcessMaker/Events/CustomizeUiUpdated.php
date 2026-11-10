@@ -31,7 +31,7 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
     private function defaultVariables(): string
     {
         $defaults = config('app.default_colors');
-        
+
         $objects = [];
         foreach ($defaults as $name => $value) {
             $objects[] = [
@@ -40,10 +40,10 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
                 'title' => ucfirst($name),
             ];
         }
-        
+
         return json_encode($objects);
     }
-    
+
     /**
      * Create a new event instance.
      *

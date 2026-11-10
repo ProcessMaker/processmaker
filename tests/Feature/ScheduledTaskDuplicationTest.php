@@ -309,7 +309,7 @@ class ScheduledTaskDuplicationTest extends TestCase
 
         // Calculate nextDate using the manager
         $config = json_decode($task->configuration);
-        $lastExecution = new \DateTime($task->last_execution, new \DateTimeZone('UTC'));
+        $lastExecution = new \DateTime($task->last_execution, new DateTimeZone('UTC'));
         $nextDate = $manager->nextDate($today, $config, $lastExecution, null);
 
         // nextDate should be 12:55 which is 55 minutes after "today" (12:00)
@@ -352,7 +352,7 @@ class ScheduledTaskDuplicationTest extends TestCase
 
         // Calculate nextDate
         $config = json_decode($task->configuration);
-        $lastExecution = new \DateTime($task->last_execution, new \DateTimeZone('UTC'));
+        $lastExecution = new \DateTime($task->last_execution, new DateTimeZone('UTC'));
         $nextDate = $manager->nextDate($today, $config, $lastExecution, null);
 
         // nextDate should be 12:01 which is before "today" (12:30)

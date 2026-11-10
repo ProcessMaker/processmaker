@@ -55,7 +55,7 @@ class ErrorExecutionNotification extends Notification
      * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @return MailMessage
      */
     public function toMail($notifiable)
     {
@@ -77,7 +77,7 @@ class ErrorExecutionNotification extends Notification
      * Get the broadcast representation of the notification.
      *
      * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\BroadcastMessage
+     * @return BroadcastMessage
      */
     public function toBroadcast($notifiable)
     {

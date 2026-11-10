@@ -174,7 +174,7 @@ class ConditionalRedirectTest extends TestCase
                 [
                     'tokenId' => $tasks[0]['id'],
                     'nodeId' => $tasks[0]['element_id'],
-                ]
+                ],
             ],
         ];
         $dispatched[] = $expectedEvent;
@@ -203,7 +203,7 @@ class ConditionalRedirectTest extends TestCase
             'params' => [
                 [
                     'tokenId' => $tasks[0]['id'],
-                ]
+                ],
             ],
         ];
         $dispatched[] = $expectedEvent;
@@ -218,6 +218,7 @@ class ConditionalRedirectTest extends TestCase
         //Get the active tasks of the request
         $route = route('api.tasks.index', ['status' => 'ACTIVE']);
         $response = $this->apiCall('GET', $route);
+
         return $response->json('data');
     }
 
@@ -225,6 +226,7 @@ class ConditionalRedirectTest extends TestCase
     {
         $route = route('api.tasks.show', [$id, 'include' => 'data,elementDestination']);
         $response = $this->apiCall('GET', $route);
+
         return $response->json();
     }
 }

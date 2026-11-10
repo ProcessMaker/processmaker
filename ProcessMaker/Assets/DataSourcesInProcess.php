@@ -25,7 +25,7 @@ class DataSourcesInProcess
         // Data Sources used in BPMN Service Tasks
         $xpath = new DOMXPath($process->getDefinitions());
         $xpath->registerNamespace('pm', WorkflowServiceProvider::PROCESS_MAKER_NS);
-        
+
         // Find all nodes with pm:config
         $nodes = $xpath->query("//*[@pm:config!='']");
         foreach ($nodes as $node) {
