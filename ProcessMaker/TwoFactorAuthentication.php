@@ -112,33 +112,29 @@ class TwoFactorAuthentication
     public function validateCode(User $user, string $code)
     {
         $methods = $user->getValid2FAPreferences();
+        $valid = false;
 
         // The code is for Google Authenticator app?
         if (strlen($code) === 6) {
-            if (!in_array(self::AUTH_APP, $methods, true) || empty($user->two_factor_secret)) {
-                return false;
-            }
+            if (in_array(self::AUTH_APP, $methods, true) && !empty($user->two_factor_secret)) {
+                // Create OTP instance
+                $otp = $this->createOtpInstance($user, true);
 
+                // Validate code
+                $valid = $otp->verify($code);
+            }
+        } elseif (
+            (in_array(self::EMAIL, $methods, true) || in_array(self::SMS, $methods, true))
+            && !empty($user->two_factor_delivery_secret)
+        ) {
             // Create OTP instance
-            $otp = $this->createOtpInstance($user, true);
+            $otp = $this->createOtpInstance($user, false);
 
             // Validate code
-            return $otp->verify($code);
+            $valid = $otp->verify($code);
         }
 
-        if (!in_array(self::EMAIL, $methods, true) && !in_array(self::SMS, $methods, true)) {
-            return false;
-        }
-
-        if (empty($user->two_factor_delivery_secret)) {
-            return false;
-        }
-
-        // Create OTP instance
-        $otp = $this->createOtpInstance($user, false);
-
-        // Validate code
-        return $otp->verify($code);
+        return $valid;
     }
 
     /**
