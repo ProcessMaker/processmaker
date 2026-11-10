@@ -42,29 +42,12 @@ class TwoFactorAuthController extends Controller
 
             // Reload DB state without User::refresh() (clears permission caches).
             $user = $user->fresh() ?? $user;
-            if (empty($user->two_factor_secret)) {
-                $methods = $user->getValid2FAPreferences();
-                if (in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)
-                    && !in_array(TwoFactorAuthentication::EMAIL, $methods, true)
-                    && !in_array(TwoFactorAuthentication::SMS, $methods, true)
-                ) {
-                    return redirect()->route('2fa.auth_app_qr');
-                }
+            if ($this->shouldRedirectToAuthenticatorQrEnrollment($user)) {
+                return redirect()->route('2fa.auth_app_qr');
             }
 
             // Send code
-            if (!session()->has(self::TFA_ERROR) && !session()->has(self::TFA_MESSAGE)) {
-                $this->twoFactorAuthentication->sendCode($user);
-            } else {
-                $methods = $user->getValid2FAPreferences();
-                $needsProvisioning = in_array(TwoFactorAuthentication::EMAIL, $methods, true)
-                    || in_array(TwoFactorAuthentication::SMS, $methods, true)
-                    ? empty($user->two_factor_delivery_secret)
-                    : empty($user->two_factor_secret);
-                if (!session()->has(self::TFA_MESSAGE) || $needsProvisioning) {
-                    $this->twoFactorAuthentication->sendCode($user);
-                }
-            }
+            $this->sendTwoFactorCodeForDisplay($user);
 
             // Set informative message
             $methodsNames = $this->twoFactorAuthentication->friendlyMethodsNames($user);
@@ -164,6 +147,38 @@ class TwoFactorAuthController extends Controller
 
         // Display view
         return view('auth.2fa.auth_app_qr', compact('qrCode'));
+    }
+
+    private function shouldRedirectToAuthenticatorQrEnrollment(User $user): bool
+    {
+        if (!empty($user->two_factor_secret)) {
+            return false;
+        }
+
+        $methods = $user->getValid2FAPreferences();
+
+        return in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)
+            && !in_array(TwoFactorAuthentication::EMAIL, $methods, true)
+            && !in_array(TwoFactorAuthentication::SMS, $methods, true);
+    }
+
+    private function sendTwoFactorCodeForDisplay(User $user): void
+    {
+        if (!session()->has(self::TFA_ERROR) && !session()->has(self::TFA_MESSAGE)) {
+            $this->twoFactorAuthentication->sendCode($user);
+
+            return;
+        }
+
+        $methods = $user->getValid2FAPreferences();
+        $needsProvisioning = in_array(TwoFactorAuthentication::EMAIL, $methods, true)
+            || in_array(TwoFactorAuthentication::SMS, $methods, true)
+            ? empty($user->two_factor_delivery_secret)
+            : empty($user->two_factor_secret);
+
+        if (!session()->has(self::TFA_MESSAGE) || $needsProvisioning) {
+            $this->twoFactorAuthentication->sendCode($user);
+        }
     }
 
     public function testSettings(Request $request)
