@@ -40,7 +40,8 @@ class TwoFactorAuthController extends Controller
                 return redirect()->route('login');
             }
 
-            $user->refresh();
+            // Reload DB state without User::refresh() (clears permission caches).
+            $user = $user->fresh() ?? $user;
             if (empty($user->two_factor_secret)) {
                 $methods = $user->getValid2FAPreferences();
                 if (in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)
