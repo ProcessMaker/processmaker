@@ -8,7 +8,6 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Support\Facades\Notification;
 use OTPHP\TOTP;
-use ParagonIE\ConstantTime\Base32;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\TwoFactorAuthNotification;
 use Twilio\Exceptions\TwilioException;
@@ -23,6 +22,8 @@ class TwoFactorAuthentication
     const AUTH_APP = 'Authenticator App';
 
     const ERROR_INVALID_TO_NUMBER = 21211;
+
+    public const PENDING_AUTHENTICATOR_SECRET = '2fa-pending-authenticator-secret';
 
     public function sendCode(User $user): void
     {
@@ -45,20 +46,55 @@ class TwoFactorAuthentication
         }
     }
 
-    private function generateSecret(User $user): string
+    private function getUserTotpSecret(User $user): string
     {
-        $base = $user->uuid . '_' . $user->username;
+        if (!empty($user->two_factor_secret)) {
+            return $user->two_factor_secret;
+        }
 
-        return trim(Base32::encodeUpper($base), '=');
+        $secret = TOTP::generate()->getSecret();
+
+        if ($user->exists) {
+            $user->two_factor_secret = $secret;
+            $user->saveQuietly();
+        } else {
+            $user->setAttribute('two_factor_secret', $secret);
+        }
+
+        return $secret;
     }
 
-    private function createOtpInstance(User $user, bool $forGoogleAuthApp = false)
+    private function getUserDeliveryTotpSecret(User $user): string
     {
-        // Get secret
-        $secret = $this->generateSecret($user);
+        if (!empty($user->two_factor_delivery_secret)) {
+            return $user->two_factor_delivery_secret;
+        }
 
-        // Config OTP
-        $otp = TOTP::createFromSecret($secret);
+        $secret = TOTP::generate()->getSecret();
+
+        if ($user->exists) {
+            $user->two_factor_delivery_secret = $secret;
+            $user->saveQuietly();
+        } else {
+            $user->setAttribute('two_factor_delivery_secret', $secret);
+        }
+
+        return $secret;
+    }
+
+    private function resolveAuthenticatorSecret(User $user): ?string
+    {
+        if (!empty($user->two_factor_secret)) {
+            return $user->two_factor_secret;
+        }
+
+        $pending = session()->get(self::PENDING_AUTHENTICATOR_SECRET);
+
+        return !empty($pending) ? $pending : null;
+    }
+
+    private function configureOtp(TOTP $otp, User $user, bool $forGoogleAuthApp): TOTP
+    {
         $otp->setIssuer('ProcessMaker');
         $otp->setLabel($user->username);
 
@@ -67,6 +103,18 @@ class TwoFactorAuthentication
             $otp->setDigits(8);
             $otp->setPeriod(300);
         }
+
+        return $otp;
+    }
+
+    private function createOtpInstance(User $user, bool $forGoogleAuthApp = false)
+    {
+        $secret = $forGoogleAuthApp
+            ? $this->resolveAuthenticatorSecret($user)
+            : $this->getUserDeliveryTotpSecret($user);
+
+        // Config OTP
+        $otp = $this->configureOtp(TOTP::createFromSecret($secret), $user, $forGoogleAuthApp);
 
         return $otp;
     }
@@ -82,14 +130,36 @@ class TwoFactorAuthentication
 
     public function validateCode(User $user, string $code)
     {
+        $methods = $user->getValid2FAPreferences();
+        $valid = false;
+
         // The code is for Google Authenticator app?
-        $forGoogleAuthApp = strlen($code) === 6;
+        if (strlen($code) === 6) {
+            $authSecret = $this->resolveAuthenticatorSecret($user);
+            if (in_array(self::AUTH_APP, $methods, true) && $authSecret !== null) {
+                // Create OTP instance
+                $otp = $this->createOtpInstance($user, true);
 
-        // Create OTP instance
-        $otp = $this->createOtpInstance($user, $forGoogleAuthApp);
+                // Validate code
+                $valid = $otp->verify($code);
+                if ($valid && empty($user->two_factor_secret)) {
+                    $user->two_factor_secret = $authSecret;
+                    $user->saveQuietly();
+                    session()->forget(self::PENDING_AUTHENTICATOR_SECRET);
+                }
+            }
+        } elseif (
+            (in_array(self::EMAIL, $methods, true) || in_array(self::SMS, $methods, true))
+            && !empty($user->two_factor_delivery_secret)
+        ) {
+            // Create OTP instance
+            $otp = $this->createOtpInstance($user, false);
 
-        // Validate code
-        return $otp->verify($code);
+            // Validate code
+            $valid = $otp->verify($code);
+        }
+
+        return $valid;
     }
 
     /**
@@ -154,7 +224,13 @@ class TwoFactorAuthentication
 
     public function generateQr(User $user)
     {
-        $otp = $this->createOtpInstance($user, true);
+        $secret = session()->get(self::PENDING_AUTHENTICATOR_SECRET);
+        if (empty($secret)) {
+            $secret = TOTP::generate()->getSecret();
+            session()->put(self::PENDING_AUTHENTICATOR_SECRET, $secret);
+        }
+
+        $otp = $this->configureOtp(TOTP::createFromSecret($secret), $user, true);
 
         $g2faUrl = $otp->getProvisioningUri();
 
