@@ -23,6 +23,8 @@ class TwoFactorAuthentication
 
     const ERROR_INVALID_TO_NUMBER = 21211;
 
+    public const PENDING_AUTHENTICATOR_SECRET = '2fa-pending-authenticator-secret';
+
     public function sendCode(User $user): void
     {
         // Get methods to send the code
@@ -80,14 +82,19 @@ class TwoFactorAuthentication
         return $secret;
     }
 
-    private function createOtpInstance(User $user, bool $forGoogleAuthApp = false)
+    private function resolveAuthenticatorSecret(User $user): ?string
     {
-        $secret = $forGoogleAuthApp
-            ? $this->getUserTotpSecret($user)
-            : $this->getUserDeliveryTotpSecret($user);
+        if (!empty($user->two_factor_secret)) {
+            return $user->two_factor_secret;
+        }
 
-        // Config OTP
-        $otp = TOTP::createFromSecret($secret);
+        $pending = session()->get(self::PENDING_AUTHENTICATOR_SECRET);
+
+        return !empty($pending) ? $pending : null;
+    }
+
+    private function configureOtp(TOTP $otp, User $user, bool $forGoogleAuthApp): TOTP
+    {
         $otp->setIssuer('ProcessMaker');
         $otp->setLabel($user->username);
 
@@ -96,6 +103,18 @@ class TwoFactorAuthentication
             $otp->setDigits(8);
             $otp->setPeriod(300);
         }
+
+        return $otp;
+    }
+
+    private function createOtpInstance(User $user, bool $forGoogleAuthApp = false)
+    {
+        $secret = $forGoogleAuthApp
+            ? $this->resolveAuthenticatorSecret($user)
+            : $this->getUserDeliveryTotpSecret($user);
+
+        // Config OTP
+        $otp = $this->configureOtp(TOTP::createFromSecret($secret), $user, $forGoogleAuthApp);
 
         return $otp;
     }
@@ -116,12 +135,18 @@ class TwoFactorAuthentication
 
         // The code is for Google Authenticator app?
         if (strlen($code) === 6) {
-            if (in_array(self::AUTH_APP, $methods, true) && !empty($user->two_factor_secret)) {
+            $authSecret = $this->resolveAuthenticatorSecret($user);
+            if (in_array(self::AUTH_APP, $methods, true) && $authSecret !== null) {
                 // Create OTP instance
                 $otp = $this->createOtpInstance($user, true);
 
                 // Validate code
                 $valid = $otp->verify($code);
+                if ($valid && empty($user->two_factor_secret)) {
+                    $user->two_factor_secret = $authSecret;
+                    $user->saveQuietly();
+                    session()->forget(self::PENDING_AUTHENTICATOR_SECRET);
+                }
             }
         } elseif (
             (in_array(self::EMAIL, $methods, true) || in_array(self::SMS, $methods, true))
@@ -199,7 +224,13 @@ class TwoFactorAuthentication
 
     public function generateQr(User $user)
     {
-        $otp = $this->createOtpInstance($user, true);
+        $secret = session()->get(self::PENDING_AUTHENTICATOR_SECRET);
+        if (empty($secret)) {
+            $secret = TOTP::generate()->getSecret();
+            session()->put(self::PENDING_AUTHENTICATOR_SECRET, $secret);
+        }
+
+        $otp = $this->configureOtp(TOTP::createFromSecret($secret), $user, true);
 
         $g2faUrl = $otp->getProvisioningUri();
 

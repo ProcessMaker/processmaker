@@ -61,7 +61,8 @@
                 $twoFactorMethods = auth()->user()->getValid2FAPreferences();
             @endphp
             @if (in_array(\ProcessMaker\TwoFactorAuthentication::AUTH_APP, $twoFactorMethods, true)
-                && empty(auth()->user()->two_factor_secret))
+                && (empty(auth()->user()->two_factor_secret)
+                || session(\ProcessMaker\TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET)))
             <a href="{{ route('2fa.auth_app_qr') }}">
                 {{ __('Authenticator app') }}
             </a>

@@ -148,6 +148,13 @@ class TwoFactorPredictableSecretTest extends TestCase
             ->get(route('2fa'))
             ->assertRedirect(route('2fa.auth_app_qr'));
 
+        $this->actingAs($authOnly, 'web')
+            ->get(route('2fa.auth_app_qr'))
+            ->assertOk();
+
+        $this->assertEmpty($authOnly->fresh()->two_factor_secret);
+        $this->assertNotEmpty(session(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET));
+
         config(['password-policies.2fa_method' => [TwoFactorAuthentication::EMAIL]]);
         $emailUser = User::factory()->create([
             'password' => Hash::make('password'),
