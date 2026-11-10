@@ -30,7 +30,7 @@ final class JsonDataPath
      */
     public static function fromSegments(array $segments, string $pattern = self::VARIABLE_SEGMENT): string
     {
-        if (count($segments) === 0) {
+        if (empty($segments)) {
             throw new InvalidArgumentException('The JSON path must contain at least one segment.');
         }
 
