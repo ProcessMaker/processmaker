@@ -39,6 +39,7 @@ use ProcessMaker\Rules\BPMNValidation;
 use ProcessMaker\Support\JsonDataPath;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\ExtendedPMQL;
+use ProcessMaker\Traits\HasAggregationAttribute;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
 use ProcessMaker\Traits\HasVersioning;
@@ -163,6 +164,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     use ProcessTrait;
     use Exportable;
     use ProjectAssetTrait;
+    use HasAggregationAttribute;
 
     const categoryClass = ProcessCategory::class;
 
