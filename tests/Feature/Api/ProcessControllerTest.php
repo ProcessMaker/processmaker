@@ -3,6 +3,9 @@
 namespace ProcessMaker\Api\Tests\Feature;
 
 use Database\Seeders\MetricsApiEnvironmentVariableSeeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -13,6 +16,8 @@ use Tests\TestCase;
 class ProcessControllerTest extends TestCase
 {
     use RequestHelper;
+
+    private const AGGREGATION_SQLI_PAYLOAD = "amount')) AS x, (SELECT 1) AS y, SUM(CAST(JSON_EXTRACT(data, '\$.amount";
 
     public function testStartProcessesReturnsActiveProcesses()
     {
@@ -296,6 +301,128 @@ class ProcessControllerTest extends TestCase
             ->assertJson([
                 'data' => 'total_amount',
             ]);
+    }
+
+    /**
+     * A crafted aggregation value must be rejected and must not overwrite the stored one.
+     */
+    public function testSaveAggregationRejectsSqlInjectionPayload()
+    {
+        $process = Process::factory()->create(['aggregation' => 'var_amount']);
+
+        $response = $this->apiCall('POST', route('api.processes.save-aggregation', ['process' => $process->id]), [
+            'aggregation' => self::AGGREGATION_SQLI_PAYLOAD,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['aggregation']);
+        $this->assertSame('var_amount', $process->refresh()->aggregation);
+    }
+
+    #[DataProvider('validAggregationNamesProvider')]
+    public function testSaveAggregationAcceptsValidVariableNames(string $name)
+    {
+        $process = Process::factory()->create();
+
+        $response = $this->apiCall('POST', route('api.processes.save-aggregation', ['process' => $process->id]), [
+            'aggregation' => $name,
+        ]);
+
+        $response->assertStatus(200)->assertJson(['data' => $name]);
+        $this->assertSame($name, $process->refresh()->aggregation);
+    }
+
+    public static function validAggregationNamesProvider(): array
+    {
+        return [
+            ['amount'],
+            ['var_amount'],
+            ['total_amount'],
+            ['grant.total'],
+            ['a1.b_2'],
+        ];
+    }
+
+    public function testStoreRejectsInvalidAggregation()
+    {
+        $response = $this->apiCall('POST', route('api.processes.store'), [
+            'name' => 'Aggregation process',
+            'description' => 'Process with a malicious aggregation',
+            'aggregation' => self::AGGREGATION_SQLI_PAYLOAD,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['aggregation']);
+        $this->assertSame(0, Process::where('name', 'Aggregation process')->count());
+    }
+
+    public function testUpdateRejectsInvalidAggregation()
+    {
+        $process = Process::factory()->create(['aggregation' => 'var_amount']);
+
+        $response = $this->apiCall('PUT', route('api.processes.update', ['process' => $process->id]), [
+            'name' => 'Aggregation process updated',
+            'description' => 'Process with a malicious aggregation',
+            'aggregation' => self::AGGREGATION_SQLI_PAYLOAD,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['aggregation']);
+        $this->assertSame('var_amount', $process->refresh()->aggregation);
+    }
+
+    public function testModelRejectsInvalidAggregationWhenRequestValidationIsBypassed()
+    {
+        $process = Process::factory()->create();
+
+        $this->expectException(ValidationException::class);
+        $process->aggregation = self::AGGREGATION_SQLI_PAYLOAD;
+    }
+
+    /**
+     * A value that is already stored in the database (before the fix) must never alter the
+     * executed SQL: the JSON path is bound and the default variable is used instead.
+     */
+    public function testStageMappingIgnoresTamperedStoredAggregation()
+    {
+        $stages = [
+            ['id' => 101, 'order' => 1, 'name' => 'Custom Stage 1', 'selected' => false],
+        ];
+        $process = Process::factory()->create([
+            'status' => 'ACTIVE',
+            'stages' => $stages,
+        ]);
+        ProcessRequest::factory()->count(5)->create([
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'last_stage_id' => $stages[0]['id'],
+            'last_stage_name' => 'Custom Stage 1',
+            'data' => ['amount' => '10'],
+        ]);
+
+        // Bypass the model mutator to simulate a value stored by a vulnerable version.
+        DB::table('processes')->where('id', $process->id)->update([
+            'aggregation' => self::AGGREGATION_SQLI_PAYLOAD,
+        ]);
+
+        $queries = [];
+        DB::listen(function ($query) use (&$queries) {
+            $queries[] = $query;
+        });
+
+        $response = $this->apiCall('GET', route('api.processes.stage-mapping', ['process' => $process->id]));
+
+        $response->assertStatus(200);
+        $stage = collect($response->json('data.stages'))->firstWhere('stage_id', $stages[0]['id']);
+        $this->assertEquals(50, $stage['agregation_sum']);
+        $this->assertEquals(5, $stage['agregation_count']);
+
+        $stageQueries = array_filter($queries, fn ($query) => str_contains($query->sql, 'var_aggregation_sum'));
+        $this->assertCount(1, $stageQueries);
+        $stageQuery = array_values($stageQueries)[0];
+        $this->assertStringContainsString('JSON_EXTRACT(data, ?)', $stageQuery->sql);
+        $this->assertStringNotContainsString('SELECT 1', $stageQuery->sql);
+        $this->assertContains('$."amount"', $stageQuery->bindings);
     }
 
     /**
