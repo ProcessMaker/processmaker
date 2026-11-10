@@ -202,8 +202,13 @@ class PluginManager
         $this->logDone('Plugin uninstalled successfully', $pluginName, $userId);
     }
 
-    private function runCommand(string $command, string $pluginName, ?int $userId = null): void
-    {
+    private function runCommand(
+        string $command,
+        string $pluginName,
+        ?int $userId = null,
+        array $extraArgv = [],
+        bool $throwOnFailure = false,
+    ): void {
         // Use absolute path: web SAPI (php-fpm) cwd is not the app root, so plain "artisan" fails.
         //TODO: Change artisan_binary() for base_path('artisan')
         $artisan = base_path('artisan');
@@ -213,13 +218,20 @@ class PluginManager
                 php_binary(),
                 $artisan,
                 $command,
+                ...$extraArgv,
             ]));
 
         if (!$result->successful()) {
             if (str_contains($result->output(), 'is not defined')) {
                 $this->logRunning("Plugin does not have a {$command} command", $pluginName, $userId);
-            } else {
-                $this->logError("Plugin {$command} command failed. Got output:\n\n{$result->output()}", $pluginName, $userId);
+
+                return;
+            }
+
+            $this->logError("Plugin {$command} command failed. Got output:\n\n{$result->output()}", $pluginName, $userId);
+
+            if ($throwOnFailure) {
+                throw new RuntimeException("Plugin {$command} command failed.");
             }
         } else {
             $this->logRunning("Plugin {$command} command output:\n\n{$result->output()}", $pluginName, $userId);
@@ -274,18 +286,41 @@ class PluginManager
     }
 
     /**
-     * Environment variables for artisan subprocesses started from a web request.
+     * Environment for artisan/composer subprocesses (Symfony Process replaces the parent env).
      */
-    private function artisanEnvironment(): array
+    private function subprocessEnvironment(): array
     {
         $environment = [];
-        $tenant = app()->bound('currentTenant') ? app('currentTenant') : null;
 
+        $tenant = app()->bound('currentTenant') ? app('currentTenant') : null;
         if (config('app.multitenancy') && $tenant) {
             $environment['TENANT'] = (string) $tenant->id;
         }
 
+        $home = config('plugin_manager.npm_home') ?: getenv('HOME');
+        if (is_string($home) && $home !== '') {
+            $environment['HOME'] = $home;
+        }
+
+        $npmCache = config('plugin_manager.npm_cache') ?: getenv('NPM_CONFIG_CACHE');
+        if (is_string($npmCache) && $npmCache !== '') {
+            $environment['NPM_CONFIG_CACHE'] = $npmCache;
+        }
+
+        $path = getenv('PATH');
+        $environment['PATH'] = is_string($path) && $path !== ''
+            ? $path
+            : '/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin';
+
         return $environment;
+    }
+
+    /**
+     * Environment variables for artisan subprocesses started from a web request.
+     */
+    private function artisanEnvironment(): array
+    {
+        return $this->subprocessEnvironment();
     }
 
     /**
@@ -523,6 +558,10 @@ class PluginManager
 
     protected function finishPluginSetup(string $pluginPath, string $repoName, ?int $userId = null): void
     {
+        if ($this->incompleteInstallPath === null) {
+            $this->incompleteInstallPath = $pluginPath;
+        }
+
         $this->logRunning('Validating plugin...', $repoName, $userId);
         $this->validatePlugin($pluginPath, $repoName, $userId);
 
@@ -532,7 +571,19 @@ class PluginManager
         $installCommand = "{$repoName}:install";
         $this->logRunning('installCommand: ' . $installCommand, $repoName, $userId);
         $this->logRunning('Running plugin install command...', $repoName, $userId);
-        $this->runCommand($installCommand, $repoName, $userId);
+
+        try {
+            $this->runCommand(
+                $installCommand,
+                $repoName,
+                $userId,
+                ['--no-build-script-executors'],
+                true
+            );
+        } catch (Throwable $exception) {
+            $this->revertFailedInstall($userId);
+            throw $exception;
+        }
 
         // Setup finished. Keep the directory even if a later route refresh fails.
         $this->incompleteInstallPath = null;
@@ -878,9 +929,7 @@ class PluginManager
         set_time_limit(0);
         $process = Process::path($pluginPath)
             ->forever()
-            ->env([
-                'PATH' => '/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:' . (getenv('PATH') ?: ''),
-            ])
+            ->env($this->subprocessEnvironment())
             ->run(['composer', 'install', '--no-interaction']);
 
         if (!$process->successful()) {

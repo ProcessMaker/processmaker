@@ -18,4 +18,11 @@ return [
     | supervisorctl restart target: "all" or a program name (e.g. processmaker-horizon).
     */
     'supervisor_restart_target' => env('PLUGIN_SUPERVISOR_RESTART_TARGET', 'all'),
+
+    /*
+    | Writable HOME and npm cache for plugin :install (npm in package postinstall).
+    | CI/pods without /home/nginx: e.g. PLUGIN_NPM_HOME=/tmp, PLUGIN_NPM_CACHE=/tmp/.npm
+    */
+    'npm_home' => env('PLUGIN_NPM_HOME'),
+    'npm_cache' => env('PLUGIN_NPM_CACHE'),
 ];
