@@ -79,32 +79,46 @@ trait TaskControllerIndexMethods
 
     private function indexOptimizedBaseQuery($request)
     {
-        $includes = $request->has('include')
-            ? array_map('trim', explode(',', $request->input('include')))
-            : [];
+        $includes = $this->parseIndexIncludeList($request);
         $includeData = in_array('data', $includes, true);
 
         $query = ProcessRequestToken::query();
+        $with = $this->buildOptimizedIndexWith($includes, $includeData);
+
+        $handledIncludes = ['data', 'processRequest', 'process', 'user', 'draft', 'processRequest.process'];
+        $additionalIncludes = array_values(array_diff($includes, $handledIncludes));
+
+        if (!empty($with)) {
+            $query->with($with);
+        }
+
+        if (!empty($additionalIncludes)) {
+            $query->with($additionalIncludes);
+        }
+
+        return $query;
+    }
+
+    private function parseIndexIncludeList($request): array
+    {
+        if (!$request->has('include')) {
+            return [];
+        }
+
+        return array_map('trim', explode(',', $request->input('include')));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildOptimizedIndexWith(array $includes, bool $includeData): array
+    {
         $with = [];
 
-        if (in_array('processRequest', $includes, true)) {
-            $processRequestColumns = [
-                'id',
-                'uuid',
-                'case_number',
-                'case_title',
-                'name',
-                'status',
-                'user_id',
-                'process_id',
-                'parent_id',
-            ];
-            $with['processRequest'] = function ($q) use ($includeData, $processRequestColumns) {
-                $q->select($processRequestColumns);
-                if (!$includeData) {
-                    $q->exclude(['data']);
-                }
-            };
+        $needsProcessRequest = in_array('processRequest', $includes, true)
+            || in_array('processRequest.process', $includes, true);
+        if ($needsProcessRequest) {
+            $with['processRequest'] = $this->optimizedProcessRequestEagerLoad($includeData);
         }
 
         if (in_array('process', $includes, true)) {
@@ -120,40 +134,40 @@ trait TaskControllerIndexMethods
         }
 
         if (in_array('processRequest.process', $includes, true)) {
-            if (!isset($with['processRequest'])) {
-                $processRequestColumns = [
-                    'id',
-                    'uuid',
-                    'case_number',
-                    'case_title',
-                    'name',
-                    'status',
-                    'user_id',
-                    'process_id',
-                    'parent_id',
-                ];
-                $with['processRequest'] = function ($q) use ($includeData, $processRequestColumns) {
-                    $q->select($processRequestColumns);
-                    if (!$includeData) {
-                        $q->exclude(['data']);
-                    }
-                };
-            }
             $with['processRequest.process'] = fn ($q) => $q->select(['id', 'name', 'uuid']);
         }
 
-        $handledIncludes = ['data', 'processRequest', 'process', 'user', 'draft', 'processRequest.process'];
-        $additionalIncludes = array_values(array_diff($includes, $handledIncludes));
+        return $with;
+    }
 
-        if (!empty($with)) {
-            $query->with($with);
-        }
+    /**
+     * @return list<string>
+     */
+    private function optimizedProcessRequestSelectColumns(): array
+    {
+        return [
+            'id',
+            'uuid',
+            'case_number',
+            'case_title',
+            'name',
+            'status',
+            'user_id',
+            'process_id',
+            'parent_id',
+        ];
+    }
 
-        if (!empty($additionalIncludes)) {
-            $query->with($additionalIncludes);
-        }
+    private function optimizedProcessRequestEagerLoad(bool $includeData): \Closure
+    {
+        $processRequestColumns = $this->optimizedProcessRequestSelectColumns();
 
-        return $query;
+        return function ($q) use ($includeData, $processRequestColumns) {
+            $q->select($processRequestColumns);
+            if (!$includeData) {
+                $q->exclude(['data']);
+            }
+        };
     }
 
     private function resolveIndexFields($request): ?array
