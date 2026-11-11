@@ -1287,6 +1287,132 @@ class ProcessRequestsTest extends TestCase
     }
 
     /**
+     * Exclusive gateway loops must not inflate Forms tab pagination with
+     * startEvent / gateway tokens that have no screen.
+     *
+     * Reproduces: start -> Task1 -> XOR -> (loop Task1 | Task2 -> end)
+     * where non-screen tokens would previously make meta.total show e.g. "1-3 of 6".
+     *
+     * @group process_requests
+     */
+    public function testScreenRequestedDoesNotCountGatewayLoopTokensWithoutScreens()
+    {
+        $screen = Screen::factory()->create();
+        $bpmn = '<?xml version="1.0"?>'
+            . '<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"'
+            . ' xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd">'
+            . '<bpmn:process id="ProcessId">'
+            . '<bpmn:startEvent id="node_start" name="Start"/>'
+            . '<bpmn:task id="node_task1" pm:screenRef="' . $screen->id . '" name="Task1"/>'
+            . '<bpmn:exclusiveGateway id="node_gateway" name="XOR"/>'
+            . '<bpmn:task id="node_task2" pm:screenRef="' . $screen->id . '" name="Task2"/>'
+            . '<bpmn:endEvent id="node_end" name="End"/>'
+            . '</bpmn:process></bpmn:definitions>';
+
+        $process = Process::factory()->create([
+            'bpmn' => $bpmn,
+            'user_id' => $this->user->id,
+        ]);
+
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'process_version_id' => $process->getLatestVersion()->id,
+        ]);
+
+        $baseTime = now()->subHours(1);
+
+        // Tokens produced by: start -> Task1 -> gateway -> Task1 -> gateway -> Task2 -> end
+        ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'node_start',
+            'element_type' => 'startEvent',
+            'status' => 'TRIGGERED',
+            'completed_at' => $baseTime->copy()->addMinutes(1),
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'node_task1',
+            'element_type' => 'task',
+            'status' => 'CLOSED',
+            'completed_at' => $baseTime->copy()->addMinutes(2),
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'node_gateway',
+            'element_type' => 'gateway',
+            'status' => 'CLOSED',
+            'completed_at' => $baseTime->copy()->addMinutes(3),
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'node_task1',
+            'element_type' => 'task',
+            'status' => 'CLOSED',
+            'completed_at' => $baseTime->copy()->addMinutes(4),
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'node_gateway',
+            'element_type' => 'gateway',
+            'status' => 'CLOSED',
+            'completed_at' => $baseTime->copy()->addMinutes(5),
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'node_task2',
+            'element_type' => 'task',
+            'status' => 'CLOSED',
+            'completed_at' => $baseTime->copy()->addMinutes(6),
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'node_end',
+            'element_type' => 'end_event',
+            'status' => 'CLOSED',
+            'completed_at' => $baseTime->copy()->addMinutes(7),
+        ]);
+        // Extra startEvent-typed tokens without screens (would previously inflate total to 6).
+        ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'node_start',
+            'element_type' => 'startEvent',
+            'status' => 'TRIGGERED',
+            'completed_at' => $baseTime->copy()->addMinutes(8),
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'node_start',
+            'element_type' => 'startEvent',
+            'status' => 'TRIGGERED',
+            'completed_at' => $baseTime->copy()->addMinutes(9),
+        ]);
+
+        $route = route('api.requests.detail.screen', ['request' => $request->id]);
+        $response = $this->apiCall('GET', $route, [
+            'page' => 1,
+            'per_page' => 3,
+            'order_by' => 'completed_at',
+            'order_direction' => 'asc',
+        ]);
+
+        $response->assertStatus(200);
+        // Only the three task submissions with screens (Task1, Task1 loop, Task2),
+        // not "1-3 of 6" from startEvent tokens without screens.
+        $response->assertJsonPath('meta.total', 3);
+        $response->assertJsonPath('meta.total_pages', 1);
+        $this->assertCount(3, $response->json('data'));
+    }
+
+    /**
      * Get a list of Requests by Cases.
      */
     public function testRequestByCase()

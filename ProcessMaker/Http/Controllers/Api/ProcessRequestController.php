@@ -10,6 +10,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -793,28 +794,29 @@ class ProcessRequestController extends Controller
     {
         $elementTypes = ['task', 'userTask', 'startEvent'];
         $query = ProcessRequestToken::query();
-        $query->select('id', 'element_id', 'process_id', 'process_request_id', 'data', 'token_properties')
+        $query->select('id', 'element_id', 'process_id', 'process_request_id', 'data', 'token_properties', 'completed_at')
             ->where('process_request_id', $request->id)
             ->whereIn('element_type', $elementTypes)
             ->whereIn('status', ['CLOSED', 'TRIGGERED'])
-            ->orderBy('completed_at');
-
-        $response =
-            $query->orderBy(
+            ->orderBy('completed_at')
+            ->orderBy(
                 $httpRequest->input('order_by', 'id'),
                 $httpRequest->input('order_direction', 'asc')
-            )->paginate($httpRequest->input('per_page', 10));
+            );
 
-        $collection = $response->getCollection()
-            ->transform(function ($token): ?object {
-                $definition = $token->getDefinition();
-                if (!array_key_exists('screenRef', $definition)) {
-                    $config = isset($definition['config']) ? json_decode($definition['config']) : null;
-                    $screenRef = (isset($config) && isset($config->web_entry)) ? $config->web_entry->screen_id ?? null : null;
-                    if (!$screenRef) {
-                        return null;
-                    }
-                }
+        // Filter tokens that actually resolve to a screen before paginating so
+        // gateway/startEvent (and other non-screen) tokens do not inflate meta.total.
+        $eligibleTokens = $query->get()->filter(function (ProcessRequestToken $token) {
+            return $this->tokenHasRequestedScreen($token);
+        })->values();
+
+        $total = $eligibleTokens->count();
+        $perPage = (int) $httpRequest->input('per_page', 10);
+        $page = (int) $httpRequest->input('page', 1);
+
+        $collection = $eligibleTokens
+            ->forPage($page, $perPage)
+            ->map(function (ProcessRequestToken $token) {
                 $screen = $token->getScreenVersion() ?? null;
 
                 if ($screen) {
@@ -829,9 +831,33 @@ class ProcessRequestController extends Controller
             ->reject(fn ($item) => $item === null)
             ->values();
 
-        $response->setCollection($collection);
+        $paginator = new LengthAwarePaginator(
+            $collection,
+            $total,
+            $perPage,
+            $page,
+            ['path' => $httpRequest->url(), 'query' => $httpRequest->query()]
+        );
 
-        return new ApiCollection($response);
+        return new ApiCollection($paginator);
+    }
+
+    /**
+     * Whether a token should appear in the Forms tab (has a configured screen).
+     */
+    private function tokenHasRequestedScreen(ProcessRequestToken $token): bool
+    {
+        $definition = $token->getDefinition();
+        if (!empty($definition['screenRef'])) {
+            return true;
+        }
+
+        $config = isset($definition['config']) ? json_decode($definition['config']) : null;
+        $screenRef = (isset($config) && isset($config->web_entry))
+            ? ($config->web_entry->screen_id ?? null)
+            : null;
+
+        return (bool) $screenRef;
     }
 
     /**
