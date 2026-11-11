@@ -10,7 +10,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -793,30 +792,29 @@ class ProcessRequestController extends Controller
     public function screenRequested(Request $httpRequest, ProcessRequest $request)
     {
         $elementTypes = ['task', 'userTask', 'startEvent'];
+        $statuses = ['CLOSED', 'TRIGGERED'];
+
+        // Only BPMN elements that resolve to a screen belong in the Forms tab. Gateway/startEvent
+        // tokens without a screen must not inflate the pagination total, so the eligible elements
+        // are resolved first (once per element, not once per token) and used to filter in SQL.
+        $screenElementIds = $this->elementIdsWithRequestedScreen($request, $elementTypes, $statuses);
+
         $query = ProcessRequestToken::query();
-        $query->select('id', 'element_id', 'process_id', 'process_request_id', 'data', 'token_properties', 'completed_at')
+        $query->select('id', 'element_id', 'process_id', 'process_request_id', 'data', 'token_properties')
             ->where('process_request_id', $request->id)
             ->whereIn('element_type', $elementTypes)
-            ->whereIn('status', ['CLOSED', 'TRIGGERED'])
-            ->orderBy('completed_at')
-            ->orderBy(
+            ->whereIn('status', $statuses)
+            ->whereIn('element_id', $screenElementIds)
+            ->orderBy('completed_at');
+
+        $response =
+            $query->orderBy(
                 $httpRequest->input('order_by', 'id'),
                 $httpRequest->input('order_direction', 'asc')
-            );
+            )->paginate($httpRequest->input('per_page', 10));
 
-        // Filter tokens that actually resolve to a screen before paginating so
-        // gateway/startEvent (and other non-screen) tokens do not inflate meta.total.
-        $eligibleTokens = $query->get()->filter(function (ProcessRequestToken $token) {
-            return $this->tokenHasRequestedScreen($token);
-        })->values();
-
-        $total = $eligibleTokens->count();
-        $perPage = (int) $httpRequest->input('per_page', 10);
-        $page = (int) $httpRequest->input('page', 1);
-
-        $collection = $eligibleTokens
-            ->forPage($page, $perPage)
-            ->map(function (ProcessRequestToken $token) {
+        $collection = $response->getCollection()
+            ->transform(function ($token): ?object {
                 $screen = $token->getScreenVersion() ?? null;
 
                 if ($screen) {
@@ -831,15 +829,40 @@ class ProcessRequestController extends Controller
             ->reject(fn ($item) => $item === null)
             ->values();
 
-        $paginator = new LengthAwarePaginator(
-            $collection,
-            $total,
-            $perPage,
-            $page,
-            ['path' => $httpRequest->url(), 'query' => $httpRequest->query()]
-        );
+        $response->setCollection($collection);
 
-        return new ApiCollection($paginator);
+        return new ApiCollection($response);
+    }
+
+    /**
+     * Get the BPMN element ids of the request tokens that have a screen configured.
+     *
+     * The definition only depends on the element, so it is evaluated once per distinct
+     * element_id using a single lightweight token (without the heavy data columns).
+     *
+     * @return array<int, string>
+     */
+    private function elementIdsWithRequestedScreen(ProcessRequest $request, array $elementTypes, array $statuses): array
+    {
+        $sampleTokenIds = ProcessRequestToken::query()
+            ->where('process_request_id', $request->id)
+            ->whereIn('element_type', $elementTypes)
+            ->whereIn('status', $statuses)
+            ->groupBy('element_id')
+            ->selectRaw('MIN(id) as id')
+            ->pluck('id');
+
+        return ProcessRequestToken::query()
+            ->select('id', 'element_id', 'process_request_id')
+            ->whereIn('id', $sampleTokenIds)
+            ->get()
+            ->filter(function (ProcessRequestToken $token) use ($request) {
+                $token->setRelation('processRequest', $request);
+
+                return $this->tokenHasRequestedScreen($token);
+            })
+            ->pluck('element_id')
+            ->all();
     }
 
     /**
@@ -848,7 +871,9 @@ class ProcessRequestController extends Controller
     private function tokenHasRequestedScreen(ProcessRequestToken $token): bool
     {
         $definition = $token->getDefinition();
-        if (!empty($definition['screenRef'])) {
+        // Keep the original semantics: the presence of the key is enough (empty values
+        // fall back to the default form screen in ProcessRequestToken::getScreen()).
+        if (array_key_exists('screenRef', $definition)) {
             return true;
         }
 
