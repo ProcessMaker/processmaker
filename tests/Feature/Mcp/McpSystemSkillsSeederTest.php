@@ -75,6 +75,29 @@ class McpSystemSkillsSeederTest extends TestCase
         $slugs = array_column($skills, 'slug');
         $this->assertContains('process-node-form-task', $slugs);
         $this->assertContains('process-validation', $slugs);
+        $this->assertContains('screen-vue-fields', $slugs);
+        $this->assertContains('screen-refactor-parity', $slugs);
+
+        $refactorParity = collect($skills)->firstWhere('slug', 'screen-refactor-parity');
+        $this->assertNotNull($refactorParity);
+        $this->assertStringContainsString('conditionalHide', $refactorParity['content']);
+        $this->assertStringContainsString('always hidden', $refactorParity['content']);
+        $this->assertStringContainsString('data-only', $refactorParity['content']);
+        $this->assertStringContainsString('Native SB control', $refactorParity['content']);
+        $this->assertStringContainsString('Must preserve', $refactorParity['content']);
+        $this->assertStringContainsString('UI redesign', $refactorParity['content']);
+        $this->assertStringContainsString('Nested screens', $refactorParity['content']);
+        $this->assertStringContainsString('shared Vue', $refactorParity['content']);
+        $this->assertStringContainsString('Instructional / help content', $refactorParity['content']);
+        $this->assertStringContainsString('FormImage', $refactorParity['content']);
+
+        $vueFields = collect($skills)->firstWhere('slug', 'screen-vue-fields');
+        $this->assertNotNull($vueFields);
+        $this->assertTrue($vueFields['system']);
+        $this->assertSame(McpGuidance::SCOPE_SCREENS, $vueFields['scope']);
+        $this->assertStringContainsString('VueComponentRenderTemplate', $vueFields['content']);
+        $this->assertStringContainsString('executePmScript', $vueFields['content']);
+        $this->assertStringContainsString('screen-refactor-parity', $vueFields['content']);
         $this->assertContains('process-web-entry', $slugs);
         $this->assertContains('data-connector-creation-rules', $slugs);
         $this->assertContains('data-connector-in-process', $slugs);

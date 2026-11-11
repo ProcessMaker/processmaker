@@ -50,6 +50,14 @@ final class McpSystemSkills
                 'scope' => McpGuidance::SCOPE_SCREENS,
             ],
             [
+                'id' => 'mcp-system-screen-vue-fields',
+                'name' => 'Screen Vue domain fields',
+                'slug' => 'screen-vue-fields',
+                'when' => 'When implementing uploads, catalog selects, signatures, or other domain UX inside a Vue Component Editor SFC — and during screen refactors with those fields',
+                'file' => 'screen-vue-fields.md',
+                'scope' => McpGuidance::SCOPE_SCREENS,
+            ],
+            [
                 'id' => self::PROCESS_CREATION_RULES_ID,
                 'name' => 'Process creation rules',
                 'slug' => self::PROCESS_CREATION_RULES_SLUG,
@@ -168,6 +176,14 @@ final class McpSystemSkills
                 'when' => 'Before deploy/create/update of a process, or when validating BPMN',
                 'file' => 'process-validation.md',
                 'scope' => McpGuidance::SCOPE_PROCESSES,
+            ],
+            [
+                'id' => 'mcp-system-screen-refactor-parity',
+                'name' => 'Screen refactor parity',
+                'slug' => 'screen-refactor-parity',
+                'when' => 'When refactoring an existing traditional Screen Builder screen into a Vue Component Editor SFC — preserve all fields, instructional help (images/how-to), calcs and watchers in the Vue SFC',
+                'file' => 'screen-refactor-parity.md',
+                'scope' => McpGuidance::SCOPE_SCREENS,
             ],
             [
                 'id' => self::DATA_CONNECTOR_CREATION_RULES_ID,
