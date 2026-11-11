@@ -170,6 +170,14 @@ final class McpSystemSkills
                 'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
+                'id' => 'mcp-system-process-bpmn-layout',
+                'name' => 'Process BPMN layout',
+                'slug' => 'process-bpmn-layout',
+                'when' => 'When authoring BPMN for MCP or calling layout-bpmn / auto_layout_bpmn on create-update',
+                'file' => 'process-bpmn-layout.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
+            ],
+            [
                 'id' => self::DATA_CONNECTOR_CREATION_RULES_ID,
                 'name' => 'Data Connector creation rules',
                 'slug' => self::DATA_CONNECTOR_CREATION_RULES_SLUG,

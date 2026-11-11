@@ -1,6 +1,6 @@
 # Skill: Process BPMN validation
 
-Use before create/update/deploy, or when implementing a future `validate-process` MCP tool. Validates structure, refs, and runtime-readiness — not visual layout aesthetics.
+Use before create/update/deploy, or with the `validate-process` MCP tool. Validates structure, refs, and runtime-readiness — **not** visual layout aesthetics (use skill `process-bpmn-layout` / `layout-bpmn` for diagram positions).
 
 ## Levels
 

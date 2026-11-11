@@ -16,6 +16,7 @@ use ProcessMaker\Mcp\Tools\Processes\CreateProcessTool;
 use ProcessMaker\Mcp\Tools\Processes\GetProcessTool;
 use ProcessMaker\Mcp\Tools\Processes\ListGroupsTool;
 use ProcessMaker\Mcp\Tools\Processes\ListProcessesTool;
+use ProcessMaker\Mcp\Tools\Processes\LayoutBpmnTool;
 use ProcessMaker\Mcp\Tools\Processes\ListUsersTool;
 use ProcessMaker\Mcp\Tools\Processes\PlanProcessTool;
 use ProcessMaker\Mcp\Tools\Processes\UpdateProcessTool;
@@ -40,6 +41,7 @@ Use list-processes to search before creating one.
 create-process requires name and description; bpmn is optional (empty template if omitted — add a start event before running).
 For MCP create-process/update-process use numeric pm:screenRef / pm:scriptRef (list-screens after create-screen). Portable ${screen:title} only resolves via package-plg deploy-process.
 Call validate-process before create/update when unsure.
+MCP create/update always runs `bpmn-auto-layout-extended` when sequence flows lack BPMNEdge waypoints (prevents Modeler spider lines). Default `auto_layout_bpmn` is true; `validate-process` errors on `missing_bpmn_edge` if layout is disabled.
 update-process changes only the fields you send.
 MARKDOWN)]
 class ProcessServer extends Server
@@ -58,6 +60,7 @@ class ProcessServer extends Server
         CreateProcessTool::class,
         UpdateProcessTool::class,
         ValidateProcessTool::class,
+        LayoutBpmnTool::class,
     ];
 
     public function createContext(): ServerContext

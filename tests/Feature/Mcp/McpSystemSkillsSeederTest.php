@@ -75,6 +75,7 @@ class McpSystemSkillsSeederTest extends TestCase
         $slugs = array_column($skills, 'slug');
         $this->assertContains('process-node-form-task', $slugs);
         $this->assertContains('process-validation', $slugs);
+        $this->assertContains('process-bpmn-layout', $slugs);
         $this->assertContains('process-web-entry', $slugs);
         $this->assertContains('data-connector-creation-rules', $slugs);
         $this->assertContains('data-connector-in-process', $slugs);

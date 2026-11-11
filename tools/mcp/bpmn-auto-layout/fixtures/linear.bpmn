@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd"
+  id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler">
+  <bpmn:process id="Process_1" name="linear" isExecutable="true">
+    <bpmn:startEvent id="node_1" name="Start">
+      <bpmn:outgoing>flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="node_2" name="Task" pm:screenRef="1" pm:assignment="requester">
+      <bpmn:incoming>flow_1</bpmn:incoming>
+      <bpmn:outgoing>flow_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="node_3" name="End">
+      <bpmn:incoming>flow_2</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_1" sourceRef="node_1" targetRef="node_2" />
+    <bpmn:sequenceFlow id="flow_2" sourceRef="node_2" targetRef="node_3" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="shape_1" bpmnElement="node_1"><dc:Bounds x="0" y="0" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_2" bpmnElement="node_2"><dc:Bounds x="0" y="0" width="116" height="76" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_3" bpmnElement="node_3"><dc:Bounds x="0" y="0" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_1" bpmnElement="flow_1"><di:waypoint x="0" y="0" /><di:waypoint x="0" y="0" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_2" bpmnElement="flow_2"><di:waypoint x="0" y="0" /><di:waypoint x="0" y="0" /></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

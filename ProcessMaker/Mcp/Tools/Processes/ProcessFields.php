@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ProcessMaker\Mcp\Tools\Processes;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\JsonSchema\Types\BooleanType;
 use Illuminate\JsonSchema\Types\IntegerType;
 use Illuminate\JsonSchema\Types\StringType;
 
@@ -58,5 +59,15 @@ final class ProcessFields
         $field = $schema->string()->description(self::BPMN);
 
         return $required ? $field->required() : $field;
+    }
+
+    public static function autoLayoutBpmn(JsonSchema $schema): BooleanType
+    {
+        return $schema->boolean()
+            ->description(
+                'When true (default) and bpmn is provided, run bpmn-auto-layout-extended before save. '
+                . 'Set false to keep coordinates only when every sequenceFlow already has BPMNEdge waypoints; '
+                . 'incomplete diagram interchange is still auto-laid out to avoid Modeler rendering bugs.',
+            );
     }
 }

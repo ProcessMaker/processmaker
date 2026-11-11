@@ -22,6 +22,8 @@ final class ProcessBpmnValidator
 
     private const DI_NS = 'http://www.omg.org/spec/BPMN/20100524/DI';
 
+    private const DD_DI_NS = 'http://www.omg.org/spec/DD/20100524/DI';
+
     /**
      * @return array{ok: bool, errors: list<array{nodeId: ?string, code: string, message: string}>, warnings: list<array{nodeId: ?string, code: string, message: string}>}
      */
@@ -52,11 +54,39 @@ final class ProcessBpmnValidator
         $xpath = new DOMXPath($dom);
         $xpath->registerNamespace('bpmn', self::BPMN_NS);
         $xpath->registerNamespace('bpmndi', self::DI_NS);
+        $xpath->registerNamespace('di', self::DD_DI_NS);
         $xpath->registerNamespace('pm', self::PM_NS);
 
         $this->collectSemanticIssues($xpath, $errors, $warnings);
 
         return $this->result($errors, $warnings);
+    }
+
+    /**
+     * True when any sequence flow lacks a BPMNEdge with at least two waypoints (Modeler spider-line bug).
+     */
+    public function lacksSequenceFlowDiagramInterchange(string $bpmn): bool
+    {
+        $bpmn = BpmnDocument::replaceHtmlEntities($bpmn);
+        $dom = new DOMDocument();
+        if (@$dom->loadXML($bpmn) !== true) {
+            return true;
+        }
+
+        $xpath = new DOMXPath($dom);
+        $xpath->registerNamespace('bpmn', self::BPMN_NS);
+        $xpath->registerNamespace('bpmndi', self::DI_NS);
+        $xpath->registerNamespace('di', self::DD_DI_NS);
+
+        $flows = $xpath->query('//bpmn:sequenceFlow[@id]');
+        if ($flows === false || $flows->length === 0) {
+            return false;
+        }
+
+        $issues = [];
+        $this->requireSequenceFlowDiagramInterchange($xpath, $issues);
+
+        return $issues !== [];
     }
 
     /**
@@ -106,6 +136,7 @@ final class ProcessBpmnValidator
         }
 
         $this->requireFlowWiring($xpath, $errors);
+        $this->requireSequenceFlowDiagramInterchange($xpath, $errors);
         $this->requireInterstitialScreen($xpath, $errors);
 
         $this->requireAttr($xpath, '//bpmn:task', 'screenRef', 'missing_screen_ref', 'Form Task requires pm:screenRef.', $errors);
@@ -184,6 +215,60 @@ final class ProcessBpmnValidator
                     $node->getAttribute('id') ?: null,
                     'missing_interstitial_screen',
                     'allowInterstitial=true requires pm:interstitialScreenRef (DISPLAY screen; system key "interstitial" is valid).',
+                );
+            }
+        }
+    }
+
+    /**
+     * Nayra wires runtime flows from bpmn:outgoing / bpmn:incoming children.
+     * sourceRef/targetRef alone leave Start Events with 0 outgoing flows.
+     *
+     * @param list<array{nodeId: ?string, code: string, message: string}> $errors
+     */
+    /**
+     * @param list<array{nodeId: ?string, code: string, message: string}> $errors
+     */
+    private function requireSequenceFlowDiagramInterchange(DOMXPath $xpath, array &$errors): void
+    {
+        $edgesByFlowId = [];
+        foreach ($xpath->query('//bpmndi:BPMNEdge[@bpmnElement]') ?: [] as $edge) {
+            if (!$edge instanceof DOMElement) {
+                continue;
+            }
+            $ref = $edge->getAttribute('bpmnElement');
+            if ($ref !== '') {
+                $edgesByFlowId[$ref] = $edge;
+            }
+        }
+
+        foreach ($xpath->query('//bpmn:sequenceFlow[@id]') ?: [] as $flow) {
+            if (!$flow instanceof DOMElement) {
+                continue;
+            }
+            $flowId = $flow->getAttribute('id');
+            if ($flowId === '') {
+                continue;
+            }
+
+            $edge = $edgesByFlowId[$flowId] ?? null;
+            if (!$edge instanceof DOMElement) {
+                $errors[] = $this->issue(
+                    $flowId,
+                    'missing_bpmn_edge',
+                    'Sequence flow ' . $flowId . ' has no bpmndi:BPMNEdge; ProcessMaker Modeler draws broken connectors from (0,0). '
+                    . 'Call layout-bpmn or save via MCP create/update with auto layout enabled.',
+                );
+
+                continue;
+            }
+
+            $waypoints = $xpath->query('.//di:waypoint', $edge);
+            if ($waypoints === false || $waypoints->length < 2) {
+                $errors[] = $this->issue(
+                    $flowId,
+                    'incomplete_bpmn_edge',
+                    'Sequence flow ' . $flowId . ' BPMNEdge needs at least two di:waypoint elements.',
                 );
             }
         }
