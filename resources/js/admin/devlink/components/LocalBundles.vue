@@ -8,27 +8,33 @@ import BundleModal from './BundleModal.vue';
 import DeleteModal from './DeleteModal.vue';
 import { useRouter, useRoute } from 'vue-router/composables';
 import UpdateBundle from './UpdateBundle.vue';
+import PaginationTable from '../../../components/shared/PaginationTable.vue';
 
 const vue = getCurrentInstance().proxy;
 const router = useRouter();
 const route = useRoute();
 const bundles = ref([]);
+const meta = ref({});
+const page = ref(1);
+const perPage = ref(15);
 const editModal = ref(null);
 const confirmDeleteModal = ref(null);
 const confirmPublishNewVersion = ref(null);
+const publishing = ref(false);
 const confirmUpdateVersion = ref(null);
 const filter = ref("");
 const bundleModal = ref(null);
 const updateBundle = ref(null);
 const deleteWarningTitle = ref(vue.$t("Delete Confirmation"));
 const updatesAvailable = reactive({});
+const remoteAvailability = reactive({});
 const refreshKey = ref(0);
 
 const actions = [
   { value: "open-item", content: "Open" },
   { value: "increase-item", content: "Publish New Version", conditional: "if(not(dev_link_id), true, false)" },
   { value: "update-item", content: "Update Bundle", conditional: "if(update_available, true, false)" },
-  { value: "reinstall-item", content: "Reinstall Bundle", conditional: "if(dev_link_id, true, false)" },
+  { value: "reinstall-item", content: "Reinstall Bundle", conditional: "if(dev_link_id, remote_available, false)" },
   { value: "edit-item", content: "Edit", conditional: "if(not(dev_link_id) , true, false)" },
   { value: "delete-item", content: "Delete" },
 ]
@@ -44,15 +50,28 @@ const setUpdateAvailable = (bundle, updateAvailable) => {
   set(updatesAvailable, bundle.id, updateAvailable);
 };
 
+const setRemoteAvailability = (bundle, available) => {
+  set(remoteAvailability, bundle.id, available);
+};
+
 onMounted(() => {
   load();
 })
 
 const load = () => {
   ProcessMaker.apiClient
-    .get(`/devlink/local-bundles?filter=${filter.value}`)
+    .get('/devlink/local-bundles', {
+      params: {
+        filter: filter.value,
+        page: page.value,
+        per_page: perPage.value,
+        order_by: 'created_at',
+        order_direction: 'desc',
+      }
+    })
     .then((result) => {
       bundles.value = result.data.data;
+      meta.value = result.data.meta;
       refreshKey.value++;
     });
 };
@@ -131,6 +150,7 @@ const create = () => {
   ProcessMaker.apiClient
     .post('/devlink/local-bundles', selected.value)
     .then((result) => {
+      page.value = 1;
       load();
     });
 };
@@ -175,11 +195,23 @@ const increaseVersionBundle = (bundle) => {
 };
 
 const executeIncrease = () => {
+  if (publishing.value) {
+    return;
+  }
+
+  publishing.value = true;
   ProcessMaker.apiClient
     .post(`devlink/local-bundles/${selected.value.id}/increase-version`)
-    .then((result) => {
+    .then(() => {
       confirmPublishNewVersion.value.hide();
       load();
+    })
+    .catch((error) => {
+      const message = error.response?.data?.error?.message || error.message;
+      window.ProcessMaker.alert(vue.$t(message), "warning");
+    })
+    .finally(() => {
+      publishing.value = false;
     });
 };
 
@@ -197,7 +229,19 @@ const debouncedLoad = debounce(load, 300);
 
 // Function called on change
 const handleFilterChange = () => {
+  page.value = 1;
   debouncedLoad();
+};
+
+const handlePageChange = (newPage) => {
+  page.value = newPage;
+  load();
+};
+
+const handlePerPageChange = (newPerPage) => {
+  page.value = 1;
+  perPage.value = newPerPage;
+  load();
 };
 
 const canEdit = (bundle) => {
@@ -213,9 +257,10 @@ const deleteWarning = computed(() => {
   return vue.$t('Are you sure you want to delete <strong>{{name}}</strong>? The action is irreversible.', { name });
 });
 
-const confirmPublishNewVersionText = computed(() => {
-  return vue.$t('Are you sure you increase the version of <strong>{{ selectedBundleName }}</strong>?', { selectedBundleName: selected.value?.name });
-});
+const confirmPublishNewVersionText = computed(() => vue.$t(
+  "Are you sure you want to increase the version of <strong>{{ selectedBundleName }}</strong>?",
+  { selectedBundleName: selected.value?.name },
+));
 
 const handleInstallationComplete = () => {
   load();
@@ -250,7 +295,8 @@ const handleInstallationComplete = () => {
       centered
       content-class="modal-style"
       title="Publish New Version"
-      @ok="executeIncrease"
+      :ok-disabled="publishing"
+      @ok.prevent="executeIncrease"
     >
       <p v-html="confirmPublishNewVersionText"></p>
     </b-modal>
@@ -280,9 +326,10 @@ const handleInstallationComplete = () => {
           <Origin :dev-link="data.item.dev_link"></Origin>
         </template>
         <template #cell(version)="data">
-          {{ data.item.version }} <VersionCheck 
-            :key="`version-check-${data.item.id}-${refreshKey}`" 
-            @updateAvailable="setUpdateAvailable(data.item, $event)" 
+          {{ data.item.version }} <VersionCheck
+            :key="`version-check-${data.item.id}-${refreshKey}`"
+            @updateAvailable="setUpdateAvailable(data.item, $event)"
+            @availabilityChanged="setRemoteAvailability(data.item, $event)"
             :dev-link="data.item">
           </VersionCheck>
         </template>
@@ -290,7 +337,11 @@ const handleInstallationComplete = () => {
           <EllipsisMenu
             class="ellipsis-devlink"
             :actions="actions"
-            :data="{ ...data.item, update_available: updatesAvailable[data.item.id] ?? false }"
+            :data="{
+              ...data.item,
+              update_available: updatesAvailable[data.item.id] ?? false,
+              remote_available: remoteAvailability[data.item.id] ?? false,
+            }"
             :custom-button="customButton"
             @navigate="onNavigate"
           />
@@ -301,6 +352,12 @@ const handleInstallationComplete = () => {
         <div>{{ $t("Create a bundle to easily share assets and settings between ProcessMaker instances.") }}</div>
       </div>
     </div>
+    <pagination-table
+      :meta="meta"
+      data-cy="local-bundles-pagination"
+      @page-change="handlePageChange"
+      @per-page-change="handlePerPageChange"
+    />
   </div>
 </template>
 

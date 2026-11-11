@@ -193,6 +193,9 @@
 
 <script>
 import AddToBundle from '../../../components/shared/AddToBundle.vue';
+// Content iframe CSS must be inlined; parent-page CSS imports do not apply inside the editor iframe.
+import oxideContentCss from 'tinymce/skins/ui/oxide/content.min.css?raw';
+import defaultContentCss from 'tinymce/skins/content/default/content.min.css?raw';
 
 export default {
   components: {
@@ -204,8 +207,9 @@ export default {
       altText: '',
       loginFooter: '',
       editorSettings: {
+        // Toolbar skin is imported in edit.js. Iframe body styles go via content_style / content_css.
         content_css: '/css/app.css',
-        content_style: "body {padding: 10px}",
+        content_style: `${oxideContentCss}\n${defaultContentCss}\nbody { padding: 10px; }`,
         menubar: false,
         plugins: [ 'link', 'lists', 'code' ],
         toolbar: 'code | undo redo | link | styleselect fontsizeselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
@@ -213,7 +217,7 @@ export default {
         relative_urls: false,
         remove_script_host: false,
       },
-      config: config,
+      config: window.config,
       key: 'css-override',
       fileLogin: {
         file: null,
@@ -394,8 +398,8 @@ export default {
       }
     });
 
-    this.loginFooter = _.get(loginFooterSetting, 'config.html', '');
-    this.altText = altTextSetting;
+    this.loginFooter = _.get(window.loginFooterSetting, 'config.html', '');
+    this.altText = window.altTextSetting;
   },
   methods: {
     placeholder(object, string) {

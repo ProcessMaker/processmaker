@@ -65,6 +65,7 @@
 </template>
 
 <script>
+import _ from "lodash";
 import "@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
 
 export default {

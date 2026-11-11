@@ -154,14 +154,8 @@ export default {
     };
   },
   computed: {
-    createdFromWizardTemplate() {
-      return !!this.process?.properties?.wizardTemplateUuid;
-    },
     isArchived() {
       return this.process?.status === "ARCHIVED";
-    },
-    wizardTemplateUuid() {
-      return this.process?.properties?.wizardTemplateUuid;
     },
   },
   mounted() {
@@ -199,9 +193,6 @@ export default {
      */
     activateReadMore() {
       this.readActivated = true;
-    },
-    getHelperProcess() {
-      this.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
     },
     toggleInfo() {
       this.showProcessInfo = !this.showProcessInfo;
@@ -261,25 +252,9 @@ export default {
 .custom-class {
  margin-top: -13px;
 }
-.wizard-link {
-  text-transform: none;
-}
-.wizard-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.wizard {
-  display: flex;
-  justify-items: end;
-  width: 294px;
-}
 @media (width < 1200px) {
   .process-options {
     margin-top: 32px;
-  }
-  .wizard {
-    width: 170px;
   }
 }
 @media (1460px <= width < 1600px) {

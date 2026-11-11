@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Http\Middleware\ServerTimingMiddleware;
 use ProcessMaker\Models\User;
+use ProcessMaker\Providers\ProcessMakerServiceProvider;
+use ReflectionClass;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -39,6 +41,28 @@ class ServerTimingMiddlewareTest extends TestCase
         $this->assertStringContainsString('provider;dur=', $serverTiming[0]);
         $this->assertStringContainsString('controller;dur=', $serverTiming[1]);
         $this->assertStringContainsString('db;dur=', $serverTiming[2]);
+    }
+
+    public function testBeginRequestTimingClearsAccumulatedQueryTime()
+    {
+        $reflection = new ReflectionClass(ProcessMakerServiceProvider::class);
+        $property = $reflection->getProperty('queryTime');
+        $property->setAccessible(true);
+        $property->setValue(null, 500);
+
+        Route::middleware(ServerTimingMiddleware::class)->get('/timing-reset-test', function () {
+            DB::select('SELECT 1');
+
+            return response()->json(['message' => 'Timing reset test']);
+        });
+
+        $response = $this->get('/timing-reset-test');
+        $serverTiming = $this->getHeader($response, 'server-timing');
+
+        preg_match('/db;dur=([\d.]+)/', implode(',', $serverTiming), $matches);
+        $dbTime = (float) ($matches[1] ?? 500);
+
+        $this->assertLessThan(500, $dbTime);
     }
 
     public function testQueryTimeIsMeasured()

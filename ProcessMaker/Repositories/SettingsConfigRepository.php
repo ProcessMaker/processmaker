@@ -39,7 +39,7 @@ class SettingsConfigRepository extends Repository
         if ($key === 'session.lifetime') {
             $settingValue = $this->getFromSettings($key);
 
-            return $settingValue ?? $default;
+            return $settingValue ?: Arr::get($this->items, $key) ?: $default ?: 120;
         }
 
         if (Arr::has($this->items, $key)) {

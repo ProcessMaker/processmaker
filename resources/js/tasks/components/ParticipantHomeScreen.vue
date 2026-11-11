@@ -31,12 +31,7 @@
 
     <div
       ref="processInfo"
-      class="tw-flex-1 tw-pb-4"
-      :class="
-        selectedProcess === 'inbox'
-          ? 'tw-overflow-hidden'
-          : 'tw-overflow-auto'
-      "
+      class="tw-flex-1 tw-pb-4 tw-overflow-auto"
     >
       <div v-if="selectedProcess === 'inbox'">
         <div class="px-3 page-content mb-0">
@@ -347,17 +342,6 @@ export default {
     },
     processDashboardSelected(id, type) {
       this.selectedProcess = type;
-      if (type === "process") {
-        this.$router.push({
-          name: "process-browser",
-          query: { process: id },
-        });
-      } else if (type === "dashboard") {
-        this.$router.push({
-          name: "dashboard",
-          query: { dashboard: id },
-        });
-      }
     },
     toggleMenu(value) {
       this.showMenu = value;

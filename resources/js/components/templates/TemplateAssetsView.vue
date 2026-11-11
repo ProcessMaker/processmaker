@@ -88,11 +88,6 @@ export default {
       type: [String, null],
       default: null,
     },
-    wizardTemplateUuid: {
-      type: String,
-      required: false,
-      default: null,
-    },
   },
   data() {
     return {
@@ -126,9 +121,6 @@ export default {
       formData.append("id", this.responseId);
       formData.append("request", JSON.stringify(this.request));
       formData.append("existingAssets", JSON.stringify(this.updatedAssets));
-      if (this.wizardTemplateUuid !== null) {
-        formData.append("wizardTemplateUuid", this.wizardTemplateUuid);
-      }
       ProcessMaker.apiClient.post(`/template/create/${this.assetType}/${this.responseId}`, formData)
         .then((response) => {
           this.$nextTick(() => {

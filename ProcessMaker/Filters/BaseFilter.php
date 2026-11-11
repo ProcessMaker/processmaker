@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Filters;
 
+use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -98,6 +99,8 @@ abstract class BaseFilter
 
     private function apply($query): void
     {
+        $this->validateRawFilterContext();
+
         if ($valueAliasMethod = $this->valueAliasMethod()) {
             $this->valueAliasAdapter($valueAliasMethod, $query);
         } elseif ($this->subjectType === self::TYPE_STAGE) {
@@ -171,26 +174,53 @@ abstract class BaseFilter
      */
     private function manuallyAddJsonWhere($query): void
     {
-        $parts = explode('.', $this->subjectValue);
-
-        array_shift($parts);
-
-        $selector = implode('"."', $parts);
+        $path = $this->jsonSelectorPath();
         $operator = $this->operator();
         $value = $this->value();
 
-        if (!is_numeric($value)) {
+        if ($value instanceof Expression) {
+            $value = $value->getValue(DB::connection()->getQueryGrammar());
+        } elseif (!is_numeric($value)) {
             $value = DB::connection()->getPdo()->quote($value);
         }
 
         if ($operator === 'like') {
             // For JSON data is required to do a CAST in order to make insensitive the comparison
             $query->whereRaw(
-                "cast(json_unquote(json_extract(`data`, '$.\"{$selector}\"')) as CHAR) {$operator} {$value}"
+                "cast(json_unquote(json_extract(`data`, ?)) as CHAR) {$operator} {$value}",
+                [$path]
             );
         } else {
-            $query->whereRaw("json_unquote(json_extract(`data`, '$.\"{$selector}\"')) {$operator} {$value}");
+            $query->whereRaw("json_unquote(json_extract(`data`, ?)) {$operator} {$value}", [$path]);
         }
+    }
+
+    /**
+     * Build the JSON path used to address the filtered field within the `data` column.
+     *
+     * The path segments come straight from the request (the part of subject.value after the
+     * leading "data."), so they must never be interpolated into raw SQL. Each segment is
+     * validated against a strict allow-list and the assembled path is returned to be passed
+     * as a bound parameter to json_extract().
+     *
+     * @return string
+     */
+    private function jsonSelectorPath(): string
+    {
+        $parts = explode('.', $this->subjectValue);
+
+        array_shift($parts);
+
+        foreach ($parts as $part) {
+            // Allow any Unicode letter (\p{L}) or number (\p{N}) plus underscore, hyphen and
+            // space, so field names in any language are accepted. The /u flag enables UTF-8
+            // matching. SQL/JSON-path metacharacters such as ' " ( ) are intentionally rejected.
+            if (!preg_match('/^[\p{L}\p{N}_\- ]+$/u', $part)) {
+                abort(422, 'Invalid filter field.');
+            }
+        }
+
+        return '$."' . implode('"."', $parts) . '"';
     }
 
     private function operator()
@@ -234,6 +264,34 @@ abstract class BaseFilter
         return $this->subjectType === self::TYPE_FIELD && str_starts_with($this->subjectValue, 'data.');
     }
 
+    private function validateRawFilterContext(): void
+    {
+        if (!$this->filteringWithRawValue()) {
+            return;
+        }
+
+        if ($this->subjectType !== self::TYPE_FIELD) {
+            abort(422, 'Raw filters are only supported for fields.');
+        }
+
+        if ($this->isJsonData()) {
+            return;
+        }
+
+        $allowedFields = [
+            'created_at',
+            'updated_at',
+            'initiated_at',
+            'completed_at',
+            'due_at',
+            'started_at',
+        ];
+
+        if (!in_array($this->subjectValue, $allowedFields, true)) {
+            abort(422, 'Raw filters are only supported for temporal fields.');
+        }
+    }
+
     private function subject()
     {
         if ($this->isJsonData()) {
@@ -274,11 +332,7 @@ abstract class BaseFilter
             return $this->value . '%';
         }
 
-        if ($this->filteringWithRawValue()) {
-            return $this->getRawValue();
-        }
-
-        return $this->value;
+        return $this->valueWithRawExpressions($this->value);
     }
 
     abstract protected function valueAliasMethod();

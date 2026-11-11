@@ -18,20 +18,12 @@ class InitializeScriptMicroserviceTest extends TestCase
 
     public function testInitializeScriptMicroserviceEnabled()
     {
-        config(['script-runner-microservice.enabled' => true]);
+        config([
+            'script-runner-microservice.enabled' => true,
+            'app.custom_executors' => false,
+        ]);
 
-        ScriptExecutor::factory()->create([
-            'language' => 'php-nayra',
-            'description' => 'Language is not in the microservice supported list',
-        ]);
-        ScriptExecutor::factory()->create([
-            'language' => 'php',
-            'description' => 'First PHP Executor',
-        ]);
-        ScriptExecutor::factory()->create([
-            'language' => 'php',
-            'description' => 'Second PHP Executor',
-        ]);
+        $this->createExistingExecutors();
 
         $this->artisan('processmaker:initialize-script-microservice')->assertSuccessful();
 
@@ -39,6 +31,34 @@ class InitializeScriptMicroserviceTest extends TestCase
         $this->assertEquals(2, ScriptExecutor::where('type', ScriptExecutorType::Duplicate)->count());
 
         $this->assertEquals([
+            'php',
+            'javascript',
+            'python',
+            'csharp',
+            'java',
+            'javascript-ssr',
+        ], ScriptExecutor::where('is_system', false)->pluck('language')->toArray());
+    }
+
+    public function testInitializeScriptMicroserviceEnabledWithCustomExecutors()
+    {
+        config([
+            'script-runner-microservice.enabled' => true,
+            'app.custom_executors' => true,
+        ]);
+
+        $this->createExistingExecutors();
+
+        $this->artisan('processmaker:initialize-script-microservice')->assertSuccessful();
+
+        // Custom executors are allowed on the microservice, so nothing is hidden
+        $this->assertEquals(0, ScriptExecutor::where('is_system', true)->count());
+        $this->assertEquals(0, ScriptExecutor::where('type', ScriptExecutorType::Duplicate)->count());
+
+        // Missing microservice languages are still created
+        $this->assertEquals([
+            'php-nayra',
+            'php',
             'php',
             'javascript',
             'python',
@@ -74,5 +94,24 @@ class InitializeScriptMicroserviceTest extends TestCase
 
         $this->assertEquals(false, $first->is_system);
         $this->assertEquals(true, $second->is_system);
+    }
+
+    /**
+     * Create one executor with an unsupported language and two sharing the same language.
+     */
+    private function createExistingExecutors(): void
+    {
+        ScriptExecutor::factory()->create([
+            'language' => 'php-nayra',
+            'description' => 'Language is not in the microservice supported list',
+        ]);
+        ScriptExecutor::factory()->create([
+            'language' => 'php',
+            'description' => 'First PHP Executor',
+        ]);
+        ScriptExecutor::factory()->create([
+            'language' => 'php',
+            'description' => 'Second PHP Executor',
+        ]);
     }
 }

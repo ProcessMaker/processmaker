@@ -4,18 +4,34 @@ namespace Tests\Model;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Exception\DevLinkRemoteBundleException;
 use ProcessMaker\Models\Bundle;
 use ProcessMaker\Models\DevLink;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\PackageDynamicUI\Models\Menu;
 use Tests\TestCase;
 
 class DevLinkTest extends TestCase
 {
+    private const REMOTE_INSTANCE_URL = 'https://remote-instance.test';
+
+    private const TEST_BUNDLE_NAME = 'Test Bundle';
+
+    private const TEST_BUNDLE_DESCRIPTION = 'Test Bundle Description';
+
+    private const FIRST_MENU_DESCRIPTION = 'First menu description';
+
+    private const SECOND_MENU_DESCRIPTION = 'Second menu description';
+
+    private const LOCAL_BUNDLE_API_PATH = 'local-bundles/123';
+
+    private const EXPORT_LOCAL_BUNDLE_API_PATH = 'export-local-bundle/123';
+
     public function testGetClientUrl()
     {
         $devLink = DevLink::factory()->create([
-            'url' => 'https://remote-instance.test',
+            'url' => self::REMOTE_INSTANCE_URL,
         ]);
 
         $expectedQueryString = http_build_query([
@@ -24,7 +40,7 @@ class DevLinkTest extends TestCase
         ]);
 
         $this->assertEquals(
-            'https://remote-instance.test/admin/devlink/oauth-client?' . $expectedQueryString,
+            self::REMOTE_INSTANCE_URL . '/admin/devlink/oauth-client?' . $expectedQueryString,
             $devLink->getClientUrl()
         );
     }
@@ -32,7 +48,7 @@ class DevLinkTest extends TestCase
     public function testGetOauthRedirectUrl()
     {
         $devLink = DevLink::factory()->create([
-            'url' => 'https://remote-instance.test',
+            'url' => self::REMOTE_INSTANCE_URL,
             'client_id' => 123,
         ]);
 
@@ -75,35 +91,29 @@ class DevLinkTest extends TestCase
         $bundle->delete();
 
         Http::fake([
-            'http://remote-instance.test/api/1.0/devlink/local-bundles/123' => Http::response([
-                'id' => 123,
-                'name' => 'Test Bundle',
-                'published' => true,
-                'version' => '5',
-                'description' => 'Test Bundle Description',
-            ]),
-            'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123' => Http::response([
+            self::remoteApiUrl(self::LOCAL_BUNDLE_API_PATH) => Http::response(self::remoteBundleResponse('5')),
+            self::remoteApiUrl(self::EXPORT_LOCAL_BUNDLE_API_PATH) => Http::response([
                 'payloads' => $exports,
             ]),
-            'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123/settings' => Http::response([
+            self::remoteApiUrl('export-local-bundle/123/settings') => Http::response([
                 'settings' => [[
                     'setting' => 'users',
                     'config' => null,
                 ]],
             ]),
-            'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123/settings-payloads' => Http::response([
+            self::remoteApiUrl('export-local-bundle/123/settings-payloads') => Http::response([
                 'payloads' => $exportsSettingsPayloads,
             ]),
-            'http://remote-instance.test/api/1.0/devlink/local-bundles/123/add-bundle-instance' => Http::response([], 200),
+            self::remoteApiUrl('local-bundles/123/add-bundle-instance') => Http::response([], 200),
         ]);
 
         $devLink = DevLink::factory()->create([
-            'url' => 'http://remote-instance.test',
+            'url' => self::REMOTE_INSTANCE_URL,
         ]);
         $devLink->installRemoteBundle(123, 'update');
 
         $bundle = Bundle::where('remote_id', 123)->first();
-        $this->assertEquals('Test Bundle', $bundle->name);
+        $this->assertEquals(self::TEST_BUNDLE_NAME, $bundle->name);
         $this->assertEquals('5', $bundle->version);
 
         $this->assertCount(2, $bundle->assets);
@@ -118,12 +128,168 @@ class DevLinkTest extends TestCase
         $this->assertCount(3, $payloads);
     }
 
+    public function testInstallRemoteBundleReportsUnavailableRemoteAssets()
+    {
+        Http::preventStrayRequests();
+        Http::fake([
+            self::remoteApiUrl(self::LOCAL_BUNDLE_API_PATH) => Http::response(self::remoteBundleResponse('5')),
+            self::remoteApiUrl(self::EXPORT_LOCAL_BUNDLE_API_PATH) => Http::response([
+                'error' => [
+                    'code' => 422,
+                    'message' => 'The bundle contains unavailable assets.',
+                ],
+                'errors' => [
+                    'assets' => [[
+                        'bundle_asset_id' => 34,
+                        'asset_type' => 'ProcessMaker\Plugins\Collections\Models\Collection',
+                        'asset_id' => 20,
+                        'integrity_status' => 'missing',
+                    ]],
+                ],
+            ], 422),
+        ]);
+
+        $devLink = DevLink::factory()->create([
+            'url' => self::REMOTE_INSTANCE_URL,
+        ]);
+
+        $this->expectException(DevLinkRemoteBundleException::class);
+        $this->expectExceptionMessage(
+            'The remote bundle contains unavailable assets: Collection #20 (bundle asset #34). ' .
+            'Repair the bundle on the source instance and try again.'
+        );
+
+        $devLink->installRemoteBundle(123, 'update');
+    }
+
+    public function testInstallRemoteBundleImportsAndReinstallsEverySelectedMenu()
+    {
+        if (!hasPackage('package-dynamic-ui')) {
+            $this->markTestSkipped('package-dynamic-ui is not installed');
+        }
+
+        Storage::fake('local');
+
+        $firstMenu = Menu::factory()->create([
+            'name' => 'First DevLink Menu',
+            'description' => self::FIRST_MENU_DESCRIPTION,
+        ]);
+        $secondMenu = Menu::factory()->create([
+            'name' => 'Second DevLink Menu',
+            'description' => self::SECOND_MENU_DESCRIPTION,
+        ]);
+        $excludedMenu = Menu::factory()->create([
+            'name' => 'Excluded DevLink Menu',
+            'description' => 'Excluded menu description',
+        ]);
+
+        $sourceBundle = Bundle::factory()->create();
+        $sourceBundle->addSettings('ui_menus', null);
+
+        $allMenuRoots = array_column($sourceBundle->exportSettingPayloads()->toArray()[0], 'root');
+        $this->assertContains($firstMenu->uuid, $allMenuRoots);
+        $this->assertContains($secondMenu->uuid, $allMenuRoots);
+        $this->assertContains($excludedMenu->uuid, $allMenuRoots);
+
+        $sourceBundle->addSettings(
+            'ui_menus',
+            json_encode(['id' => [$firstMenu->id, $secondMenu->id]]),
+            null,
+            true
+        );
+
+        $settings = $sourceBundle->exportSettings();
+        $settingPayloads = $sourceBundle->exportSettingPayloads()->toArray();
+        $selectedMenuRoots = array_column($settingPayloads[0], 'root');
+
+        $this->assertEqualsCanonicalizing(
+            [$firstMenu->uuid, $secondMenu->uuid],
+            $selectedMenuRoots
+        );
+        $this->assertNotContains($excludedMenu->uuid, $selectedMenuRoots);
+
+        $firstMenuUuid = $firstMenu->uuid;
+        $secondMenuUuid = $secondMenu->uuid;
+        $excludedMenuUuid = $excludedMenu->uuid;
+        $firstMenu->delete();
+        $secondMenu->delete();
+        $sourceBundle->delete();
+
+        Http::fake([
+            self::remoteApiUrl('local-bundles/456') => Http::response([
+                'id' => 456,
+                'name' => 'Menus Bundle',
+                'published' => true,
+                'version' => '1',
+                'description' => 'Bundle with selected menus',
+            ]),
+            self::remoteApiUrl('export-local-bundle/456') => Http::response([
+                'payloads' => [],
+            ]),
+            self::remoteApiUrl('export-local-bundle/456/settings') => Http::response([
+                'settings' => $settings,
+            ]),
+            self::remoteApiUrl('export-local-bundle/456/settings-payloads') => Http::response([
+                'payloads' => $settingPayloads,
+            ]),
+            self::remoteApiUrl('local-bundles/456/add-bundle-instance') => Http::response([], 200),
+        ]);
+
+        $devLink = DevLink::factory()->create([
+            'url' => self::REMOTE_INSTANCE_URL,
+        ]);
+        $devLink->installRemoteBundle(456, 'update');
+
+        $importedFirstMenu = Menu::where('uuid', $firstMenuUuid)->firstOrFail();
+        $importedSecondMenu = Menu::where('uuid', $secondMenuUuid)->firstOrFail();
+        $this->assertSame(self::FIRST_MENU_DESCRIPTION, $importedFirstMenu->description);
+        $this->assertSame(self::SECOND_MENU_DESCRIPTION, $importedSecondMenu->description);
+        $this->assertSame(1, Menu::where('uuid', $excludedMenuUuid)->count());
+
+        $installedBundle = Bundle::where('remote_id', 456)->firstOrFail();
+        $installedMedia = $installedBundle->newestVersionFile();
+        $this->assertTrue($installedMedia->getCustomProperty('settings_payloads_complete'));
+        $this->assertSame([
+            'setting' => 'ui_menus',
+            'selection' => 'partial',
+            'available' => true,
+            'items' => [
+                ['key' => $firstMenuUuid, 'name' => 'First DevLink Menu'],
+                ['key' => $secondMenuUuid, 'name' => 'Second DevLink Menu'],
+            ],
+        ], $installedBundle->settingPreview('ui_menus'));
+
+        $savedPayloads = json_decode(
+            gzdecode(file_get_contents($installedMedia->getPath())),
+            true
+        );
+        $savedRoots = array_column($savedPayloads, 'root');
+        $this->assertEqualsCanonicalizing([$firstMenuUuid, $secondMenuUuid], $savedRoots);
+        $this->assertNotContains($excludedMenuUuid, $savedRoots);
+
+        $importedFirstMenu->update(['description' => 'Locally changed first menu']);
+        $importedSecondMenu->update(['description' => 'Locally changed second menu']);
+
+        $installedBundle->reinstall('update');
+
+        $this->assertSame(
+            self::FIRST_MENU_DESCRIPTION,
+            Menu::where('uuid', $firstMenuUuid)->firstOrFail()->description
+        );
+        $this->assertSame(
+            self::SECOND_MENU_DESCRIPTION,
+            Menu::where('uuid', $secondMenuUuid)->firstOrFail()->description
+        );
+        $this->assertSame(1, Menu::where('uuid', $firstMenuUuid)->count());
+        $this->assertSame(1, Menu::where('uuid', $secondMenuUuid)->count());
+    }
+
     public function testRemoteBundles()
     {
         Http::preventStrayRequests();
 
         $devLink = DevLink::factory()->create([
-            'url' => 'http://remote-instance.test',
+            'url' => self::REMOTE_INSTANCE_URL,
         ]);
 
         $existingInstalledRemoteBundle = Bundle::factory()->create([
@@ -132,7 +298,7 @@ class DevLinkTest extends TestCase
         ]);
 
         Http::fake([
-            'http://remote-instance.test/api/1.0/devlink/local-bundles?published=1' => Http::response([
+            self::remoteApiUrl('local-bundles?published=1') => Http::response([
                 'data' => [
                     [
                         'id' => $existingInstalledRemoteBundle->remote_id,
@@ -173,7 +339,7 @@ class DevLinkTest extends TestCase
 
         // Local Instance
         $devLink = DevLink::factory()->create([
-            'url' => 'http://remote-instance.test',
+            'url' => self::REMOTE_INSTANCE_URL,
         ]);
 
         $existingBundle = Bundle::factory()->create([
@@ -183,43 +349,13 @@ class DevLinkTest extends TestCase
         ]);
 
         Http::fake([
-            'http://remote-instance.test/api/1.0/devlink/local-bundles/123' => Http::sequence()
-                ->push([
-                    'id' => 123,
-                    'name' => 'Test Bundle',
-                    'published' => true,
-                    'version' => '2',
-                    'description' => 'Test Bundle Description',
-                ], 200)
-                ->push([
-                    'id' => 123,
-                    'name' => 'Test Bundle',
-                    'published' => true,
-                    'version' => '3',
-                    'description' => 'Test Bundle Description',
-                ], 200)
-                ->push([
-                    'id' => 123,
-                    'name' => 'Test Bundle',
-                    'published' => true,
-                    'version' => '4',
-                    'description' => 'Test Bundle Description',
-                ], 200)
-                ->push([
-                    'id' => 123,
-                    'name' => 'Test Bundle',
-                    'published' => true,
-                    'version' => '8',
-                    'description' => 'Test Bundle Description',
-                ], 200)
-                ->push([
-                    'id' => 123,
-                    'name' => 'Test Bundle',
-                    'published' => true,
-                    'version' => '9',
-                    'description' => 'Test Bundle Description',
-                ], 200),
-            'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123' => Http::sequence()
+            self::remoteApiUrl(self::LOCAL_BUNDLE_API_PATH) => Http::sequence()
+                ->push(self::remoteBundleResponse('2'), 200)
+                ->push(self::remoteBundleResponse('3'), 200)
+                ->push(self::remoteBundleResponse('4'), 200)
+                ->push(self::remoteBundleResponse('8'), 200)
+                ->push(self::remoteBundleResponse('9'), 200),
+            self::remoteApiUrl(self::EXPORT_LOCAL_BUNDLE_API_PATH) => Http::sequence()
                 ->push([
                     'payloads' => $exports,
                 ], 200)
@@ -235,16 +371,16 @@ class DevLinkTest extends TestCase
                 ->push([
                     'payloads' => $exportsNewScreenName,
                 ], 200),
-            'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123/settings' => Http::response([
+            self::remoteApiUrl('export-local-bundle/123/settings') => Http::response([
                 'settings' => [[
                     'setting' => 'users',
                     'config' => null,
                 ]],
             ]),
-            'http://remote-instance.test/api/1.0/devlink/export-local-bundle/123/settings-payloads' => Http::response([
+            self::remoteApiUrl('export-local-bundle/123/settings-payloads') => Http::response([
                 'payloads' => [$exportsSettingsPayloads],
             ]),
-            'http://remote-instance.test/api/1.0/devlink/local-bundles/123/add-bundle-instance' => Http::response([], 200),
+            self::remoteApiUrl('local-bundles/123/add-bundle-instance') => Http::response([], 200),
         ]);
 
         $devLink->installRemoteBundle(123, 'update');
@@ -270,5 +406,21 @@ class DevLinkTest extends TestCase
         $this->assertCount(3, $media);
         $savedVersions = $media->map(fn ($m) => $m->getCustomProperty('version'))->toArray();
         $this->assertEquals(['4', '8', '9'], $savedVersions);
+    }
+
+    private static function remoteApiUrl(string $path): string
+    {
+        return self::REMOTE_INSTANCE_URL . '/api/1.0/devlink/' . ltrim($path, '/');
+    }
+
+    private static function remoteBundleResponse(string $version): array
+    {
+        return [
+            'id' => 123,
+            'name' => self::TEST_BUNDLE_NAME,
+            'published' => true,
+            'version' => $version,
+            'description' => self::TEST_BUNDLE_DESCRIPTION,
+        ];
     }
 }

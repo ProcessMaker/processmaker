@@ -44,7 +44,7 @@
                :key="configurable"
                :label="configurableLabel(configurable)"
                :checked="getConfigurableValue(configurable)"
-               toggle="true"
+               :toggle="true"
                @change="setConfigurableValue($event, configurable)">
             </form-checkbox>
           </div>

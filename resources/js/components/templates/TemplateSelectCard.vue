@@ -1,13 +1,8 @@
 <template>
-  <div :class="type !== 'wizard' ? 'template-select-card-container pb-2' : 'wizard-select-card-container pb-4'" >
+  <div class="template-select-card-container pb-2">
     <div v-if="!showTemplatePreview">
-      <wizard-template-card
-        v-if="type === 'wizard'"
-        :template="template"
-        @show-details="showDetails()"
-      />
       <screen-template-card
-        v-else-if="type === 'screen'"
+        v-if="type === 'screen'"
         :template="template"
         :is-active="isActive"
         :default-template-id="defaultTemplateId"
@@ -28,13 +23,12 @@
 </template>
 
 <script>
-import WizardTemplateCard from "./WizardTemplateCard.vue";
 import ScreenTemplateCard from "./ScreenTemplateCard.vue";
 import DefaultTemplateCard from "./DefaultTemplateCard.vue";
 import PreviewTemplate from "./PreviewTemplate.vue";
 
 export default {
-  components: { WizardTemplateCard, DefaultTemplateCard, ScreenTemplateCard, PreviewTemplate },
+  components: { DefaultTemplateCard, ScreenTemplateCard, PreviewTemplate },
   props: ["template", "type", "isActive", "defaultTemplateId", "defaultTemplateScreenType", "isDefaultTemplatePublic"],
   data() {
     return {
@@ -65,10 +59,4 @@ export default {
   flex: 0 0 33.333333%;
 }
 
-.wizard-select-card-container {
-  height: 240px;
-  margin-right: 1rem;
-  margin-top: 1rem;
-  width: 350px;
-}
 </style>

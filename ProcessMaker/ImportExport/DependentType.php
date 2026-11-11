@@ -22,6 +22,8 @@ abstract class DependentType
 
     const ENVIRONMENT_VARIABLE_VALUE = 'environment_variables_value';
 
+    const ENVIRONMENT_VARIABLE_ASSET = 'environment_variable_asset';
+
     const SCRIPT_EXECUTORS = 'script_executors';
 
     const SUB_PROCESSES = 'sub_processes';

@@ -31,6 +31,9 @@
         <template slot="title" slot-scope="props">
           <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.title }}</span>
         </template>
+        <template slot="type" slot-scope="props">
+          {{ (props.rowData.type === "custom") ? "Custom" : "Base" }}
+        </template>
 
         <template slot="actions" slot-scope="props">
           <div class="actions">
@@ -46,6 +49,7 @@
               </b-btn>
               <b-btn
                 variant="link"
+                :disabled="props.rowData.type !== 'custom'"
                 @click="deleteExecutor(props.rowData)"
                 v-b-tooltip.hover
                 :title="$t('Delete')"
@@ -106,6 +110,7 @@
                   required
                   v-model="formData.title"
                   name="title"
+                  :disabled="formData.type !== 'custom'"
                 ></b-input>
               </b-form-group>
               <b-form-group
@@ -119,6 +124,7 @@
                 v-model="formData.language"
                 :options="languagesSelect"
                 name="language"
+                :disabled="formData.type !== 'custom'"
               >
               </b-form-select>
               </b-form-group>
@@ -131,6 +137,7 @@
               v-model="formData.description"
               class="flex-grow-1"
               name="description"
+              :disabled="formData.type !== 'custom'"
             ></b-textarea>
           </b-col>
         </b-row>
@@ -170,7 +177,7 @@
       <b-form-textarea
         v-model="formData.config"
         class="mb-3 dockerfile"
-        :disabled="isRunning"
+        :disabled="isRunning || formData.type !== 'custom'"
       >
       </b-form-textarea>
 
@@ -208,7 +215,7 @@
         </b-button>
 
         <b-button
-          v-if="showCancel"
+          v-if="showCancel && formData.type === 'custom'"
           :disabled="pidFile === null"
           variant="secondary"
           @click="cancel"
@@ -217,7 +224,7 @@
         </b-button>
 
         <b-button
-          v-if="showSave"
+          v-if="showSave && formData.type === 'custom'"
           :disabled="isRunning"
           variant="primary"
           @click="save()"
@@ -241,7 +248,11 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   components: { AddToBundle },
-  props: ["filter", "permission"],
+  props: [
+    "filter",
+    "permission",
+    "script_microservice_enabled",
+  ],
   data() {
     return {
       commandOutput: "",
@@ -252,6 +263,7 @@ export default {
         description: "",
         config: "",
         language: null,
+        type: "custom",
       },
       errors: {},
       status: "idle",
@@ -259,6 +271,7 @@ export default {
       exitCode: 0,
       showDockerfile: false,
       loading: true,
+      script_microservice_broadcast_uui: null,
 
       localLoadOnStart: true,
       orderBy: "language",
@@ -288,6 +301,11 @@ export default {
           sortField: "title",
         },
         {
+          title: () => this.$t("Type"),
+          name: "__slot:type",
+          sortField: "type",
+        },
+        {
           title: () => this.$t("Modified"),
           name: "updated_at",
           sortField: "updated_at",
@@ -310,7 +328,7 @@ export default {
       document.querySelector('meta[name="user-id"]'),
       "content"
     );
-    if (userId) {
+    if (userId && !this.script_microservice_enabled) {
       window.Echo.private(`ProcessMaker.Models.User.${userId}`).listen(
         ".BuildScriptExecutor",
         (event) => {
@@ -342,6 +360,11 @@ export default {
   watch: {
     commandOutput() {
       this.scrollToBottom();
+    },
+    script_microservice_broadcast_uui(newVal) {
+      if (newVal) {
+        this.subscribeToScriptMicroserviceChannel(newVal);
+      }
     },
   },
   computed: {
@@ -455,6 +478,7 @@ export default {
           .put(path, this.formData)
           .then((result) => {
             this.status = _.get(result, "data.status", "error");
+            this.script_microservice_broadcast_uui = result.data.uuid;
           })
           .catch((e) => {
             this.setErrors(e);
@@ -465,6 +489,7 @@ export default {
           .post(path, this.formData)
           .then((result) => {
             this.status = _.get(result, "data.status", "error");
+            this.script_microservice_broadcast_uui = result.data.uuid;
             if (this.status === "started") {
               this.formData.id = result.data.id;
               this.fetch(); // refresh the table (beneath the modal)
@@ -479,7 +504,6 @@ export default {
       this.$refs.edit.show();
     },
     edit(row) {
-      console.log(row);
       this.formData = _.cloneDeep(row);
       this.$refs.edit.show();
     },
@@ -525,6 +549,33 @@ export default {
     },
     onAddToBundle(data) {
       this.$root.$emit('add-to-bundle', data);
+    },
+    subscribeToScriptMicroserviceChannel(name) {
+      const channel = `build-image-${name}`;
+      if (this.script_microservice_enabled) {
+      // Subscribe to new channel
+        window.ScriptMicroserviceEcho
+          .channel(channel)
+          .listenToAll((eventName, data) => {
+            this.status = this.status === "idle" ? "starting" : this.status;
+            switch (eventName) {
+              case ".build-image":
+                this.output(`${data}\n`);
+                break;
+              case ".build-finished":
+                this.pidFile = null;
+                this.exitCode = 0;
+                this.status = "done";
+                break;
+              case ".build-error":
+                this.output(data);
+                this.pidFile = null;
+                this.exitCode = 1;
+                this.status = "done";
+                break;
+            }
+          });
+      }
     },
   },
 };

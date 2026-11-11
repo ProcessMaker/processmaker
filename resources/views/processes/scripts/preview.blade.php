@@ -1,5 +1,4 @@
-@extends('layouts.preview')
-
+@extends('layouts.previewnextvite')
 
 @section('content')
     <div class="container" id="script-container">
@@ -44,5 +43,5 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/scripts/preview.js')}}"></script>
+    @vite('resources/js/processes/scripts/preview.js')
 @endsection

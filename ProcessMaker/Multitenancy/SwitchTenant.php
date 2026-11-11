@@ -2,13 +2,15 @@
 
 namespace ProcessMaker\Multitenancy;
 
-use Illuminate\Broadcasting\BroadcastManager;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
-use Monolog\Handler\RotatingFileHandler;
+use Illuminate\Support\Facades\Storage;
+use Laravel\Passport\ApiTokenCookieFactory;
+use Laravel\Passport\ClientRepository;
+use League\OAuth2\Server\AuthorizationServer;
+use League\OAuth2\Server\ResourceServer;
 use ProcessMaker\Application;
-use ProcessMaker\Multitenancy\Broadcasting\TenantAwareBroadcastManager;
 use Spatie\Multitenancy\Concerns\UsesMultitenancyConfig;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\SwitchTenantTask;
@@ -40,11 +42,6 @@ class SwitchTenant implements SwitchTenantTask
         request()->headers->set('host', $tenant->domain);
 
         $this->overrideConfigs($app, $tenant);
-
-        // Extend BroadcastManager to our custom implementation that prefixes the channel names with the tenant id.
-        $app->extend(BroadcastManager::class, function ($manager, $app) use ($tenant) {
-            return new TenantAwareBroadcastManager($app, $tenant->id);
-        });
     }
 
     /**
@@ -57,15 +54,66 @@ class SwitchTenant implements SwitchTenantTask
         $app = app();
         $app->useStoragePath(base_path('storage'));
 
+        // Restore landlord disk roots. Cached adapters still point at the previous
+        // tenant until flushFilesystemDisks() runs below.
+        foreach ($this->landlordConfig('filesystems.disks') ?? [] as $disk => $config) {
+            if (isset($config['root'])) {
+                $this->setConfig('filesystems.disks.' . $disk . '.root', $config['root']);
+            }
+            if (isset($config['url'])) {
+                $this->setConfig('filesystems.disks.' . $disk . '.url', $config['url']);
+            }
+        }
+
+        $app->useLangPath(resource_path('lang'));
+        $this->setConfig('filesystems.disks.lang.root', lang_path());
+        $this->flushFilesystemDisks($app);
+
         $this->setConfig('logging.channels.daily.path', storage_path('logs/processmaker.log'));
         $app->make('log')->reset();
         $app->forgetInstance('log');
 
-        $app->useLangPath(resource_path('lang'));
-
         // app key / encrypter
         $this->setConfig('app.key', $this->landlordConfig('app.key'));
+        $this->flushTenantSensitiveSingletons($app);
+    }
+
+    /**
+     * Drop container instances that captured the previous tenant's APP_KEY or oauth keys.
+     *
+     * Passport's ResourceServer/AuthorizationServer and Encrypter are singletons.
+     * Under Octane they can outlive a tenant switch and keep signing or verifying
+     * laravel_token cookies with the wrong key (API 401s).
+     */
+    private function flushTenantSensitiveSingletons(Application $app): void
+    {
         $app->forgetInstance('encrypter');
+        $app->forgetInstance(ResourceServer::class);
+        $app->forgetInstance(AuthorizationServer::class);
+        $app->forgetInstance(ClientRepository::class);
+        $app->forgetInstance(ApiTokenCookieFactory::class);
+
+        if ($app->resolved('auth.driver')) {
+            $app->forgetInstance('auth.driver');
+        }
+
+        if ($app->resolved('auth')) {
+            $app->make('auth')->forgetGuards();
+        }
+    }
+
+    /**
+     * Drop cached filesystem disks so Storage picks up the tenant (or landlord) root.
+     *
+     * Horizon/Octane reuse the same worker process across tenants. FilesystemManager
+     * caches disk adapters, so without this, Storage keeps writing/reading the previous
+     * root (often landlord storage/app) after config roots were already rewritten.
+     */
+    private function flushFilesystemDisks(Application $app): void
+    {
+        $disks = array_keys($this->landlordConfig('filesystems.disks') ?? config('filesystems.disks', []));
+        Storage::forgetDisk($disks);
+        $app->forgetInstance('filesystem');
     }
 
     private function landlordConfig($key)
@@ -89,7 +137,7 @@ class SwitchTenant implements SwitchTenantTask
     {
         $this->setEnvironmentVariable('APP_URL', $tenant->config['app.url']);
 
-        $this->setConfig('app.instance', $this->landlordConfig('app.instance') . '_' . $tenant->id);
+        $this->setConfig('app.instance', $tenant->database);
         $this->setConfig('app.url', $tenant->config['app.url']);
 
         // Microservice callback url
@@ -126,11 +174,12 @@ class SwitchTenant implements SwitchTenantTask
         // Lang path
         $app->useLangPath(resource_path('lang/tenant_' . $tenant->id));
         $this->setConfig('filesystems.disks.lang.root', lang_path());
+        $this->flushFilesystemDisks($app);
 
         // app key / encrypter
         $landlordEncrypter = $app->make('encrypter');
         $this->setConfig('app.key', $landlordEncrypter->decryptString($tenant->config['app.key']));
-        $app->forgetInstance('encrypter');
+        $this->flushTenantSensitiveSingletons($app);
 
         // Logging
         $this->setConfig('logging.channels.daily.path', storage_path('logs/processmaker.log'));

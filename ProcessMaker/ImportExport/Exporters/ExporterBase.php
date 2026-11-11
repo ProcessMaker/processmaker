@@ -47,6 +47,12 @@ abstract class ExporterBase implements ExporterInterface
 
     public $hidden = false;
 
+    /**
+     * When true (or a callable returning true), this asset is explicitly discarded.
+     * Callables receive the model: fn (Model $model): bool
+     *
+     * @var bool|callable
+     */
     public $discard = false;
 
     public static $forceUpdate = false;
@@ -135,7 +141,7 @@ abstract class ExporterBase implements ExporterInterface
 
     public function include() : bool
     {
-        if ($this->discard) { // Explicit Discard (not from passed-in options)
+        if ($this->isExplicitlyDiscarded()) { // Explicit Discard (not from passed-in options)
             if (!$this->ignoreExplicitDiscard) {
                 return false;
             }
@@ -146,6 +152,40 @@ abstract class ExporterBase implements ExporterInterface
         }
 
         return true;
+    }
+
+    /**
+     * Resolve $discard whether it is a boolean or a callable checked against the model.
+     */
+    public function isExplicitlyDiscarded(): bool
+    {
+        if (is_callable($this->discard)) {
+            return (bool) ($this->discard)($this->model);
+        }
+
+        return (bool) $this->discard;
+    }
+
+    /**
+     * Import-time check: should an existing target model be discarded (not overwritten)?
+     *
+     * Only callables are evaluated here. Boolean `$discard = true` (Users/Groups) is an
+     * export-time flag handled by include(), not an import-time skip.
+     * Psudomodels (e.g. Signal) are never discarded by this path.
+     */
+    public static function shouldDiscardExistingModelDuringImport(Model|Psudomodel|null $model): bool
+    {
+        if (!$model instanceof Model || !$model->exists) {
+            return false;
+        }
+
+        $exporter = new static($model, new Manifest(), new Options([]), false);
+
+        if (!is_callable($exporter->discard)) {
+            return false;
+        }
+
+        return (bool) ($exporter->discard)($model);
     }
 
     public function addDependent(string $type, Model|Psudomodel $dependentModel, string $exporterClass, $meta = null)
@@ -304,7 +344,7 @@ abstract class ExporterBase implements ExporterInterface
             'hidden' => $this->hidden,
             'mode' => $this->mode,
             'saveAssetsMode' => $this->saveAssetsMode,
-            'explicit_discard' => $this->discard,
+            'explicit_discard' => $this->isExplicitlyDiscarded(),
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
             'name' => $this->getName($this->model),
             'description' => $this->getDescription(),

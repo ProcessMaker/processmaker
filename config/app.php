@@ -32,6 +32,9 @@ return [
     // The timezone for the application
     'timezone' => env('APP_TIMEZONE', 'America/Los_Angeles'),
 
+    // The timezone for the anonymous user
+    'anonymous_user_timezone' => env('ANONYMOUS_USER_TIMEZONE', 'UTC'),
+
     // The time format for the application
     'dateformat' => env('DATE_FORMAT', 'm/d/Y h:i A'),
 

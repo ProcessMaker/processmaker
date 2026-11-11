@@ -34,9 +34,12 @@ class Options
 
     public $options;
 
-    public function __construct(array $options)
+    public ?int $importingUserId;
+
+    public function __construct(array $options, ?int $importingUserId = null)
     {
         $this->options = $options;
+        $this->importingUserId = $importingUserId;
     }
 
     public function get($name, $uuid)

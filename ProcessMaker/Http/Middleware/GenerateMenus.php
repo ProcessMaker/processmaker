@@ -353,7 +353,7 @@ class GenerateMenus
             return $user && $user->can($permission) && $user->hasPermission($permission);
         }
 
-        $userPermissions = $user->permissions()->pluck('group')->unique()->toArray();
+        $userPermissions = $user->cachedPermissionGroups();
         $defaultPermissions = Permission::DEFAULT_PERMISSIONS;
         $userWithDefaultPermissions = empty(array_diff($userPermissions, $defaultPermissions));
 

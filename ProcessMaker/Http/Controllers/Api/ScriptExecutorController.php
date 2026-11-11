@@ -6,6 +6,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Events\ScriptExecutorCreated;
 use ProcessMaker\Events\ScriptExecutorDeleted;
 use ProcessMaker\Events\ScriptExecutorUpdated;
@@ -15,6 +16,7 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Jobs\BuildScriptExecutor;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Services\ScriptMicroserviceService;
 
 class ScriptExecutorController extends Controller
 {
@@ -26,7 +28,7 @@ class ScriptExecutorController extends Controller
      * @return ResponseFactory|Response
      *
      *
-     *     @OA\Get(
+     * @OA\Get(
      *      path="/script-executors",
      *      summary="Returns all script executors that the user has access to",
      *      operationId="getScriptExecutors",
@@ -79,7 +81,7 @@ class ScriptExecutorController extends Controller
      * @return ResponseFactory|Response
      *
      *
-     *     @OA\Post(
+     * @OA\Post(
      *      path="/script-executors",
      *      summary="Create a script executor",
      *      operationId="createScriptExecutor",
@@ -109,21 +111,23 @@ class ScriptExecutorController extends Controller
      *     ),
      * )
      */
-    public function store(Request $request)
+    public function store(Request $request, ScriptMicroserviceService $service)
     {
-        $request->request->add(['type' => 'custom']);
         $this->checkAuth($request);
-        $request->validate(ScriptExecutor::rules());
+        $request->validate(ScriptExecutor::rules(), ScriptExecutor::messages());
 
         $scriptExecutor = ScriptExecutor::create(
             $request->only((new ScriptExecutor())->getFillable())
         );
 
-        ScriptExecutorCreated::dispatch($scriptExecutor->getAttributes());
+        if (!config('script-runner-microservice.enabled')) {
+            ScriptExecutorCreated::dispatch($scriptExecutor->getAttributes());
+            BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
+        } else {
+            $service->createCustomExecutor($scriptExecutor);
+        }
 
-        BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
-
-        return ['status'=>'started', 'id' => $scriptExecutor->id];
+        return ['status' => 'started', 'uuid' => $scriptExecutor->uuid, 'id' => $scriptExecutor->id];
     }
 
     /**
@@ -135,7 +139,7 @@ class ScriptExecutorController extends Controller
      * @return ResponseFactory|Response
      *
      *
-     *     @OA\Put(
+     * @OA\Put(
      *      path="/script-executors/{script_executor}",
      *      summary="Update script executor",
      *      operationId="updateScriptExecutor",
@@ -173,10 +177,10 @@ class ScriptExecutorController extends Controller
      * )
      * )
      */
-    public function update(Request $request, ScriptExecutor $scriptExecutor)
+    public function update(Request $request, ScriptExecutor $scriptExecutor, ScriptMicroserviceService $service)
     {
         $this->checkAuth($request);
-        $request->validate(ScriptExecutor::rules());
+        $request->validate(ScriptExecutor::rules($scriptExecutor), ScriptExecutor::messages());
 
         $original = $scriptExecutor->getAttributes();
 
@@ -184,13 +188,16 @@ class ScriptExecutorController extends Controller
             $request->only($scriptExecutor->getFillable())
         );
 
-        if (!empty($scriptExecutor->getChanges())) {
-            ScriptExecutorUpdated::dispatch($scriptExecutor->id, $original, $scriptExecutor->getChanges());
+        if (config('script-runner-microservice.enabled') && $scriptExecutor->type == ScriptExecutorType::Custom) {
+            $service->updateCustomExecutor($scriptExecutor);
+        } else {
+            if (!empty($scriptExecutor->getChanges())) {
+                ScriptExecutorUpdated::dispatch($scriptExecutor->id, $original, $scriptExecutor->getChanges());
+            }
+            BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
         }
 
-        BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
-
-        return ['status'=>'started'];
+        return ['status' => 'started', 'uuid' => $scriptExecutor->uuid];
     }
 
     /**
@@ -202,7 +209,7 @@ class ScriptExecutorController extends Controller
      * @return ResponseFactory|Response
      *
      *
-     *     @OA\Delete(
+     * @OA\Delete(
      *      path="/script-executors/{script_executor}",
      *      summary="Delete a script executor",
      *      operationId="deleteScriptExecutor",
@@ -233,7 +240,7 @@ class ScriptExecutorController extends Controller
      *     ),
      * )
      */
-    public function delete(Request $request, ScriptExecutor $scriptExecutor)
+    public function delete(Request $request, ScriptExecutor $scriptExecutor, ScriptMicroserviceService $service)
     {
         if ($scriptExecutor->scripts()->count() > 0) {
             throw ValidationException::withMessages(['delete' => __('Can not delete executor when it is assigned to scripts.')]);
@@ -254,9 +261,15 @@ class ScriptExecutorController extends Controller
             }
         }
 
+        $scriptExecutorUUID = $scriptExecutor->uuid;
+
         ScriptExecutor::destroy($scriptExecutor->id);
 
-        ScriptExecutorDeleted::dispatch($scriptExecutor->getAttributes());
+        if (!config('script-runner-microservice.enabled')) {
+            ScriptExecutorDeleted::dispatch($scriptExecutor->getAttributes());
+        } else {
+            $service->deleteCustomExecutor($scriptExecutorUUID);
+        }
 
         return ['status' => 'done'];
     }
@@ -280,7 +293,7 @@ class ScriptExecutorController extends Controller
      * @return ResponseFactory|Response
      *
      *
-     *     @OA\Post(
+     * @OA\Post(
      *      path="/script-executors/cancel",
      *      summary="Cancel a script executor",
      *      operationId="cancelScriptExecutor",
@@ -314,11 +327,41 @@ class ScriptExecutorController extends Controller
      */
     public function cancel(Request $request)
     {
-        $pidFile = $request->input('pidFile');
-        $pid = file_get_contents($pidFile);
-        exec("kill -9 $pid");
+        $this->checkAuth($request);
 
-        return ['status' => 'canceled', 'pid' => $pid];
+        $request->validate([
+            'pidFile' => 'required|string',
+        ]);
+
+        $pid = $this->readBuildScriptExecutorPidFromFile($request->input('pidFile'));
+        exec(sprintf('kill -9 %d', $pid));
+
+        return ['status' => 'canceled', 'pid' => (string) $pid];
+    }
+
+    private function readBuildScriptExecutorPidFromFile(string $pidFile): int
+    {
+        if (!preg_match('#^/tmp/build_script_executor_[a-zA-Z0-9]+$#', $pidFile)) {
+            throw ValidationException::withMessages(['pidFile' => __('Invalid pid file.')]);
+        }
+
+        $resolvedPidFile = realpath($pidFile);
+        $tmpDirectory = realpath('/tmp');
+        if (
+            $resolvedPidFile === false
+            || $tmpDirectory === false
+            || !str_starts_with($resolvedPidFile, $tmpDirectory . DIRECTORY_SEPARATOR)
+            || !is_readable($resolvedPidFile)
+        ) {
+            throw ValidationException::withMessages(['pidFile' => __('Invalid pid file.')]);
+        }
+
+        $pid = trim((string) file_get_contents($resolvedPidFile));
+        if ($pid === '' || !ctype_digit($pid) || (int) $pid <= 0) {
+            throw ValidationException::withMessages(['pidFile' => __('Invalid pid file.')]);
+        }
+
+        return (int) $pid;
     }
 
     /**
@@ -327,7 +370,7 @@ class ScriptExecutorController extends Controller
      * @return ResponseFactory|Response
      *
      *
-     *     @OA\Get(
+     * @OA\Get(
      *      path="/script-executors/available-languages",
      *      summary="Returns all available languages",
      *      operationId="getAvailableLanguages",
@@ -360,7 +403,8 @@ class ScriptExecutorController extends Controller
     {
         $languages = [];
         foreach (Script::scriptFormats() as $key => $config) {
-            if (in_array($key, Script::deprecatedLanguages)) {
+            // ToDo remove $key === 'php-nayra' validation when php-nayra include in deprecatedLanguages
+            if (in_array($key, Script::deprecatedLanguages) || $key === 'php-nayra') {
                 continue;
             }
             if (!array_key_exists('system', $config) || (array_key_exists('system', $config) && !$config['system'])) {
