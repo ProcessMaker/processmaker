@@ -111,7 +111,7 @@ Modeler UI writes:
 - Nested BPMN (`eventDefinitions`, `conditionExpression`, `timerEventDefinition`, …)
 - **`pm:config`**: stringified JSON for Web Entry, email notifications, connector settings, self-service, etc.
 
-Never put connector settings in the wrong place: Service Tasks use BPMN `implementation` + JSON `config` / `pm:config`.
+Never put connector settings in the wrong place: Service Tasks use BPMN `implementation` + JSON `config` / `pm:config`. Load `process-node-service-task` then the matching `process-connector-*` (or `data-connector-in-process`) skill — do not invent `implementation` strings.
 
 ## Workflow
 

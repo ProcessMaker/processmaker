@@ -26,6 +26,10 @@ final class McpSystemSkills
 
     public const COLLECTION_CREATION_RULES_SLUG = 'collection-creation-rules';
 
+    public const FLOWGENIE_CREATION_RULES_ID = 'mcp-system-flowgenie-creation-rules';
+
+    public const FLOWGENIE_CREATION_RULES_SLUG = 'flowgenie-creation-rules';
+
     /**
      * Legacy ids/slugs previously stored in local mcp.skills configs.
      *
@@ -47,6 +51,14 @@ final class McpSystemSkills
                 'slug' => self::SCREEN_CREATION_RULES_SLUG,
                 'when' => 'Before create-screen, update-screen, or validate-screen',
                 'file' => 'screen-creation-rules.md',
+                'scope' => McpGuidance::SCOPE_SCREENS,
+            ],
+            [
+                'id' => 'mcp-system-screen-vue-fields',
+                'name' => 'Screen Vue domain fields',
+                'slug' => 'screen-vue-fields',
+                'when' => 'When implementing uploads, catalog selects, signatures, or other domain UX inside a Vue Component Editor SFC — and during screen refactors with those fields',
+                'file' => 'screen-vue-fields.md',
                 'scope' => McpGuidance::SCOPE_SCREENS,
             ],
             [
@@ -149,8 +161,80 @@ final class McpSystemSkills
                 'id' => 'mcp-system-process-node-service-task',
                 'name' => 'Process node: Service Task',
                 'slug' => 'process-node-service-task',
-                'when' => 'When adding a Service Task or package connector (email, AI, data connector, PDF, …)',
+                'when' => 'When adding a Service Task or choosing which package connector skill to load (email, PDF, Slack, FlowGenie, …)',
                 'file' => 'process-node-service-task.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
+            ],
+            [
+                'id' => 'mcp-system-process-connector-email',
+                'name' => 'Process connector: Send Email',
+                'slug' => 'process-connector-email',
+                'when' => 'When adding a Send Email Service Task, or Form Task email_notifications / Actions-by-Email toggles',
+                'file' => 'process-connector-email.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
+            ],
+            [
+                'id' => 'mcp-system-process-connector-pdf',
+                'name' => 'Process connector: PDF Generator',
+                'slug' => 'process-connector-pdf',
+                'when' => 'When adding a PDF Generator Service Task',
+                'file' => 'process-connector-pdf.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
+            ],
+            [
+                'id' => 'mcp-system-process-connector-slack',
+                'name' => 'Process connector: Slack Notification',
+                'slug' => 'process-connector-slack',
+                'when' => 'When adding a Slack Notification Service Task',
+                'file' => 'process-connector-slack.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
+            ],
+            [
+                'id' => 'mcp-system-process-connector-decision-task',
+                'name' => 'Process connector: Decision Task',
+                'slug' => 'process-connector-decision-task',
+                'when' => 'When adding a Decision Task / decision table Service Task',
+                'file' => 'process-connector-decision-task.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
+            ],
+            [
+                'id' => 'mcp-system-process-connector-flowgenie',
+                'name' => 'Process connector: FlowGenie',
+                'slug' => 'process-connector-flowgenie',
+                'when' => 'When adding a FlowGenie Service Task (package-ai)',
+                'file' => 'process-connector-flowgenie.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
+            ],
+            [
+                'id' => 'mcp-system-process-connector-uipath',
+                'name' => 'Process connector: UiPath',
+                'slug' => 'process-connector-uipath',
+                'when' => 'When adding a UiPath / RPA Service Task (package-rpa)',
+                'file' => 'process-connector-uipath.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
+            ],
+            [
+                'id' => 'mcp-system-process-connector-actions-by-email',
+                'name' => 'Process connector: Actions By Email',
+                'slug' => 'process-connector-actions-by-email',
+                'when' => 'When adding an Actions By Email Call Activity (interactive email options)',
+                'file' => 'process-connector-actions-by-email.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
+            ],
+            [
+                'id' => 'mcp-system-process-connector-docusign',
+                'name' => 'Process connector: DocuSign',
+                'slug' => 'process-connector-docusign',
+                'when' => 'When adding a DocuSign Call Activity / envelope template node',
+                'file' => 'process-connector-docusign.md',
+                'scope' => McpGuidance::SCOPE_PROCESSES,
+            ],
+            [
+                'id' => 'mcp-system-process-node-pools',
+                'name' => 'Process node: Pools and Lanes',
+                'slug' => 'process-node-pools',
+                'when' => 'When modeling pools, lanes, collaborations, or message flows between participants',
+                'file' => 'process-node-pools.md',
                 'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
@@ -170,6 +254,14 @@ final class McpSystemSkills
                 'scope' => McpGuidance::SCOPE_PROCESSES,
             ],
             [
+                'id' => 'mcp-system-screen-refactor-parity',
+                'name' => 'Screen refactor parity',
+                'slug' => 'screen-refactor-parity',
+                'when' => 'When refactoring an existing traditional Screen Builder screen into a Vue Component Editor SFC — preserve all fields, instructional help (images/how-to), calcs and watchers in the Vue SFC',
+                'file' => 'screen-refactor-parity.md',
+                'scope' => McpGuidance::SCOPE_SCREENS,
+            ],
+            [
                 'id' => self::DATA_CONNECTOR_CREATION_RULES_ID,
                 'name' => 'Data Connector creation rules',
                 'slug' => self::DATA_CONNECTOR_CREATION_RULES_SLUG,
@@ -181,7 +273,7 @@ final class McpSystemSkills
                 'id' => 'mcp-system-data-connector-in-process',
                 'name' => 'Data Connector in a process',
                 'slug' => 'data-connector-in-process',
-                'when' => 'When wiring a Data Connector into BPMN Service Task pm:config, or configuring process API calls',
+                'when' => 'When wiring a Data Connector into BPMN Service Task or callback Call Activity pm:config, or configuring process API calls',
                 'file' => 'data-connector-in-process.md',
                 'scope' => McpGuidance::SCOPE_DATA_CONNECTORS,
             ],
@@ -200,6 +292,14 @@ final class McpSystemSkills
                 'when' => 'When adding sample/demo records with create-collection-records',
                 'file' => 'collection-test-data.md',
                 'scope' => McpGuidance::SCOPE_DATA_CONNECTORS,
+            ],
+            [
+                'id' => self::FLOWGENIE_CREATION_RULES_ID,
+                'name' => 'FlowGenie creation rules',
+                'slug' => self::FLOWGENIE_CREATION_RULES_SLUG,
+                'when' => 'Before create-flow-genie, update-flow-genie, or validate-flow-genie',
+                'file' => 'flowgenie-creation-rules.md',
+                'scope' => McpGuidance::SCOPE_FLOW_GENIES,
             ],
         ];
     }

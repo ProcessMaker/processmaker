@@ -10,7 +10,13 @@ Use when embedding another Process as a sub-process.
 | BPMN type | `bpmn:CallActivity` |
 | Defaults | `calledElement=""`, `config="{}"` |
 
-Packages may register alternate CallActivity nodes (e.g. Data Connector `data-source-call-activity`, Actions By Email).
+Packages may register alternate CallActivity nodes — load the dedicated skill:
+
+| Node | Skill |
+|------|-------|
+| Data Connector callback | `data-connector-in-process` |
+| Actions By Email | `process-connector-actions-by-email` |
+| DocuSign | `process-connector-docusign` |
 
 ## Inspectors → attributes
 

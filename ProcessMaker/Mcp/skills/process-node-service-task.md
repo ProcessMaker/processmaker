@@ -1,6 +1,6 @@
 # Skill: Service Task & package connectors
 
-Use when adding a Service Task or a package connector node (email, PDF, AI/FlowGenie, Data Connector, Decision Engine, Slack, DocuSign, IDP, …).
+Use when adding a Service Task or choosing which package connector skill to load. This skill is an **index** — load the dedicated connector skill for config details.
 
 ## Identity
 
@@ -12,48 +12,43 @@ Use when adding a Service Task or a package connector node (email, PDF, AI/FlowG
 
 Base inspector is Name only. Packages register palette nodes on `modeler-init` with a fixed `implementation` key.
 
-## Common package implementations
+## Connector skills (load these)
 
-| Palette / modeler id | `implementation` |
-|----------------------|------------------|
-| Send Email | `connector-send-email/processmaker-communication-email-send` |
-| PDF | `connector-pdf-print/processmaker-communication-pdf-print` |
-| Data Connector | `package-data-sources/data-source-task-service` (see skill `data-connector-in-process` + Data Connectors MCP) |
-| Decision table | `package-decision-engine/decision-table` |
-| FlowGenie / AI | `package-ai/processmaker-ai-task` |
-| Slack / DocuSign / IDP | package-specific keys |
+| Palette | `implementation` | Skill slug |
+|---------|------------------|------------|
+| Send Email | `connector-send-email/processmaker-communication-email-send` | `process-connector-email` |
+| PDF Generator | `connector-pdf-print/processmaker-communication-pdf-print` | `process-connector-pdf` |
+| Slack Notification | `connector-slack/processmaker-communication-slack` | `process-connector-slack` |
+| Data Connector | `package-data-sources/data-source-task-service` | `data-connector-in-process` |
+| Decision Task | `package-decision-engine/decision-table` | `process-connector-decision-task` |
+| FlowGenie | `package-ai/processmaker-ai-task` | `process-connector-flowgenie` |
+| UiPath | `package-rpa/processmaker-communication-rpa` | `process-connector-uipath` |
+| IDP | `connector-idp/processmaker-communication-idp` | _(no dedicated skill yet)_ |
 
-Also related: Data Connector CallActivity (`data-source-call-activity`), Actions By Email CallActivity.
+### Call Activity connectors (not Service Task)
 
-## Example (email)
-
-```xml
-<bpmn:serviceTask id="node_90" name="Notify Applicant"
-  implementation="connector-send-email/processmaker-communication-email-send"
-  pm:config="{&quot;emailServer&quot;:&quot;&quot;,&quot;type&quot;:&quot;text&quot;,&quot;subject&quot;:&quot;Update&quot;,&quot;textBody&quot;:&quot;Hello&quot;,&quot;toRecipients&quot;:[{&quot;email&quot;:&quot;{{ email }}&quot;,&quot;type&quot;:&quot;email&quot;}]}" />
-```
-
-Typical email config keys: `emailServer`, `type` (`text`|`screen`), `subject`, `textBody`, `screenRef`, `toRecipients[]`, `cc`/`bcc`, `attachments[]`.
+| Palette | Marker | Skill slug |
+|---------|--------|------------|
+| Actions By Email | `calledElement=ProcessId-{id}` | `process-connector-actions-by-email` |
+| DocuSign | `calledElement=ProcessId-DocuSignSendEnvelope` | `process-connector-docusign` |
+| Data Connector callback | `calledElement=data_source_callback-data_source_sub_process` | `data-connector-in-process` |
 
 ## Data in / out
 
 - **In:** request data + decoded config → connector PHP class / script
 - **Out:** implementation return merged into request (connector-specific)
-- Error handling: `pm:errorHandling` where supported
+- Error handling: `pm:errorHandling` where supported (Data Connector, UiPath, …)
 
 ## Validation
 
-- FlowGenie: `validateFlowGenieRef` when `implementation` is `package-ai/processmaker-ai-task`
+- FlowGenie: modeler `validateFlowGenieRef` when `implementation` is `package-ai/processmaker-ai-task`
 - Missing `implementation` → no-op / runtime failure
 - `config` must be valid JSON inside the XML attribute
-
-## Form Task email notifications
-
-`connector-send-email` can register an inspector accordion on **Form Tasks** writing `pm:config.email_notifications` — that is not a Service Task; do not confuse the two.
+- MCP `validate-process` does **not** yet verify connector asset refs
 
 ## Pitfalls
 
 1. Connector package must be installed on the instance
-2. Do not invent implementation strings
-3. Email `screenRef` inside connector config ≠ Form Task `pm:screenRef`
-4. Prefer documenting instance-specific server ids in workflow notes, not inventing them
+2. Do not invent implementation strings — copy from the table above
+3. Load the dedicated skill before authoring `pm:config`
+4. Email connector `screenRef` ≠ Form Task `pm:screenRef`

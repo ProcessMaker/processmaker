@@ -287,6 +287,20 @@ Do **not** add native Screen Builder `FormSelectList` for the main UX.
 - Do not ship multi-option selects as hard-coded Vue arrays — create/reuse a Collection, seed it, and wire the numeric id.
 - Do not fake uploads or signatures with checkboxes alone.
 
+## Refactoring an existing screen (mandatory parity)
+
+When replacing a traditional Screen Builder screen (or rewriting a Vue one), load skills **`screen-refactor-parity`** and **`screen-vue-fields`** and follow them **before** claiming done.
+
+Minimum bar:
+
+1. Inventory every original field `name`, **full native control `config`**, ancestor `conditionalHide`, `readonly`, computed `property`, watcher (`script_id` **or** Data Connector), and **every nested-screen id** (inventory each nest with `get-screen`).
+2. Reimplement **behavior** configs in the Vue SFC (validation, visibility, options/codes, events, data-affecting defaults). UI-only configs (colors, CSS, chrome) may change for redesign — details in `screen-refactor-parity`.
+3. Recreate nested screens as a **shared** Vue child SFC reused by every parent that nested that screen (register + import; do not duplicate markup).
+4. Put **all** domain variables on request `data`; render editable UI only for originally **visible interactive** controls. Always-hidden / data-only keys (`conditionalHide: "false"`, etc.) must not become new selectors/inputs.
+5. **Calcs and watchers live in the Vue SFC** — Vue-only screens do not fire SB `computed` / `watchers` (watched FormButton variables are missing from the compiler). Reimplement calcs in Vue; call backend scripts via `POST scripts/execute/{id}` (`sync: true`) or an equivalent helper (e.g. `executePmScript`); call Data Connectors / Collections from Vue.
+6. On `create-screen` / `update-screen` set `computed: []` and `watchers: []` (not `null`). Do **not** copy original SB calc/watcher JSON expecting them to run.
+7. Still write the same request-data keys (including legacy trigger values like `search: "1"`) when BPMN or scripts expect them.
+
 ## Done checklist
 
 - [ ] Screen exists and id is known
@@ -301,6 +315,7 @@ Do **not** add native Screen Builder `FormSelectList` for the main UX.
 - [ ] `npm run prod` (package-plg) + `vendor:publish --tag=package-plg --force` (core) ran after catalog/SFC changes
 - [ ] Screen Builder preview actually renders the mounted component
 - [ ] `get-screen` shows the control wired as intended
+- [ ] **If refactoring:** skill `screen-refactor-parity` inventory is complete; all original fields, behavior configs, calcs, watchers, and nested screens (shared child SFCs) live in Vue (SB arrays empty)
 
 ## Screen Builder config safety (required)
 

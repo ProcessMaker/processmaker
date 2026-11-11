@@ -21,6 +21,8 @@ class McpGuidance
 
     public const SCOPE_DATA_CONNECTORS = 'data-connectors';
 
+    public const SCOPE_FLOW_GENIES = 'flow-genies';
+
     public function systemPrompt(): string
     {
         $value = Setting::configByKey(self::SYSTEM_PROMPT_KEY);

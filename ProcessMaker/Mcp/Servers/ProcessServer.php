@@ -39,6 +39,8 @@ Re-call `plan-process` with answers until `ready` is true, then build screens/BP
 Use list-processes to search before creating one.
 create-process requires name and description; bpmn is optional (empty template if omitted — add a start event before running).
 For MCP create-process/update-process use numeric pm:screenRef / pm:scriptRef (list-screens after create-screen). Portable ${screen:title} only resolves via package-plg deploy-process.
+For package connectors (email, PDF, Slack, FlowGenie, Decision Task, UiPath, DocuSign, Actions By Email, Data Connector) load `process-node-service-task` then the matching `process-connector-*` / `data-connector-in-process` skill — do not invent `implementation` strings.
+For FlowGenie Service Tasks: create/configure the asset via FlowGenies MCP (`create-flow-genie`) first, then set numeric `flow_genie_id` in pm:config (skill `process-connector-flowgenie`).
 Call validate-process before create/update when unsure.
 update-process changes only the fields you send.
 MARKDOWN)]
