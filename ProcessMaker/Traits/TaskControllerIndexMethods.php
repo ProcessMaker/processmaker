@@ -119,6 +119,29 @@ trait TaskControllerIndexMethods
             $with['draft'] = fn ($q) => $q->select(['id', 'uuid', 'process_request_token_id']);
         }
 
+        if (in_array('processRequest.process', $includes, true)) {
+            if (!isset($with['processRequest'])) {
+                $processRequestColumns = [
+                    'id',
+                    'uuid',
+                    'case_number',
+                    'case_title',
+                    'name',
+                    'status',
+                    'user_id',
+                    'process_id',
+                    'parent_id',
+                ];
+                $with['processRequest'] = function ($q) use ($includeData, $processRequestColumns) {
+                    $q->select($processRequestColumns);
+                    if (!$includeData) {
+                        $q->exclude(['data']);
+                    }
+                };
+            }
+            $with['processRequest.process'] = fn ($q) => $q->select(['id', 'name', 'uuid']);
+        }
+
         $handledIncludes = ['data', 'processRequest', 'process', 'user', 'draft', 'processRequest.process'];
         $additionalIncludes = array_values(array_diff($includes, $handledIncludes));
 
