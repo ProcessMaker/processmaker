@@ -128,9 +128,15 @@ class ModelerController extends Controller
 
         $defaultEmailNotification = $this->getDefaultEmailNotification();
 
+        $modelerPackageScripts = array_values(array_filter(
+            $manager->getScriptWithParams(),
+            fn ($params) => !str_contains($params['src'], 'initialLoad')
+        ));
+
         return [
             'process' => $process,
             'manager' => $manager,
+            'modelerPackageScripts' => $modelerPackageScripts,
             'signalPermissions' => SignalManager::permissions($request->user()),
             'autoSaveDelay' => config('versions.delay.process', 5000),
             'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),

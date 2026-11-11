@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Vite;
 use Laravel\Horizon\Horizon;
 use Laravel\Horizon\SystemProcessCounter;
 use Laravel\Horizon\WorkerCommandString;
@@ -86,6 +87,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
     {
         // Track the start time for service providers boot
         self::$bootStart = microtime(true);
+
+        // Vite hot file must not be public/hot — that file is reserved for Mix HMR
+        // and would make mix('js/...') URLs point at the Vite dev server (404).
+        Vite::useHotFile(storage_path('vite.hot'));
 
         // Set the current tenant
         $this->setCurrentTenantForConsoleCommands();

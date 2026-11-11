@@ -4,9 +4,13 @@ import LocalStorageBackend from "i18next-localstorage-backend";
 import XHR from "i18next-xhr-backend";
 import VueI18Next from "@panter/vue-i18next";
 import { setGlobalPMVariables, setUses, getGlobalVariable } from "../globalVariables";
+import translator from "../../modules/lang.js";
 
 export default () => {
   const Vue = getGlobalVariable("Vue");
+
+  // Match Mix bootstrap: Blade/Vue templates use __(msg) in expressions
+  window.__ = translator;
 
   const isProd = document.head.querySelector("meta[name=\"is-prod\"]")?.content === "true";
   let translationsLoaded = false;

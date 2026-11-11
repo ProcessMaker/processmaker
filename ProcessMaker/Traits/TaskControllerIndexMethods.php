@@ -6,6 +6,7 @@ use Auth;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Filters\Filter;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Process;
@@ -69,7 +70,7 @@ trait TaskControllerIndexMethods
         }
 
         $filterByFields = [
-            'process_id',
+            'process_request_tokens.process_id' => 'process_id',
             'process_request_tokens.user_id' => 'user_id',
             'process_request_tokens.status' => 'status',
             'element_id',
@@ -247,60 +248,6 @@ trait TaskControllerIndexMethods
             'is_priority',
         ];
 
-        $hasProcessRequestOrdering = false;
-        $hasUserOrdering = false;
-        foreach ($orderColumns as $column) {
-            $normalizedColumn = preg_replace(
-                '/^(process_request|processRequests)\./',
-                'process_requests.',
-                $column
-            );
-
-            if (in_array($normalizedColumn, array_map(
-                fn ($name) => 'process_requests.' . $name,
-                $processRequestColumns
-            ), true) || preg_match('/^data\.[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*$/', $column)) {
-                $hasProcessRequestOrdering = true;
-            }
-            if ($column === 'user.name') {
-                $hasUserOrdering = true;
-            }
-        }
-
-        if ($hasProcessRequestOrdering) {
-            $query->leftJoin(
-                'process_requests',
-                'process_requests.id',
-                '=',
-                'process_request_tokens.process_request_id'
-            );
-        }
-        if ($hasUserOrdering) {
-            $query->leftJoin(
-                'users',
-                'users.id',
-                '=',
-                'process_request_tokens.user_id'
-            );
-        }
-        if ($hasProcessRequestOrdering || $hasUserOrdering) {
-            if ($query->getQuery()->columns === null) {
-                $query->select('process_request_tokens.*');
-            } else {
-                $query->select(array_map(function ($column) {
-                    if (!is_string($column)) {
-                        return $column;
-                    }
-
-                    $column = ltrim($column, '.');
-
-                    return str_contains($column, '.')
-                        ? $column
-                        : 'process_request_tokens.' . $column;
-                }, $query->getQuery()->columns));
-            }
-        }
-
         $hasValidOrdering = false;
         foreach ($orderColumns as $index => $column) {
             $direction = strtolower($orderDirections[$index] ?? $orderDirections[0] ?? 'asc');
@@ -312,17 +259,44 @@ trait TaskControllerIndexMethods
             );
 
             if ($column === 'user.name') {
-                $query->orderBy('users.firstname', $direction)
-                    ->orderBy('users.lastname', $direction);
+                $query->orderBy(
+                    $this->relatedOrderSubquery('users', 'firstname', 'users.id', 'process_request_tokens.user_id'),
+                    $direction
+                )->orderBy(
+                    $this->relatedOrderSubquery('users', 'lastname', 'users.id', 'process_request_tokens.user_id'),
+                    $direction
+                );
                 $hasValidOrdering = true;
             } elseif (preg_match('/^data\.([A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*)$/', $column, $matches)) {
-                $query->orderBy('process_requests.data->' . str_replace('.', '->', $matches[1]), $direction);
+                $jsonColumn = 'data->' . str_replace('.', '->', $matches[1]);
+                $query->orderBy(
+                    $this->relatedOrderSubquery(
+                        'process_requests',
+                        $jsonColumn,
+                        'process_requests.id',
+                        'process_request_tokens.process_request_id'
+                    ),
+                    $direction
+                );
                 $hasValidOrdering = true;
             } elseif (in_array($normalizedColumn, array_map(
                 fn ($name) => 'process_requests.' . $name,
                 $processRequestColumns
             ), true)) {
-                $query->orderBy($normalizedColumn, $direction);
+                $columnName = substr($normalizedColumn, strlen('process_requests.'));
+                if ($columnName === 'id') {
+                    $query->orderBy('process_request_tokens.process_request_id', $direction);
+                } else {
+                    $query->orderBy(
+                        $this->relatedOrderSubquery(
+                            'process_requests',
+                            $columnName,
+                            'process_requests.id',
+                            'process_request_tokens.process_request_id'
+                        ),
+                        $direction
+                    );
+                }
                 $hasValidOrdering = true;
             } elseif (in_array($column, $tokenColumns, true)) {
                 $query->orderBy('process_request_tokens.' . $column, $direction);
@@ -335,6 +309,14 @@ trait TaskControllerIndexMethods
         }
     }
 
+    private function relatedOrderSubquery(string $table, string $column, string $localKey, string $foreignKey)
+    {
+        return DB::table($table)
+            ->select($column)
+            ->whereColumn($localKey, $foreignKey)
+            ->limit(1);
+    }
+
     private function applyStatusFilter($query, $request)
     {
         $statusFilter = $request->input('statusfilter', '');
@@ -342,7 +324,7 @@ trait TaskControllerIndexMethods
             $statusFilter = array_map(function ($value) {
                 return mb_strtoupper(trim($value));
             }, explode(',', $statusFilter));
-            $query->whereIn('status', $statusFilter);
+            $query->whereIn('process_request_tokens.status', $statusFilter);
         }
     }
 
@@ -544,8 +526,8 @@ trait TaskControllerIndexMethods
         }
 
         $query->where(function ($query) use ($user) {
-            $query->where('user_id', $user->id)
-                ->orWhereIn('id', $user->availableSelfServiceTasksQuery());
+            $query->where('process_request_tokens.user_id', $user->id)
+                ->orWhereIn('process_request_tokens.id', $user->availableSelfServiceTasksQuery());
         });
     }
 

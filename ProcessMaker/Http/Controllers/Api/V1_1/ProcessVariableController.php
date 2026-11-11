@@ -256,7 +256,7 @@ class ProcessVariableController extends Controller
             return $this->mergeOnlyAvailableColumns($paginator, $savedSearch, $activeColumns);
         }
 
-        return $query->paginate($perPage, ['*'], 'page', $page);
+        return $paginator;
     }
 
     /**

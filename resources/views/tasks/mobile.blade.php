@@ -1,4 +1,4 @@
-@extends('layouts.mobile')
+@extends('layouts.mobilenextvite')
 @section('title')
 {{__($title)}}
 @endsection
@@ -21,7 +21,8 @@
 @endsection
 
 @section('js')
-<script src="{{mix('js/tasks/mobile.js')}}"></script>
+@vite(['resources/js/tasks/loaderTasks.js'])
+@vite(['resources/js/tasks/mobile.js'])
 @endsection
 
 @section('css')

@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
   {{__('About ProcessMaker')}}
@@ -63,6 +63,7 @@
     </div>
   </div>
 </div>
+@vite('resources/js/loader/loaderMinimal.js')
 <script>
 async function refreshMs() {
   const update = await (await fetch('?partial=ms')).text();

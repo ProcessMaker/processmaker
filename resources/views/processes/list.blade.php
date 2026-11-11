@@ -25,7 +25,7 @@
                     @endcan
                     @can('create-processes')
                         <select-template-modal
-                            :type="__('Process')"
+                            :type="{{ Js::from(__('Process')) }}"
                             :count-categories="@json($config->countCategories)"
                             :package-ai="{{ hasPackage('package-ai') ? '1' : '0' }}"
                             :is-projects-installed="@json(\ProcessMaker\PackageHelper::isPackageInstalled(
@@ -67,6 +67,5 @@
 </div>
 
 @section('js')
-    <script src="{{mix('js/processes/index.js')}}"></script>
-
+   @vite(['resources/js/processes/processes.js'])
 @append

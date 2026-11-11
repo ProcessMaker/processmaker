@@ -114,7 +114,7 @@ class ScriptExecutorController extends Controller
     public function store(Request $request, ScriptMicroserviceService $service)
     {
         $this->checkAuth($request);
-        $request->validate(ScriptExecutor::rules());
+        $request->validate(ScriptExecutor::rules(), ScriptExecutor::messages());
 
         $scriptExecutor = ScriptExecutor::create(
             $request->only((new ScriptExecutor())->getFillable())
@@ -180,7 +180,7 @@ class ScriptExecutorController extends Controller
     public function update(Request $request, ScriptExecutor $scriptExecutor, ScriptMicroserviceService $service)
     {
         $this->checkAuth($request);
-        $request->validate(ScriptExecutor::rules());
+        $request->validate(ScriptExecutor::rules($scriptExecutor), ScriptExecutor::messages());
 
         $original = $scriptExecutor->getAttributes();
 
@@ -327,11 +327,41 @@ class ScriptExecutorController extends Controller
      */
     public function cancel(Request $request)
     {
-        $pidFile = $request->input('pidFile');
-        $pid = file_get_contents($pidFile);
-        exec("kill -9 $pid");
+        $this->checkAuth($request);
 
-        return ['status' => 'canceled', 'pid' => $pid];
+        $request->validate([
+            'pidFile' => 'required|string',
+        ]);
+
+        $pid = $this->readBuildScriptExecutorPidFromFile($request->input('pidFile'));
+        exec(sprintf('kill -9 %d', $pid));
+
+        return ['status' => 'canceled', 'pid' => (string) $pid];
+    }
+
+    private function readBuildScriptExecutorPidFromFile(string $pidFile): int
+    {
+        if (!preg_match('#^/tmp/build_script_executor_[a-zA-Z0-9]+$#', $pidFile)) {
+            throw ValidationException::withMessages(['pidFile' => __('Invalid pid file.')]);
+        }
+
+        $resolvedPidFile = realpath($pidFile);
+        $tmpDirectory = realpath('/tmp');
+        if (
+            $resolvedPidFile === false
+            || $tmpDirectory === false
+            || !str_starts_with($resolvedPidFile, $tmpDirectory . DIRECTORY_SEPARATOR)
+            || !is_readable($resolvedPidFile)
+        ) {
+            throw ValidationException::withMessages(['pidFile' => __('Invalid pid file.')]);
+        }
+
+        $pid = trim((string) file_get_contents($resolvedPidFile));
+        if ($pid === '' || !ctype_digit($pid) || (int) $pid <= 0) {
+            throw ValidationException::withMessages(['pidFile' => __('Invalid pid file.')]);
+        }
+
+        return (int) $pid;
     }
 
     /**

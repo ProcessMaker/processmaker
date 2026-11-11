@@ -135,7 +135,9 @@
 
 @yield('js')
 @stack('scripts')
-
+@foreach(GlobalScripts::getScripts() as $script)
+  <script defer src="{{$script}}"></script>
+@endforeach
 @isset($addons)
   @foreach ($addons as $addon)
     @if (!empty($addon['script_mix']))

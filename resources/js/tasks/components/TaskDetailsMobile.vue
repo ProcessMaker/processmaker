@@ -108,7 +108,7 @@
                 class="btn btn-outline-secondary btn-block"
                 @click="eraseDraft()"
               >
-                <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+                <img :src="eraserImage" :alt="$t('No Image')">
                 {{ $t('Clear Draft') }}
               </button>
             </div>
@@ -145,6 +145,7 @@ export default {
   data() {
     return {
       statusCard: "card-header text-capitalize text-white bg-success",
+      eraserImage: '/img/smartinbox-images/eraser.svg',
     };
   },
   computed: {

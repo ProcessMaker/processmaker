@@ -163,6 +163,8 @@ $finder = Finder::create()
     ->in($directories)
     ->name('*.php')
     ->notName('*.blade.php')
+    // Seed scripts are executor snippets, not PSR-4 package classes
+    ->notPath('Seeds/code')
     ->ignoreDotFiles(true)
     ->ignoreVCS(true);
 

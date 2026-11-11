@@ -151,11 +151,11 @@ export default {
   data() {
     return {
       showPromptArea: false,
-      proceC2Icon: require("./../../../../img/proceC2Black.svg"),
-      penSparkleIcon: require("./../../../../img/pen_sparkle_icon.svg"),
-      bookIcon: require("./../../../../img/book_icon.svg"),
-      brushIcon: require("./../../../../img/brush_icon.svg"),
-      listIcon: require("./../../../../img/list_icon.svg"),
+      proceC2Icon: "/img/proceC2Black.svg",
+      penSparkleIcon: "/img/pen_sparkle_icon.svg",
+      bookIcon: "/img/book_icon.svg",
+      brushIcon: "/img/brush_icon.svg",
+      listIcon: "/img/list_icon.svg",
       changesApplied: false,
       newCode: `\n $a = 3+4; \n $b = $a / 2;`,
       loading: false,
