@@ -101,26 +101,6 @@
                             </div>
                         </div>
 
-                        <div class="form-group" v-if="isPhpScript">
-                            <div class="custom-control custom-switch">
-                                <input
-                                    type="checkbox"
-                                    class="custom-control-input"
-                                    id="allow_in_process"
-                                    v-model="formData.allow_in_process"
-                                >
-                                <label class="custom-control-label" for="allow_in_process">
-                                    {{ __('Allow Run Script without Docker') }}
-                                </label>
-                            </div>
-                            <small class="form-text text-muted">
-                                {{ __('Run this trusted PHP script in the ProcessMaker worker (no Docker). Requires CORE_SERVICE_TASK_ENABLED. Use Script Runtime modules for package helpers.') }}
-                            </small>
-                            <div class="invalid-feedback d-block" role="alert" v-if="errors.allow_in_process">
-                                @{{ errors.allow_in_process[0] }}
-                            </div>
-                        </div>
-
                         <slider-with-input
                             :label="$t('Timeout')"
                             :description="$t('How many seconds the script should be allowed to run (0 is unlimited).')"
