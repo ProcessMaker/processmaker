@@ -37,6 +37,7 @@ class CreateProcessTool extends ProcessTool
             'status' => ProcessFields::status($schema),
             'process_category_id' => ProcessFields::category($schema, false),
             'bpmn' => ProcessFields::bpmn($schema, false),
+            'auto_layout_bpmn' => ProcessFields::autoLayoutBpmn($schema),
         ];
     }
 }

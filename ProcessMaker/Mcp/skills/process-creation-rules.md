@@ -57,7 +57,7 @@ Rules:
 1. Exactly **one** `bpmndi:BPMNDiagram` (API validates this).
 2. Form Task element type is **`bpmn:Task`**, not `bpmn:UserTask`.
 3. Node `id` must match Advanced inspector: `^[a-zA-Z][^\s][a-zA-Z0-9_-]+$` (e.g. `node_1`).
-4. Every flow needs matching diagram edge; every shape needs bounds.
+4. Every `sequenceFlow` must have a `bpmndi:BPMNEdge` with ≥2 `di:waypoint` (shapes-only XML breaks Modeler). **Do not hand-draw coordinates** — MCP create/update auto-layouts when edges are missing; `validate-process` fails with `missing_bpmn_edge` if you bypass layout.
 5. **Every sequence flow must also appear as `<bpmn:outgoing>` on the source and `<bpmn:incoming>` on the target.** Nayra wires the runtime graph from those child refs — `sourceRef`/`targetRef` alone is not enough. Without them, a Start Event has 0 outgoing flows and the Request never reaches the first task.
 6. Do **not** put Form Task assignment values like `pm:assignment="requester"` on a Start Event (start permissions use `user` / `group` / `process_manager` or omit).
 7. Interstitial (“Display Next Assigned Task to Task Assignee”): if you set `pm:allowInterstitial="true"` you **must** also set `pm:interstitialScreenRef` to a **DISPLAY** screen (system key `interstitial` is fine). Enabling interstitial without a screen leaves the UI stuck on loading after start. If you do not need that UX, omit both attributes.
@@ -119,9 +119,10 @@ Never put connector settings in the wrong place: Service Tasks use BPMN `impleme
 2. **Catalogs first** — for every multi-option select the screens will need, `list-collections` / `create-collection` + seed (`collection-creation-rules`, `collection-test-data`). Keep **collection id** map; confirm Data Connectors with `list-data-connectors`.
 3. Ensure assets — create/upsert every screen/script/child process; wire collection ids into Vue mounts; keep a **title → id** map.
 4. Author BPMN — start → tasks/gateways → end; for MCP use **numeric** `pm:screenRef` / `pm:scriptRef` from that map; gateway conditions use catalog **codes**.
-5. Validate — see skill `process-validation` (schema, refs, gateway defaults, screen types, no unresolved `${…}`).
-6. Create/update — MCP `create-process`/`update-process`, or PLG `deploy-process` for portable git BPMN.
-7. Verify — `get-process`; every Form/Manual Task has a numeric screen id; runnable path start → end.
+5. Layout — skill `process-bpmn-layout`: `layout-bpmn` or rely on `auto_layout_bpmn` (default true) on MCP create/update.
+6. Validate — see skill `process-validation` (schema, refs, gateway defaults, screen types, no unresolved `${…}`).
+7. Create/update — MCP `create-process`/`update-process`, or PLG `deploy-process` for portable git BPMN.
+8. Verify — `get-process`; every Form/Manual Task has a numeric screen id; runnable path start → end.
 
 ## Do not
 

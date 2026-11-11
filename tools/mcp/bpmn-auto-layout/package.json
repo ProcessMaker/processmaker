@@ -1,0 +1,19 @@
+{
+  "name": "@processmaker/mcp-bpmn-auto-layout",
+  "private": true,
+  "version": "1.0.0",
+  "description": "BPMN diagram auto-layout for ProcessMaker MCP (lanes, collaborations)",
+  "type": "module",
+  "bin": {
+    "mcp-bpmn-auto-layout": "./cli.mjs"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bpmn-auto-layout-extended": "^1.0.5"
+  }
+}

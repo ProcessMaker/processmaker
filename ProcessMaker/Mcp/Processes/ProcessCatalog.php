@@ -33,8 +33,10 @@ class ProcessCatalog
      */
     private const ORDER_COLUMNS = ['name', 'status', 'updated_at', 'created_at', 'id'];
 
-    public function __construct(private readonly ProcessBpmnValidator $validator)
-    {
+    public function __construct(
+        private readonly ProcessBpmnValidator $validator,
+        private readonly BpmnLayoutService $layout,
+    ) {
     }
 
     public function actor(?Authenticatable $user): User
@@ -111,6 +113,7 @@ class ProcessCatalog
         $validated = validator($input, $this->createRules($input))->validate();
 
         if (array_key_exists('bpmn', $validated) && is_string($validated['bpmn']) && $validated['bpmn'] !== '') {
+            $validated['bpmn'] = $this->layoutBpmnIfRequested($input, $validated['bpmn']);
             $this->assertBpmnAcceptable($validated['bpmn']);
             $validated['bpmn'] = BpmnDocument::replaceHtmlEntities($validated['bpmn']);
         }
@@ -156,6 +159,7 @@ class ProcessCatalog
         }
 
         if (isset($attributes['bpmn'])) {
+            $attributes['bpmn'] = $this->layoutBpmnIfRequested($input, $attributes['bpmn']);
             $this->assertBpmnAcceptable($attributes['bpmn']);
             $attributes['bpmn'] = BpmnDocument::replaceHtmlEntities($attributes['bpmn']);
         }
@@ -184,6 +188,38 @@ class ProcessCatalog
         }
 
         return $this->validator->validate(is_string($bpmn) ? $bpmn : null);
+    }
+
+    /**
+     * @param array<string, mixed> $input
+     * @return array{bpmn: string, warnings: list<string>, layout_engine: string}
+     */
+    public function layoutBpmn(User $user, array $input): array
+    {
+        $this->assertCan($user, self::VIEW);
+        $validated = validator($input, [
+            'bpmn' => 'nullable|string',
+            'id' => 'nullable|integer|min:1',
+        ])->validate();
+
+        $bpmn = $validated['bpmn'] ?? null;
+        if (($bpmn === null || $bpmn === '') && isset($validated['id'])) {
+            $bpmn = Process::query()->findOrFail((int) $validated['id'])->bpmn;
+        }
+
+        if (!is_string($bpmn) || trim($bpmn) === '') {
+            throw ValidationException::withMessages([
+                'bpmn' => 'BPMN XML is required (or pass process id).',
+            ]);
+        }
+
+        $result = $this->layout->layout($bpmn);
+
+        return [
+            'bpmn' => $result['bpmn'],
+            'warnings' => $result['warnings'],
+            'layout_engine' => 'bpmn-auto-layout-extended',
+        ];
     }
 
     /**
@@ -280,6 +316,42 @@ class ProcessCatalog
             'process_category_id',
             'bpmn',
         ]));
+    }
+
+    /**
+     * @param array<string, mixed> $input
+     */
+    private function layoutBpmnIfRequested(array $input, string $bpmn): string
+    {
+        $needsLayout = $this->shouldAutoLayout($input)
+            || $this->validator->lacksSequenceFlowDiagramInterchange($bpmn);
+
+        if (!$needsLayout) {
+            return $bpmn;
+        }
+
+        if (!config('mcp.bpmn_layout.enabled')) {
+            return $bpmn;
+        }
+
+        return $this->layout->layout($bpmn)['bpmn'];
+    }
+
+    /**
+     * @param array<string, mixed> $input
+     */
+    private function shouldAutoLayout(array $input): bool
+    {
+        if (!config('mcp.bpmn_layout.enabled')) {
+            return false;
+        }
+
+        $flag = $input['auto_layout_bpmn'] ?? true;
+        if ($flag === false || $flag === 0 || $flag === '0' || $flag === 'false') {
+            return false;
+        }
+
+        return true;
     }
 
     private function assertBpmnAcceptable(string $bpmn): void

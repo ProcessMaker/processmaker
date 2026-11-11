@@ -12,6 +12,7 @@ use ProcessMaker\Mcp\Servers\ProcessServer;
 use ProcessMaker\Mcp\Tools\GetMcpGuidanceTool;
 use ProcessMaker\Mcp\Tools\GetMcpSkillTool;
 use ProcessMaker\Mcp\Tools\Processes\CreateProcessTool;
+use ProcessMaker\Mcp\Tools\Processes\LayoutBpmnTool;
 use ProcessMaker\Mcp\Tools\Processes\GetProcessTool;
 use ProcessMaker\Mcp\Tools\Processes\ListGroupsTool;
 use ProcessMaker\Mcp\Tools\Processes\ListProcessesTool;
@@ -232,6 +233,112 @@ XML;
                 ->etc());
     }
 
+    /**
+     * @group requires-node
+     */
+    public function testLayoutBpmnToolAppliesAutoLayout(): void
+    {
+        $this->assumeBpmnLayoutAvailable();
+
+        $bpmn = file_get_contents(base_path('tools/mcp/bpmn-auto-layout/fixtures/linear.bpmn'));
+        $this->assertNotFalse($bpmn);
+
+        ProcessServer::actingAs($this->user)->tool(LayoutBpmnTool::class, [
+            'bpmn' => $bpmn,
+        ])->assertOk()
+            ->assertHasNoErrors()
+            ->assertStructuredContent(function (AssertableJson $json): void {
+                $json->where('layout_engine', 'bpmn-auto-layout-extended')
+                    ->whereType('bpmn', 'string')
+                    ->whereType('warnings', 'array');
+
+                $out = $json->toArray();
+                $this->assertStringContainsString('pm:screenRef="1"', $out['bpmn'] ?? '');
+                preg_match_all('/dc:Bounds x="(\d+)"/', $out['bpmn'] ?? '', $matches);
+                $xs = array_map('intval', $matches[1] ?? []);
+                $this->assertGreaterThanOrEqual(3, count($xs));
+                $this->assertTrue($xs[1] > $xs[0] && $xs[2] > $xs[1]);
+                $json->etc();
+            });
+    }
+
+    /**
+     * @group requires-node
+     */
+    public function testCreateProcessWithoutBpmnEdgesStillAutoLayoutsBeforeSave(): void
+    {
+        $this->assumeBpmnLayoutAvailable();
+        Event::fake([ProcessCreated::class]);
+
+        $bpmn = <<<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd"
+  id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="true">
+    <bpmn:startEvent id="node_1"><bpmn:outgoing>flow_1</bpmn:outgoing></bpmn:startEvent>
+    <bpmn:task id="node_2" pm:screenRef="1" pm:assignment="requester">
+      <bpmn:incoming>flow_1</bpmn:incoming>
+      <bpmn:outgoing>flow_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="node_3"><bpmn:incoming>flow_2</bpmn:incoming></bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_1" sourceRef="node_1" targetRef="node_2" />
+    <bpmn:sequenceFlow id="flow_2" sourceRef="node_2" targetRef="node_3" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="shape_1" bpmnElement="node_1"><dc:Bounds x="0" y="0" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_2" bpmnElement="node_2"><dc:Bounds x="0" y="0" width="116" height="76" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape_3" bpmnElement="node_3"><dc:Bounds x="0" y="0" width="36" height="36" /></bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
+XML;
+
+        ProcessServer::actingAs($this->user)->tool(CreateProcessTool::class, [
+            'name' => 'MCP forced layout edges',
+            'description' => 'Shapes only input',
+            'bpmn' => $bpmn,
+            'auto_layout_bpmn' => false,
+        ])->assertOk()->assertHasNoErrors()
+            ->assertStructuredContent(function (AssertableJson $json): void {
+                $stored = $json->toArray()['bpmn'] ?? '';
+                $this->assertGreaterThanOrEqual(2, substr_count($stored, 'bpmndi:BPMNEdge'));
+                $this->assertGreaterThanOrEqual(4, substr_count($stored, 'di:waypoint'));
+                $json->etc();
+            });
+    }
+
+    /**
+     * @group requires-node
+     */
+    public function testCreateProcessAutoLayoutSpreadsDiagramCoordinates(): void
+    {
+        $this->assumeBpmnLayoutAvailable();
+        Event::fake([ProcessCreated::class]);
+
+        $bpmn = file_get_contents(base_path('tools/mcp/bpmn-auto-layout/fixtures/linear.bpmn'));
+        $this->assertNotFalse($bpmn);
+
+        $created = ProcessServer::actingAs($this->user)->tool(CreateProcessTool::class, [
+            'name' => 'MCP ELK Layout Flow',
+            'description' => 'Auto layout test',
+            'bpmn' => $bpmn,
+            'auto_layout_bpmn' => true,
+        ]);
+
+        $created->assertOk()->assertHasNoErrors()
+            ->assertStructuredContent(function (AssertableJson $json): void {
+                $payload = $json->toArray();
+                preg_match_all('/dc:Bounds x="(\d+)"/', $payload['bpmn'] ?? '', $matches);
+                $xs = array_map('intval', $matches[1] ?? []);
+                $this->assertTrue($xs[1] > $xs[0] && $xs[2] > $xs[1]);
+                $json->etc();
+            });
+    }
+
     public function testServerInstructionsIncludeProcessCatalogWithoutSkillBodies(): void
     {
         $this->seedMcpGuidance();
@@ -241,6 +348,7 @@ XML;
 
         $this->assertStringContainsString('get-mcp-guidance', $instructions);
         $this->assertStringContainsString('validate-process', $instructions);
+        $this->assertStringContainsString('layout-bpmn', $instructions);
         $this->assertStringContainsString('Prefer clear process names', $instructions);
         $this->assertStringContainsString('process-creation-rules', $instructions);
         $this->assertStringNotContainsString('Author BPMN carefully', $instructions);
@@ -257,6 +365,22 @@ XML;
         $this->assertCount(1, $resources);
         $this->assertInstanceOf(McpSkillResource::class, $resources->first());
         $this->assertSame('pm://mcp/skills/process-creation-rules', $resources->first()->uri());
+    }
+
+    private function assumeBpmnLayoutAvailable(): void
+    {
+        $script = config('mcp.bpmn_layout.script_path');
+        if (!is_string($script) || !is_file($script)) {
+            $this->markTestSkipped('BPMN auto-layout script is not installed.');
+        }
+
+        $node = config('mcp.bpmn_layout.node_binary', 'node');
+        $check = new \Symfony\Component\Process\Process([$node, '--version']);
+        try {
+            $check->mustRun();
+        } catch (\Throwable) {
+            $this->markTestSkipped('Node.js is not available for BPMN layout.');
+        }
     }
 
     private function seedMcpGuidance(): void

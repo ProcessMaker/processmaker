@@ -10,6 +10,7 @@ use Illuminate\Validation\ValidationException;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Tool;
+use ProcessMaker\Mcp\Processes\BpmnLayoutException;
 use Throwable;
 
 abstract class ProcessTool extends Tool
@@ -32,6 +33,7 @@ abstract class ProcessTool extends Tool
             $exception instanceof ValidationException => $this->validationMessage($exception),
             $exception instanceof AuthorizationException => $exception->getMessage(),
             $exception instanceof ModelNotFoundException => 'Process not found.',
+            $exception instanceof BpmnLayoutException => $exception->getMessage(),
             default => throw $exception,
         };
 
