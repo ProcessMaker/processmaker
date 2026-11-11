@@ -116,7 +116,7 @@ trait TaskControllerIndexMethods
         }
 
         if (in_array('draft', $includes, true)) {
-            $with['draft'] = fn ($q) => $q->select(['id', 'uuid', 'process_request_token_id']);
+            $with['draft'] = fn ($q) => $q->select(['id', 'task_id', 'data']);
         }
 
         if (in_array('processRequest.process', $includes, true)) {
