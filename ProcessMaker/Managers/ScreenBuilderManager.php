@@ -3,6 +3,7 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Foundation\PackageManifest;
+use ProcessMaker\Support\PluginVendorAssets;
 
 class ScreenBuilderManager
 {
@@ -42,7 +43,7 @@ class ScreenBuilderManager
     {
         $scripts = [];
         foreach ($this->javascriptRegistry as $script) {
-            $path = public_path($script);
+            $path = $this->filesystemPathForWebScript($script);
             $time = file_exists($path) ? filemtime($path) : 0;
             $scripts[] = $script . ($time ? "?t=$time" : '');
         }
@@ -100,42 +101,48 @@ class ScreenBuilderManager
                 continue;
             }
 
-            $packageName = $this->resolvePluginPackageName($pluginPath, $folderName);
-            $relativePath = '/vendor/processmaker/packages/' . $packageName . '/js/' . $extensionsFile;
+            $packageName = PluginVendorAssets::packageNameFromPluginPath($pluginPath, $folderName);
+            $webPath = $this->publishedPluginScriptWebPath($packageName, $extensionsFile);
 
-            if (file_exists(public_path($relativePath))) {
-                $this->addScript($relativePath);
+            if ($webPath !== null) {
+                $this->addScript($webPath);
             }
         }
+    }
+
+    /**
+     * Prefer tenant-published plugin assets when available, else global public/vendor.
+     */
+    private function publishedPluginScriptWebPath(string $packageName, string $extensionsFile): ?string
+    {
+        $relativeJs = '/js/' . $extensionsFile;
+
+        if (PluginVendorAssets::isEnabled()) {
+            $tenantId = PluginVendorAssets::currentTenantId();
+            $tenantFile = PluginVendorAssets::tenantPublicRoot($tenantId, $packageName) . $relativeJs;
+            if (is_file($tenantFile)) {
+                return PluginVendorAssets::webPath($tenantId, $packageName, $relativeJs);
+            }
+        }
+
+        $globalWeb = '/vendor/processmaker/packages/' . $packageName . $relativeJs;
+        if (is_file(public_path(ltrim($globalWeb, '/')))) {
+            return $globalWeb;
+        }
+
+        return null;
+    }
+
+    private function filesystemPathForWebScript(string $webScript): string
+    {
+        $pathOnly = explode('?', $webScript, 2)[0];
+
+        return public_path(ltrim($pathOnly, '/'));
     }
 
     private function screenBuilderExtensionsFile(string $type): string
     {
         return 'screen-builder-' . strtolower($type) . '-components.js';
-    }
-
-    /**
-     * Resolve the web package folder name (e.g. package-plg) from a plugin directory.
-     */
-    private function resolvePluginPackageName(string $pluginPath, string $folderName): string
-    {
-        $composerPath = $pluginPath . '/composer.json';
-        if (!is_file($composerPath)) {
-            return $folderName;
-        }
-
-        $content = file_get_contents($composerPath);
-        $data = json_decode($content, true);
-        if (!is_array($data)) {
-            return $folderName;
-        }
-
-        $name = $data['name'] ?? null;
-        if (is_string($name) && str_contains($name, '/')) {
-            return substr($name, strrpos($name, '/') + 1);
-        }
-
-        return $folderName;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Tests\Managers;
 
 use ProcessMaker\Managers\ScreenBuilderManager;
+use ProcessMaker\Support\PluginVendorAssets;
 use Tests\TestCase;
 
 class ScreenBuilderManagerTest extends TestCase
@@ -14,6 +15,9 @@ class ScreenBuilderManagerTest extends TestCase
 
     /** @var list<string> */
     private array $publicAssetPaths = [];
+
+    /** @var list<string> */
+    private array $tenantPublicAssetPaths = [];
 
     protected function setUp(): void
     {
@@ -35,6 +39,13 @@ class ScreenBuilderManagerTest extends TestCase
         }
         foreach ($this->publicAssetPaths as $path) {
             if (is_file($path)) {
+                unlink($path);
+            }
+        }
+        foreach ($this->tenantPublicAssetPaths as $path) {
+            if (is_dir($path)) {
+                $this->deleteDirectory($path);
+            } elseif (is_file($path)) {
                 unlink($path);
             }
         }
@@ -114,6 +125,48 @@ class ScreenBuilderManagerTest extends TestCase
             $resolvedScripts,
             '/vendor/processmaker/packages/' . $resolvedName . '/js/screen-builder-form-components.js'
         ));
+
+        config(['app.multitenancy' => true]);
+        config(['plugin_manager.tenant_plugin_assets_enabled' => true]);
+        $this->app->instance('currentTenant', (object) ['id' => 7]);
+
+        $tenantPackage = 'tenant-sb-plugin-' . uniqid();
+        $tenantDir = $this->pluginsDir . '/' . $tenantPackage;
+        $this->pluginDirsToRemove[] = $tenantDir;
+        mkdir($tenantDir, 0755, true);
+        file_put_contents($tenantDir . '/composer.json', json_encode([
+            'name' => 'processmaker/' . $tenantPackage,
+        ]));
+        $this->touchTenantPublicAsset(7, $tenantPackage, 'screen-builder-form-components.js');
+
+        $managerTenant = new ScreenBuilderManager();
+        $managerTenant->addPackageScripts('FORM');
+        $tenantScripts = $managerTenant->getScripts();
+        $tenantWebPath = PluginVendorAssets::webPath(
+            7,
+            $tenantPackage,
+            '/js/screen-builder-form-components.js'
+        );
+        $this->assertTrue($this->scriptsContainPath($tenantScripts, $tenantWebPath));
+        foreach ($tenantScripts as $entry) {
+            if (str_starts_with($entry, $tenantWebPath)) {
+                $this->assertStringContainsString('?t=', $entry);
+                break;
+            }
+        }
+    }
+
+    private function touchTenantPublicAsset(int $tenantId, string $packageName, string $fileName): string
+    {
+        $dir = PluginVendorAssets::tenantPublicRoot($tenantId, $packageName) . '/js';
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        $path = $dir . '/' . $fileName;
+        file_put_contents($path, '// tenant test asset');
+        $this->tenantPublicAssetPaths[] = PluginVendorAssets::tenantPublicRoot($tenantId, $packageName);
+
+        return $path;
     }
 
     private function touchPublicAsset(string $packageName, string $fileName): string
