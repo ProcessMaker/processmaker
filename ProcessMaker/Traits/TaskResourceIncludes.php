@@ -70,6 +70,19 @@ trait TaskResourceIncludes
             return ['draft' => null];
         }
 
+        if (!$draft) {
+            return ['draft' => null];
+        }
+
+        $user = Auth::user();
+        if (!$user || !$user->can('view', $this->resource)) {
+            return ['draft' => $draft->only(['id', 'task_id'])];
+        }
+
+        if (!array_key_exists('data', $draft->getAttributes())) {
+            $draft = TaskDraft::query()->whereKey($draft->getKey())->first(['id', 'task_id', 'data']);
+        }
+
         return ['draft' => $draft];
     }
 
