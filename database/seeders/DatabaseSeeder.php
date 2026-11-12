@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
             SettingsMenusSeeder::class,
             ScreenEmailSeeder::class,
             MetricsApiEnvironmentVariableSeeder::class,
-            McpSystemSkillsSeeder::class,
+            McpSettingsSeeder::class,
         ]);
         $this->callPluginSeeders();
     }

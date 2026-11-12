@@ -17,7 +17,7 @@ use ProcessMaker\Mcp\Screens\ScreenCatalog;
 
 #[Name('validate-screen')]
 #[Title('Validate Screen')]
-#[Description('Validates a Screen Builder config without saving. Pass config and optional type, and/or an existing screen id. Returns ok, errors, and warnings (select options, Vue component wiring). Load screen-creation-rules for the checklist.')]
+#[Description('Validates a Screen Builder config without saving. Pass config and optional type, and/or an existing screen id. Returns ok, errors, and warnings (select options, Vue component wiring). See the pm4-screen skill for the checklist.')]
 #[IsReadOnly]
 #[IsIdempotent]
 class ValidateScreenTool extends ScreenTool

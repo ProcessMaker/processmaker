@@ -120,7 +120,7 @@ class FlowGenieServerTest extends TestCase
                 ->etc());
     }
 
-    public function testGuidanceListsFlowGenieCreationSkill(): void
+    public function testGuidanceListsFlowGenieScopedCustomSkill(): void
     {
         Setting::updateOrCreate([
             'key' => McpGuidance::SKILLS_KEY,
@@ -128,21 +128,19 @@ class FlowGenieServerTest extends TestCase
             'format' => 'component',
             'config' => [
                 [
-                    'id' => 'mcp-system-screen-creation-rules',
-                    'name' => 'Screen creation rules',
-                    'slug' => 'screen-creation-rules',
-                    'when' => 'Before create-screen',
-                    'content' => 'Use Vue mounts',
-                    'system' => true,
+                    'id' => 'custom-screen-styles',
+                    'name' => 'Screen styles',
+                    'slug' => 'screen-styles',
+                    'when' => 'Before create-screen when styling matters',
+                    'content' => 'Use calm colors',
                     'scope' => McpGuidance::SCOPE_SCREENS,
                 ],
                 [
-                    'id' => 'mcp-system-flowgenie-creation-rules',
-                    'name' => 'FlowGenie creation rules',
-                    'slug' => 'flowgenie-creation-rules',
+                    'id' => 'custom-genie-tone',
+                    'name' => 'Genie tone',
+                    'slug' => 'genie-tone',
                     'when' => 'Before create-flow-genie',
-                    'content' => 'instructions model output_type',
-                    'system' => true,
+                    'content' => 'Keep a friendly tone',
                     'scope' => McpGuidance::SCOPE_FLOW_GENIES,
                 ],
             ],
@@ -154,7 +152,7 @@ class FlowGenieServerTest extends TestCase
             ->assertOk()
             ->assertStructuredContent(fn (AssertableJson $json) => $json
                 ->has('skills', 1)
-                ->where('skills.0.slug', 'flowgenie-creation-rules')
+                ->where('skills.0.slug', 'genie-tone')
                 ->missing('skills.0.content')
                 ->etc());
 
@@ -163,6 +161,6 @@ class FlowGenieServerTest extends TestCase
 
         $this->assertCount(1, $resources);
         $this->assertInstanceOf(McpSkillResource::class, $resources->first());
-        $this->assertSame('pm://mcp/skills/flowgenie-creation-rules', $resources->first()->uri());
+        $this->assertSame('pm://mcp/skills/genie-tone', $resources->first()->uri());
     }
 }

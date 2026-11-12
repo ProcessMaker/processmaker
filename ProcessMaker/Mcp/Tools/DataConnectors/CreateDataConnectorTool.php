@@ -16,7 +16,7 @@ use ProcessMaker\Mcp\Tools\RespondingTool;
 
 #[Name('create-data-connector')]
 #[Title('Create Data Connector')]
-#[Description('Creates a REST/SOAP Data Connector. Requires name, type, authtype, data_source_category_id. Load skill data-connector-creation-rules first.')]
+#[Description('Creates a REST/SOAP Data Connector. Requires name, type, authtype, data_source_category_id. See the pm4-data-connector skill.')]
 class CreateDataConnectorTool extends RespondingTool
 {
     public function handle(Request $request, DataConnectorCatalog $catalog): Response|ResponseFactory

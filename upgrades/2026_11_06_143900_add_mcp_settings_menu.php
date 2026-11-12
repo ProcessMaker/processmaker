@@ -1,6 +1,6 @@
 <?php
 
-use Database\Seeders\McpSystemSkillsSeeder;
+use Database\Seeders\McpSettingsSeeder;
 use ProcessMaker\Mcp\McpGuidance;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
@@ -12,7 +12,7 @@ class AddMcpSettingsMenu extends Upgrade
      */
     public function up(): void
     {
-        (new McpSystemSkillsSeeder())->run();
+        (new McpSettingsSeeder())->run();
     }
 
     /**

@@ -63,7 +63,7 @@ final class ScreenConfigValidator
             $warnings[] = $this->issue(
                 null,
                 'prefer_vue_component_editor',
-                'FORM screens should use VueComponentRenderTemplate as the main UI (see screen-creation-rules). Native FormSelectList/FormInput layouts are fragile and often miss required options.',
+                'FORM screens should use VueComponentRenderTemplate as the main UI (see the pm4-screen skill). Native FormSelectList/FormInput layouts are fragile and often miss required options.',
             );
         }
 

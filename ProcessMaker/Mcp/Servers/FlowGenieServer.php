@@ -36,9 +36,8 @@ Call validate-flow-genie before create/update when unsure about config shape.
 create-flow-genie requires name, description, and flow_genie_category_id.
 config is the agent JSON (instructions, model, provider, output_type, tools, mcp_servers, …).
 Secrets (provider_api_key, MCP tokens) are write-only — get/list redact them.
-After creating a FlowGenie, wire it into BPMN with Processes MCP skill `process-connector-flowgenie`
-(`implementation` `package-ai/processmaker-ai-task`, pm:config `flow_genie_id` + `output_variable`).
-Load skill `flowgenie-creation-rules`.
+After creating a FlowGenie, wire it into BPMN as described in the `pm4-flow-genie` skill from the ProcessMaker Skills repository
+(`npx skills add processmaker/skills`): `implementation` `package-ai/processmaker-ai-task`, pm:config `flow_genie_id` + `output_variable`.
 MARKDOWN)]
 class FlowGenieServer extends Server
 {
