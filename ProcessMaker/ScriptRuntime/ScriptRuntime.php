@@ -90,7 +90,7 @@ class ScriptRuntime
 
                 $output = include $__scriptPath;
 
-                return ($output === 1 && !$__hasExplicitReturn) || $output === null
+                return (($output === 1 || $output === null) && !$__hasExplicitReturn)
                     ? $result
                     : $output;
             })($scriptPath, $context, $instances, $hasExplicitReturn);
@@ -238,9 +238,37 @@ class ScriptRuntime
 
     private function hasExplicitReturn(string $code): bool
     {
+        $braceDepth = 0;
+        $functionBodyDepths = [];
+        $pendingFunctionBody = false;
+
         foreach (token_get_all($code) as $token) {
-            if (is_array($token) && $token[0] === T_RETURN) {
-                return true;
+            if (is_array($token)) {
+                if ($token[0] === T_FUNCTION) {
+                    $pendingFunctionBody = true;
+                } elseif ($token[0] === T_RETURN && empty($functionBodyDepths)) {
+                    return true;
+                }
+
+                continue;
+            }
+
+            if ($token === '{') {
+                $braceDepth++;
+                if ($pendingFunctionBody) {
+                    $functionBodyDepths[] = $braceDepth;
+                    $pendingFunctionBody = false;
+                }
+            } elseif ($token === '}') {
+                if (!empty($functionBodyDepths)
+                    && end($functionBodyDepths) === $braceDepth
+                ) {
+                    array_pop($functionBodyDepths);
+                }
+
+                $braceDepth--;
+            } elseif ($token === ';') {
+                $pendingFunctionBody = false;
             }
         }
 

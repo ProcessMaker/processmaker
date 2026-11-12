@@ -536,6 +536,60 @@ class ScriptsTest extends TestCase
         $response->assertForbidden();
     }
 
+    public function testNonPrivilegedUserEditingModulesScriptFallsBackToBare(): void
+    {
+        $editor = User::factory()->create(['is_administrator' => false]);
+        $editor->giveDirectPermission('edit-scripts');
+        $editor->giveDirectPermission('create-scripts');
+        $script = $this->getScript('php');
+        $script->update([
+            'allow_in_process' => true,
+            'execution_mode' => Script::EXECUTION_MODE_MODULES,
+        ]);
+
+        $response = $this->actingAs($editor, 'api')->putJson(
+            route('api.scripts.update', $script),
+            [
+                'title' => 'Updated without modules',
+                'language' => 'php',
+                'code' => $script->code,
+                'description' => $script->description,
+                'run_as_user_id' => $script->run_as_user_id,
+                'script_executor_id' => $script->script_executor_id,
+                'script_category_id' => $script->script_category_id,
+                'allow_in_process' => true,
+            ]
+        );
+
+        $response->assertNoContent();
+        $this->assertSame(
+            Script::EXECUTION_MODE_BARE,
+            $script->refresh()->execution_mode
+        );
+    }
+
+    public function testNonPrivilegedUserDuplicatesModulesScriptAsBare(): void
+    {
+        $editor = User::factory()->create(['is_administrator' => false]);
+        $editor->giveDirectPermission('edit-scripts');
+        $script = $this->getScript('php');
+        $script->update([
+            'allow_in_process' => true,
+            'execution_mode' => Script::EXECUTION_MODE_MODULES,
+        ]);
+
+        $response = $this->actingAs($editor, 'api')->putJson(
+            route('api.scripts.duplicate', $script),
+            ['title' => 'Duplicate without modules']
+        );
+
+        $response->assertCreated();
+        $this->assertSame(
+            Script::EXECUTION_MODE_BARE,
+            Script::findOrFail($response->json('id'))->execution_mode
+        );
+    }
+
     /**
      * Delete script in process
      */
