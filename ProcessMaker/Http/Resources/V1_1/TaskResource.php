@@ -12,6 +12,7 @@ use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
 use ProcessMaker\Http\Resources\Task;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\ProcessTranslations\ProcessTranslation;
+use ProcessMaker\Support\TaskDraftIncludes;
 use ProcessMaker\Traits\TaskResourceIncludes;
 use ProcessMaker\Traits\TaskScreenResourceTrait;
 
@@ -173,19 +174,19 @@ class TaskResource extends ApiResource
             $query->addSelect($field);
         }
 
-        $include = $request->query('include', []);
-        if ($include) {
-            $include = explode(',', $include);
-        }
-        $include = array_merge($include, self::$defaultIncludes);
+        $parsed = self::parseV11RequestIncludes($request);
+        $include = array_merge($parsed, self::$defaultIncludes);
 
-        if (in_array('data', $include)) {
+        if (in_array('data', $include, true)) {
             $query->addSelect('process_request_id');
             self::$defaultFieldsFor['processRequest'][] = 'data';
         }
 
         foreach (self::$includeMethods as $key) {
-            if (!in_array($key, $include)) {
+            if (!in_array($key, $include, true)) {
+                continue;
+            }
+            if ($key === 'draft' && !in_array('draft', $parsed, true)) {
                 continue;
             }
 
@@ -194,7 +195,10 @@ class TaskResource extends ApiResource
 
         $model = $query->first();
         foreach (self::$includeMethods as $key) {
-            if (!in_array($key, $include)) {
+            if (!in_array($key, $include, true)) {
+                continue;
+            }
+            if ($key === 'draft' && !in_array('draft', $parsed, true)) {
                 continue;
             }
 
@@ -209,14 +213,14 @@ class TaskResource extends ApiResource
      */
     public static function fromTokenWithIncludes(ProcessRequestToken $token, Request $request): self
     {
-        $include = $request->query('include', []);
-        if ($include) {
-            $include = explode(',', $include);
-        }
-        $include = array_merge($include, self::$defaultIncludes);
+        $parsed = self::parseV11RequestIncludes($request);
+        $include = array_merge($parsed, self::$defaultIncludes);
 
         foreach (self::$includeMethods as $key) {
-            if (!in_array($key, $include)) {
+            if (!in_array($key, $include, true)) {
+                continue;
+            }
+            if ($key === 'draft' && !in_array('draft', $parsed, true)) {
                 continue;
             }
 
@@ -243,15 +247,21 @@ class TaskResource extends ApiResource
         return new static($token);
     }
 
+    /** @return list<string> */
+    private static function parseV11RequestIncludes(Request $request): array
+    {
+        return TaskDraftIncludes::parseIncludeList((string) $request->input('include', ''));
+    }
+
     private function processInclude(Request $request, array $array)
     {
-        $include = $request->query('include', []);
-        if ($include) {
-            $include = explode(',', $include);
-        }
+        $include = self::parseV11RequestIncludes($request);
 
         foreach (self::$includeMethods as $key) {
-            if (!in_array($key, $include)) {
+            if ($key === 'draft' && TaskDraftIncludes::includesDraft($include)) {
+                continue;
+            }
+            if (!in_array($key, $include, true)) {
                 continue;
             }
 
@@ -264,6 +274,6 @@ class TaskResource extends ApiResource
             }
         }
 
-        return $array;
+        return $this->sanitizeDraftInTaskArray($array, $request);
     }
 }

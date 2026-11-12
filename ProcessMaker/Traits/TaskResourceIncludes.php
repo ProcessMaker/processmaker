@@ -13,6 +13,7 @@ use ProcessMaker\Models\ScreenVersion as ScreenVersionModel;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
+use ProcessMaker\Support\TaskDraftIncludes;
 use StdClass;
 
 trait TaskResourceIncludes
@@ -58,39 +59,61 @@ trait TaskResourceIncludes
         return ['process_request' => $this->processRequest->attributesToArray()];
     }
 
-    private function includeDraft()
+    /**
+     * Strips or redacts draft on task index/show; parent::toArray() may serialize the relation first.
+     */
+    protected function sanitizeDraftInTaskArray(array $array, $request): array
     {
-        $draft = $this->draft;
-        if ($draft && !TaskDraft::draftsEnabled()) {
-            // Drafts are used to get data from quick-fill to the screen,
-            // but drafts are disabled so we need to delete it now that
-            // it's been accessed.
-            $draft->delete();
+        $include = TaskDraftIncludes::parseIncludeList((string) $request->input('include', ''));
 
-            // Return null to prevent the frontend from trying to load
-            // files from the deleted draft
-            return ['draft' => null];
+        if (!TaskDraftIncludes::includesDraft($include)) {
+            unset($array['draft']);
+
+            return $array;
         }
 
+        $array['draft'] = $this->resolveDraftPayloadForResponse();
+
+        return $array;
+    }
+
+    /** @return array<string, mixed>|TaskDraft|null */
+    private function resolveDraftPayloadForResponse(): array|TaskDraft|null
+    {
+        $draft = $this->draft;
         if (!$draft) {
-            return ['draft' => null];
+            return null;
         }
 
         $user = Auth::user();
+
+        if (!TaskDraft::draftsEnabled()) {
+            if (!$user) {
+                return null;
+            }
+            $this->ensureTokenAttributesForViewPolicy($this->resource);
+            if (!$this->userCanViewTaskForDraft($user)) {
+                return null;
+            }
+            $draft->delete();
+
+            return null;
+        }
+
         if (!$user) {
-            return ['draft' => $draft->only(['id', 'task_id'])];
+            return $draft->only(['id', 'task_id']);
         }
 
         $this->ensureTokenAttributesForViewPolicy($this->resource);
         if (!$this->userCanViewTaskForDraft($user)) {
-            return ['draft' => $draft->only(['id', 'task_id'])];
+            return $draft->only(['id', 'task_id']);
         }
 
         if (!array_key_exists('data', $draft->getAttributes())) {
             $draft = TaskDraft::query()->whereKey($draft->getKey())->first(['id', 'task_id', 'data']);
         }
 
-        return ['draft' => $draft];
+        return $draft;
     }
 
     private function includeComponent()
@@ -239,10 +262,7 @@ trait TaskResourceIncludes
         }
     }
 
-    /**
-     * Mirrors ProcessRequestTokenPolicy::view without lazy-loading process on the token
-     * (loaded process relations are serialized by Task::toArray before includes run).
-     */
+    /** @see ProcessRequestTokenPolicy::view — avoids lazy-loading process on list rows */
     private function userCanViewTaskForDraft(User $user): bool
     {
         if ($user->is_administrator) {

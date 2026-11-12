@@ -16,6 +16,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\Services\SmartExtractConfiguration;
+use ProcessMaker\Support\TaskDraftIncludes;
 
 trait TaskControllerIndexMethods
 {
@@ -38,10 +39,8 @@ trait TaskControllerIndexMethods
 
     private function indexBaseQuery($request)
     {
-        // Parse the includes parameter
-        $includes = $request->has('include') ? explode(',', $request->input('include')) : [];
-        // Determine if the data should be included
-        $includeData = in_array('data', $includes);
+        $includes = $this->parseIndexIncludeList($request);
+        $includeData = in_array('data', $includes, true);
 
         $query = ProcessRequestToken::exclude(['data']);
 
@@ -61,18 +60,20 @@ trait TaskControllerIndexMethods
             // review if bpmn is required here processRequest.processVersion.process
             // 'processRequest.processVersion.process' => fn($q) => $q->exclude(['svg', 'warnings']),
             'user',
-            'draft',
         ]);
 
-        $include = $request->input('include') ? explode(',', $request->input('include')) : [];
-
-        foreach (['data'] as $key) {
-            if (in_array($key, $include)) {
-                unset($include[array_search($key, $include)]);
-            }
+        if (TaskDraftIncludes::includesDraft($includes)) {
+            $query->with(['draft' => TaskDraftIncludes::constrainedEagerLoad()]);
         }
 
-        $query->with($include);
+        $additionalIncludes = array_values(array_filter(
+            $includes,
+            fn (string $token) => $token !== 'data' && !TaskDraftIncludes::isDraftToken($token)
+        ));
+
+        if ($additionalIncludes !== []) {
+            $query->with($additionalIncludes);
+        }
 
         return $query;
     }
@@ -87,6 +88,10 @@ trait TaskControllerIndexMethods
 
         $handledIncludes = ['data', 'processRequest', 'process', 'user', 'draft', 'processRequest.process'];
         $additionalIncludes = array_values(array_diff($includes, $handledIncludes));
+        $additionalIncludes = array_values(array_filter(
+            $additionalIncludes,
+            fn (string $token) => !TaskDraftIncludes::isDraftToken($token)
+        ));
 
         if (!empty($with)) {
             $query->with($with);
@@ -105,7 +110,7 @@ trait TaskControllerIndexMethods
             return [];
         }
 
-        return array_map('trim', explode(',', $request->input('include')));
+        return TaskDraftIncludes::parseIncludeList((string) $request->input('include'));
     }
 
     /**
@@ -125,8 +130,8 @@ trait TaskControllerIndexMethods
             $with['user'] = fn ($q) => $q->select(['id', 'firstname', 'lastname', 'avatar', 'status']);
         }
 
-        if (in_array('draft', $includes, true)) {
-            $with['draft'] = fn ($q) => $q->select(['id', 'task_id']);
+        if (TaskDraftIncludes::includesDraft($includes)) {
+            $with['draft'] = TaskDraftIncludes::constrainedEagerLoad();
         }
 
         if (in_array('process', $includes, true)) {
