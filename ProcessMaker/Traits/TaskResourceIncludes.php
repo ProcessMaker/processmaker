@@ -111,27 +111,33 @@ trait TaskResourceIncludes
             return null;
         }
 
-        $user = Auth::user();
-
         if (!TaskDraft::draftsEnabled()) {
-            if (!$user) {
-                return null;
-            }
-            $this->ensureTokenAttributesForViewPolicy($token);
-            if (!$this->userCanViewTaskForDraft($user, $token)) {
-                return null;
-            }
-            $draft->delete();
+            return $this->resolveDraftPayloadWhenDraftsDisabled(Auth::user(), $token, $draft);
+        }
 
+        return $this->resolveDraftPayloadWhenDraftsEnabled(Auth::user(), $token, $draft);
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function resolveDraftPayloadWhenDraftsDisabled(?User $user, ProcessRequestToken $token, TaskDraft $draft): ?array
+    {
+        if (!$user || !$this->callerCanViewTaskForDraft($user, $token)) {
             return null;
         }
 
-        if (!$user) {
-            return $draft->only(['id', 'task_id']);
-        }
+        $draft->delete();
 
-        $this->ensureTokenAttributesForViewPolicy($token);
-        if (!$this->userCanViewTaskForDraft($user, $token)) {
+        return null;
+    }
+
+    /**
+     * @return array<string, mixed>|TaskDraft|null
+     */
+    private function resolveDraftPayloadWhenDraftsEnabled(?User $user, ProcessRequestToken $token, TaskDraft $draft): array|TaskDraft|null
+    {
+        if (!$user || !$this->callerCanViewTaskForDraft($user, $token)) {
             return $draft->only(['id', 'task_id']);
         }
 
@@ -143,6 +149,13 @@ trait TaskResourceIncludes
         }
 
         return $draft;
+    }
+
+    private function callerCanViewTaskForDraft(User $user, ProcessRequestToken $token): bool
+    {
+        $this->ensureTokenAttributesForViewPolicy($token);
+
+        return $this->userCanViewTaskForDraft($user, $token);
     }
 
     private function tokenFromPersistedId(int|string|null $tokenId): ?ProcessRequestToken
@@ -165,16 +178,15 @@ trait TaskResourceIncludes
      */
     private function taskDraftForToken(ProcessRequestToken $token, mixed $draft): ?TaskDraft
     {
+        $boundQuery = fn () => TaskDraft::query()
+            ->where('task_id', $token->id)
+            ->first(['id', 'task_id', 'data']);
+
         if ($draft === null) {
-            return TaskDraft::query()
-                ->where('task_id', $token->id)
-                ->first(['id', 'task_id', 'data']);
+            return $boundQuery();
         }
 
-        $draftId = $draft instanceof TaskDraft
-            ? $draft->getKey()
-            : (is_array($draft) ? ($draft['id'] ?? null) : null);
-
+        $draftId = $this->draftIdFromPayload($draft);
         if ($draftId !== null) {
             return TaskDraft::query()
                 ->whereKey($draftId)
@@ -182,10 +194,17 @@ trait TaskResourceIncludes
                 ->first(['id', 'task_id', 'data']);
         }
 
+        return $draft instanceof TaskDraft ? $boundQuery() : null;
+    }
+
+    private function draftIdFromPayload(mixed $draft): int|string|null
+    {
         if ($draft instanceof TaskDraft) {
-            return TaskDraft::query()
-                ->where('task_id', $token->id)
-                ->first(['id', 'task_id', 'data']);
+            return $draft->getKey();
+        }
+
+        if (is_array($draft)) {
+            return $draft['id'] ?? null;
         }
 
         return null;
@@ -378,15 +397,10 @@ trait TaskResourceIncludes
         }
 
         $token ??= $this->resource;
-        if ((int) $token->user_id === (int) $user->id) {
-            return true;
-        }
 
-        if (in_array($user->id, $this->managerIdsForTaskProcess($token))) {
-            return true;
-        }
-
-        return $user->canSelfServe($token);
+        return (int) $token->user_id === (int) $user->id
+            || in_array($user->id, $this->managerIdsForTaskProcess($token))
+            || $user->canSelfServe($token);
     }
 
     /**
