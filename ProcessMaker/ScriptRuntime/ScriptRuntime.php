@@ -82,10 +82,12 @@ class ScriptRuntime
                 array $__instances,
                 bool $__hasExplicitReturn
             ) {
-                $data = $__context->data;
-                $config = $__context->config;
-                $modules = $__instances;
                 $result = ['response' => 'Error: add a result array'];
+                extract([
+                    'data' => $__context->data,
+                    'config' => $__context->config,
+                    'modules' => $__instances,
+                ], EXTR_SKIP);
                 extract($__instances, EXTR_SKIP);
 
                 $output = include $__scriptPath;
@@ -244,45 +246,73 @@ class ScriptRuntime
 
         foreach (token_get_all($code) as $token) {
             if (is_array($token)) {
-                if ($token[0] === T_FUNCTION) {
-                    $pendingFunctionBody = true;
-                } elseif ($token[0] === T_RETURN && empty($functionBodyDepths)) {
+                if ($this->isTopLevelReturn($token, $functionBodyDepths)) {
                     return true;
-                } elseif ($token[0] === T_CURLY_OPEN) {
-                    $braceDepth++;
-                } elseif ($token[0] === T_CURLY_CLOSE) {
-                    if (
-                        !empty($functionBodyDepths)
-                        && end($functionBodyDepths) === $braceDepth
-                    ) {
-                        array_pop($functionBodyDepths);
-                    }
-
-                    $braceDepth--;
                 }
 
+                $this->processArrayToken($token, $braceDepth, $pendingFunctionBody);
                 continue;
             }
 
             if ($token === '{') {
-                $braceDepth++;
-                if ($pendingFunctionBody) {
-                    $functionBodyDepths[] = $braceDepth;
-                    $pendingFunctionBody = false;
-                }
-            } elseif ($token === '}') {
-                if (!empty($functionBodyDepths)
-                    && end($functionBodyDepths) === $braceDepth
-                ) {
-                    array_pop($functionBodyDepths);
-                }
+                $this->openBrace(
+                    $braceDepth,
+                    $functionBodyDepths,
+                    $pendingFunctionBody
+                );
+                continue;
+            }
 
-                $braceDepth--;
-            } elseif ($token === ';') {
+            if ($token === '}') {
+                $this->closeBrace($braceDepth, $functionBodyDepths);
+                continue;
+            }
+
+            if ($token === ';') {
                 $pendingFunctionBody = false;
             }
         }
 
         return false;
+    }
+
+    private function isTopLevelReturn(array $token, array $functionBodyDepths): bool
+    {
+        return $token[0] === T_RETURN && empty($functionBodyDepths);
+    }
+
+    private function processArrayToken(
+        array $token,
+        int &$braceDepth,
+        bool &$pendingFunctionBody
+    ): void {
+        if ($token[0] === T_FUNCTION) {
+            $pendingFunctionBody = true;
+        }
+
+        if ($token[0] === T_CURLY_OPEN) {
+            $braceDepth++;
+        }
+    }
+
+    private function openBrace(
+        int &$braceDepth,
+        array &$functionBodyDepths,
+        bool &$pendingFunctionBody
+    ): void {
+        $braceDepth++;
+        if ($pendingFunctionBody) {
+            $functionBodyDepths[] = $braceDepth;
+            $pendingFunctionBody = false;
+        }
+    }
+
+    private function closeBrace(int &$braceDepth, array &$functionBodyDepths): void
+    {
+        if (!empty($functionBodyDepths) && end($functionBodyDepths) === $braceDepth) {
+            array_pop($functionBodyDepths);
+        }
+
+        $braceDepth--;
     }
 }

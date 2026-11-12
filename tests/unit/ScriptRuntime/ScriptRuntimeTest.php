@@ -96,12 +96,11 @@ PHP,
         $output = ScriptRuntime::run(
             <<<'PHP'
 <?php
-function helper(string $value): string
-{
+$helper = static function (string $value): string {
     return "value: {$value}";
-}
+};
 
-$result = ['value' => helper('ok')];
+$result = ['value' => $helper('ok')];
 PHP,
             new ScriptExecutionContext(
                 data: [],
