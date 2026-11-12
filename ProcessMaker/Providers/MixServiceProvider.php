@@ -4,8 +4,10 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Mix;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use ProcessMaker\Support\PluginVendorAssets;
 
 class MixServiceProvider extends ServiceProvider
 {
@@ -16,6 +18,9 @@ class MixServiceProvider extends ServiceProvider
     {
         $this->app->singleton(Mix::class, function ($app) {
             return new class extends Mix {
+                /** @var array<string, array<string, mixed>> */
+                private static array $tenantManifests = [];
+
                 /**
                  * Get the path to a versioned Mix file.
                  *
@@ -27,6 +32,11 @@ class MixServiceProvider extends ServiceProvider
                  */
                 public function __invoke($path, $manifestDirectory = '')
                 {
+                    $tenantPluginUrl = $this->resolveTenantPluginVendorUrl($path, $manifestDirectory);
+                    if ($tenantPluginUrl !== null) {
+                        return $tenantPluginUrl;
+                    }
+
                     $tenant = app()->bound('currentTenant') ? app('currentTenant') : null;
 
                     if (!$tenant) {
@@ -68,6 +78,43 @@ class MixServiceProvider extends ServiceProvider
                     }
 
                     return parent::__invoke($path, $manifestDirectory);
+                }
+
+                /**
+                 * URL for a plugin package copied to the current tenant's public disk.
+                 * Returns null when there is no tenant copy, so the default resolution runs.
+                 */
+                private function resolveTenantPluginVendorUrl(string $path, string $manifestDirectory): ?HtmlString
+                {
+                    $packageName = PluginVendorAssets::parsePackageFromManifestDirectory($manifestDirectory);
+                    if ($packageName === null || !PluginVendorAssets::isEnabled()) {
+                        return null;
+                    }
+
+                    $tenantId = PluginVendorAssets::currentTenantId();
+                    if ($tenantId === null) {
+                        return null;
+                    }
+
+                    $manifestPath = PluginVendorAssets::mixManifestPath($tenantId, $packageName);
+                    if (!is_file($manifestPath)) {
+                        return null;
+                    }
+
+                    if (!isset(self::$tenantManifests[$manifestPath])) {
+                        $decoded = json_decode((string) file_get_contents($manifestPath), true);
+                        self::$tenantManifests[$manifestPath] = is_array($decoded) ? $decoded : [];
+                    }
+
+                    $key = '/' . ltrim(str_replace('\\', '/', $path), '/');
+                    $manifest = self::$tenantManifests[$manifestPath];
+                    if (!isset($manifest[$key])) {
+                        return null;
+                    }
+
+                    return new HtmlString(
+                        (string) config('app.mix_url') . PluginVendorAssets::webPath($packageName, (string) $manifest[$key])
+                    );
                 }
             };
         });

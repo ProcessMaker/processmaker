@@ -9,6 +9,7 @@ use function Illuminate\Support\php_binary;
 use ProcessMaker\Events\PluginLog;
 use ProcessMaker\Models\Plugin;
 use ProcessMaker\Services\PluginRuntimeReload;
+use ProcessMaker\Support\PluginVendorAssets;
 use RuntimeException;
 use Throwable;
 
@@ -195,6 +196,8 @@ class PluginManager
         $uninstallCommand = "{$pluginName}:uninstall";
         $this->logRunning('Running plugin uninstall command...', $pluginName, $userId);
         $this->runCommand($uninstallCommand, $pluginName, $userId);
+
+        $this->removeTenantPluginAssetsIfApplicable($pluginPath, $pluginName, $userId);
 
         $this->logRunning('Removing plugin directory...', $pluginName, $userId);
         $this->removePluginPath($pluginPath, $pluginName, $userId);
@@ -542,10 +545,50 @@ class PluginManager
         $this->logRunning('Running plugin install command...', $repoName, $userId);
         $this->runCommand($installCommand, $repoName, $userId);
 
+        $this->publishTenantPluginAssetsIfApplicable($pluginPath, $repoName, $userId);
+
         // Setup finished. Keep the directory even if a later route refresh fails.
         $this->incompleteInstallPath = null;
 
         $this->refreshRuntimeAfterPluginChange($repoName, $userId);
+    }
+
+    /**
+     * Copy the plugin's public/ assets onto the current tenant's public disk.
+     * Failures are logged and do not fail the install.
+     */
+    protected function publishTenantPluginAssetsIfApplicable(string $pluginPath, string $pluginName, ?int $userId = null): void
+    {
+        if (!PluginVendorAssets::isEnabled()) {
+            return;
+        }
+
+        try {
+            $published = app(TenantPluginAssetPublisher::class)->publishPlugin($pluginPath);
+            $this->logRunning(
+                $published ? 'Tenant plugin public assets published.' : 'Tenant plugin assets skipped: no public directory.',
+                $pluginName,
+                $userId
+            );
+        } catch (Throwable $exception) {
+            $this->logError('Could not publish tenant plugin assets: ' . $exception->getMessage(), $pluginName, $userId);
+        }
+    }
+
+    /**
+     * Remove the plugin's copy from the current tenant's public disk before uninstall.
+     */
+    protected function removeTenantPluginAssetsIfApplicable(string $pluginPath, string $pluginName, ?int $userId = null): void
+    {
+        if (!PluginVendorAssets::isEnabled()) {
+            return;
+        }
+
+        try {
+            app(TenantPluginAssetPublisher::class)->removePublishedPlugin($pluginPath);
+        } catch (Throwable $exception) {
+            $this->logError('Could not remove tenant plugin assets: ' . $exception->getMessage(), $pluginName, $userId);
+        }
     }
 
     /**
