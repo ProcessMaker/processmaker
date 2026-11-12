@@ -450,13 +450,7 @@ class ScriptController extends Controller
             return;
         }
 
-        if ($script?->execution_mode === Script::EXECUTION_MODE_MODULES) {
-            $request->merge(['execution_mode' => Script::EXECUTION_MODE_BARE]);
-
-            return;
-        }
-
-        abort(403);
+        $request->merge(['execution_mode' => Script::EXECUTION_MODE_BARE]);
     }
 
     /**

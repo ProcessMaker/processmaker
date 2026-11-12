@@ -80,7 +80,9 @@ class ScriptExporter extends ExporterBase
 
     private function canUseModules(): bool
     {
-        $user = auth()->user();
+        $user = $this->options->importingUserId
+            ? User::find($this->options->importingUserId)
+            : auth()->user();
 
         return (bool) ($user?->is_administrator || $user?->can('run-in-process-modules'));
     }

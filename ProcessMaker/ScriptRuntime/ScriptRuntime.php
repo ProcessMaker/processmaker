@@ -248,6 +248,17 @@ class ScriptRuntime
                     $pendingFunctionBody = true;
                 } elseif ($token[0] === T_RETURN && empty($functionBodyDepths)) {
                     return true;
+                } elseif ($token[0] === T_CURLY_OPEN) {
+                    $braceDepth++;
+                } elseif ($token[0] === T_CURLY_CLOSE) {
+                    if (
+                        !empty($functionBodyDepths)
+                        && end($functionBodyDepths) === $braceDepth
+                    ) {
+                        array_pop($functionBodyDepths);
+                    }
+
+                    $braceDepth--;
                 }
 
                 continue;

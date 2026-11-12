@@ -91,6 +91,29 @@ PHP,
         $this->assertSame(['ok' => true], $output);
     }
 
+    public function testLegacyResultIgnoresReturnsInsideInterpolatedStrings(): void
+    {
+        $output = ScriptRuntime::run(
+            <<<'PHP'
+<?php
+function helper(string $value): string
+{
+    return "value: {$value}";
+}
+
+$result = ['value' => helper('ok')];
+PHP,
+            new ScriptExecutionContext(
+                data: [],
+                config: [],
+                user: null,
+                source: 'preview',
+            )
+        );
+
+        $this->assertSame(['value' => 'value: ok'], $output);
+    }
+
     public function testRunScriptWithExplicitScalarReturn(): void
     {
         $output = ScriptRuntime::run(

@@ -512,7 +512,7 @@ class ScriptsTest extends TestCase
         );
     }
 
-    public function testNonPrivilegedUserCannotSelectModulesExecutionMode(): void
+    public function testNonPrivilegedUserFallsBackToBareWhenSelectingModules(): void
     {
         $editor = User::factory()->create(['is_administrator' => false]);
         $editor->giveDirectPermission('edit-scripts');
@@ -533,7 +533,11 @@ class ScriptsTest extends TestCase
             ]
         );
 
-        $response->assertForbidden();
+        $response->assertNoContent();
+        $this->assertSame(
+            Script::EXECUTION_MODE_BARE,
+            $script->refresh()->execution_mode
+        );
     }
 
     public function testNonPrivilegedUserEditingModulesScriptFallsBackToBare(): void
