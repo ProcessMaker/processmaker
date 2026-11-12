@@ -158,7 +158,7 @@ class ProcessController extends Controller
         // Filter by category status
         $processes->categoryStatus($request->input('cat_status', null));
 
-        $pmqlError = $this->applyProcessIndexPmql($processes, $request->input('pmql', ''));
+        $pmqlError = $this->applyProcessIndexPmql($processes, (string) ($request->input('pmql') ?? ''));
         if ($pmqlError !== null) {
             return $pmqlError;
         }
