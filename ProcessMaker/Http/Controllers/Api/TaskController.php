@@ -156,13 +156,17 @@ class TaskController extends Controller
 
         $this->applyFilters($query, $request);
 
-        $this->excludeNonVisibleTasks($query, $request);
+        $resolveManagedProcessVisibility = $this->excludeNonVisibleTasks(
+            $query,
+            $request,
+            $request->input('processesIManage') === 'true'
+        );
 
         $this->applyStatusFilter($query, $request);
 
         // Apply process manager filter BEFORE PMQL to avoid conflicts with is_self_service filtering
         if ($request->input('processesIManage') === 'true') {
-            $this->applyProcessManager($query, $user, $request);
+            $this->applyProcessManager($query, $user, $request, $resolveManagedProcessVisibility);
         } else {
             $this->applyForCurrentUser($query, $user);
         }
