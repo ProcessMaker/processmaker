@@ -559,6 +559,52 @@ class TasksTest extends TestCase
         $this->assertNull($otherRow['draft'] ?? null);
     }
 
+    public function testV11TaskShowOmitsDraftWithoutIncludeDespiteFastPathPreload()
+    {
+        $this->initializePermissions();
+        config(['app.task_drafts_enabled' => true]);
+
+        $assignee = User::factory()->create();
+        $this->user = $assignee;
+        $processRequest = ProcessRequest::factory()->create();
+        $task = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $task->id,
+            'data' => ['field' => 'show-fast-preload'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.1.1.tasks.show', $task->id));
+        $response->assertStatus(200);
+        $this->assertArrayNotHasKey('draft', $response->json());
+    }
+
+    public function testTaskShowIncludesDraftWhenRequested()
+    {
+        $this->initializePermissions();
+        config(['app.task_drafts_enabled' => true]);
+
+        $assignee = User::factory()->create();
+        $this->user = $assignee;
+        $processRequest = ProcessRequest::factory()->create();
+        $task = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $task->id,
+            'data' => ['field' => 'show-with-include'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.show', $task->id) . '?include=draft');
+        $response->assertStatus(200);
+        $this->assertEquals('show-with-include', $response->json('draft.data.field'));
+    }
+
     public function testV11TaskShowIgnoresPlantedDraftObjectsInRequestData()
     {
         $this->initializePermissions();
