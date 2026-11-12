@@ -288,12 +288,13 @@ trait TaskControllerIndexMethods
         return $response;
     }
 
-    private function excludeNonVisibleTasks($query, $request)
+    private function excludeNonVisibleTasks($query, $request, $resolveManagedProcessVisibility = false)
     {
         $nonSystem = filter_var($request->input('non_system'), FILTER_VALIDATE_BOOLEAN);
         $optimized = filter_var($request->input('optimized'), FILTER_VALIDATE_BOOLEAN);
         $allTasks = filter_var($request->input('all_tasks'), FILTER_VALIDATE_BOOLEAN);
         $hitlEnabled = app(SmartExtractConfiguration::class)->hitlEnabled();
+        $resolveManagedProcessVisibility = $resolveManagedProcessVisibility && $nonSystem && !$hitlEnabled;
         $includeScreen = filter_var($request->input('includeScreen'), FILTER_VALIDATE_BOOLEAN);
         $query->when(!$allTasks, function ($query) use ($includeScreen) {
             $query->where(function ($query) use ($includeScreen) {
@@ -309,7 +310,7 @@ trait TaskControllerIndexMethods
                 });
             });
         })
-            ->when($nonSystem, function ($query) use ($hitlEnabled, $optimized) {
+            ->when($nonSystem && !$resolveManagedProcessVisibility, function ($query) use ($hitlEnabled, $optimized) {
                 if (!$hitlEnabled) {
                     $query->nonSystem($optimized);
 
@@ -324,6 +325,8 @@ trait TaskControllerIndexMethods
                     });
                 });
             });
+
+        return $resolveManagedProcessVisibility;
     }
 
     private function applyColumnOrdering($query, $request)
@@ -610,19 +613,20 @@ trait TaskControllerIndexMethods
                 }
 
                 // Manually apply the Self Service filter for process managers
-                $selfServiceTaskIds = ProcessRequestToken::select(['id'])
-                    ->whereIn('process_id', $processManagerIds)
-                    ->where('is_self_service', 1)
-                    ->whereNull('user_id')
-                    ->where('status', 'ACTIVE');
+                $selfServiceTasks = function ($query) use ($processManagerIds) {
+                    $query->whereIn('process_request_tokens.process_id', $processManagerIds)
+                        ->where('process_request_tokens.is_self_service', 1)
+                        ->whereNull('process_request_tokens.user_id')
+                        ->where('process_request_tokens.status', 'ACTIVE');
+                };
 
                 if (!empty($statusFilters)) {
-                    $query->where(function ($query) use ($statusFilters, $selfServiceTaskIds) {
+                    $query->where(function ($query) use ($statusFilters, $selfServiceTasks) {
                         Filter::filter($query, $statusFilters);
-                        $query->orWhereIn('process_request_tokens.id', $selfServiceTaskIds);
+                        $query->orWhere($selfServiceTasks);
                     });
                 } else {
-                    $query->whereIn('process_request_tokens.id', $selfServiceTaskIds);
+                    $query->where($selfServiceTasks);
                 }
             } else {
                 // Normal behavior - apply the filter as-is
@@ -663,7 +667,7 @@ trait TaskControllerIndexMethods
         });
     }
 
-    public function applyProcessManager($query, $user, $request)
+    public function applyProcessManager($query, $user, $request, $resolveManagedProcessVisibility = false)
     {
         $ids = Process::select(['id'])
             ->where(function ($subQuery) use ($user) {
@@ -672,6 +676,12 @@ trait TaskControllerIndexMethods
                     ->orWhereRaw("JSON_CONTAINS(JSON_EXTRACT(properties, '$.manager_id'), CAST(? AS JSON))", [$user->id]);
             })
             ->where('status', 'ACTIVE')
+            ->when($resolveManagedProcessVisibility, function ($query) {
+                // Match token nonSystem(): at least one category must be non-system.
+                $query->whereHas('categories', function ($query) {
+                    $query->where('is_system', false);
+                });
+            })
             ->pluck('id')
             ->toArray();
 
