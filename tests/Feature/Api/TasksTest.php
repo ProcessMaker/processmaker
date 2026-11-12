@@ -272,6 +272,38 @@ class TasksTest extends TestCase
         $this->assertEquals('assignee-draft', $tasks[$task->id]['draft']['data']['field'] ?? null);
     }
 
+    public function testTaskIndexIncludesDraftDataForProcessManagerWithStringManagerIds()
+    {
+        $this->initializePermissions();
+        config(['app.task_drafts_enabled' => true]);
+
+        $manager = User::factory()->create();
+        $manager->giveDirectPermission('view-all_requests');
+        $assignee = User::factory()->create();
+        $this->user = $manager;
+
+        $process = Process::factory()->create([
+            'properties' => ['manager_id' => [(string) $manager->id]],
+        ]);
+        $processRequest = ProcessRequest::factory()->create(['process_id' => $process->id]);
+        $task = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $task->id,
+            'data' => ['manager_visible' => 'manager-draft'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', ['include' => 'draft']));
+        $response->assertStatus(200);
+
+        $draft = collect($response->json('data'))->keyBy('id')[$task->id]['draft'];
+        $this->assertEquals('manager-draft', $draft['data']['manager_visible'] ?? null);
+    }
+
     /**
      * You only see non system type tasks.
      */

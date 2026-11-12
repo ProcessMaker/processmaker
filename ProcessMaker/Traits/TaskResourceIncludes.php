@@ -260,7 +260,7 @@ trait TaskResourceIncludes
             return true;
         }
 
-        if (in_array($user->id, $this->managerIdsForTaskProcess($token), true)) {
+        if (in_array($user->id, $this->managerIdsForTaskProcess($token))) {
             return true;
         }
 
@@ -268,7 +268,7 @@ trait TaskResourceIncludes
     }
 
     /**
-     * @return list<int>
+     * @return list<int|string>
      */
     private function managerIdsForTaskProcess(ProcessRequestToken $token): array
     {
