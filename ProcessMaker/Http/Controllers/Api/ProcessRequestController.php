@@ -113,17 +113,61 @@ class ProcessRequestController extends Controller
             $user = Auth::user();
         }
 
-        // Filter request with user permissions
-        $query = ProcessRequest::forUser($user);
         $includes = $request->input('include', '');
+        $query = $this->buildProcessRequestIndexQuery($request, $user, $includes);
+
+        $pmqlError = $this->applyProcessRequestIndexPmql($query, $request);
+        if ($pmqlError !== null) {
+            return $pmqlError;
+        }
+
+        $fetchResult = $this->fetchProcessRequestIndexData($query, $request, $getTotal, $includes);
+        if (!is_array($fetchResult) || !isset($fetchResult['response'])) {
+            return $fetchResult;
+        }
+
+        ['response' => $response, 'total' => $total] = $fetchResult;
+
+        $response = $response->map(function ($processRequest) {
+            return new ProcessRequestResource($processRequest);
+        });
+
+        // Add process_request field for frontend compatibility
+        if ($request->input('extra_fields') === 'process_request') {
+            $response = $this->addExtraFieldForCompatibility($response);
+        }
+
+        return new ApiCollection($response, $total);
+    }
+
+    private function buildProcessRequestIndexQuery(Request $request, User $user, string $includes)
+    {
+        $query = ProcessRequest::forUser($user);
         foreach (array_filter(explode(',', $includes)) as $include) {
             if (in_array($include, ProcessRequest::$allowedIncludes) && $include !== 'process') {
                 $query->with($include);
             }
         }
 
-        // type filter
-        switch ($request->input('type')) {
+        $this->applyProcessRequestIndexTypeFilter($query, $request->input('type'));
+
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $query->filter($filter);
+        }
+
+        if ($advancedFilter = $request->input('advanced_filter', '')) {
+            Filter::filter($query, $advancedFilter);
+        }
+
+        $query->nonSystem();
+
+        return $query;
+    }
+
+    private function applyProcessRequestIndexTypeFilter($query, ?string $type): void
+    {
+        switch ($type) {
             case 'started_me':
                 $query->startedMe(Auth::user()->id);
                 $query->notCompleted();
@@ -138,73 +182,54 @@ class ProcessRequestController extends Controller
                 $query->getQuery()->wheres = [];
                 $query->get();
                 break;
+            default:
+                break;
         }
+    }
 
-        $filter = $request->input('filter', '');
-        if (!empty($filter)) {
-            $query->filter($filter);
-        }
-
-        if ($advancedFilter = $request->input('advanced_filter', '')) {
-            Filter::filter($query, $advancedFilter);
-        }
-
-        $query->nonSystem();
-
+    private function applyProcessRequestIndexPmql($query, Request $request)
+    {
         $pmql = $request->input('pmql', '');
+        $errorResponse = null;
+
         if (!empty($pmql)) {
             try {
                 $query->getModel()->useDataStoreTable($query, $request->input('data_store_table', ''), $request->input('data_store_columns', []));
                 $query->pmql($pmql);
             } catch (SyntaxError $e) {
-                return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
+                $errorResponse = response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             } catch (PmqlMethodException $e) {
-                return response(['message' => $e->getMessage(), 'field' => $e->getField()], 400);
+                $errorResponse = response(['message' => $e->getMessage(), 'field' => $e->getField()], 400);
             }
         }
+
+        return $errorResponse;
+    }
+
+    private function fetchProcessRequestIndexData($query, Request $request, $getTotal, string $includes)
+    {
         try {
             if ($getTotal === true) {
                 return $query->count();
-            } elseif ($request->input('total') == 'true') {
-                return ['meta' => ['total' => $query->count()]];
-            } else {
-                $response = $query->orderBy(
-                    str_ireplace('.', '->', $request->input('order_by', 'name')),
-                    $request->input('order_direction', 'ASC')
-                )
-                    ->select('process_requests.*')
-                    ->withAggregate('processVersion', 'alternative')
-                    ->paginate($request->input('per_page', 10));
-                $total = $response->total();
-                app(ProcessRequestListingRawRepository::class)->hydrate($response, $includes);
             }
+            if ($request->input('total') == 'true') {
+                return ['meta' => ['total' => $query->count()]];
+            }
+
+            $response = $query->orderBy(
+                str_ireplace('.', '->', $request->input('order_by', 'name')),
+                $request->input('order_direction', 'ASC')
+            )
+                ->select('process_requests.*')
+                ->withAggregate('processVersion', 'alternative')
+                ->paginate($request->input('per_page', 10));
+            $total = $response->total();
+            app(ProcessRequestListingRawRepository::class)->hydrate($response, $includes);
+
+            return ['response' => $response, 'total' => $total];
         } catch (QueryException $e) {
             throw $e;
-            $rawMessage = $e->getMessage();
-            if (preg_match("/Column not found: 1054 (.*) in 'where clause'/", $rawMessage, $matches)) {
-                $message = $matches[1];
-            } else {
-                $message = $rawMessage;
-            }
-
-            return response(['message' => $message], 400);
         }
-
-        if (isset($response)) {
-            // Map each item through its resource
-            $response = $response->map(function ($processRequest) use ($request) {
-                return new ProcessRequestResource($processRequest);
-            });
-        } else {
-            $response = collect([]);
-        }
-
-        // Add process_request field for frontend compatibility
-        if ($request->input('extra_fields') === 'process_request') {
-            $response = $this->addExtraFieldForCompatibility($response);
-        }
-
-        return new ApiCollection($response, $total);
     }
 
     public function getCount(Request $request, $process)

@@ -180,11 +180,15 @@ class TaskController extends Controller
 
         $this->applyColumnOrdering($query, $request);
 
-        // If only the total is being requested (by a Saved Search), send it now
         if ($getTotal === true) {
             return $query->count();
         }
 
+        return $this->paginateTaskIndex($query, $request, $user);
+    }
+
+    private function paginateTaskIndex($query, Request $request, User $user)
+    {
         try {
             $response = $query->paginate($request->input('per_page', 10));
         } catch (QueryException $e) {

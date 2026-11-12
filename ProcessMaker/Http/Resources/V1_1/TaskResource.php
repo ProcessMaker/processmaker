@@ -209,31 +209,14 @@ class TaskResource extends ApiResource
      */
     public static function fromTokenWithIncludes(ProcessRequestToken $token, Request $request): self
     {
-        $include = $request->query('include', []);
-        if ($include) {
-            $include = explode(',', $include);
-        }
-        $include = array_merge($include, self::$defaultIncludes);
+        $include = self::resolveRequestIncludes($request);
 
         foreach (self::$includeMethods as $key) {
             if (!in_array($key, $include)) {
                 continue;
             }
 
-            if ($key === 'user' && $token->relationLoaded('user')) {
-                continue;
-            }
-            if ($key === 'processRequest' && $token->relationLoaded('processRequest')) {
-                continue;
-            }
-            if ($key === 'process' && $token->relationLoaded('process')) {
-                continue;
-            }
-            if ($key === 'draft' && $token->relationLoaded('draft')) {
-                continue;
-            }
-            if ($key === 'requestor' && $token->relationLoaded('processRequest')
-                && $token->processRequest->relationLoaded('user')) {
+            if (self::includeRelationshipAlreadyLoaded($token, $key)) {
                 continue;
             }
 
@@ -241,6 +224,29 @@ class TaskResource extends ApiResource
         }
 
         return new static($token);
+    }
+
+    private static function resolveRequestIncludes(Request $request): array
+    {
+        $include = $request->query('include', []);
+        if ($include) {
+            $include = explode(',', $include);
+        }
+
+        return array_merge($include, self::$defaultIncludes);
+    }
+
+    private static function includeRelationshipAlreadyLoaded(ProcessRequestToken $token, string $key): bool
+    {
+        return match ($key) {
+            'user' => $token->relationLoaded('user'),
+            'processRequest' => $token->relationLoaded('processRequest'),
+            'process' => $token->relationLoaded('process'),
+            'draft' => $token->relationLoaded('draft'),
+            'requestor' => $token->relationLoaded('processRequest')
+                && $token->processRequest->relationLoaded('user'),
+            default => false,
+        };
     }
 
     private function processInclude(Request $request, array $array)
