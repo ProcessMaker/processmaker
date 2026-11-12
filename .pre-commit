@@ -16,7 +16,8 @@ errors=()
 if [ -n "$files" ]; then
     while read file; do
         echo "Checking $file"
-        php-cs-fixer fix --dry-run --verbose "$file" 2> /dev/null
+        # intersection: honor Finder exclusions (e.g. Seeds/code script snippets)
+        php-cs-fixer fix --dry-run --verbose --path-mode=intersection "$file" 2> /dev/null
         if [ $? -ne 0 ]; then
             errors+=("$file")
         fi
