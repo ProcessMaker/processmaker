@@ -240,6 +240,38 @@ class TasksTest extends TestCase
         $this->assertEquals('own-draft', $ownDraft['data']['mine'] ?? null);
     }
 
+    public function testTaskIndexIncludesOwnDraftDataWhenTokenProjectionOmitsUserId()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $assignee = User::factory()->create();
+        $this->user = $assignee;
+
+        $processRequest = ProcessRequest::factory()->create();
+        $task = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $task->id,
+            'data' => ['field' => 'assignee-draft'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'draft',
+            'fields' => 'id,element_name,status',
+        ]));
+
+        $response->assertStatus(200);
+        $tasks = collect($response->json('data'))->keyBy('id');
+        $this->assertEquals('assignee-draft', $tasks[$task->id]['draft']['data']['field'] ?? null);
+    }
+
     /**
      * You only see non system type tasks.
      */

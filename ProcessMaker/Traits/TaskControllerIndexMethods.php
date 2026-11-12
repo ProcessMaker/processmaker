@@ -121,16 +121,20 @@ trait TaskControllerIndexMethods
             $with['processRequest'] = $this->optimizedProcessRequestEagerLoad($includeData);
         }
 
-        if (in_array('process', $includes, true)) {
-            $with['process'] = fn ($q) => $q->select(['id', 'name', 'uuid']);
-        }
-
         if (in_array('user', $includes, true)) {
             $with['user'] = fn ($q) => $q->select(['id', 'firstname', 'lastname', 'avatar', 'status']);
         }
 
         if (in_array('draft', $includes, true)) {
             $with['draft'] = fn ($q) => $q->select(['id', 'task_id']);
+        }
+
+        if (in_array('process', $includes, true) || in_array('draft', $includes, true)) {
+            $processColumns = ['id', 'manager_id'];
+            if (in_array('process', $includes, true)) {
+                $processColumns = array_values(array_unique(array_merge($processColumns, ['name', 'uuid'])));
+            }
+            $with['process'] = fn ($q) => $q->select($processColumns);
         }
 
         if (in_array('processRequest.process', $includes, true)) {

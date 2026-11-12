@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ScreenVersion as ScreenVersionModel;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
@@ -75,7 +77,12 @@ trait TaskResourceIncludes
         }
 
         $user = Auth::user();
-        if (!$user || !$user->can('view', $this->resource)) {
+        if (!$user) {
+            return ['draft' => $draft->only(['id', 'task_id'])];
+        }
+
+        $this->ensureTokenAttributesForViewPolicy($this->resource);
+        if (!$user->can('view', $this->resource)) {
             return ['draft' => $draft->only(['id', 'task_id'])];
         }
 
@@ -200,6 +207,47 @@ trait TaskResourceIncludes
         $elementDestination = $this->resource->getElementDestinationAttribute();
 
         return ['elementDestination' => $elementDestination];
+    }
+
+    /**
+     * Partial token/process projections (optimized index, fast show) may omit columns
+     * required by ProcessRequestTokenPolicy::view before including draft payloads.
+     */
+    private function ensureTokenAttributesForViewPolicy(ProcessRequestToken $token): void
+    {
+        $tokenColumns = [];
+        foreach (['user_id', 'process_id', 'is_self_service'] as $column) {
+            if (!array_key_exists($column, $token->getAttributes())) {
+                $tokenColumns[] = $column;
+            }
+        }
+
+        if ($tokenColumns !== []) {
+            $row = ProcessRequestToken::query()
+                ->whereKey($token->getKey())
+                ->first(array_merge(['id'], $tokenColumns));
+            if ($row) {
+                foreach ($tokenColumns as $column) {
+                    $token->setAttribute($column, $row->{$column});
+                }
+            }
+        }
+
+        if ($token->is_self_service && !array_key_exists('self_service_groups', $token->getAttributes())) {
+            $groups = ProcessRequestToken::query()->whereKey($token->getKey())->value('self_service_groups');
+            $token->setAttribute('self_service_groups', $groups);
+        }
+
+        $process = $token->relationLoaded('process') ? $token->process : null;
+        if ($process && !array_key_exists('manager_id', $process->getAttributes())) {
+            $managerIds = Process::query()->whereKey($process->getKey())->value('manager_id');
+            $process->setAttribute('manager_id', $managerIds);
+        } elseif (!$token->relationLoaded('process') && $token->process_id) {
+            $token->setRelation(
+                'process',
+                Process::query()->whereKey($token->process_id)->first(['id', 'manager_id'])
+            );
+        }
     }
 
     private function loadUserRequestPermission(ProcessRequest $request, User $user, array $permissions)
