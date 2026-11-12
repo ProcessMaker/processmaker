@@ -1,10 +1,7 @@
-import { subProcessPreviewPayloadFromNode } from "./subprocessPreview";
+import { emitSubProcessPreviewOpen, subProcessPreviewPayloadFromNode } from "./subprocessPreview";
 
 const CALL_ACTIVITY_TYPE = "processmaker-modeler-call-activity";
 const DOUBLE_CLICK_MS = 450;
-const PREVIEW_OPEN_DEBOUNCE_MS = 400;
-
-let lastPreviewOpen = { processId: null, at: 0 };
 
 /**
  * POC: open PM4-owned subprocess preview modal on double-click of a Sub Process node.
@@ -59,24 +56,12 @@ function getSubProcessComponents(modeler) {
 function openPmSubProcessPreview(node, component) {
   const payload = subProcessPreviewPayloadFromNode(node);
 
-  if (!payload.processId) {
-    window.ProcessMaker.EventBus.$emit("subprocess-preview-open", payload);
-    return;
+  if (payload.processId) {
+    component?.$refs?.["subprocess-modal"]?.hide?.();
+    component?.$refs?.["no-subprocess-modal"]?.hide?.();
   }
 
-  const now = Date.now();
-  if (
-    lastPreviewOpen.processId === payload.processId
-    && now - lastPreviewOpen.at < PREVIEW_OPEN_DEBOUNCE_MS
-  ) {
-    return;
-  }
-  lastPreviewOpen = { processId: payload.processId, at: now };
-
-  component?.$refs?.["subprocess-modal"]?.hide?.();
-  component?.$refs?.["no-subprocess-modal"]?.hide?.();
-
-  window.ProcessMaker.EventBus.$emit("subprocess-preview-open", payload);
+  emitSubProcessPreviewOpen(payload);
 }
 
 function createPmClickSubprocessHandler(component, node) {

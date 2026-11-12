@@ -1,3 +1,31 @@
+const PREVIEW_OPEN_DEBOUNCE_MS = 400;
+
+let lastPreviewOpen = { processId: null, at: 0 };
+
+/**
+ * Emit subprocess-preview-open, debouncing repeated opens of the same process.
+ *
+ * @param {{ processId: number|null, nodeId?: string }} payload
+ * @returns {boolean} whether the event was emitted
+ */
+export function emitSubProcessPreviewOpen(payload) {
+  const processId = payload?.processId || null;
+
+  if (processId) {
+    const now = Date.now();
+    if (
+      lastPreviewOpen.processId === processId
+      && now - lastPreviewOpen.at < PREVIEW_OPEN_DEBOUNCE_MS
+    ) {
+      return false;
+    }
+    lastPreviewOpen = { processId, at: now };
+  }
+
+  window.ProcessMaker.EventBus.$emit("subprocess-preview-open", payload);
+  return true;
+}
+
 /**
  * Resolve child process id from a Call Activity (Sub Process) BPMN node.
  *

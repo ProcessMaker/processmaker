@@ -1,4 +1,5 @@
 import {
+  emitSubProcessPreviewOpen,
   fetchSubProcessPreviewName,
   resolveSubProcessId,
   subProcessPreviewPayloadFromNode,
@@ -65,5 +66,33 @@ describe("fetchSubProcessPreviewName", () => {
   it("returns process name from API", async () => {
     await expect(fetchSubProcessPreviewName(12)).resolves.toBe("Child process");
     expect(ProcessMaker.apiClient.get).toHaveBeenCalledWith("/processes/12");
+  });
+});
+
+describe("emitSubProcessPreviewOpen", () => {
+  beforeEach(() => {
+    ProcessMaker.EventBus = {
+      $emit: jest.fn(),
+    };
+  });
+
+  it("emits the open event", () => {
+    expect(emitSubProcessPreviewOpen({ processId: 5 })).toBe(true);
+    expect(ProcessMaker.EventBus.$emit).toHaveBeenCalledWith("subprocess-preview-open", {
+      processId: 5,
+    });
+  });
+
+  it("debounces repeated opens of the same process", () => {
+    expect(emitSubProcessPreviewOpen({ processId: 8 })).toBe(true);
+    expect(emitSubProcessPreviewOpen({ processId: 8 })).toBe(false);
+    expect(ProcessMaker.EventBus.$emit).toHaveBeenCalledTimes(1);
+  });
+
+  it("still emits when process id is missing", () => {
+    expect(emitSubProcessPreviewOpen({ processId: null })).toBe(true);
+    expect(ProcessMaker.EventBus.$emit).toHaveBeenCalledWith("subprocess-preview-open", {
+      processId: null,
+    });
   });
 });

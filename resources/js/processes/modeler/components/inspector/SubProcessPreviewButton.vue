@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { resolveSubProcessId } from "../../subprocessPreview";
+import { emitSubProcessPreviewOpen, resolveSubProcessId } from "../../subprocessPreview";
 
 export default {
   name: "SubProcessPreviewButton",
@@ -51,7 +51,7 @@ export default {
   },
   methods: {
     openPreview() {
-      window.ProcessMaker.EventBus.$emit("subprocess-preview-open", {
+      emitSubProcessPreviewOpen({
         processId: this.subProcessId,
       });
     },

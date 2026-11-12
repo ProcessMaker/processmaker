@@ -94,17 +94,27 @@ export default {
      * @param {{ processId: number|null, processName?: string }} payload
      */
     show(payload = {}) {
-      this.processId = payload.processId || null;
-      this.processName = "";
+      const nextProcessId = payload.processId || null;
       this.errorMessage = null;
 
-      if (!this.processId) {
+      if (!nextProcessId) {
+        this.processId = null;
+        this.processName = "";
         this.errorMessage = this.$t("Select a subprocess on this Sub Process node first.");
         this.loading = false;
         this.$refs.modal.show();
         return;
       }
 
+      // Same embed URL stays mounted; iframe @load will not fire again.
+      // Re-arming loading here would leave the overlay stuck until hide.
+      if (nextProcessId === this.processId) {
+        this.$refs.modal.show();
+        return;
+      }
+
+      this.processId = nextProcessId;
+      this.processName = "";
       this.loading = true;
       this.$refs.modal.show();
       this.loadMetadata();
