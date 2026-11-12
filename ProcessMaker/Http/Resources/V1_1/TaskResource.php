@@ -224,20 +224,7 @@ class TaskResource extends ApiResource
                 continue;
             }
 
-            if ($key === 'user' && $token->relationLoaded('user')) {
-                continue;
-            }
-            if ($key === 'processRequest' && $token->relationLoaded('processRequest')) {
-                continue;
-            }
-            if ($key === 'process' && $token->relationLoaded('process')) {
-                continue;
-            }
-            if ($key === 'draft' && $token->relationLoaded('draft')) {
-                continue;
-            }
-            if ($key === 'requestor' && $token->relationLoaded('processRequest')
-                && $token->processRequest->relationLoaded('user')) {
+            if (self::includeRelationshipAlreadyLoaded($token, $key)) {
                 continue;
             }
 
@@ -251,6 +238,19 @@ class TaskResource extends ApiResource
     private static function parseV11RequestIncludes(Request $request): array
     {
         return TaskDraftIncludes::parseIncludeList((string) $request->input('include', ''));
+    }
+
+    private static function includeRelationshipAlreadyLoaded(ProcessRequestToken $token, string $key): bool
+    {
+        return match ($key) {
+            'user' => $token->relationLoaded('user'),
+            'processRequest' => $token->relationLoaded('processRequest'),
+            'process' => $token->relationLoaded('process'),
+            'draft' => $token->relationLoaded('draft'),
+            'requestor' => $token->relationLoaded('processRequest')
+                && $token->processRequest->relationLoaded('user'),
+            default => false,
+        };
     }
 
     private function processInclude(Request $request, array $array)

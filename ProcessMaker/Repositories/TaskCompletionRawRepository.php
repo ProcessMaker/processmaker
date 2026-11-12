@@ -122,25 +122,24 @@ class TaskCompletionRawRepository
      */
     private function decodeManagerIds(mixed $value): array
     {
+        $managerIds = [];
+
         if ($value === null || $value === '') {
-            return [];
+            return $managerIds;
         }
 
         if (is_array($value)) {
-            return array_map('intval', $value);
+            $managerIds = array_map('intval', $value);
+        } elseif (is_numeric($value)) {
+            $managerIds = [(int) $value];
+        } else {
+            $decoded = $this->decodeJson($value);
+            if (is_array($decoded)) {
+                $managerIds = array_map('intval', $decoded);
+            }
         }
 
-        if (is_numeric($value)) {
-            return [(int) $value];
-        }
-
-        $decoded = $this->decodeJson($value);
-
-        if (is_array($decoded)) {
-            return array_map('intval', $decoded);
-        }
-
-        return [];
+        return $managerIds;
     }
 
     private function decodeJson(mixed $value): mixed

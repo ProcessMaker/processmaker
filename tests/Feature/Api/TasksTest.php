@@ -336,6 +336,105 @@ class TasksTest extends TestCase
         $this->assertArrayNotHasKey('data', $draft);
     }
 
+    public function testTaskIndexProcessRequestTokensDraftDoesNotExposeOtherUsersDraftData()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'nested-process-request-token'],
+        ]);
+
+        $ownTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $viewer->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $ownTask->id,
+            'data' => ['mine' => 'own-nested-pr'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'processRequest.tokens.draft',
+        ]));
+        $response->assertStatus(200);
+
+        $row = collect($response->json('data'))->firstWhere('id', $ownTask->id);
+        $tokens = collect($row['process_request']['tokens'] ?? [])->keyBy('id');
+
+        $otherDraft = $tokens[$otherTask->id]['draft'] ?? null;
+        $this->assertNotNull($otherDraft);
+        $this->assertArrayNotHasKey('data', $otherDraft);
+
+        $ownDraft = $tokens[$ownTask->id]['draft'] ?? null;
+        $this->assertEquals('own-nested-pr', $ownDraft['data']['mine'] ?? null);
+    }
+
+    public function testTaskIndexProcessRequestsTokensDraftDoesNotExposeOtherUsersDraftData()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $process = Process::factory()->create();
+        $viewerRequest = ProcessRequest::factory()->create(['process_id' => $process->id]);
+        $otherRequest = ProcessRequest::factory()->create(['process_id' => $process->id]);
+
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $otherRequest->id,
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'nested-process-requests'],
+        ]);
+
+        $ownTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $viewerRequest->id,
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'user_id' => $viewer->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'process.requests.tokens.draft',
+        ]));
+        $response->assertStatus(200);
+
+        $row = collect($response->json('data'))->firstWhere('id', $ownTask->id);
+        $otherDraft = collect($row['process']['requests'] ?? [])
+            ->flatMap(fn ($request) => $request['tokens'] ?? [])
+            ->firstWhere('id', $otherTask->id)['draft'] ?? null;
+
+        $this->assertNotNull($otherDraft);
+        $this->assertArrayNotHasKey('data', $otherDraft);
+    }
+
     public function testLegacyTaskIndexWithoutIncludeDoesNotEmbedDraftRelation()
     {
         $this->initializePermissions();

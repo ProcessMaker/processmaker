@@ -72,17 +72,29 @@ trait TaskResourceIncludes
             return $array;
         }
 
-        $array['draft'] = $this->resolveDraftPayloadForResponse();
+        $array['draft'] = $this->resolveDraftPayloadForToken($this->resource, $this->draft);
+        $this->redactNestedDraftsInArray($array);
 
         return $array;
     }
 
-    /** @return array<string, mixed>|TaskDraft|null */
-    private function resolveDraftPayloadForResponse(): array|TaskDraft|null
+    /**
+     * @return array<string, mixed>|TaskDraft|null
+     */
+    private function resolveDraftPayloadForToken(ProcessRequestToken $token, mixed $draft): array|TaskDraft|null
     {
-        $draft = $this->draft;
-        if (!$draft) {
+        if ($draft === null) {
             return null;
+        }
+
+        if (!$draft instanceof TaskDraft) {
+            if (!is_array($draft) || !isset($draft['id'], $draft['task_id'])) {
+                return is_array($draft)
+                    ? array_intersect_key($draft, array_flip(['id', 'task_id']))
+                    : null;
+            }
+            $draft = (new TaskDraft())->setRawAttributes($draft, true);
+            $draft->exists = true;
         }
 
         $user = Auth::user();
@@ -91,8 +103,8 @@ trait TaskResourceIncludes
             if (!$user) {
                 return null;
             }
-            $this->ensureTokenAttributesForViewPolicy($this->resource);
-            if (!$this->userCanViewTaskForDraft($user)) {
+            $this->ensureTokenAttributesForViewPolicy($token);
+            if (!$this->userCanViewTaskForDraft($user, $token)) {
                 return null;
             }
             $draft->delete();
@@ -104,8 +116,8 @@ trait TaskResourceIncludes
             return $draft->only(['id', 'task_id']);
         }
 
-        $this->ensureTokenAttributesForViewPolicy($this->resource);
-        if (!$this->userCanViewTaskForDraft($user)) {
+        $this->ensureTokenAttributesForViewPolicy($token);
+        if (!$this->userCanViewTaskForDraft($user, $token)) {
             return $draft->only(['id', 'task_id']);
         }
 
@@ -114,6 +126,51 @@ trait TaskResourceIncludes
         }
 
         return $draft;
+    }
+
+    /**
+     * @param  array<string, mixed>  $array
+     */
+    private function redactNestedDraftsInArray(array &$array): void
+    {
+        foreach ($array as &$value) {
+            if (!is_array($value)) {
+                continue;
+            }
+            if (array_is_list($value)) {
+                foreach ($value as &$item) {
+                    if (is_array($item)) {
+                        $this->redactDraftOnSerializedToken($item);
+                        $this->redactNestedDraftsInArray($item);
+                    }
+                }
+                continue;
+            }
+            $this->redactDraftOnSerializedToken($value);
+            $this->redactNestedDraftsInArray($value);
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     */
+    private function redactDraftOnSerializedToken(array &$row): void
+    {
+        if (!isset($row['draft'], $row['id'])) {
+            return;
+        }
+
+        $token = new ProcessRequestToken();
+        $token->setRawAttributes([
+            'id' => $row['id'],
+            'user_id' => $row['user_id'] ?? null,
+            'process_id' => $row['process_id'] ?? null,
+            'process_request_id' => $row['process_request_id'] ?? null,
+            'is_self_service' => $row['is_self_service'] ?? null,
+        ], true);
+        $token->exists = true;
+
+        $row['draft'] = $this->resolveDraftPayloadForToken($token, $row['draft']);
     }
 
     private function includeComponent()
@@ -263,13 +320,13 @@ trait TaskResourceIncludes
     }
 
     /** @see ProcessRequestTokenPolicy::view — avoids lazy-loading process on list rows */
-    private function userCanViewTaskForDraft(User $user): bool
+    private function userCanViewTaskForDraft(User $user, ?ProcessRequestToken $token = null): bool
     {
         if ($user->is_administrator) {
             return true;
         }
 
-        $token = $this->resource;
+        $token ??= $this->resource;
         if ((int) $token->user_id === (int) $user->id) {
             return true;
         }

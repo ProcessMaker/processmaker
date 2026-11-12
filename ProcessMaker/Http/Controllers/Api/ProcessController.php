@@ -38,6 +38,7 @@ use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\Template;
+use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
 use ProcessMaker\Nayra\Services\FixBpmnSchemaService;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
@@ -135,29 +136,73 @@ class ProcessController extends Controller
         $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
         $relationships = array_values(array_diff($include, ['events']));
-        $status = $request->input('status');
-        $pmql = $request->input('pmql', '');
 
-        $processes = Process::nonSystem()->notArchived()->with($relationships);
-        if ($status === 'archived') {
-            $processes = Process::archived()->with($relationships);
-        }
-        if ($status === 'all') {
-            $processes = Process::active()->with($relationships);
-        }
+        $processes = $this->buildProcessIndexQuery($request->input('status'), $relationships);
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $processes->filter($filter);
         }
 
-        // The simplified parameter indicates to return just the main information of processes
+        $simplifiedResponse = $this->processIndexSimplifiedResponse($request, $processes);
+        if ($simplifiedResponse !== null) {
+            return $simplifiedResponse;
+        }
+
+        // Filter by category
+        $category = $request->input('category', null);
+        if (!empty($category)) {
+            $processes->processCategory($category);
+        }
+
+        // Filter by category status
+        $processes->categoryStatus($request->input('cat_status', null));
+
+        $pmqlError = $this->applyProcessIndexPmql($processes, $request->input('pmql', ''));
+        if ($pmqlError !== null) {
+            return $pmqlError;
+        }
+
+        $processes = $processes
+            ->with('notification_settings')
+            ->exclude(['bpmn', 'svg'])
+            ->leftJoin(\DB::raw('(select id, uuid, name from process_categories) as category'), 'processes.process_category_id', '=', 'category.id')
+            ->leftJoin(\DB::raw('(select id, uuid, username, lastname, firstname from users) as user'), 'processes.user_id', '=', 'user.id')
+            ->orderBy(...$orderBy)
+            ->paginate($perPage);
+
+        $this->enrichProcessIndexCollection(
+            $processes,
+            $user,
+            $request->input('bookmark', false),
+            $request->input('launchpad', false)
+        );
+
+        return new ProcessCollection($processes);
+    }
+
+    private function buildProcessIndexQuery(?string $status, array $relationships)
+    {
+        $processes = Process::nonSystem()->notArchived()->with($relationships);
+        if ($status === 'archived') {
+            return Process::archived()->with($relationships);
+        }
+        if ($status === 'all') {
+            return Process::active()->with($relationships);
+        }
+
+        return $processes;
+    }
+
+    private function processIndexSimplifiedResponse(Request $request, $processes)
+    {
         if ($request->input('simplified_data', false)) {
-            $processes = Process::where('status', 'ACTIVE')->select('id', 'start_events')->get();
-            $modifiedCollection = $processes->map(function ($item) {
+            $items = Process::where('status', 'ACTIVE')->select('id', 'start_events')->get();
+            $modifiedCollection = $items->map(function ($item) {
                 return [
                     'id' => $item['id'],
-                    'events' => $item['start_events']];
+                    'events' => $item['start_events'],
+                ];
             });
 
             return new ApiCollection($modifiedCollection);
@@ -170,36 +215,26 @@ class ProcessController extends Controller
             return new ApiCollection($processes->get());
         }
 
-        // Filter by category
-        $category = $request->input('category', null);
-        if (!empty($category)) {
-            $processes->processCategory($category);
+        return null;
+    }
+
+    private function applyProcessIndexPmql($processes, string $pmql)
+    {
+        if (empty($pmql)) {
+            return null;
         }
 
-        // Filter by category status
-        $processes->categoryStatus($request->input('cat_status', null));
-
-        if (!empty($pmql)) {
-            try {
-                $processes->pmql($pmql);
-            } catch (\ProcessMaker\Query\SyntaxError $e) {
-                return response(['error' => 'PMQL error'], 400);
-            }
+        try {
+            $processes->pmql($pmql);
+        } catch (\ProcessMaker\Query\SyntaxError $e) {
+            return response(['error' => 'PMQL error'], 400);
         }
 
-        // Get with bookmark
-        $bookmark = $request->input('bookmark', false);
-        // Get with launchpad
-        $launchpad = $request->input('launchpad', false);
+        return null;
+    }
 
-        $processes = $processes
-            ->with('notification_settings')
-            ->exclude(['bpmn', 'svg'])
-            ->leftJoin(\DB::raw('(select id, uuid, name from process_categories) as category'), 'processes.process_category_id', '=', 'category.id')
-            ->leftJoin(\DB::raw('(select id, uuid, username, lastname, firstname from users) as user'), 'processes.user_id', '=', 'user.id')
-            ->orderBy(...$orderBy)
-            ->paginate($perPage);
-
+    private function enrichProcessIndexCollection($processes, User $user, $bookmark, $launchpad): void
+    {
         foreach ($processes as $process) {
             $process->setAppends(array_values(array_diff($process->getAppends(), ['projects'])));
             $process->makeHidden('notification_settings');
@@ -216,8 +251,6 @@ class ProcessController extends Controller
                 $process->case_retention_tier_adjustment_notice = CaseRetentionTierService::adjustmentNoticeIsActive($process);
             }
         }
-
-        return new ProcessCollection($processes);
     }
 
     /**

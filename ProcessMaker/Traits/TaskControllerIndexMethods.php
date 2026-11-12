@@ -66,6 +66,11 @@ trait TaskControllerIndexMethods
             $query->with(['draft' => TaskDraftIncludes::constrainedEagerLoad()]);
         }
 
+        $nestedDraftWith = TaskDraftIncludes::nestedDraftEagerLoadMap($includes);
+        if ($nestedDraftWith !== []) {
+            $query->with($nestedDraftWith);
+        }
+
         $additionalIncludes = array_values(array_filter(
             $includes,
             fn (string $token) => $token !== 'data' && !TaskDraftIncludes::isDraftToken($token)
@@ -141,6 +146,15 @@ trait TaskControllerIndexMethods
         if (in_array('processRequest.process', $includes, true)) {
             $with['processRequest.process'] = fn ($q) => $q->select(['id', 'name', 'uuid']);
         }
+
+        $nestedDraftWith = TaskDraftIncludes::nestedDraftEagerLoadMap($includes);
+        if (array_key_exists('processRequest.tokens', $nestedDraftWith) && !isset($with['processRequest'])) {
+            $with['processRequest'] = $this->optimizedProcessRequestEagerLoad($includeData);
+        }
+        if (array_key_exists('process.requests.tokens', $nestedDraftWith) && !isset($with['process'])) {
+            $with['process'] = fn ($q) => $q->select(['id', 'name', 'uuid']);
+        }
+        $with = array_merge($with, $nestedDraftWith);
 
         return $with;
     }
