@@ -258,7 +258,7 @@ class TaskResource extends ApiResource
         $include = self::parseV11RequestIncludes($request);
 
         foreach (self::$includeMethods as $key) {
-            if ($key === 'draft' && TaskDraftIncludes::includesDraft($include)) {
+            if ($key === 'draft' && (TaskDraftIncludes::includesDraft($include) || $this->resource->relationLoaded('draft'))) {
                 continue;
             }
             if (!in_array($key, $include, true)) {

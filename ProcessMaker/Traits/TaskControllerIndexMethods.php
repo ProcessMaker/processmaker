@@ -92,10 +92,10 @@ trait TaskControllerIndexMethods
         $with = $this->buildOptimizedIndexWith($includes, $includeData);
 
         $handledIncludes = ['data', 'processRequest', 'process', 'user', 'draft', 'processRequest.process'];
-        $additionalIncludes = array_values(array_diff($includes, $handledIncludes));
         $additionalIncludes = array_values(array_filter(
-            $additionalIncludes,
-            fn (string $token) => !TaskDraftIncludes::isDraftToken($token)
+            $includes,
+            fn (string $token) => !in_array($token, $handledIncludes, true)
+                && !TaskDraftIncludes::isDraftToken($token)
         ));
 
         if (!empty($with)) {

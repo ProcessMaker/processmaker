@@ -304,6 +304,38 @@ class TasksTest extends TestCase
         $this->assertEquals('manager-draft', $draft['data']['manager_visible'] ?? null);
     }
 
+    public function testLegacyTaskIndexDraftMediaDoesNotExposeOtherUsersDraftData()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => false,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'legacy-draft-media'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', ['include' => 'draft.media']));
+        $response->assertStatus(200);
+
+        $draft = collect($response->json('data'))->keyBy('id')[$otherTask->id]['draft'] ?? null;
+        $this->assertNotNull($draft);
+        $this->assertArrayNotHasKey('data', $draft);
+    }
+
     public function testTaskIndexNestedDraftIncludeDoesNotExposeOtherUsersDraftData()
     {
         $this->initializePermissions();
@@ -488,6 +520,38 @@ class TasksTest extends TestCase
         ]);
 
         $response = $this->apiCall('GET', route('api.tasks.index', ['include' => 'draft']));
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('task_drafts', ['id' => $draft->id, 'task_id' => $otherTask->id]);
+        $otherRow = collect($response->json('data'))->keyBy('id')[$otherTask->id];
+        $this->assertNull($otherRow['draft'] ?? null);
+    }
+
+    public function testTaskIndexDraftMediaWithDraftsDisabledDoesNotDeleteAnotherUsersDraft()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => false,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        $draft = TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'must-survive-media'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', ['include' => 'draft.media']));
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('task_drafts', ['id' => $draft->id, 'task_id' => $otherTask->id]);

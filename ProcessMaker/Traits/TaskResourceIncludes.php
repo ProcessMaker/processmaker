@@ -66,14 +66,19 @@ trait TaskResourceIncludes
     {
         $include = TaskDraftIncludes::parseIncludeList((string) $request->input('include', ''));
 
-        if (!TaskDraftIncludes::includesDraft($include)) {
-            unset($array['draft']);
+        $draftPayload = $this->resource->relationLoaded('draft')
+            ? $this->draft
+            : ($array['draft'] ?? null);
 
-            return $array;
+        if ($draftPayload !== null || array_key_exists('draft', $array)) {
+            $array['draft'] = $this->resolveDraftPayloadForToken($this->resource, $draftPayload);
+        } elseif (!TaskDraftIncludes::includesDraft($include)) {
+            unset($array['draft']);
         }
 
-        $array['draft'] = $this->resolveDraftPayloadForToken($this->resource, $this->draft);
-        $this->redactNestedDraftsInArray($array);
+        if (TaskDraftIncludes::includesDraft($include)) {
+            $this->redactNestedDraftsInArray($array);
+        }
 
         return $array;
     }
