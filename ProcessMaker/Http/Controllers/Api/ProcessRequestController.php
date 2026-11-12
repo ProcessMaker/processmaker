@@ -128,7 +128,7 @@ class ProcessRequestController extends Controller
 
         ['response' => $response, 'total' => $total] = $fetchResult;
 
-        $response = $response->map(function ($processRequest) use ($request) {
+        $response = $response->map(function ($processRequest) {
             return new ProcessRequestResource($processRequest);
         });
 
@@ -182,26 +182,28 @@ class ProcessRequestController extends Controller
                 $query->getQuery()->wheres = [];
                 $query->get();
                 break;
+            default:
+                break;
         }
     }
 
     private function applyProcessRequestIndexPmql($query, Request $request)
     {
         $pmql = $request->input('pmql', '');
-        if (empty($pmql)) {
-            return null;
+        $errorResponse = null;
+
+        if (!empty($pmql)) {
+            try {
+                $query->getModel()->useDataStoreTable($query, $request->input('data_store_table', ''), $request->input('data_store_columns', []));
+                $query->pmql($pmql);
+            } catch (SyntaxError $e) {
+                $errorResponse = response(['message' => __('Your PMQL contains invalid syntax.')], 400);
+            } catch (PmqlMethodException $e) {
+                $errorResponse = response(['message' => $e->getMessage(), 'field' => $e->getField()], 400);
+            }
         }
 
-        try {
-            $query->getModel()->useDataStoreTable($query, $request->input('data_store_table', ''), $request->input('data_store_columns', []));
-            $query->pmql($pmql);
-        } catch (SyntaxError $e) {
-            return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
-        } catch (PmqlMethodException $e) {
-            return response(['message' => $e->getMessage(), 'field' => $e->getField()], 400);
-        }
-
-        return null;
+        return $errorResponse;
     }
 
     private function fetchProcessRequestIndexData($query, Request $request, $getTotal, string $includes)
