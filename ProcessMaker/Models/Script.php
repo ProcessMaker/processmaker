@@ -30,6 +30,7 @@ use ProcessMaker\Validation\CategoryRule;
  * @property string language
  * @property text code
  * @property int timeout
+ * @property bool allow_in_process
  *
  * @OA\Schema(
  *   schema="scriptsEditable",
@@ -38,6 +39,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   @OA\Property(property="language", type="string"),
  *   @OA\Property(property="code", type="string"),
  *   @OA\Property(property="timeout", type="integer"),
+ *   @OA\Property(property="allow_in_process", type="boolean"),
  *   @OA\Property(property="run_as_user_id", type="integer"),
  *   @OA\Property(property="key", type="string"),
  *   @OA\Property(property="script_category_id", type="integer"),
@@ -87,6 +89,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
         'timeout' => 'integer',
         'retry_attempts' => 'integer',
         'retry_wait_time' => 'integer',
+        'allow_in_process' => 'boolean',
     ];
 
     protected $appends = [
@@ -110,6 +113,12 @@ class Script extends ProcessMakerModel implements ScriptInterface
             // If a script executor has not been set, choose one
             // automatically based on the scripts set language
             $script->setDefaultExecutor();
+
+            if ($script->allow_in_process && strtolower((string) $script->language) !== 'php') {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'allow_in_process' => [__('Only PHP scripts can allow in-process execution.')],
+                ]);
+            }
 
             // Execute the clear cache callback
             $clearCacheCallback($script);
@@ -154,6 +163,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
             'description' => 'required',
             'run_as_user_id' => 'required',
             'timeout' => 'integer|min:0|max:65535',
+            'allow_in_process' => 'sometimes|boolean',
             'script_category_id' => [new CategoryRule($existing)],
         ];
     }
