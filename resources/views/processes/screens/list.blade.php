@@ -42,6 +42,5 @@
     </div>
 
 @section('js')
-    <script src="{{mix('js/processes/screens/index.js')}}"></script>
-
+    @vite(['resources/js/processes/screens/index.js'])
 @append

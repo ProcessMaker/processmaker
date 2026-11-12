@@ -7,14 +7,12 @@ import { getApi } from "../variables/index";
  * @param {string|null} filter - Filter string to search users
  * @param {number|null} taskId - Task ID to get assignable users for
  * @param {Object|null} formData - Form data needed to calculate rule expressions
- * @param {number|null} currentTaskUserId - User ID to exclude from results (matches: task?.user_id ?? task?.user?.id)
  * @returns {Promise<Object>} Response data with users array
  */
 export const getReassignUsers = async (
   filter = null,
   taskId = null,
-  formData = null,
-  currentTaskUserId = null
+  formData = null
 ) => {
   const api = getApi();
   const params = {};
@@ -37,14 +35,8 @@ export const getReassignUsers = async (
   }
 
   const response = await api.post("users_task_count", params);
-  const data = response.data;
-  
-  // Filter out current user to prevent self-reassignment (matches mixin logic)
-  if (currentTaskUserId && Array.isArray(data?.data)) {
-    data.data = data.data.filter((user) => user.id !== currentTaskUserId);
-  }
-  
-  return data;
+
+  return response.data;
 };
 
 export const updateReassignUser = async (taskId, userId, comments = null) => {

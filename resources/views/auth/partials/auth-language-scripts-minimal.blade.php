@@ -1,8 +1,4 @@
-@foreach(GlobalScripts::getScripts() as $script)
-  @if (strpos($script, '/vendor/processmaker/packages/package-dynamic-ui/js/global.js') !== 0)
-    <script src="{{ $script }}"></script>
-  @endif
-@endforeach
+@include('auth.partials.deferred-global-scripts')
 <script>
   window.ProcessMaker = window.ProcessMaker || {};
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());

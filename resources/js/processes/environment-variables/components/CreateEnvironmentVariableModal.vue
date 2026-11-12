@@ -47,7 +47,9 @@
 </template>
 
 <script>
-  import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+  import  FormErrorsMixin  from "../../../components/shared/FormErrorsMixin.js";
+  import Modal from "../../../components/shared/Modal.vue";
+  import Required from "../../../components/shared/Required.vue";
   import AssetLinkFields from "./AssetLinkFields.vue";
   import DoNotUpdateSwitch from "./DoNotUpdateSwitch.vue";
 

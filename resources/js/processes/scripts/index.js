@@ -1,7 +1,7 @@
 import Vue from "vue";
-import ScriptListing from "./components/ScriptListing";
-import CreateScriptModal from "./components/CreateScriptModal";
-import CategorySelect from "../categories/components/CategorySelect";
+import ScriptListing from "./components/ScriptListing.vue";
+import CreateScriptModal from "./components/CreateScriptModal.vue";
+import CategorySelect from "../categories/components/CategorySelect.vue";
 
 Vue.component("CategorySelect", CategorySelect);
 

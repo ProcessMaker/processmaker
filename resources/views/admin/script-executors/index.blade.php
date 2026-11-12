@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layoutnextvite')
 
 @section('title')
     {{ __('Script Executors') }}
@@ -15,6 +15,7 @@
     ]])
 @endsection
 @section('content')
+    @vite('resources/js/loader/loaderMinimal.js')
     <div id="script-executors" class="px-3">
         <div class="card card-body">
             <script-executors
@@ -25,6 +26,30 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/script-executors/index.js')}}"></script>
+    <script>
+        if (!!{{ config('script-runner-microservice.enabled') }}) {
+            window.Processmaker.script_microservice = {
+                enabled : {{ config('script-runner-microservice.enabled', false) }},
+                broadcasting : {
+                    broadcaster: "pusher",
+                    key: "{{config('script-runner-microservice.broadcasting.app_key')}}",
+                    cluster: "{{config('script-runner-microservice.broadcasting.cluster')}}",
+                    forceTLS: {{config('script-runner-microservice.broadcasting.scheme') === 'https' ? 'true' : 'false'}},
+                    enabledTransports: ['ws', 'wss'],
+                    disableStats: true,
+                }
+            };
+            const broadcastingHost = "{{config('script-runner-microservice.broadcasting.host')}}";
+            if (broadcastingHost !== "") {
+                window.Processmaker.script_microservice.broadcasting.wsHost = "{{config('script-runner-microservice.broadcasting.host')}}";
+                window.Processmaker.script_microservice.broadcasting.wsPort = "{{config('script-runner-microservice.broadcasting.port')}}";
+                window.Processmaker.script_microservice.broadcasting.wssPort = "{{config('script-runner-microservice.broadcasting.port')}}";
+            }
+        }
+        window.temporal = window.temporal || {};
+        window.temporal.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+        window.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+    </script>
+    @vite(['resources/js/admin/script-executors/index.js'])
 @endsection
 

@@ -98,6 +98,13 @@ class Permission extends ProcessMakerModel
         return $filtered;
     }
 
+    public static function cachedNames(): array
+    {
+        return Cache::remember('permissions', 86400, function () {
+            return self::pluck('name')->toArray();
+        });
+    }
+
     public static function byName($name)
     {
         try {
@@ -139,7 +146,7 @@ class Permission extends ProcessMakerModel
                     ->on('assignables.assignable_id', '=', 'users.id');
                 })
                 ->select('users.*')
-                ->union(\ProcessMaker\Models\User::where('is_administrator', '=', true))
+                ->union(User::where('is_administrator', '=', true))
                 ->groupBy('users.id')
                 ->get();
 
@@ -148,8 +155,7 @@ class Permission extends ProcessMakerModel
 
     private static function clearAndRebuildCache()
     {
-        // Rebuild and update the permissions cache
-        $permissions = self::pluck('name')->toArray();
-        Cache::put('permissions', $permissions, 86400);
+        Cache::forget('permissions');
+        self::cachedNames();
     }
 }

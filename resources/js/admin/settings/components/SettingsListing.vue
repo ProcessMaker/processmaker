@@ -193,7 +193,7 @@
 </template>
 
 <script>
-import { BasicSearch } from "SharedComponents";
+import  BasicSearch  from "../../../components/shared/BasicSearch.vue";
 import isPMQL from "../../../modules/isPMQL";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import PmqlInput from "../../../components/shared/PmqlInput";

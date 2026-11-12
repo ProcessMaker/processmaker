@@ -2,12 +2,12 @@
 
 namespace ProcessMaker\Jobs;
 
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Exception\ConfigurationException;
-use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\DataManager;
@@ -144,8 +144,11 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $error->setName($message);
 
             $token->setProperty('error', $error);
-            $exceptionClass = get_class($exception);
-            $modifiedException = new $exceptionClass($message);
+            if ($message !== $exception->getMessage()) {
+                $modifiedException = new Exception($message, $exception->getCode(), $exception);
+            } else {
+                $modifiedException = $exception;
+            }
             $token->logError($modifiedException, $element);
 
             Log::error('Script failed: ' . $scriptRef . ' - ' . $message);

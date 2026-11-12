@@ -6,16 +6,14 @@ use Illuminate\Broadcasting\BroadcastManager;
 
 class TenantAwareBroadcastManager extends BroadcastManager
 {
-    private int $tenantId;
-
-    public function __construct($app, int $tenantId)
+    /**
+     * Create an instance of the driver.
+     *
+     * @param  array  $config
+     * @return \Illuminate\Contracts\Broadcasting\Broadcaster
+     */
+    protected function createPusherDriver(array $config)
     {
-        parent::__construct($app);
-        $this->tenantId = $tenantId;
-    }
-
-    public function createPusherDriver($config)
-    {
-        return new TenantAwarePusherBroadcaster($this->pusher($config), $this->tenantId);
+        return new TenantAwarePusherBroadcaster($this->pusher($config), $config['jsonp'] ?? false);
     }
 }

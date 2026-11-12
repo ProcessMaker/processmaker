@@ -116,6 +116,7 @@ export default {
   data() {
     return {
       urlPath: "",
+
       assetsCore: [
         {
           color: "#4DA2EB",
@@ -168,7 +169,7 @@ export default {
         },
         {
           color: "#556271",
-          image_icon: require("../../../img/flowGenieIcon.svg"),
+          image_icon: "/img/flowGenieIcon.svg",
           asset_name: "FlowGenie",
           asset_name_all: "View All Genies",
           asset_name_new: "New Genie",
