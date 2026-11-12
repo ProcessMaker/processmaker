@@ -20,6 +20,20 @@ trait TaskResourceIncludes
 {
     use TaskScreenResourceTrait;
 
+    /** Do not treat case/request payload trees as task token rows. */
+    private const DRAFT_REDACT_EXCLUDED_KEYS = [
+        'request_data',
+        'data',
+        'screen',
+        'config',
+        'nested',
+        'definition',
+        'interstitial_screen',
+        'user_request_permission',
+        'elementDestination',
+        'loop_context',
+    ];
+
     private function getData()
     {
         if ($this->loadedData) {
@@ -88,18 +102,14 @@ trait TaskResourceIncludes
      */
     private function resolveDraftPayloadForToken(ProcessRequestToken $token, mixed $draft): array|TaskDraft|null
     {
-        if ($draft === null) {
+        $token = $this->tokenFromPersistedId($token->getKey());
+        if (!$token) {
             return null;
         }
 
-        if (!$draft instanceof TaskDraft) {
-            if (!is_array($draft) || !isset($draft['id'], $draft['task_id'])) {
-                return is_array($draft)
-                    ? array_intersect_key($draft, array_flip(['id', 'task_id']))
-                    : null;
-            }
-            $draft = (new TaskDraft())->setRawAttributes($draft, true);
-            $draft->exists = true;
+        $draft = $this->taskDraftForToken($token, $draft);
+        if (!$draft) {
+            return null;
         }
 
         $user = Auth::user();
@@ -127,10 +137,59 @@ trait TaskResourceIncludes
         }
 
         if (!array_key_exists('data', $draft->getAttributes())) {
-            $draft = TaskDraft::query()->whereKey($draft->getKey())->first(['id', 'task_id', 'data']);
+            $draft = TaskDraft::query()
+                ->whereKey($draft->getKey())
+                ->where('task_id', $token->id)
+                ->first(['id', 'task_id', 'data']);
         }
 
         return $draft;
+    }
+
+    private function tokenFromPersistedId(int|string|null $tokenId): ?ProcessRequestToken
+    {
+        if ($tokenId === null || $tokenId === '') {
+            return null;
+        }
+
+        return ProcessRequestToken::query()->whereKey($tokenId)->first([
+            'id',
+            'user_id',
+            'process_id',
+            'process_request_id',
+            'is_self_service',
+        ]);
+    }
+
+    /**
+     * Resolve draft only when task_id matches the persisted token id (never trust nested JSON).
+     */
+    private function taskDraftForToken(ProcessRequestToken $token, mixed $draft): ?TaskDraft
+    {
+        if ($draft === null) {
+            return TaskDraft::query()
+                ->where('task_id', $token->id)
+                ->first(['id', 'task_id', 'data']);
+        }
+
+        $draftId = $draft instanceof TaskDraft
+            ? $draft->getKey()
+            : (is_array($draft) ? ($draft['id'] ?? null) : null);
+
+        if ($draftId !== null) {
+            return TaskDraft::query()
+                ->whereKey($draftId)
+                ->where('task_id', $token->id)
+                ->first(['id', 'task_id', 'data']);
+        }
+
+        if ($draft instanceof TaskDraft) {
+            return TaskDraft::query()
+                ->where('task_id', $token->id)
+                ->first(['id', 'task_id', 'data']);
+        }
+
+        return null;
     }
 
     /**
@@ -138,20 +197,20 @@ trait TaskResourceIncludes
      */
     private function redactNestedDraftsInArray(array &$array): void
     {
-        foreach ($array as &$value) {
-            if (!is_array($value)) {
+        foreach ($array as $key => &$value) {
+            if (!is_array($value) || in_array($key, self::DRAFT_REDACT_EXCLUDED_KEYS, true)) {
                 continue;
             }
-            if (array_is_list($value)) {
+
+            if ($key === 'tokens' && array_is_list($value)) {
                 foreach ($value as &$item) {
                     if (is_array($item)) {
                         $this->redactDraftOnSerializedToken($item);
-                        $this->redactNestedDraftsInArray($item);
                     }
                 }
                 continue;
             }
-            $this->redactDraftOnSerializedToken($value);
+
             $this->redactNestedDraftsInArray($value);
         }
     }
@@ -165,15 +224,12 @@ trait TaskResourceIncludes
             return;
         }
 
-        $token = new ProcessRequestToken();
-        $token->setRawAttributes([
-            'id' => $row['id'],
-            'user_id' => $row['user_id'] ?? null,
-            'process_id' => $row['process_id'] ?? null,
-            'process_request_id' => $row['process_request_id'] ?? null,
-            'is_self_service' => $row['is_self_service'] ?? null,
-        ], true);
-        $token->exists = true;
+        $token = $this->tokenFromPersistedId($row['id']);
+        if (!$token) {
+            unset($row['draft']);
+
+            return;
+        }
 
         $row['draft'] = $this->resolveDraftPayloadForToken($token, $row['draft']);
     }
@@ -300,21 +356,12 @@ trait TaskResourceIncludes
      */
     private function ensureTokenAttributesForViewPolicy(ProcessRequestToken $token): void
     {
-        $tokenColumns = [];
-        foreach (['user_id', 'process_id', 'is_self_service'] as $column) {
-            if (!array_key_exists($column, $token->getAttributes())) {
-                $tokenColumns[] = $column;
-            }
-        }
-
-        if ($tokenColumns !== []) {
-            $row = ProcessRequestToken::query()
-                ->whereKey($token->getKey())
-                ->first(array_merge(['id'], $tokenColumns));
-            if ($row) {
-                foreach ($tokenColumns as $column) {
-                    $token->setAttribute($column, $row->{$column});
-                }
+        $row = ProcessRequestToken::query()
+            ->whereKey($token->getKey())
+            ->first(['id', 'user_id', 'process_id', 'is_self_service']);
+        if ($row) {
+            foreach (['user_id', 'process_id', 'is_self_service'] as $column) {
+                $token->setAttribute($column, $row->{$column});
             }
         }
 

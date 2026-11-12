@@ -559,6 +559,55 @@ class TasksTest extends TestCase
         $this->assertNull($otherRow['draft'] ?? null);
     }
 
+    public function testV11TaskShowIgnoresPlantedDraftObjectsInRequestData()
+    {
+        $this->initializePermissions();
+        config(['app.task_drafts_enabled' => true]);
+
+        $assignee = User::factory()->create();
+        $this->user = $assignee;
+        $otherAssignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $ownTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $otherAssignee->id,
+        ]);
+        $otherDraft = TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'request-data-plant'],
+        ]);
+
+        $processRequest->update([
+            'data' => [
+                'draft_trap' => [
+                    'id' => $ownTask->id,
+                    'user_id' => $assignee->id,
+                    'draft' => [
+                        'id' => $otherDraft->id,
+                        'task_id' => $ownTask->id,
+                    ],
+                ],
+            ],
+        ]);
+
+        $response = $this->apiCall(
+            'GET',
+            route('api.1.1.tasks.show', $ownTask->id) . '?include=draft,requestData'
+        );
+        $response->assertStatus(200);
+
+        $json = json_encode($response->json());
+        $this->assertStringNotContainsString('request-data-plant', $json);
+        $this->assertDatabaseHas('task_drafts', ['id' => $otherDraft->id]);
+    }
+
     /**
      * You only see non system type tasks.
      */
