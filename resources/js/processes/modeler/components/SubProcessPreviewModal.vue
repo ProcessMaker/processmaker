@@ -25,6 +25,7 @@
           class="subprocess-preview-iframe"
           :title="modalTitle"
           data-test="subprocess-preview-iframe"
+          @load="onEmbedLoaded"
         />
         <div
           v-if="loading"
@@ -118,18 +119,22 @@ export default {
       this.errorMessage = null;
     },
     loadMetadata() {
-      fetchSubProcessPreviewName(this.processId)
+      const processId = this.processId;
+      fetchSubProcessPreviewName(processId)
         .then((name) => {
+          if (this.processId !== processId) {
+            return;
+          }
           if (name) {
             this.processName = name;
           }
         })
         .catch(() => {
           // Iframe still loads BPMN from the embed route.
-        })
-        .finally(() => {
-          this.loading = false;
         });
+    },
+    onEmbedLoaded() {
+      this.loading = false;
     },
   },
 };
