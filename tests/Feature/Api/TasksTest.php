@@ -418,6 +418,49 @@ class TasksTest extends TestCase
         $this->assertEquals('own-nested-pr', $ownDraft['data']['mine'] ?? null);
     }
 
+    public function testTaskIndexProcessRequestTokensDraftCaseInsensitiveDoesNotExposeOtherUsersDraftData()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'case-insensitive-nested'],
+        ]);
+
+        $ownTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $viewer->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'processRequest.tokens.Draft',
+        ]));
+        $response->assertStatus(200);
+
+        $row = collect($response->json('data'))->firstWhere('id', $ownTask->id);
+        $tokens = collect($row['process_request']['tokens'] ?? [])->keyBy('id');
+        $otherDraft = $tokens[$otherTask->id]['draft'] ?? null;
+
+        $this->assertNotNull($otherDraft);
+        $this->assertArrayNotHasKey('data', $otherDraft);
+    }
+
     public function testTaskIndexProcessRequestsTokensDraftDoesNotExposeOtherUsersDraftData()
     {
         $this->initializePermissions();

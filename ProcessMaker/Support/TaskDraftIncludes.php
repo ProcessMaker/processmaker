@@ -37,10 +37,12 @@ final class TaskDraftIncludes
 
     public static function isDraftToken(string $token): bool
     {
-        return $token === 'draft'
-            || str_starts_with($token, 'draft.')
-            || str_ends_with($token, '.draft')
-            || str_contains($token, '.draft.');
+        $lower = strtolower($token);
+
+        return $lower === 'draft'
+            || str_starts_with($lower, 'draft.')
+            || str_ends_with($lower, '.draft')
+            || str_contains($lower, '.draft.');
     }
 
     public static function constrainedEagerLoad(): \Closure
@@ -57,11 +59,13 @@ final class TaskDraftIncludes
         $constrained = fn ($q) => $q->with(['draft' => self::constrainedEagerLoad()]);
 
         foreach ($includes as $token) {
-            if (!self::isDraftToken($token) || $token === 'draft' || str_starts_with($token, 'draft.')) {
+            $lower = strtolower($token);
+            if (!self::isDraftToken($token) || $lower === 'draft' || str_starts_with($lower, 'draft.')) {
                 continue;
             }
             foreach (self::NESTED_DRAFT_RELATIONS as $relation) {
-                if ($token === "{$relation}.draft" || str_starts_with($token, "{$relation}.")) {
+                $relationLower = strtolower($relation);
+                if ($lower === "{$relationLower}.draft" || str_starts_with($lower, "{$relationLower}.")) {
                     $with[$relation] = $constrained;
                     break;
                 }
