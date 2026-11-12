@@ -82,7 +82,7 @@ trait TaskResourceIncludes
         }
 
         $this->ensureTokenAttributesForViewPolicy($this->resource);
-        if (!$user->can('view', $this->resource)) {
+        if (!$this->userCanViewTaskForDraft($user)) {
             return ['draft' => $draft->only(['id', 'task_id'])];
         }
 
@@ -239,15 +239,79 @@ trait TaskResourceIncludes
         }
 
         $process = $token->relationLoaded('process') ? $token->process : null;
-        if ($process && !array_key_exists('manager_id', $process->getAttributes())) {
-            $managerIds = Process::query()->whereKey($process->getKey())->value('manager_id');
-            $process->setAttribute('manager_id', $managerIds);
-        } elseif (!$token->relationLoaded('process') && $token->process_id) {
-            $token->setRelation(
-                'process',
-                Process::query()->whereKey($token->process_id)->first(['id', 'manager_id'])
-            );
+        if ($process && !array_key_exists('properties', $process->getAttributes())) {
+            $properties = Process::query()->whereKey($process->getKey())->value('properties');
+            $process->setAttribute('properties', $properties);
         }
+    }
+
+    /**
+     * Mirrors ProcessRequestTokenPolicy::view without lazy-loading process on the token
+     * (loaded process relations are serialized by Task::toArray before includes run).
+     */
+    private function userCanViewTaskForDraft(User $user): bool
+    {
+        if ($user->is_administrator) {
+            return true;
+        }
+
+        $token = $this->resource;
+        if ((int) $token->user_id === (int) $user->id) {
+            return true;
+        }
+
+        if (in_array($user->id, $this->managerIdsForTaskProcess($token), true)) {
+            return true;
+        }
+
+        return $user->canSelfServe($token);
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function managerIdsForTaskProcess(ProcessRequestToken $token): array
+    {
+        $process = $token->relationLoaded('process') ? $token->process : null;
+        if ($process) {
+            if (!array_key_exists('properties', $process->getAttributes())) {
+                $properties = Process::query()->whereKey($process->getKey())->value('properties');
+                $process->setAttribute('properties', $this->decodeJsonColumn($properties));
+            }
+
+            return $process->manager_id ?? [];
+        }
+
+        if (!$token->process_id) {
+            return [];
+        }
+
+        $properties = Process::query()->whereKey($token->process_id)->value('properties');
+        $managerId = ($this->decodeJsonColumn($properties))['manager_id'] ?? null;
+
+        if ($managerId === null || $managerId === 'undefined') {
+            return [];
+        }
+
+        return is_array($managerId) ? $managerId : [$managerId];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function decodeJsonColumn(mixed $value): array
+    {
+        if (is_array($value)) {
+            return $value;
+        }
+
+        if (!is_string($value) || $value === '') {
+            return [];
+        }
+
+        $decoded = json_decode($value, true);
+
+        return is_array($decoded) ? $decoded : [];
     }
 
     private function loadUserRequestPermission(ProcessRequest $request, User $user, array $permissions)

@@ -129,12 +129,12 @@ trait TaskControllerIndexMethods
             $with['draft'] = fn ($q) => $q->select(['id', 'task_id']);
         }
 
-        if (in_array('process', $includes, true) || in_array('draft', $includes, true)) {
-            $processColumns = ['id', 'manager_id'];
-            if (in_array('process', $includes, true)) {
-                $processColumns = array_values(array_unique(array_merge($processColumns, ['name', 'uuid'])));
+        if (in_array('process', $includes, true)) {
+            $processColumns = ['id', 'name', 'uuid'];
+            if (in_array('draft', $includes, true)) {
+                $processColumns[] = 'properties';
             }
-            $with['process'] = fn ($q) => $q->select($processColumns);
+            $with['process'] = fn ($q) => $q->select(array_values(array_unique($processColumns)));
         }
 
         if (in_array('processRequest.process', $includes, true)) {

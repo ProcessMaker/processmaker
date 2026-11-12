@@ -50,7 +50,7 @@ class TaskV11ShowFastRepository
         }
 
         if ($token->process_id) {
-            $process = Process::query()->select(['id', 'name', 'manager_id'])->find($token->process_id);
+            $process = Process::query()->select(['id', 'name', 'properties'])->find($token->process_id);
             $token->setRelation('process', $process);
         }
 
