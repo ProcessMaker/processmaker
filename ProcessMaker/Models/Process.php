@@ -32,6 +32,7 @@ use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
+use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Repositories\ProcessExecutionRawRepository;
 use ProcessMaker\Rules\BPMNValidation;
 use ProcessMaker\Traits\Exportable;
@@ -1487,18 +1488,6 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $document = new BpmnDocument();
         $document->loadXML($this->bpmn);
         $conversions = 0;
-        // Replace subProcess by callActivity
-        $subProcesses = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'subProcess');
-        while ($subProcess = $subProcesses->item(0)) {
-            $conversions++;
-            $name = $subProcess->getAttribute('name');
-            $callActivity = $this->createCallActivityFrom($subProcess);
-            $subProcess->parentNode->replaceChild($callActivity, $subProcess);
-            $warnings[] = [
-                'title' => __('Element conversion'),
-                'text' => __('SubProcess Conversion', ['name' => $name]),
-            ];
-        }
         // Replace sendTask to scriptTask
         $sendTasks = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'sendTask');
         while ($sendTask = $sendTasks->item(0)) {
@@ -1512,51 +1501,19 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             ];
         }
         if ($conversions) {
+            $this->ensurePmNamespaceOnDefinitions($document);
             $this->bpmn = $document->saveXml();
             $this->bpmnDefinitions = null;
         }
         $this->warnings = $warnings;
     }
 
-    /**
-     * Convert a subProcess into a callActivity
-     *
-     * @param BPMNElement $subProcess
-     * @return void
-     */
-    private function createCallActivityFrom($subProcess)
+    private function ensurePmNamespaceOnDefinitions(BpmnDocument $document): void
     {
-        $element = $this->cloneNodeAs($subProcess, 'callActivity', ['outgoing', 'incoming'], [], ['triggeredByEvent']);
-
-        $definitions = $subProcess->ownerDocument->firstChild->cloneNode(false);
-        $diagram = $subProcess->ownerDocument->getElementsByTagName('BPMNDiagram')->item(0)->cloneNode(true);
-        $subProcessClone = $this->cloneNodeAs($subProcess, 'process', [], ['outgoing', 'incoming'], ['triggeredByEvent']);
-        $definitions->appendChild($subProcessClone);
-        $definitions->appendChild($diagram);
-
-        $subProcessBpmn = $subProcessClone->ownerDocument->saveXml($definitions);
-
-        $name = $subProcessClone->getAttribute('name');
-        $duplicated = self::where('name', 'like', $name . '%')
-            ->orderBy(DB::raw('LENGTH(name), name'))
-            ->get();
-        if ($duplicated->count()) {
-            $duplicated = $duplicated->last();
-            $number = intval(substr($duplicated->name, strlen($name))) + 1;
-            $name = $name . ' (' . $number . ')';
+        $root = $document->documentElement;
+        if ($root && !$root->hasAttribute('xmlns:pm')) {
+            $root->setAttribute('xmlns:pm', WorkflowServiceProvider::PROCESS_MAKER_NS);
         }
-        $process = new self([
-            'name' => $name,
-            'bpmn' => $subProcessBpmn,
-            'description' => $subProcessClone->getAttribute('name'),
-        ]);
-        $process->user_id = $this->user_id;
-        $process->process_category_id = $this->process_category_id;
-        $process->save();
-        $bpmnProcess = $process->getDefinitions()->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process')->item(0);
-        $element->setAttribute('calledElement', $bpmnProcess->getAttribute('id') . '-' . $process->id);
-
-        return $element;
     }
 
     /**
