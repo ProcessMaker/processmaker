@@ -1,11 +1,31 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import DashboardViewer from "./components/DashboardViewer.vue";
-import Process from "../processes-catalogue/components/Process";
 
 Vue.use(VueRouter);
-const screen = JSON.parse(sessionStorage.getItem('dashboard_screen'));
-const formData = JSON.parse(sessionStorage.getItem('dashboard_formData'));
+
+const InboxRoutePlaceholder = { template: "<div />" };
+
+const loadProcess = () => import(
+  /* webpackChunkName: "inbox-process" */
+  "../processes-catalogue/components/Process"
+);
+
+const loadDashboardViewer = () => import(
+  /* webpackChunkName: "inbox-dashboard" */
+  "./components/DashboardViewer.vue"
+);
+
+const parseSessionJson = (key) => {
+  const value = sessionStorage.getItem(key);
+  if (!value) {
+    return null;
+  }
+
+  return JSON.parse(value);
+};
+
+const screen = parseSessionJson('dashboard_screen');
+const formData = parseSessionJson('dashboard_formData');
 
 const router = new VueRouter({
   mode: "history",
@@ -14,7 +34,7 @@ const router = new VueRouter({
     {
       path: "/process/:processId",
       name: "process-browser",
-      component: Process,
+      component: loadProcess,
       props: route => ({
         processId: parseInt(route.params.processId) || null,
         process: null,
@@ -24,17 +44,12 @@ const router = new VueRouter({
     {
       path: "",
       name: "inbox",
-      component: Process,
-      props: route => ({
-        processId: null,
-        process: null,
-        ellipsisPermission: window.ProcessMaker.ellipsisPermission
-      })
+      component: InboxRoutePlaceholder,
     },
     {
       path: "/dashboard/:dashboardId",
       name: "dashboard",
-      component: DashboardViewer,
+      component: loadDashboardViewer,
       props: route => ({
         dashboardId: route.params.dashboardId || null,
         screen: route.params.screen || screen,
@@ -44,4 +59,4 @@ const router = new VueRouter({
   ]
 });
 
-export default router; 
+export default router;
