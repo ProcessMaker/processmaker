@@ -75,16 +75,15 @@ class ScriptRuntime
                 'modules' => array_keys($instances),
             ]);
 
-            $result = (static function (string $__scriptPath, ScriptExecutionContext $__context, array $__instances) {
-                $data = $__context->data;
-                $config = $__context->config;
-                $modules = $__instances;
-                extract($__instances, EXTR_SKIP);
+            return (static function (string $__scriptPath, ScriptExecutionContext $__context, array $__instances) {
+                extract([
+                    'data' => $__context->data,
+                    'config' => $__context->config,
+                    'modules' => $__instances,
+                ] + $__instances, EXTR_SKIP);
 
                 return include $__scriptPath;
             })($scriptPath, $context, $instances);
-
-            return $result;
         } catch (Throwable $exception) {
             throw new ScriptException($exception->getMessage(), (int) $exception->getCode(), $exception);
         } finally {

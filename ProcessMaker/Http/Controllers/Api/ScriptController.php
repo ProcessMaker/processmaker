@@ -206,11 +206,7 @@ class ScriptController extends Controller
      */
     private function shouldPreviewInProcess(Request $request, Script $script): bool
     {
-        if (!config('core-service-task.enabled')) {
-            return false;
-        }
-
-        if (strtolower((string) $script->language) !== 'php') {
+        if (!config('core-service-task.enabled') || strtolower((string) $script->language) !== 'php') {
             return false;
         }
 

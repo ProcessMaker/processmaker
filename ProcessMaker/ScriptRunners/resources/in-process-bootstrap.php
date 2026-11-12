@@ -55,6 +55,6 @@ if (getenv('API_TOKEN') && getenv('API_HOST') && class_exists('ProcessMaker\\Cli
     }
 }
 
-$response = require $scriptPath;
+$response = require_once $scriptPath;
 
 echo json_encode(['output' => $response]);
