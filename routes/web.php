@@ -168,7 +168,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
     // Ensure our modeler loads at a distinct url
     Route::get('modeler/{process}', [ModelerController::class, 'show'])->name('modeler.show')->middleware('can:edit,process');
-    Route::get('modeler/{process}/subprocess-preview-embed', [ModelerController::class, 'subprocessPreviewEmbed'])->name('modeler.subprocess-preview-embed')->middleware('can:view,process');
+    Route::get('modeler/{process}/subprocess-preview-embed', [ModelerController::class, 'subprocessPreviewEmbed'])->name('modeler.subprocess-preview-embed')->middleware('can:edit,process');
     Route::get('modeler/{process}/inflight/{request?}', [ModelerController::class, 'inflight'])->name('modeler.inflight')->middleware('can:view,request');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');

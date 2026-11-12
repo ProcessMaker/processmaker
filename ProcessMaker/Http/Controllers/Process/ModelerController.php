@@ -190,6 +190,9 @@ class ModelerController extends Controller
 
     /**
      * Read-only subprocess diagram for iframe preview in the parent modeler (isolated JS context).
+     *
+     * Gated by can:edit,process (same as modeler.show) so unpublished draft BPMN is not
+     * exposed to view-processes-only users.
      */
     public function subprocessPreviewEmbed(ModelerManager $manager, Process $process, Request $request)
     {

@@ -9,6 +9,8 @@ use Tests\TestCase;
 
 class ModelerTest extends TestCase
 {
+    public $withPermissions = true;
+
     public function testInflightRoute()
     {
         $user = User::factory()->admin()->create();
@@ -96,5 +98,25 @@ class ModelerTest extends TestCase
         $response->assertViewHas('requestId', null);
         // Design-time preview must not enable inflight token tooltips (requests/null/tokens).
         $response->assertSee('enable-tooltip="false"', false);
+    }
+
+    public function testSubprocessPreviewEmbedRequiresEditProcessPermission()
+    {
+        $process = Process::factory()->create();
+        $route = route('modeler.subprocess-preview-embed', [
+            'process' => $process->id,
+        ]);
+
+        $viewer = User::factory()->create(['is_administrator' => false]);
+        $viewer->giveDirectPermission('view-processes');
+        $viewer->refresh();
+
+        $this->actingAs($viewer)->get($route)->assertStatus(403);
+
+        $editor = User::factory()->create(['is_administrator' => false]);
+        $editor->giveDirectPermission('edit-processes');
+        $editor->refresh();
+
+        $this->actingAs($editor)->get($route)->assertStatus(200);
     }
 }
