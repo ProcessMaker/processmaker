@@ -100,9 +100,13 @@ class CoreServiceTask implements ServiceTaskImplementationInterface
      */
     private function resolveTimeout(int $requestedTimeout, int $scriptTimeout): int
     {
-        $timeout = $requestedTimeout > 0
-            ? $requestedTimeout
-            : ($scriptTimeout > 0 ? $scriptTimeout : (int) config('core-service-task.default_timeout', 60));
+        if ($requestedTimeout > 0) {
+            $timeout = $requestedTimeout;
+        } elseif ($scriptTimeout > 0) {
+            $timeout = $scriptTimeout;
+        } else {
+            $timeout = (int) config('core-service-task.default_timeout', 60);
+        }
 
         $max = (int) config('core-service-task.max_timeout', 300);
         if ($max > 0 && $timeout > $max) {

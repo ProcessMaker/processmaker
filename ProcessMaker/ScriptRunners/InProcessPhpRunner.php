@@ -6,12 +6,12 @@ use Illuminate\Process\Exceptions\ProcessTimedOutException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
+use ProcessMaker\Exception\InProcessScriptException;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Exception\ScriptTimeoutException;
 use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\User;
-use RuntimeException;
 use Throwable;
 
 /**
@@ -31,6 +31,7 @@ class InProcessPhpRunner
      *
      * @throws ScriptTimeoutException
      * @throws ScriptException
+     * @throws InProcessScriptException
      */
     public function run(string $code, array $data, array $config, int $timeout, ?User $user = null)
     {
@@ -89,7 +90,7 @@ class InProcessPhpRunner
                 . "\n"
                 . __('Timeout: :timeout seconds', ['timeout' => $timeout])
             );
-        } catch (ScriptException|ScriptTimeoutException $exception) {
+        } catch (ScriptException|ScriptTimeoutException|InProcessScriptException $exception) {
             throw $exception;
         } catch (Throwable $exception) {
             throw new ScriptException($exception->getMessage(), (int) $exception->getCode(), $exception);
@@ -115,7 +116,7 @@ class InProcessPhpRunner
     {
         $path = __DIR__ . '/resources/in-process-bootstrap.php';
         if (!file_exists($path)) {
-            throw new RuntimeException('In-process bootstrap not found: ' . $path);
+            throw new InProcessScriptException('In-process bootstrap not found: ' . $path);
         }
 
         return $path;
@@ -126,7 +127,7 @@ class InProcessPhpRunner
         $base = config('app.processmaker_scripts_home', storage_path('app'));
         $dir = rtrim($base, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'in-process-' . Str::uuid();
         if (!mkdir($dir, 0700, true) && !is_dir($dir)) {
-            throw new RuntimeException('Unable to create in-process work directory');
+            throw new InProcessScriptException('Unable to create in-process work directory');
         }
 
         return $dir;
