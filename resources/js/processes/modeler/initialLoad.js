@@ -53,6 +53,8 @@ import ErrorHandlingRetryWaitTime from "./components/inspector/ErrorHandlingRetr
 import NotifyProcessManager from "./components/inspector/NotifyProcessManager";
 import { onModelerInit } from "./modelerInit";
 import StageManager from "./components/inspector/StageManager";
+import SubProcessPreviewButton from "./components/inspector/SubProcessPreviewButton.vue";
+import { registerSubProcessPreviewHooks } from "./subprocessModelerHooks";
 
 const Vue = window.Vue;
 const ProcessMaker = window.ProcessMaker;
@@ -79,6 +81,7 @@ Vue.component("ErrorHandlingRetryAttempts", ErrorHandlingRetryAttempts);
 Vue.component("ErrorHandlingRetryWaitTime", ErrorHandlingRetryWaitTime);
 Vue.component("NotifyProcessManager", NotifyProcessManager);
 Vue.component("StageManager", StageManager);
+Vue.component("SubProcessPreviewButton", SubProcessPreviewButton);
 
 const nodeTypes = [
   endEvent,
@@ -434,6 +437,15 @@ ProcessMaker.EventBus.$on(
     });
 
     registerInspectorExtension(callActivity, {
+      component: "SubProcessPreviewButton",
+      config: {
+        label: "Subprocess diagram",
+        helper: "Opens the child process in a modal so the parent diagram stays compact.",
+        name: "subProcessPreview",
+      },
+    });
+
+    registerInspectorExtension(callActivity, {
       component: "FormAccordion",
       container: true,
       config: {
@@ -523,3 +535,5 @@ ProcessMaker.EventBus.$on(
 
 validateScreenRef();
 validateFlowGenieRef();
+
+registerSubProcessPreviewHooks(Vue);

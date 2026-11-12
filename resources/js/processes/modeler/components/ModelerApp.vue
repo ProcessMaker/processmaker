@@ -59,6 +59,7 @@
         :asset-id="processId"
         :current-user-id="currentUserId"
       />
+      <sub-process-preview-modal ref="sub-process-preview-modal" />
     </b-card>
   </b-container>
 </template>
@@ -67,6 +68,7 @@
 import { Modeler as ModelerSource, ValidationStatus as ValidationStatusSource } from "@processmaker/modeler";
 import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../../../components/pm-blocks/CreatePmBlockModal.vue";
+import SubProcessPreviewModal from "./SubProcessPreviewModal.vue";
 import autosaveMixins from "../../../modules/autosave/mixins";
 import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 
@@ -84,6 +86,7 @@ export default {
     ValidationStatus: asVueComponent(ValidationStatusSource),
     CreateTemplateModal,
     CreatePmBlockModal,
+    SubProcessPreviewModal,
   },
   mixins: [...autosaveMixins, AssetRedirectMixin],
   props: {
@@ -195,8 +198,17 @@ export default {
     window.ProcessMaker.EventBus.$on("modeler-discard", () => {
       this.discardDraft();
     });
+    this.onSubProcessPreviewOpen = (payload) => {
+      this.$refs["sub-process-preview-modal"].show(payload);
+    };
+    window.ProcessMaker.EventBus.$on("subprocess-preview-open", this.onSubProcessPreviewOpen);
     // Display version indicator.
     this.setVersionIndicator();
+  },
+  beforeDestroy() {
+    if (this.onSubProcessPreviewOpen) {
+      window.ProcessMaker.EventBus.$off("subprocess-preview-open", this.onSubProcessPreviewOpen);
+    }
   },
   methods: {
     updateBpmnValidations() {

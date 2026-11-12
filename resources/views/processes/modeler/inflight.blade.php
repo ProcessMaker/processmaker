@@ -45,6 +45,23 @@
       height: 100%;
       max-height: 100%;
     }
+
+    @if (!empty($compactPreview))
+    #navbar,
+    #map-legend,
+    .map-legend-card {
+      display: none !important;
+    }
+
+    html,
+    body,
+    #app-container,
+    #mainbody,
+    #main {
+      height: 100%;
+      min-height: 100%;
+    }
+    @endif
   </style>
   @if (Auth::user())
     <script type="text/javascript">

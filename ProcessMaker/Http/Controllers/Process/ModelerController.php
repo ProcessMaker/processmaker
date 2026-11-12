@@ -189,6 +189,33 @@ class ModelerController extends Controller
     }
 
     /**
+     * Read-only subprocess diagram for iframe preview in the parent modeler (isolated JS context).
+     */
+    public function subprocessPreviewEmbed(ModelerManager $manager, Process $process, Request $request)
+    {
+        $pmBlockList = $this->getPmBlockList();
+        $externalIntegrationsList = $this->getExternalIntegrationsList();
+
+        event(new ModelerStarting($manager));
+
+        $alternative = (string) $request->input('alternative', 'A');
+        $draft = $process->getDraftOrPublishedLatestVersion($alternative);
+        $bpmn = $draft?->bpmn ?: $process->bpmn;
+
+        return view('processes.modeler.inflight', [
+            'manager' => $manager,
+            'bpmn' => $bpmn,
+            'requestCompletedNodes' => [],
+            'requestInProgressNodes' => [],
+            'requestIdleNodes' => [],
+            'requestId' => null,
+            'pmBlockList' => $pmBlockList,
+            'externalIntegrationsList' => $externalIntegrationsList,
+            'compactPreview' => true,
+        ]);
+    }
+
+    /**
      * Invokes the Modeler for In-flight Process Map rendering.
      */
     public function inflight(ModelerManager $manager, Process $process, ProcessRequest $request)
