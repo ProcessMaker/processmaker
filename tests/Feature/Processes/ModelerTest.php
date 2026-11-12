@@ -78,4 +78,23 @@ class ModelerTest extends TestCase
             $defaultEmailNotification['subject']
         );
     }
+
+    public function testSubprocessPreviewEmbedDisablesRequestTooltips()
+    {
+        $user = User::factory()->admin()->create();
+        $process = Process::factory()->create();
+
+        $route = route('modeler.subprocess-preview-embed', [
+            'process' => $process->id,
+        ]);
+
+        $response = $this->actingAs($user)->get($route);
+
+        $response->assertStatus(200);
+        $response->assertViewIs('processes.modeler.inflight');
+        $response->assertViewHas('compactPreview', true);
+        $response->assertViewHas('requestId', null);
+        // Design-time preview must not enable inflight token tooltips (requests/null/tokens).
+        $response->assertSee('enable-tooltip="false"', false);
+    }
 }

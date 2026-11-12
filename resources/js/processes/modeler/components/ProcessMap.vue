@@ -120,7 +120,7 @@ export default {
       });
     }, 60000),
     handleClick(payload) {
-      if (this.isMappingActive) {
+      if (this.enableTooltip && this.isMappingActive) {
         this.setupTooltip(payload);
       }
     },

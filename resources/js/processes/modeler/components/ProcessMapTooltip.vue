@@ -115,6 +115,9 @@ export default {
   },
   methods: {
     getRequestTokens() {
+      if (!this.requestId) {
+        return;
+      }
       this.isLoading = true;
       ProcessMaker.apiClient.get(`requests/${this.requestId}/tokens`, {
         params: {

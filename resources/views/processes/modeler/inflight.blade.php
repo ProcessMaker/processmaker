@@ -119,7 +119,12 @@
       </div>
       <div class="flex-grow-1 d-flex flex-column h-100 overflow-hidden" id="mainbody">
         <div id="main" class="main flex-grow-1 h-100 overflow-hidden">
-          <div id="modeler-app"></div>
+          <div
+            id="modeler-app"
+            @if (!empty($compactPreview))
+              enable-tooltip="false"
+            @endif
+          ></div>
           @include('processes.modeler.partials.map-legend')
         </div>
       </div>
