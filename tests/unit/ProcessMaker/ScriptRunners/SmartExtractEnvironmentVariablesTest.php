@@ -3,14 +3,17 @@
 namespace Tests\Unit\ProcessMaker\ScriptRunners;
 
 use Illuminate\Support\Facades\Cache;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\Base;
 use ProcessMaker\ScriptRunners\ScriptMicroserviceRunner;
+use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Services\SmartExtractConfiguration;
 use ReflectionMethod;
+use ReflectionProperty;
 use Tests\TestCase;
 
 class SmartExtractEnvironmentVariablesTest extends TestCase
@@ -129,11 +132,65 @@ class SmartExtractEnvironmentVariablesTest extends TestCase
         $this->assertArrayNotHasKey(SmartExtractConfiguration::API_HOST, $microserviceVariables);
     }
 
+    public function test_smart_extract_docker_failure_log_omits_raw_output(): void
+    {
+        $executor = ScriptExecutor::factory()->create([
+            'language' => 'php',
+            'type' => ScriptExecutorType::Custom,
+        ]);
+        $script = Script::factory()->create([
+            'key' => SmartExtractConfiguration::SEND_DOCUMENT_SCRIPT_KEY,
+            'language' => 'php',
+            'script_executor_id' => $executor->id,
+        ]);
+        config([
+            'script-runner-microservice.enabled' => false,
+            'script-runners.php.runner' => 'PhpRunner',
+        ]);
+
+        $scriptRunner = new ScriptRunner($script);
+        $runnerProperty = new ReflectionProperty(ScriptRunner::class, 'runner');
+        $runnerProperty->setAccessible(true);
+        $runner = $runnerProperty->getValue($scriptRunner);
+
+        $message = $this->dockerFailureLogMessage($runner, [
+            'Authorization: Basic dXNlcjpwYXNz',
+            'Bearer secret-token',
+        ]);
+
+        $this->assertSame('Script threw return code 255', $message);
+        $this->assertStringNotContainsString('dXNlcjpwYXNz', $message);
+        $this->assertStringNotContainsString('secret-token', $message);
+    }
+
+    public function test_other_docker_failure_logs_keep_their_raw_output(): void
+    {
+        $executor = ScriptExecutor::factory()->create(['language' => 'php']);
+        $runner = new class ($executor, 'another-package/script') extends Base {
+            public function config($code, array $dockerConfig)
+            {
+                return $dockerConfig;
+            }
+        };
+
+        $message = $this->dockerFailureLogMessage($runner, ['Existing diagnostic']);
+
+        $this->assertSame('Script threw return code 255 Message: Existing diagnostic', $message);
+    }
+
     private function createApiHost(): void
     {
         EnvironmentVariable::factory()->create([
             'name' => SmartExtractConfiguration::API_HOST,
             'value' => 'https://database.example.com',
         ]);
+    }
+
+    private function dockerFailureLogMessage(Base $runner, array $output): string
+    {
+        $method = new ReflectionMethod(Base::class, 'dockerFailureLogMessage');
+        $method->setAccessible(true);
+
+        return $method->invoke($runner, 255, $output);
     }
 }
