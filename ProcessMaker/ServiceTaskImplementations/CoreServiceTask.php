@@ -9,13 +9,14 @@ use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\InProcessPhpRunner;
 use ProcessMaker\ScriptRuntime\ScriptExecutionContext;
+use ProcessMaker\Services\ScriptExecutionModeResolver;
 
 /**
  * ServiceTask implementation that runs allowlisted PHP scripts in-process
  * without Docker or the script microservice.
  *
- * execution=modules (default): Laravel worker + ScriptRuntime modules.
- * execution=bare: PHP subprocess without Laravel (legacy).
+ * execution_mode=modules: Laravel worker + ScriptRuntime modules.
+ * execution_mode=bare: PHP subprocess without Laravel.
  */
 class CoreServiceTask implements ServiceTaskImplementationInterface
 {
@@ -63,7 +64,7 @@ class CoreServiceTask implements ServiceTaskImplementationInterface
 
         $effectiveTimeout = $this->resolveTimeout((int) $timeout, (int) $script->timeout);
 
-        if ($this->usesModulesExecution()) {
+        if ($this->usesModulesExecution($script)) {
             $context = new ScriptExecutionContext(
                 data: $data,
                 config: $config,
@@ -90,9 +91,10 @@ class CoreServiceTask implements ServiceTaskImplementationInterface
         return ScriptRuntime::normalizeOutput($output);
     }
 
-    private function usesModulesExecution(): bool
+    private function usesModulesExecution(Script $script): bool
     {
-        return config('core-service-task.execution', 'modules') === 'modules';
+        return app(ScriptExecutionModeResolver::class)->resolve($script)
+            === Script::EXECUTION_MODE_MODULES;
     }
 
     /**

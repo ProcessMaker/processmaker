@@ -31,6 +31,7 @@ use ProcessMaker\Validation\CategoryRule;
  * @property text code
  * @property int timeout
  * @property bool allow_in_process
+ * @property string execution_mode
  *
  * @OA\Schema(
  *   schema="scriptsEditable",
@@ -40,6 +41,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   @OA\Property(property="code", type="string"),
  *   @OA\Property(property="timeout", type="integer"),
  *   @OA\Property(property="allow_in_process", type="boolean"),
+ *   @OA\Property(property="execution_mode", type="string", enum={"bare", "modules"}),
  *   @OA\Property(property="run_as_user_id", type="integer"),
  *   @OA\Property(property="key", type="string"),
  *   @OA\Property(property="script_category_id", type="integer"),
@@ -65,6 +67,15 @@ use ProcessMaker\Validation\CategoryRule;
  */
 class Script extends ProcessMakerModel implements ScriptInterface
 {
+    public const EXECUTION_MODE_BARE = 'bare';
+
+    public const EXECUTION_MODE_MODULES = 'modules';
+
+    public const EXECUTION_MODES = [
+        self::EXECUTION_MODE_BARE,
+        self::EXECUTION_MODE_MODULES,
+    ];
+
     use SerializeToIso8601;
     use HideSystemResources;
     use HasCategories;
@@ -90,6 +101,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
         'retry_attempts' => 'integer',
         'retry_wait_time' => 'integer',
         'allow_in_process' => 'boolean',
+        'execution_mode' => 'string',
     ];
 
     protected $appends = [
@@ -117,6 +129,15 @@ class Script extends ProcessMakerModel implements ScriptInterface
             if ($script->allow_in_process && strtolower((string) $script->language) !== 'php') {
                 throw \Illuminate\Validation\ValidationException::withMessages([
                     'allow_in_process' => [__('Only PHP scripts can allow in-process execution.')],
+                ]);
+            }
+
+            if (
+                $script->execution_mode === self::EXECUTION_MODE_MODULES
+                && (!$script->allow_in_process || strtolower((string) $script->language) !== 'php')
+            ) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'execution_mode' => [__('Modules execution requires an allowed PHP script.')],
                 ]);
             }
 
@@ -164,6 +185,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
             'run_as_user_id' => 'required',
             'timeout' => 'integer|min:0|max:65535',
             'allow_in_process' => 'sometimes|boolean',
+            'execution_mode' => ['sometimes', Rule::in(self::EXECUTION_MODES)],
             'script_category_id' => [new CategoryRule($existing)],
         ];
     }

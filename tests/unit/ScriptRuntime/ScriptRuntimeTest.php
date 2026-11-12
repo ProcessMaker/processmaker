@@ -68,6 +68,21 @@ class ScriptRuntimeTest extends TestCase
         $this->assertSame(['pong' => 'hello'], $output);
     }
 
+    public function testRunScriptWithExplicitScalarReturn(): void
+    {
+        $output = ScriptRuntime::run(
+            '<?php return 1;',
+            new ScriptExecutionContext(
+                data: [],
+                config: [],
+                user: null,
+                source: 'preview',
+            )
+        );
+
+        $this->assertSame(1, $output);
+    }
+
     public function testRejectsReservedModuleKey(): void
     {
         $this->expectException(\InvalidArgumentException::class);

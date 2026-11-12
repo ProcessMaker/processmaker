@@ -369,6 +369,7 @@ class ScriptController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorizeModulesExecution($request);
         $request->validate(Script::rules());
         $script = new Script();
         $script->fill($request->input());
@@ -421,6 +422,7 @@ class ScriptController extends Controller
      */
     public function update(Script $script, Request $request)
     {
+        $this->authorizeModulesExecution($request, $script);
         $request->validate(Script::rules($script));
         $script->fill($request->input());
         $original = array_intersect_key($script->getOriginal(), $script->getDirty());
@@ -435,6 +437,20 @@ class ScriptController extends Controller
         ScriptUpdated::dispatch($script, $changes, $original);
 
         return response($request, 204);
+    }
+
+    private function authorizeModulesExecution(Request $request, ?Script $script = null): void
+    {
+        $executionMode = $request->input('execution_mode', $script?->execution_mode);
+        if ($executionMode !== Script::EXECUTION_MODE_MODULES) {
+            return;
+        }
+
+        abort_unless(
+            $request->user()?->is_administrator
+                || $request->user()?->can('run-in-process-modules'),
+            403
+        );
     }
 
     /**

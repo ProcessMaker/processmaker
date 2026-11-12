@@ -76,14 +76,24 @@ class ScriptRuntime
                 'modules' => array_keys($instances),
             ]);
 
-            $result = (static function (string $__scriptPath, ScriptExecutionContext $__context, array $__instances) {
+            $result = (static function (
+                string $__scriptPath,
+                ScriptExecutionContext $__context,
+                array $__instances,
+                bool $__hasExplicitReturn
+            ) {
                 $data = $__context->data;
                 $config = $__context->config;
                 $modules = $__instances;
+                $result = ['response' => 'Error: add a result array'];
                 extract($__instances, EXTR_SKIP);
 
-                return include $__scriptPath;
-            })($scriptPath, $context, $instances);
+                $output = include $__scriptPath;
+
+                return ($output === 1 && !$__hasExplicitReturn) || $output === null
+                    ? $result
+                    : $output;
+            })($scriptPath, $context, $instances, $hasExplicitReturn);
 
             return $result;
         } catch (Throwable $exception) {

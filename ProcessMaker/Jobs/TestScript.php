@@ -15,6 +15,7 @@ use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\InProcessPhpRunner;
 use ProcessMaker\ScriptRuntime\ScriptExecutionContext;
+use ProcessMaker\Services\ScriptExecutionModeResolver;
 use Throwable;
 
 class TestScript implements ShouldQueue
@@ -133,7 +134,10 @@ class TestScript implements ShouldQueue
         }
         $timeout = max(1, $timeout);
 
-        if (config('core-service-task.execution', 'modules') === 'modules') {
+        if (
+            app(ScriptExecutionModeResolver::class)->resolve($this->script)
+            === Script::EXECUTION_MODE_MODULES
+        ) {
             $context = new ScriptExecutionContext(
                 data: $this->data,
                 config: $this->configuration,
