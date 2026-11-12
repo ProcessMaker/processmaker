@@ -59,6 +59,7 @@ class ScriptRuntime
     {
         $instances = $this->instantiateModules($context);
         $scriptPath = $this->writeTempScript($code);
+        $hasExplicitReturn = $this->hasExplicitReturn($code);
         $accessToken = null;
         $envSnapshot = null;
 
@@ -75,15 +76,16 @@ class ScriptRuntime
                 'modules' => array_keys($instances),
             ]);
 
-            return (static function (string $__scriptPath, ScriptExecutionContext $__context, array $__instances) {
-                extract([
-                    'data' => $__context->data,
-                    'config' => $__context->config,
-                    'modules' => $__instances,
-                ] + $__instances, EXTR_SKIP);
+            $result = (static function (string $__scriptPath, ScriptExecutionContext $__context, array $__instances) {
+                $data = $__context->data;
+                $config = $__context->config;
+                $modules = $__instances;
+                extract($__instances, EXTR_SKIP);
 
                 return include $__scriptPath;
             })($scriptPath, $context, $instances);
+
+            return $result;
         } catch (Throwable $exception) {
             throw new ScriptException($exception->getMessage(), (int) $exception->getCode(), $exception);
         } finally {
@@ -222,5 +224,16 @@ class ScriptRuntime
         }
 
         return "<?php\n" . $code;
+    }
+
+    private function hasExplicitReturn(string $code): bool
+    {
+        foreach (token_get_all($code) as $token) {
+            if (is_array($token) && $token[0] === T_RETURN) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

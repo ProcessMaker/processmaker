@@ -53,6 +53,21 @@ class ScriptRuntimeTest extends TestCase
         $this->assertContains('echo', $output['keys']);
     }
 
+    public function testRunScriptWithLegacyResultVariable(): void
+    {
+        $output = ScriptRuntime::run(
+            '<?php $result = ["pong" => $data["ping"]];',
+            new ScriptExecutionContext(
+                data: ['ping' => 'hello'],
+                config: [],
+                user: null,
+                source: 'preview',
+            )
+        );
+
+        $this->assertSame(['pong' => 'hello'], $output);
+    }
+
     public function testRejectsReservedModuleKey(): void
     {
         $this->expectException(\InvalidArgumentException::class);
