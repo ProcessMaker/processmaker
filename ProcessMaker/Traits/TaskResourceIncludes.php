@@ -210,8 +210,8 @@ trait TaskResourceIncludes
     }
 
     /**
-     * Partial token/process projections (optimized index, fast show) may omit columns
-     * required by ProcessRequestTokenPolicy::view before including draft payloads.
+     * Partial token projections (optimized index, fast show) may omit columns
+     * required for draft visibility checks (assignee, self-service).
      */
     private function ensureTokenAttributesForViewPolicy(ProcessRequestToken $token): void
     {
@@ -236,12 +236,6 @@ trait TaskResourceIncludes
         if ($token->is_self_service && !array_key_exists('self_service_groups', $token->getAttributes())) {
             $groups = ProcessRequestToken::query()->whereKey($token->getKey())->value('self_service_groups');
             $token->setAttribute('self_service_groups', $groups);
-        }
-
-        $process = $token->relationLoaded('process') ? $token->process : null;
-        if ($process && !array_key_exists('properties', $process->getAttributes())) {
-            $properties = Process::query()->whereKey($process->getKey())->value('properties');
-            $process->setAttribute('properties', $properties);
         }
     }
 
@@ -273,27 +267,23 @@ trait TaskResourceIncludes
     private function managerIdsForTaskProcess(ProcessRequestToken $token): array
     {
         $process = $token->relationLoaded('process') ? $token->process : null;
-        if ($process) {
-            if (!array_key_exists('properties', $process->getAttributes())) {
-                $properties = Process::query()->whereKey($process->getKey())->value('properties');
-                $process->setAttribute('properties', $this->decodeJsonColumn($properties));
-            }
-
-            return $process->manager_id ?? [];
-        }
-
-        if (!$token->process_id) {
+        $processId = $process?->getKey() ?? $token->process_id;
+        if (!$processId) {
             return [];
         }
 
-        $properties = Process::query()->whereKey($token->process_id)->value('properties');
-        $managerId = ($this->decodeJsonColumn($properties))['manager_id'] ?? null;
-
-        if ($managerId === null || $managerId === 'undefined') {
-            return [];
+        if ($process && array_key_exists('properties', $process->getAttributes())) {
+            $properties = $this->decodeJsonColumn($process->getAttribute('properties'));
+        } else {
+            $properties = $this->decodeJsonColumn(
+                Process::query()->whereKey($processId)->value('properties')
+            );
         }
 
-        return is_array($managerId) ? $managerId : [$managerId];
+        $standIn = new Process();
+        $standIn->setAttribute('properties', $properties);
+
+        return $standIn->manager_id ?? [];
     }
 
     /**

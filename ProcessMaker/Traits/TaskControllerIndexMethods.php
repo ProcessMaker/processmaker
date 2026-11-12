@@ -130,11 +130,7 @@ trait TaskControllerIndexMethods
         }
 
         if (in_array('process', $includes, true)) {
-            $processColumns = ['id', 'name', 'uuid'];
-            if (in_array('draft', $includes, true)) {
-                $processColumns[] = 'properties';
-            }
-            $with['process'] = fn ($q) => $q->select(array_values(array_unique($processColumns)));
+            $with['process'] = fn ($q) => $q->select(['id', 'name', 'uuid']);
         }
 
         if (in_array('processRequest.process', $includes, true)) {
