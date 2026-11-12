@@ -16,7 +16,7 @@ use ProcessMaker\Mcp\Tools\RespondingTool;
 
 #[Name('create-flow-genie')]
 #[Title('Create FlowGenie')]
-#[Description('Creates a FlowGenie asset. Requires name, description, flow_genie_category_id. Prefer validate-flow-genie then set config.instructions. Load skill flowgenie-creation-rules.')]
+#[Description('Creates a FlowGenie asset. Requires name, description, flow_genie_category_id. Prefer validate-flow-genie then set config.instructions. See the pm4-flow-genie skill.')]
 class CreateFlowGenieTool extends RespondingTool
 {
     public function handle(Request $request, FlowGenieCatalog $catalog): Response|ResponseFactory

@@ -206,12 +206,12 @@ XML;
             ->assertHasNoErrors()
             ->assertSee([
                 'Prefer clear process names',
-                'Process creation rules',
+                'Process naming',
             ])
-            ->assertDontSee('screen-creation-rules')
+            ->assertDontSee('screen-styles')
             ->assertStructuredContent(fn (AssertableJson $json) => $json
                 ->where('system_prompt', 'Prefer clear process names')
-                ->where('skills.0.slug', 'process-creation-rules')
+                ->where('skills.0.slug', 'process-naming')
                 ->missing('skills.0.content')
                 ->etc());
     }
@@ -221,14 +221,14 @@ XML;
         $this->seedMcpGuidance();
 
         ProcessServer::actingAs($this->user)
-            ->tool(GetMcpSkillTool::class, ['slug' => 'process-creation-rules'])
+            ->tool(GetMcpSkillTool::class, ['slug' => 'process-naming'])
             ->assertOk()
             ->assertHasNoErrors()
-            ->assertSee('Author BPMN carefully')
+            ->assertSee('Name processes by outcome')
             ->assertStructuredContent(fn (AssertableJson $json) => $json
-                ->where('slug', 'process-creation-rules')
-                ->where('content', 'Author BPMN carefully')
-                ->where('uri', 'pm://mcp/skills/process-creation-rules')
+                ->where('slug', 'process-naming')
+                ->where('content', 'Name processes by outcome')
+                ->where('uri', 'pm://mcp/skills/process-naming')
                 ->etc());
     }
 
@@ -242,9 +242,9 @@ XML;
         $this->assertStringContainsString('get-mcp-guidance', $instructions);
         $this->assertStringContainsString('validate-process', $instructions);
         $this->assertStringContainsString('Prefer clear process names', $instructions);
-        $this->assertStringContainsString('process-creation-rules', $instructions);
-        $this->assertStringNotContainsString('Author BPMN carefully', $instructions);
-        $this->assertStringNotContainsString('screen-creation-rules', $instructions);
+        $this->assertStringContainsString('process-naming', $instructions);
+        $this->assertStringNotContainsString('Name processes by outcome', $instructions);
+        $this->assertStringNotContainsString('screen-styles', $instructions);
     }
 
     public function testSkillResourcesAreProcessScoped(): void
@@ -256,7 +256,7 @@ XML;
 
         $this->assertCount(1, $resources);
         $this->assertInstanceOf(McpSkillResource::class, $resources->first());
-        $this->assertSame('pm://mcp/skills/process-creation-rules', $resources->first()->uri());
+        $this->assertSame('pm://mcp/skills/process-naming', $resources->first()->uri());
     }
 
     private function seedMcpGuidance(): void
@@ -274,21 +274,19 @@ XML;
             'format' => 'component',
             'config' => [
                 [
-                    'id' => 'mcp-system-screen-creation-rules',
-                    'name' => 'Screen creation rules',
-                    'slug' => 'screen-creation-rules',
-                    'when' => 'Before create-screen',
-                    'content' => 'Use Vue mounts',
-                    'system' => true,
+                    'id' => 'custom-screen-styles',
+                    'name' => 'Screen styles',
+                    'slug' => 'screen-styles',
+                    'when' => 'Before create-screen when styling matters',
+                    'content' => 'Use calm colors',
                     'scope' => McpGuidance::SCOPE_SCREENS,
                 ],
                 [
-                    'id' => 'mcp-system-process-creation-rules',
-                    'name' => 'Process creation rules',
-                    'slug' => 'process-creation-rules',
+                    'id' => 'custom-process-naming',
+                    'name' => 'Process naming',
+                    'slug' => 'process-naming',
                     'when' => 'Before create-process',
-                    'content' => 'Author BPMN carefully',
-                    'system' => true,
+                    'content' => 'Name processes by outcome',
                     'scope' => McpGuidance::SCOPE_PROCESSES,
                 ],
             ],

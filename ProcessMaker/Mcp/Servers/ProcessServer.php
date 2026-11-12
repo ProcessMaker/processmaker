@@ -32,15 +32,15 @@ Before any other ProcessMaker Processes tool:
 3. Do not load every skill by default. Follow the system prompt and any skills you loaded.
 
 ## Designing a new process
-When the request is vague or incomplete, call `plan-process` first (load skill `process-planner`).
+When the request is vague or incomplete, call `plan-process` first.
 Ask the human the returned `open_questions`. Use `list-users` and `list-groups` so they can pick real assignees / process manager.
 Re-call `plan-process` with answers until `ready` is true, then build screens/BPMN.
 
 Use list-processes to search before creating one.
 create-process requires name and description; bpmn is optional (empty template if omitted — add a start event before running).
 For MCP create-process/update-process use numeric pm:screenRef / pm:scriptRef (list-screens after create-screen). Portable ${screen:title} only resolves via package-plg deploy-process.
-For package connectors (email, PDF, Slack, FlowGenie, Decision Task, UiPath, DocuSign, Actions By Email, Data Connector) load `process-node-service-task` then the matching `process-connector-*` / `data-connector-in-process` skill — do not invent `implementation` strings.
-For FlowGenie Service Tasks: create/configure the asset via FlowGenies MCP (`create-flow-genie`) first, then set numeric `flow_genie_id` in pm:config (skill `process-connector-flowgenie`).
+For BPMN structure, node settings, and package connectors (email, PDF, Slack, FlowGenie, Decision Task, UiPath, DocuSign, IDP, Actions By Email, Data Connector), follow the matching `pm4-*` skill from the ProcessMaker Skills repository (`npx skills add processmaker/skills`, start with `pm4-process`). Do not invent `implementation` strings.
+For FlowGenie Service Tasks: create/configure the asset via FlowGenies MCP (`create-flow-genie`) first, then set numeric `flow_genie_id` in pm:config.
 Call validate-process before create/update when unsure.
 update-process changes only the fields you send.
 MARKDOWN)]

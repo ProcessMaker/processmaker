@@ -35,8 +35,8 @@ create-screen requires title, description, type, and screen_category_id.
 type is usually FORM or DISPLAY.
 config is the screen builder page array; every control in page.items must include `"inspector": []` (or a real inspector list) or the designer crashes.
 create/update reject configs with empty FormSelectList options (missing optionsList).
-Build coherent Vue SFCs only (VueComponentRenderTemplate). Implement file upload, catalog selects (Collections via apiClient), and signature pads inside the Vue component — do not add native FileUpload / FormSelectList / SignaturePad siblings. Load skills screen-creation-rules and screen-vue-fields.
-When refactoring an existing traditional screen into Vue, also load skill screen-refactor-parity: preserve every field/variable on request data; keep instructional help (FormImage diagrams, how-to HTML, tip alerts, helper links) restyled/condensed as needed but not omitted; review each native SB control config and reimplement the same behavior in the Vue SFC (validation, visibility, options, events — UI-only keys like colors/CSS may change for redesign); inventory nested screens and recreate them as shared Vue child SFCs reused by every parent that nested them; reimplement calcs and invoke backend scripts / Data Connectors from the Vue SFC (Vue-only screens do not fire SB computed/watchers — leave those arrays empty). Respect original conditionalHide/readonly — do not show always-hidden data-only fields as editable controls.
+New FORM/DISPLAY screens are built as a Vue Component Editor mount (VueComponentRenderTemplate with a thin contentVue); do not add native FileUpload / FormSelectList / SignaturePad siblings.
+For the full rules (control shape, component registration, domain fields, refactor parity), follow the `pm4-screen` skill from the ProcessMaker Skills repository (`npx skills add processmaker/skills`).
 update-screen changes only the fields you send.
 delete-screen cannot remove a default screen.
 MARKDOWN)]

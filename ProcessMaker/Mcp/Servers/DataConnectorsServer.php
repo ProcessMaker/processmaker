@@ -39,15 +39,15 @@ Use list-data-connectors / list-data-connector-categories before creating one.
 create-data-connector requires name, type, authtype, and data_source_category_id.
 endpoints is a map keyed by purpose; each endpoint needs purpose, method, and url.
 Credentials are write-only (not returned by get/list).
-Load skill `data-connector-creation-rules`. For BPMN Service Task wiring load `data-connector-in-process`
-(implementation `package-data-sources/data-source-task-service`, pm:config dataSource + endpoint).
+Follow the `pm4-data-connector` skill from the ProcessMaker Skills repository (`npx skills add processmaker/skills`),
+including BPMN Service Task wiring (implementation `package-data-sources/data-source-task-service`, pm:config dataSource + endpoint).
 
 ## Collections
 Use list-collections before creating one.
 create-collection requires name, description, create_screen_id, read_screen_id, update_screen_id
 (create those screens via Screens MCP first when missing).
 Creating a collection may auto-create a matching Data Connector for `/collections/{id}/records`.
-Add demo rows with create-collection-records (skill `collection-test-data`).
+Add demo rows with create-collection-records (see the `pm4-collection` skill).
 MARKDOWN)]
 class DataConnectorsServer extends Server
 {

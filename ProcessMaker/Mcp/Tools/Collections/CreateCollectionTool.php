@@ -16,7 +16,7 @@ use ProcessMaker\Mcp\Tools\RespondingTool;
 
 #[Name('create-collection')]
 #[Title('Create Collection')]
-#[Description('Creates a collection. Requires name, description, and create/read/update screen ids. May auto-create a Data Connector for records. Load skill collection-creation-rules first.')]
+#[Description('Creates a collection. Requires name, description, and create/read/update screen ids. May auto-create a Data Connector for records. See the pm4-collection skill.')]
 class CreateCollectionTool extends RespondingTool
 {
     public function handle(Request $request, CollectionCatalog $catalog): Response|ResponseFactory

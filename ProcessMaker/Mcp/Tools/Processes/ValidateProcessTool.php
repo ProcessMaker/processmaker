@@ -17,7 +17,7 @@ use ProcessMaker\Mcp\Processes\ProcessCatalog;
 
 #[Name('validate-process')]
 #[Title('Validate Process')]
-#[Description('Validates BPMN without saving. Pass bpmn XML and/or an existing process id. Returns ok, errors, and warnings (schema + semantic checks). Load process-validation skill for the full checklist.')]
+#[Description('Validates BPMN without saving. Pass bpmn XML and/or an existing process id. Returns ok, errors, and warnings (schema + semantic checks). See the pm4-process skill (verify.md) for the full checklist.')]
 #[IsReadOnly]
 #[IsIdempotent]
 class ValidateProcessTool extends ProcessTool

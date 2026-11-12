@@ -16,7 +16,7 @@ use ProcessMaker\Mcp\Tools\RespondingTool;
 
 #[Name('create-collection-records')]
 #[Title('Create Collection Records')]
-#[Description('Adds one or more test/demo records to a collection. Pass records (array of data objects) or data (single object). Load skill collection-test-data.')]
+#[Description('Adds one or more test/demo records to a collection. Pass records (array of data objects) or data (single object). See the pm4-collection skill.')]
 class CreateCollectionRecordsTool extends RespondingTool
 {
     public function handle(Request $request, CollectionCatalog $catalog): Response|ResponseFactory

@@ -78,7 +78,7 @@ class ProcessPlanner
             'ready' => $ready,
             'goal' => $goal,
             'agent_instructions' => $ready
-                ? 'Blueprint is complete enough to design screens (if needed), then author BPMN and call validate-process before create-process. Load process-creation-rules and only the node skills you need. Use list-users / list-groups if any assignment id is still unclear.'
+                ? 'Blueprint is complete enough to design screens (if needed), then author BPMN and call validate-process before create-process. Follow the pm4-process skill (and the connector skills you need). Use list-users / list-groups if any assignment id is still unclear.'
                 : 'Do not call create-process yet. Ask the human the open_questions (batch a few related ones). After they answer, call plan-process again with the same goal and filled answer fields. Use list-users and list-groups when discussing assignees so the human can pick real people/groups.',
             'open_questions' => $open,
             'answered' => $answers,

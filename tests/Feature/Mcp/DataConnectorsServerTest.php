@@ -191,10 +191,10 @@ class DataConnectorsServerTest extends TestCase
         $this->assertStringContainsString('get-mcp-guidance', $instructions);
         $this->assertStringContainsString('create-data-connector', $instructions);
         $this->assertStringContainsString('Prefer clear connector names', $instructions);
-        $this->assertStringContainsString('data-connector-creation-rules', $instructions);
-        $this->assertStringNotContainsString('Author connectors carefully', $instructions);
-        $this->assertStringNotContainsString('screen-creation-rules', $instructions);
-        $this->assertStringNotContainsString('process-creation-rules', $instructions);
+        $this->assertStringContainsString('connector-naming', $instructions);
+        $this->assertStringNotContainsString('Name connectors by target system', $instructions);
+        $this->assertStringNotContainsString('screen-styles', $instructions);
+        $this->assertStringNotContainsString('process-naming', $instructions);
     }
 
     public function testSkillResourcesAreDataConnectorScoped(): void
@@ -206,7 +206,7 @@ class DataConnectorsServerTest extends TestCase
 
         $this->assertCount(1, $resources);
         $this->assertInstanceOf(McpSkillResource::class, $resources->first());
-        $this->assertSame('pm://mcp/skills/data-connector-creation-rules', $resources->first()->uri());
+        $this->assertSame('pm://mcp/skills/connector-naming', $resources->first()->uri());
     }
 
     public function testGetMcpGuidanceReturnsScopedCatalog(): void
@@ -219,7 +219,7 @@ class DataConnectorsServerTest extends TestCase
             ->assertStructuredContent(fn (AssertableJson $json) => $json
                 ->where('system_prompt', 'Prefer clear connector names')
                 ->has('skills', 1)
-                ->where('skills.0.slug', 'data-connector-creation-rules')
+                ->where('skills.0.slug', 'connector-naming')
                 ->missing('skills.0.content')
                 ->etc());
     }
@@ -237,30 +237,27 @@ class DataConnectorsServerTest extends TestCase
             'format' => 'component',
             'config' => [
                 [
-                    'id' => 'mcp-system-screen-creation-rules',
-                    'name' => 'Screen creation rules',
-                    'slug' => 'screen-creation-rules',
-                    'when' => 'Before create-screen',
-                    'content' => 'Use Vue mounts',
-                    'system' => true,
+                    'id' => 'custom-screen-styles',
+                    'name' => 'Screen styles',
+                    'slug' => 'screen-styles',
+                    'when' => 'Before create-screen when styling matters',
+                    'content' => 'Use calm colors',
                     'scope' => McpGuidance::SCOPE_SCREENS,
                 ],
                 [
-                    'id' => 'mcp-system-process-creation-rules',
-                    'name' => 'Process creation rules',
-                    'slug' => 'process-creation-rules',
+                    'id' => 'custom-process-naming',
+                    'name' => 'Process naming',
+                    'slug' => 'process-naming',
                     'when' => 'Before create-process',
-                    'content' => 'Author BPMN carefully',
-                    'system' => true,
+                    'content' => 'Name processes by outcome',
                     'scope' => McpGuidance::SCOPE_PROCESSES,
                 ],
                 [
-                    'id' => 'mcp-system-data-connector-creation-rules',
-                    'name' => 'Data Connector creation rules',
-                    'slug' => 'data-connector-creation-rules',
+                    'id' => 'custom-connector-naming',
+                    'name' => 'Connector naming',
+                    'slug' => 'connector-naming',
                     'when' => 'Before create-data-connector',
-                    'content' => 'Author connectors carefully',
-                    'system' => true,
+                    'content' => 'Name connectors by target system',
                     'scope' => McpGuidance::SCOPE_DATA_CONNECTORS,
                 ],
             ],
