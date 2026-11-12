@@ -39,7 +39,8 @@ final class TaskDraftIncludes
     {
         return $token === 'draft'
             || str_starts_with($token, 'draft.')
-            || str_contains($token, '.draft');
+            || str_ends_with($token, '.draft')
+            || str_contains($token, '.draft.');
     }
 
     public static function constrainedEagerLoad(): \Closure
