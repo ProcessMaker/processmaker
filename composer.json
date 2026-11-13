@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "2026.16.5",
+    "version": "2026.17.1",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -120,7 +120,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "14b7e7a5",
+            "build": "45dc5b46",
             "cicd-enabled": true,
             "custom": {
                 "package-ellucian-ethos": "1.19.12",
