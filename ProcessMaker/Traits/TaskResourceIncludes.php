@@ -162,7 +162,9 @@ trait TaskResourceIncludes
             return null;
         }
 
-        if ($consumeDraftWhenDisabled) {
+        if ($consumeDraftWhenDisabled
+            && $user
+            && (int) $user->id === (int) $token->user_id) {
             $draft->delete();
         }
 
@@ -206,10 +208,6 @@ trait TaskResourceIncludes
             && (int) $this->resource->getKey() === (int) $tokenId
             && $this->tokenHasDraftPolicyAttributes($this->resource)) {
             return $this->resource;
-        }
-
-        if ($this->tokenHasDraftPolicyAttributes($candidate)) {
-            return $candidate;
         }
 
         if (array_key_exists($tokenId, $this->draftPolicyTokenCache)) {
@@ -394,11 +392,7 @@ trait TaskResourceIncludes
 
         $candidate = new ProcessRequestToken();
         $candidate->exists = true;
-        foreach (self::DRAFT_POLICY_TOKEN_COLUMNS as $column) {
-            if (array_key_exists($column, $row)) {
-                $candidate->setAttribute($column, $row[$column]);
-            }
-        }
+        $candidate->setAttribute('id', $row['id']);
 
         return $this->persistedTokenForDraftPolicy($candidate);
     }
@@ -552,7 +546,7 @@ trait TaskResourceIncludes
      */
     private function ensureTokenAttributesForViewPolicy(ProcessRequestToken $token): void
     {
-        if ($this->tokenHasDraftPolicyAttributes($token)) {
+        if ($this->tokenDraftPolicyAttributesAreAuthoritative($token)) {
             return;
         }
 
@@ -587,6 +581,31 @@ trait TaskResourceIncludes
                 $token->setAttribute($column, $source->getAttribute($column));
             }
         }
+    }
+
+    /**
+     * Serialized nested token rows must not satisfy policy checks without a DB row.
+     */
+    private function tokenDraftPolicyAttributesAreAuthoritative(ProcessRequestToken $token): bool
+    {
+        if (!$this->tokenHasDraftPolicyAttributes($token)) {
+            return false;
+        }
+
+        $tokenId = $token->getKey();
+        if ($tokenId === null || $tokenId === '') {
+            return false;
+        }
+
+        if ($this->resource instanceof ProcessRequestToken
+            && (int) $this->resource->getKey() === (int) $tokenId
+            && $this->tokenHasDraftPolicyAttributes($this->resource)) {
+            return true;
+        }
+
+        $cached = $this->draftPolicyTokenCache[$tokenId] ?? null;
+
+        return $cached instanceof ProcessRequestToken && $cached === $token;
     }
 
     /** @see ProcessRequestTokenPolicy::view — avoids lazy-loading process on list rows */

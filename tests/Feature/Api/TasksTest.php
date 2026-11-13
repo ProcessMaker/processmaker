@@ -629,6 +629,45 @@ class TasksTest extends TestCase
         $this->assertNull($nested);
     }
 
+    public function testTaskIndexRootDraftWithDraftsDisabledDoesNotDeleteOtherAssigneeDraftForManager()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => false,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $manager = User::factory()->create();
+        $manager->giveDirectPermission('view-all_requests');
+        $assignee = User::factory()->create();
+        $this->user = $manager;
+
+        $process = Process::factory()->create([
+            'properties' => ['manager_id' => [$manager->id]],
+        ]);
+        $processRequest = ProcessRequest::factory()->create(['process_id' => $process->id]);
+        $assigneeTask = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        $assigneeDraft = TaskDraft::factory()->create([
+            'task_id' => $assigneeTask->id,
+            'data' => ['secret' => 'manager-root-must-not-consume'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', ['include' => 'draft']));
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('task_drafts', [
+            'id' => $assigneeDraft->id,
+            'task_id' => $assigneeTask->id,
+        ]);
+        $row = collect($response->json('data'))->keyBy('id')[$assigneeTask->id];
+        $this->assertNull($row['draft'] ?? null);
+    }
+
     /**
      * @return array<string, array{string, string}>
      */
