@@ -21,6 +21,8 @@ final class ScreenFields
 
     public const CONFIG = 'Screen builder config. An array of page objects. Each control in page.items must include inspector (use [] when unknown); pages should include items ([]) even when empty.';
 
+    public const PREVIEW_PRESETS = 'Named Screen Builder Preview payloads. Array of { title, data }. data MUST be a JSON string (not a nested object) so empty {} survive PHP json_decode. Required on create and Vue refactor: cover empty/start, happy path, and each major UI branch.';
+
     public static function id(JsonSchema $schema): IntegerType
     {
         return $schema->integer()
@@ -61,5 +63,12 @@ final class ScreenFields
         return $schema->array()
             ->items($schema->object())
             ->description(self::CONFIG);
+    }
+
+    public static function previewPresets(JsonSchema $schema): ArrayType
+    {
+        return $schema->array()
+            ->items($schema->object())
+            ->description(self::PREVIEW_PRESETS);
     }
 }

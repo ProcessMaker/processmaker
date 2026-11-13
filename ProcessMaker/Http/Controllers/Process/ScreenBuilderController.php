@@ -36,6 +36,7 @@ class ScreenBuilderController extends Controller
                 'computed',
                 'custom_css',
                 'watchers',
+                'preview_presets',
             ]));
         }
 

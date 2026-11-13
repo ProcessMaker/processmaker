@@ -16,7 +16,7 @@ use ProcessMaker\Mcp\Screens\ScreenCatalog;
 
 #[Name('update-screen')]
 #[Title('Update Screen')]
-#[Description('Updates a ProcessMaker screen. Send only the fields that should change. Rejects invalid config (e.g. FormSelectList without optionsList). Prefer validate-screen first. Does not reset config to the last published version.')]
+#[Description('Updates a ProcessMaker screen. Send only the fields that should change. Rejects invalid config (e.g. FormSelectList without optionsList). Prefer validate-screen first. Does not reset config to the last published version. On create/refactor follow-ups, set preview_presets (each data as JSON string) covering all major UI cases.')]
 #[IsIdempotent]
 class UpdateScreenTool extends ScreenTool
 {
@@ -42,6 +42,7 @@ class UpdateScreenTool extends ScreenTool
             'config' => ScreenFields::config($schema),
             'computed' => $schema->array()->description('Computed properties for the screen.'),
             'watchers' => $schema->array()->description('Screen watchers.'),
+            'preview_presets' => ScreenFields::previewPresets($schema),
             'custom_css' => $schema->string()->description('Custom CSS applied when the screen renders.'),
         ];
     }

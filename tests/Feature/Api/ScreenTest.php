@@ -299,6 +299,13 @@ class ScreenTest extends TestCase
             'computed' => [['id' => 2, 'name' => 'test', 'type' => 'expression', 'formula' => 'test', 'property' => 'test']],
             'custom_css' => '.class { font-size: large; }',
             'watchers' => '[{"input_data":"{}","script_configuration":"{}","synchronous":false,"show_async_loading":false,"run_onload":false,"name":"Watchers","watching":"form_input_1","script":{"id":"script-4","uuid":"98a4376e-efb8-4c10-83fd-01199398eddc","key":null,"title":"Autosave","description":"Autosave","language":"php","code":"","timeout":60,"run_as_user_id":1,"status":"ACTIVE","script_category_id":"1","script_executor_id":3},"script_id":"4","script_key":null,"uid":"16794186944621"}]',
+            'preview_presets' => [
+                [
+                    'title' => 'Empty contact',
+                    // data stored as JSON string so empty objects ({}) survive PHP json_decode
+                    'data' => '{"email":"jane@example.com","contact":{}}',
+                ],
+            ],
             'type' => $screen->type,
             'screen_category_id' => $screen->screen_category_id,
         ]);
@@ -313,6 +320,15 @@ class ScreenTest extends TestCase
         $this->assertEquals($draft->computed, [['id' => 2, 'name' => 'test', 'type' => 'expression', 'formula' => 'test', 'property' => 'test']]);
         $this->assertEquals($draft->custom_css, '.class { font-size: large; }');
         $this->assertEquals($draft->watchers, '[{"input_data":"{}","script_configuration":"{}","synchronous":false,"show_async_loading":false,"run_onload":false,"name":"Watchers","watching":"form_input_1","script":{"id":"script-4","uuid":"98a4376e-efb8-4c10-83fd-01199398eddc","key":null,"title":"Autosave","description":"Autosave","language":"php","code":"","timeout":60,"run_as_user_id":1,"status":"ACTIVE","script_category_id":"1","script_executor_id":3},"script_id":"4","script_key":null,"uid":"16794186944621"}]');
+        $this->assertEquals(
+            [
+                [
+                    'title' => 'Empty contact',
+                    'data' => '{"email":"jane@example.com","contact":{}}',
+                ],
+            ],
+            $draft->preview_presets
+        );
         $this->assertLessThan(3, $draft->updated_at->diffInSeconds($screen->updated_at));
     }
 

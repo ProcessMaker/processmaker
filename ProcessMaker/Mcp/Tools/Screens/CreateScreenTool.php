@@ -15,7 +15,7 @@ use ProcessMaker\Mcp\Screens\ScreenCatalog;
 
 #[Name('create-screen')]
 #[Title('Create Screen')]
-#[Description('Creates a ProcessMaker screen. Requires title, description, type, and screen_category_id. Rejects invalid config (e.g. FormSelectList without optionsList). Prefer validate-screen first.')]
+#[Description('Creates a ProcessMaker screen. Requires title, description, type, and screen_category_id. Rejects invalid config (e.g. FormSelectList without optionsList). Prefer validate-screen first. Always include preview_presets covering empty/start, happy path, and each major UI branch; each preset.data must be a JSON string.')]
 class CreateScreenTool extends ScreenTool
 {
     public function handle(Request $request, ScreenCatalog $screens): Response|ResponseFactory
@@ -39,6 +39,7 @@ class CreateScreenTool extends ScreenTool
             'config' => ScreenFields::config($schema),
             'computed' => $schema->array()->description('Computed properties for the screen.'),
             'watchers' => $schema->array()->description('Screen watchers.'),
+            'preview_presets' => ScreenFields::previewPresets($schema),
             'custom_css' => $schema->string()->description('Custom CSS applied when the screen renders.'),
         ];
     }
