@@ -264,7 +264,7 @@ final class ProcessBpmnValidator
 
     /**
      * MCP create/update-process does not resolve ${screen:title} / ${script:title} / ${process:name}.
-     * Those portable refs only resolve via package-plg deploy-process. Leave them as hard errors here.
+     * Those portable refs resolve via core deploy-process. Leave them as hard errors here.
      *
      * @param list<array{nodeId: ?string, code: string, message: string}> $errors
      */
