@@ -34,11 +34,11 @@ use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessPermission;
-use ProcessMaker\Models\User;
 use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\Template;
+use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
 use ProcessMaker\Nayra\Services\FixBpmnSchemaService;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
@@ -158,7 +158,7 @@ class ProcessController extends Controller
         // Filter by category status
         $processes->categoryStatus($request->input('cat_status', null));
 
-        $pmqlError = $this->applyProcessIndexPmql($processes, $request->input('pmql', ''));
+        $pmqlError = $this->applyProcessIndexPmql($processes, (string) ($request->input('pmql') ?? ''));
         if ($pmqlError !== null) {
             return $pmqlError;
         }
