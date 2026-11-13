@@ -1,7 +1,7 @@
 import http from 'k6/http';
 import { check, sleep, group } from 'k6';
 import { Trend } from 'k6/metrics';
-import { config, headers } from './config.js';
+import { config, getHeaders, validateConfiguration } from './config.js';
 
 // Custom metrics to track request durations.
 let duration200 = new Trend('duration_200');
@@ -15,8 +15,13 @@ export let options = {
   ],
 };
 
+export function setup() {
+  validateConfiguration();
+}
+
 export default function () {
   const baseUrl = config.endpoints.startProcesses;
+  const headers = getHeaders();
   group('ETag Performance', () => {
     // Add the duration of the 200 response to the custom metric.
     let res = http.get(baseUrl, { headers });

@@ -47,6 +47,9 @@ return [
     // The timeout length for API calls, in milliseconds (0 for no timeout)
     'api_timeout' => env('API_TIMEOUT', 5000),
 
+    // Optimized V1.1 task show (case start): lean load + skips duplicate request data include
+    'optimized_tasks_start_enabled' => env('OPTIMIZED_TASKS_START_ENABLED', false),
+
     // Hide server headers for security (prevents information disclosure)
     'hide_server_headers' => env('HIDE_SERVER_HEADERS', true),
 
@@ -84,6 +87,9 @@ return [
 
     // System-level scripts timeout
     'processmaker_system_scripts_timeout_seconds' => env('PROCESSMAKER_SYSTEM_SCRIPTS_TIMEOUT_SECONDS', 300),
+
+    // Enable optimized tasks
+    'processmaker_optimized_tasks_enabled' => env('OPTIMIZED_TASKS_ENABLED', true),
 
     // Since the task scheduler has a preset of one minute (crontab), the times
     // must be rounded or truncated to the nearest HH:MM:00 before compare
@@ -264,6 +270,12 @@ return [
     'node_bin_path' => env('NODE_BIN_PATH', '/usr/bin/node'),
 
     'task_drafts_enabled' => env('TASK_DRAFTS_ENABLED', true),
+
+    // Raw-query PUT /api/1.1/tasks/{id} for optimized task completion (FOUR-32800).
+    'task_update_v1_1_enabled' => env('TASK_UPDATE_V1_1_ENABLED', false),
+
+    // Raw SQL for TokenRepository persistActivity* and getNextUser (FOUR-32800 option 3).
+    'token_persistence_raw_enabled' => env('TOKEN_PERSISTENCE_RAW_ENABLED', false),
 
     'force_https' => env('FORCE_HTTPS', true),
 

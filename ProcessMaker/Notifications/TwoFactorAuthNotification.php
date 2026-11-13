@@ -48,7 +48,7 @@ class TwoFactorAuthNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject(_('Security Code'))
+            ->subject(__('Security Code'))
             ->greeting($this->user->username)
             ->line(__('This is your security code: :code', ['code' => $this->code]));
     }

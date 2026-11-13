@@ -90,4 +90,32 @@ class AuthTest extends TestCase
         $response = $this->get(route('home'));
         $response->assertRedirect('/login');
     }
+
+    public function testUserIsBlockedAfterTooManyFailedLoginAttempts()
+    {
+        config(['password-policies.login_attempts' => 3]);
+
+        $user = User::factory()->create([
+            'username' => 'blocktest',
+            'password' => Hash::make('correct-password'),
+            'status' => 'ACTIVE',
+        ]);
+
+        for ($i = 0; $i < 3; $i++) {
+            $this->post('login', [
+                'username' => 'blocktest',
+                'password' => 'wrong-password',
+            ])->assertSessionHasErrors('username');
+        }
+
+        $response = $this->post('login', [
+            'username' => 'blocktest',
+            'password' => 'wrong-password',
+        ]);
+        $response->assertSessionHasErrors([
+            'username' => 'Account locked after too many failed attempts. Contact administrator.',
+        ]);
+
+        $this->assertEquals('BLOCKED', $user->fresh()->status);
+    }
 }
