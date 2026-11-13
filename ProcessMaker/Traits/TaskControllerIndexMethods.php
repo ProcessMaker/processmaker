@@ -16,17 +16,31 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\Services\SmartExtractConfiguration;
+use ProcessMaker\Support\TaskDraftIncludes;
 
 trait TaskControllerIndexMethods
 {
     private const SELF_SERVICE_STATUS = 'self service';
 
+    private const INDEX_JSON_COLUMNS = ['data', 'self_service_groups', 'token_properties'];
+
+    private const INDEX_COLUMN_FIELD_MAP = [
+        'case_number' => ['process_request_id'],
+        'case_title' => ['process_request_id'],
+        'is_priority' => ['is_priority'],
+        'element_name' => ['element_name', 'element_type'],
+        'status' => ['status', 'is_self_service', 'due_at'],
+        'due_at' => ['due_at'],
+        'completed_at' => ['completed_at'],
+        'process' => ['process_id'],
+        'assignee' => ['user_id', 'is_self_service'],
+        'request' => ['process_request_id', 'process_id'],
+    ];
+
     private function indexBaseQuery($request)
     {
-        // Parse the includes parameter
-        $includes = $request->has('include') ? explode(',', $request->input('include')) : [];
-        // Determine if the data should be included
-        $includeData = in_array('data', $includes);
+        $includes = $this->parseIndexIncludeList($request);
+        $includeData = in_array('data', $includes, true);
 
         $query = ProcessRequestToken::exclude(['data']);
 
@@ -46,20 +60,193 @@ trait TaskControllerIndexMethods
             // review if bpmn is required here processRequest.processVersion.process
             // 'processRequest.processVersion.process' => fn($q) => $q->exclude(['svg', 'warnings']),
             'user',
-            'draft',
         ]);
 
-        $include = $request->input('include') ? explode(',', $request->input('include')) : [];
-
-        foreach (['data'] as $key) {
-            if (in_array($key, $include)) {
-                unset($include[array_search($key, $include)]);
-            }
+        if (TaskDraftIncludes::includesRootDraft($includes)) {
+            $query->with(['draft' => TaskDraftIncludes::rootDraftEagerLoad($includes)]);
         }
 
-        $query->with($include);
+        $nestedDraftWith = TaskDraftIncludes::nestedDraftEagerLoadMap($includes);
+        if ($nestedDraftWith !== []) {
+            $query->with($nestedDraftWith);
+        }
+
+        $additionalIncludes = array_values(array_filter(
+            $includes,
+            fn (string $token) => $token !== 'data' && !TaskDraftIncludes::isDraftToken($token)
+        ));
+
+        if ($additionalIncludes !== []) {
+            $query->with($additionalIncludes);
+        }
 
         return $query;
+    }
+
+    private function indexOptimizedBaseQuery($request)
+    {
+        $includes = $this->parseIndexIncludeList($request);
+        $includeData = in_array('data', $includes, true);
+
+        $query = ProcessRequestToken::query();
+        $with = $this->buildOptimizedIndexWith($includes, $includeData);
+
+        $handledIncludes = ['data', 'processRequest', 'process', 'user', 'draft', 'processRequest.process'];
+        $additionalIncludes = array_values(array_filter(
+            $includes,
+            fn (string $token) => !in_array($token, $handledIncludes, true)
+                && !TaskDraftIncludes::isDraftToken($token)
+        ));
+
+        if (!empty($with)) {
+            $query->with($with);
+        }
+
+        if (!empty($additionalIncludes)) {
+            $query->with($additionalIncludes);
+        }
+
+        return $query;
+    }
+
+    private function parseIndexIncludeList($request): array
+    {
+        if (!$request->has('include')) {
+            return [];
+        }
+
+        return TaskDraftIncludes::parseIncludeList((string) $request->input('include'));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildOptimizedIndexWith(array $includes, bool $includeData): array
+    {
+        $with = [];
+
+        $needsProcessRequest = in_array('processRequest', $includes, true)
+            || in_array('processRequest.process', $includes, true);
+        if ($needsProcessRequest) {
+            $with['processRequest'] = $this->optimizedProcessRequestEagerLoad($includeData);
+        }
+
+        if (in_array('user', $includes, true)) {
+            $with['user'] = fn ($q) => $q->select(['id', 'firstname', 'lastname', 'avatar', 'status']);
+        }
+
+        if (TaskDraftIncludes::includesRootDraft($includes)) {
+            $with['draft'] = TaskDraftIncludes::rootDraftEagerLoad($includes);
+        }
+
+        if (in_array('process', $includes, true)) {
+            $with['process'] = fn ($q) => $q->select(['id', 'name', 'uuid']);
+        }
+
+        if (in_array('processRequest.process', $includes, true)) {
+            $with['processRequest.process'] = fn ($q) => $q->select(['id', 'name', 'uuid']);
+        }
+
+        $nestedDraftWith = TaskDraftIncludes::nestedDraftEagerLoadMap($includes);
+        if (array_key_exists('processRequest.tokens', $nestedDraftWith) && !isset($with['processRequest'])) {
+            $with['processRequest'] = $this->optimizedProcessRequestEagerLoad($includeData);
+        }
+        if (array_key_exists('process.requests.tokens', $nestedDraftWith) && !isset($with['process'])) {
+            $with['process'] = fn ($q) => $q->select(['id', 'name', 'uuid']);
+        }
+        $with = array_merge($with, $nestedDraftWith);
+
+        return $with;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function optimizedProcessRequestSelectColumns(): array
+    {
+        return [
+            'id',
+            'uuid',
+            'case_number',
+            'case_title',
+            'name',
+            'status',
+            'user_id',
+            'process_id',
+            'parent_id',
+        ];
+    }
+
+    private function optimizedProcessRequestEagerLoad(bool $includeData): \Closure
+    {
+        $processRequestColumns = $this->optimizedProcessRequestSelectColumns();
+
+        return function ($q) use ($includeData, $processRequestColumns) {
+            $q->select($processRequestColumns);
+            if (!$includeData) {
+                $q->exclude(['data']);
+            }
+        };
+    }
+
+    private function resolveIndexFields($request): ?array
+    {
+        $fields = $request->input('fields', '');
+        if ($fields) {
+            $selectedFields = array_filter(array_map('trim', explode(',', $fields)));
+        } else {
+            $columns = $request->input('columns', '');
+            if (!$columns) {
+                return null;
+            }
+            $selectedFields = $this->mapColumnsToFields(array_map('trim', explode(',', $columns)));
+        }
+
+        if (!in_array('id', $selectedFields, true)) {
+            $selectedFields[] = 'id';
+        }
+
+        return array_values(array_unique($selectedFields));
+    }
+
+    private function mapColumnsToFields(array $columns): array
+    {
+        $fields = [];
+
+        foreach ($columns as $column) {
+            if (str_starts_with($column, 'data.')) {
+                continue;
+            }
+
+            if (isset(self::INDEX_COLUMN_FIELD_MAP[$column])) {
+                $fields = array_merge($fields, self::INDEX_COLUMN_FIELD_MAP[$column]);
+                continue;
+            }
+
+            if (in_array($column, ['draft', 'actions'], true)) {
+                continue;
+            }
+
+            $fields[] = $column;
+        }
+
+        return array_values(array_unique(array_merge(
+            $fields,
+            ['id', 'process_id', 'process_request_id']
+        )));
+    }
+
+    private function applyIndexFieldSelection($query, $request): void
+    {
+        $selectedFields = $this->resolveIndexFields($request);
+
+        if ($selectedFields !== null) {
+            $query->select($selectedFields);
+
+            return;
+        }
+
+        $query->exclude(self::INDEX_JSON_COLUMNS);
     }
 
     private function applyFilters($query, $request)
@@ -160,6 +347,7 @@ trait TaskControllerIndexMethods
     private function excludeNonVisibleTasks($query, $request, $resolveManagedProcessVisibility = false)
     {
         $nonSystem = filter_var($request->input('non_system'), FILTER_VALIDATE_BOOLEAN);
+        $optimized = filter_var($request->input('optimized'), FILTER_VALIDATE_BOOLEAN);
         $allTasks = filter_var($request->input('all_tasks'), FILTER_VALIDATE_BOOLEAN);
         $hitlEnabled = app(SmartExtractConfiguration::class)->hitlEnabled();
         $resolveManagedProcessVisibility = $resolveManagedProcessVisibility && $nonSystem && !$hitlEnabled;
@@ -178,15 +366,15 @@ trait TaskControllerIndexMethods
                 });
             });
         })
-            ->when($nonSystem && !$resolveManagedProcessVisibility, function ($query) use ($hitlEnabled) {
+            ->when($nonSystem && !$resolveManagedProcessVisibility, function ($query) use ($hitlEnabled, $optimized) {
                 if (!$hitlEnabled) {
-                    $query->nonSystem();
+                    $query->nonSystem($optimized);
 
                     return;
                 }
 
-                $query->where(function ($query) {
-                    $query->nonSystem();
+                $query->where(function ($query) use ($optimized) {
+                    $query->nonSystem($optimized);
                     $query->orWhere(function ($query) {
                         $query->where('element_type', '=', 'task');
                         $query->where('element_name', '=', 'Manual Document Review');
