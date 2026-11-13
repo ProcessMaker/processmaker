@@ -20,6 +20,21 @@ trait TaskResourceIncludes
 {
     use TaskScreenResourceTrait;
 
+    /** @var array<int|string, ProcessRequestToken|null> */
+    private array $draftPolicyTokenCache = [];
+
+    /** @var array<int|string, list<int|string>> */
+    private array $processManagerIdsCache = [];
+
+    private const DRAFT_POLICY_TOKEN_COLUMNS = [
+        'id',
+        'user_id',
+        'process_id',
+        'process_request_id',
+        'is_self_service',
+        'self_service_groups',
+    ];
+
     /** Do not treat case/request payload trees as task token rows. */
     private const DRAFT_REDACT_EXCLUDED_KEYS = [
         'request_data',
@@ -83,6 +98,7 @@ trait TaskResourceIncludes
         if (!TaskDraftIncludes::includesDraft($include)) {
             unset($array['draft']);
             if ($this->arrayContainsNestedTokenDrafts($array)) {
+                $this->prefetchDraftPolicyTokensForNestedArray($array);
                 $this->redactNestedDraftsInArray($array);
             }
 
@@ -100,6 +116,7 @@ trait TaskResourceIncludes
         }
 
         if (TaskDraftIncludes::includesNestedDraft($include)) {
+            $this->prefetchDraftPolicyTokensForNestedArray($array);
             $this->redactNestedDraftsInArray($array);
         }
 
@@ -114,7 +131,7 @@ trait TaskResourceIncludes
         mixed $draft,
         bool $consumeDraftWhenDisabled = false,
     ): array|TaskDraft|null {
-        $token = $this->tokenFromPersistedId($token->getKey());
+        $token = $this->persistedTokenForDraftPolicy($token);
         $draft = $token !== null ? $this->taskDraftForToken($token, $draft) : null;
         if ($token === null || $draft === null) {
             return null;
@@ -178,19 +195,50 @@ trait TaskResourceIncludes
         return $this->userCanViewTaskForDraft($user, $token);
     }
 
-    private function tokenFromPersistedId(int|string|null $tokenId): ?ProcessRequestToken
+    private function persistedTokenForDraftPolicy(ProcessRequestToken $candidate): ?ProcessRequestToken
     {
+        $tokenId = $candidate->getKey();
         if ($tokenId === null || $tokenId === '') {
             return null;
         }
 
-        return ProcessRequestToken::query()->whereKey($tokenId)->first([
-            'id',
-            'user_id',
-            'process_id',
-            'process_request_id',
-            'is_self_service',
-        ]);
+        if ($this->resource instanceof ProcessRequestToken
+            && (int) $this->resource->getKey() === (int) $tokenId
+            && $this->tokenHasDraftPolicyAttributes($this->resource)) {
+            return $this->resource;
+        }
+
+        if ($this->tokenHasDraftPolicyAttributes($candidate)) {
+            return $candidate;
+        }
+
+        if (array_key_exists($tokenId, $this->draftPolicyTokenCache)) {
+            return $this->draftPolicyTokenCache[$tokenId];
+        }
+
+        $loaded = ProcessRequestToken::query()
+            ->whereKey($tokenId)
+            ->first(self::DRAFT_POLICY_TOKEN_COLUMNS);
+
+        $this->draftPolicyTokenCache[$tokenId] = $loaded;
+
+        return $loaded;
+    }
+
+    private function tokenHasDraftPolicyAttributes(ProcessRequestToken $token): bool
+    {
+        $attrs = $token->getAttributes();
+        foreach (['user_id', 'process_id', 'is_self_service'] as $column) {
+            if (!array_key_exists($column, $attrs)) {
+                return false;
+            }
+        }
+
+        if ($token->is_self_service && !array_key_exists('self_service_groups', $attrs)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -262,7 +310,7 @@ trait TaskResourceIncludes
             return;
         }
 
-        $token = $this->tokenFromPersistedId($row['id']);
+        $token = $this->tokenFromNestedTokenRow($row);
         if (!$token) {
             unset($row['draft']);
 
@@ -270,6 +318,89 @@ trait TaskResourceIncludes
         }
 
         $row['draft'] = $this->resolveDraftPayloadForToken($token, $row['draft']);
+    }
+
+    /**
+     * @param  array<string, mixed>  $array
+     */
+    private function prefetchDraftPolicyTokensForNestedArray(array $array): void
+    {
+        $ids = [];
+        $this->collectNestedTokenIdsWithDraft($array, $ids);
+        $ids = array_values(array_unique(array_filter($ids)));
+        if ($ids === []) {
+            return;
+        }
+
+        $toLoad = [];
+        foreach ($ids as $id) {
+            if (array_key_exists($id, $this->draftPolicyTokenCache)) {
+                continue;
+            }
+            $toLoad[] = $id;
+        }
+
+        if ($toLoad === []) {
+            return;
+        }
+
+        $rows = ProcessRequestToken::query()
+            ->whereIn('id', $toLoad)
+            ->get(self::DRAFT_POLICY_TOKEN_COLUMNS);
+
+        foreach ($rows as $row) {
+            $this->draftPolicyTokenCache[$row->getKey()] = $row;
+        }
+
+        foreach ($toLoad as $id) {
+            if (!array_key_exists($id, $this->draftPolicyTokenCache)) {
+                $this->draftPolicyTokenCache[$id] = null;
+            }
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $array
+     * @param  list<int|string>  $ids
+     */
+    private function collectNestedTokenIdsWithDraft(array $array, array &$ids): void
+    {
+        foreach ($array as $key => $value) {
+            if (!is_array($value) || in_array($key, self::DRAFT_REDACT_EXCLUDED_KEYS, true)) {
+                continue;
+            }
+
+            if ($key === 'tokens' && array_is_list($value)) {
+                foreach ($value as $item) {
+                    if (is_array($item) && isset($item['draft'], $item['id'])) {
+                        $ids[] = $item['id'];
+                    }
+                }
+                continue;
+            }
+
+            $this->collectNestedTokenIdsWithDraft($value, $ids);
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     */
+    private function tokenFromNestedTokenRow(array $row): ?ProcessRequestToken
+    {
+        if (!isset($row['id'])) {
+            return null;
+        }
+
+        $candidate = new ProcessRequestToken();
+        $candidate->exists = true;
+        foreach (self::DRAFT_POLICY_TOKEN_COLUMNS as $column) {
+            if (array_key_exists($column, $row)) {
+                $candidate->setAttribute($column, $row[$column]);
+            }
+        }
+
+        return $this->persistedTokenForDraftPolicy($candidate);
     }
 
     /**
@@ -421,18 +552,40 @@ trait TaskResourceIncludes
      */
     private function ensureTokenAttributesForViewPolicy(ProcessRequestToken $token): void
     {
-        $row = ProcessRequestToken::query()
-            ->whereKey($token->getKey())
-            ->first(['id', 'user_id', 'process_id', 'is_self_service']);
-        if ($row) {
-            foreach (['user_id', 'process_id', 'is_self_service'] as $column) {
-                $token->setAttribute($column, $row->{$column});
-            }
+        if ($this->tokenHasDraftPolicyAttributes($token)) {
+            return;
         }
 
-        if ($token->is_self_service && !array_key_exists('self_service_groups', $token->getAttributes())) {
-            $groups = ProcessRequestToken::query()->whereKey($token->getKey())->value('self_service_groups');
-            $token->setAttribute('self_service_groups', $groups);
+        $tokenId = $token->getKey();
+        $cached = $tokenId !== null ? ($this->draftPolicyTokenCache[$tokenId] ?? null) : null;
+        if ($cached instanceof ProcessRequestToken && $this->tokenHasDraftPolicyAttributes($cached)) {
+            $this->mergeDraftPolicyAttributes($token, $cached);
+
+            return;
+        }
+
+        $columns = ['id', 'user_id', 'process_id', 'is_self_service'];
+        $needsGroups = (bool) $token->is_self_service
+            && !array_key_exists('self_service_groups', $token->getAttributes());
+        if ($needsGroups) {
+            $columns[] = 'self_service_groups';
+        }
+
+        $row = ProcessRequestToken::query()->whereKey($tokenId)->first($columns);
+        if ($row) {
+            $this->mergeDraftPolicyAttributes($token, $row);
+            if ($tokenId !== null) {
+                $this->draftPolicyTokenCache[$tokenId] = $row;
+            }
+        }
+    }
+
+    private function mergeDraftPolicyAttributes(ProcessRequestToken $token, ProcessRequestToken $source): void
+    {
+        foreach (['user_id', 'process_id', 'is_self_service', 'self_service_groups'] as $column) {
+            if (array_key_exists($column, $source->getAttributes())) {
+                $token->setAttribute($column, $source->getAttribute($column));
+            }
         }
     }
 
@@ -461,6 +614,10 @@ trait TaskResourceIncludes
             return [];
         }
 
+        if (array_key_exists($processId, $this->processManagerIdsCache)) {
+            return $this->processManagerIdsCache[$processId];
+        }
+
         if ($process && array_key_exists('properties', $process->getAttributes())) {
             $properties = $this->decodeJsonColumn($process->getAttribute('properties'));
         } else {
@@ -472,7 +629,10 @@ trait TaskResourceIncludes
         $standIn = new Process();
         $standIn->setAttribute('properties', $properties);
 
-        return $standIn->manager_id ?? [];
+        $managerIds = $standIn->manager_id ?? [];
+        $this->processManagerIdsCache[$processId] = $managerIds;
+
+        return $managerIds;
     }
 
     /**
