@@ -102,12 +102,8 @@ trait TaskResourceIncludes
     private function resolveDraftPayloadForToken(ProcessRequestToken $token, mixed $draft): array|TaskDraft|null
     {
         $token = $this->tokenFromPersistedId($token->getKey());
-        if (!$token) {
-            return null;
-        }
-
-        $draft = $this->taskDraftForToken($token, $draft);
-        if (!$draft) {
+        $draft = $token !== null ? $this->taskDraftForToken($token, $draft) : null;
+        if ($token === null || $draft === null) {
             return null;
         }
 
