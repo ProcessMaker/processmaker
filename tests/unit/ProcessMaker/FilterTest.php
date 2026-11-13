@@ -362,6 +362,23 @@ class FilterTest extends TestCase
         $this->assertStringContainsString('json_contains(`self_service_groups`', $sql);
     }
 
+    public function testTaskStatusSelfServiceWithoutAuthenticatedUserRequiresActiveUnassignedTask()
+    {
+        Auth::shouldReceive('user')->andReturn(null);
+
+        $sql = $this->filter([
+            [
+                'subject' => ['type' => 'Status'],
+                'operator' => '=',
+                'value' => 'Self Service',
+            ],
+        ], ProcessRequestToken::class);
+
+        $this->assertStringContainsString('`process_request_tokens`.`is_self_service` = 1', $sql);
+        $this->assertStringContainsString("`process_request_tokens`.`status` = 'ACTIVE'", $sql);
+        $this->assertStringContainsString('`process_request_tokens`.`user_id` is null', $sql);
+    }
+
     public function testTaskStatusActive()
     {
         $user = User::factory()->create();
