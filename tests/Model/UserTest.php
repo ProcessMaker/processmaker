@@ -143,4 +143,27 @@ class UserTest extends TestCase
         $this->assertNull(Cache::get("user_{$user->id}_permissions"));
         $this->assertSame('keep-me', Cache::get('unrelated-cache-key'));
     }
+
+    public function testOnlyAnActiveReplacementCanReceiveADelegatedTask(): void
+    {
+        $activeReplacement = User::factory()->create(['status' => 'ACTIVE']);
+        $owner = User::factory()->create([
+            'status' => 'OUT_OF_OFFICE',
+            'delegation_user_id' => $activeReplacement->id,
+        ]);
+
+        $this->assertSame($activeReplacement->id, $owner->activeDelegationUserId());
+        $this->assertSame($activeReplacement->id, $owner->acceptResolvedAssignee($activeReplacement->id));
+
+        foreach (['INACTIVE', 'OUT_OF_OFFICE', 'BLOCKED', 'SCHEDULED'] as $status) {
+            $unavailableReplacement = User::factory()->create(['status' => $status]);
+            $owner->delegation_user_id = $unavailableReplacement->id;
+            $owner->save();
+
+            $this->assertNull($owner->activeDelegationUserId());
+            $this->assertNull($owner->acceptResolvedAssignee($unavailableReplacement->id));
+        }
+
+        $this->assertSame($owner->id, $owner->acceptResolvedAssignee($owner->id));
+    }
 }

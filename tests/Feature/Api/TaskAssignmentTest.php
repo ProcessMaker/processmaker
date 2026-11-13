@@ -131,6 +131,42 @@ class TaskAssignmentTest extends TestCase
     }
 
     /**
+     * An unavailable replacement is resolved to the process manager
+     */
+    public function testUnavailableReplacementResolvesToProcessManager()
+    {
+        $manager = User::factory()->create(['status' => 'ACTIVE']);
+        $process = Process::factory()->create([
+            'status' => 'ACTIVE',
+            'bpmn' => file_get_contents(__DIR__ . '/processes/InvalidUserAssignment.bpmn'),
+        ]);
+        $process->manager_id = $manager->id;
+        $process->save();
+        $instance = $this->startProcess($process, 'node_1');
+        $token = $instance->tokens()->where('status', 'ACTIVE')->firstOrFail();
+
+        $replacement = User::factory()->create(['status' => 'INACTIVE']);
+        $outOfOffice = User::factory()->create([
+            'status' => 'OUT_OF_OFFICE',
+            'delegation_user_id' => $replacement->id,
+        ]);
+
+        $this->assertSame(
+            $manager->id,
+            $token->resolveAssignedUserId($outOfOffice->id, $replacement->id)
+        );
+
+        $activeReplacement = User::factory()->create(['status' => 'ACTIVE']);
+        $outOfOffice->delegation_user_id = $activeReplacement->id;
+        $outOfOffice->save();
+        $this->assertSame(
+            $activeReplacement->id,
+            $token->resolveAssignedUserId($outOfOffice->id, $activeReplacement->id)
+        );
+        $this->assertSame($manager->id, $token->resolveAssignedUserId($outOfOffice->id, null));
+    }
+
+    /**
      * Invalid user assignment is reassigned to the process manager
      */
     public function testInvalidUserAssignmentReassignToProcessManager()
