@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Database\Seeders\PermissionSeeder;
 use Facades\ProcessMaker\RollbackProcessRequest;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Mockery;
 use PHPUnit\Framework\Attributes\Group as TestGroup;
@@ -26,6 +27,7 @@ use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Providers\AuthServiceProvider;
+use ProcessMaker\Services\SmartExtractConfiguration;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
@@ -1498,6 +1500,224 @@ class TasksTest extends TestCase
         $this->assertContains($completedTask->id, $returnedIds);
         $this->assertNotContains($activeTask->id, $returnedIds);
         $this->assertNotContains($unmanagedCompletedTask->id, $returnedIds);
+    }
+
+    private function createManagedProcessForVisibilityTest(User $manager, bool $system = false): Process
+    {
+        $category = ProcessCategory::factory()->create(['is_system' => $system]);
+        $process = Process::factory()->create([
+            'user_id' => $manager->id,
+            'process_category_id' => $category->id,
+            'properties' => ['manager_id' => [$manager->id]],
+        ]);
+        $process->categories()->sync([$category->id]);
+
+        return $process;
+    }
+
+    private function createManagedTaskForVisibilityTest(Process $process, array $attributes = []): ProcessRequestToken
+    {
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $this->user->id,
+        ]);
+
+        return ProcessRequestToken::factory()->create(array_merge([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'user_id' => $this->user->id,
+            'element_type' => 'task',
+            'status' => 'ACTIVE',
+            'is_self_service' => 0,
+        ], $attributes));
+    }
+
+    private function setManagerVisibilityHitl(bool $enabled): void
+    {
+        $configuration = Mockery::mock(SmartExtractConfiguration::class);
+        $configuration->shouldReceive('hitlEnabled')->andReturn($enabled);
+        $this->app->instance(SmartExtractConfiguration::class, $configuration);
+    }
+
+    public function testManagedTaskStatusesAndMultipleProcesses()
+    {
+        $this->setManagerVisibilityHitl(false);
+        $this->user = User::factory()->create(['is_administrator' => true]);
+        $first = $this->createManagedProcessForVisibilityTest($this->user);
+        $second = $this->createManagedProcessForVisibilityTest($this->user);
+        $active = $this->createManagedTaskForVisibilityTest($first);
+        $closed = $this->createManagedTaskForVisibilityTest($first, ['status' => 'CLOSED']);
+        $completed = $this->createManagedTaskForVisibilityTest($second, ['status' => 'COMPLETED']);
+        $selfService = $this->createManagedTaskForVisibilityTest($second, ['user_id' => null, 'is_self_service' => 1]);
+        $this->createManagedTaskForVisibilityTest($second, ['is_self_service' => 1]);
+        $this->createManagedTaskForVisibilityTest($second, ['user_id' => null, 'is_self_service' => 1, 'status' => 'CLOSED']);
+
+        $parameters = ['processesIManage' => 'true', 'non_system' => 'true', 'per_page' => 100];
+        $cases = [
+            '(status = "Self Service" or status = "In Progress" or status = "Completed")' => [$active->id, $closed->id, $completed->id, $selfService->id],
+            '(status = "Self Service")' => [$selfService->id],
+            '(status = "In Progress")' => [$active->id],
+            '(status = "Completed")' => [$closed->id, $completed->id],
+        ];
+        foreach ($cases as $pmql => $expected) {
+            $response = $this->apiCall('GET', '/tasks', $parameters + ['pmql' => $pmql]);
+            $response->assertStatus(200);
+            $this->assertEqualsCanonicalizing($expected, collect($response->json('data'))->pluck('id')->all());
+            $this->assertEquals(count($expected), $response->json('meta.total'));
+        }
+
+        foreach ([['Self Service'], ['Self Service', 'Completed']] as $statuses) {
+            $response = $this->apiCall('GET', '/tasks', $parameters + [
+                'advanced_filter' => json_encode([[
+                    'subject' => ['type' => 'Status'], 'operator' => '=', 'value' => $statuses,
+                ]]),
+            ]);
+            $response->assertStatus(200);
+            $expected = count($statuses) === 1 ? [$selfService->id] : [$selfService->id, $closed->id, $completed->id];
+            $this->assertEqualsCanonicalizing($expected, collect($response->json('data'))->pluck('id')->all());
+        }
+    }
+
+    public function testManagerOfOneProcessDoesNotSeeOtherProcesses()
+    {
+        $this->setManagerVisibilityHitl(false);
+        $this->user = User::factory()->create(['is_administrator' => true]);
+        $managed = $this->createManagedProcessForVisibilityTest($this->user);
+        $unmanaged = $this->createManagedProcessForVisibilityTest(User::factory()->create());
+        $task = $this->createManagedTaskForVisibilityTest($managed);
+        $this->createManagedTaskForVisibilityTest($unmanaged);
+
+        $response = $this->apiCall('GET', '/tasks', ['processesIManage' => 'true', 'non_system' => 'true']);
+        $response->assertStatus(200);
+        $this->assertEquals([$task->id], collect($response->json('data'))->pluck('id')->all());
+        $this->assertEquals(1, $response->json('meta.total'));
+    }
+
+    public function testManagerWithoutManagedProcessesGetsEmptyResults()
+    {
+        $this->setManagerVisibilityHitl(false);
+        $otherManager = User::factory()->create();
+        $process = $this->createManagedProcessForVisibilityTest($otherManager);
+        $this->createManagedTaskForVisibilityTest($process);
+        $this->user = User::factory()->create(['is_administrator' => true]);
+
+        $response = $this->apiCall('GET', '/tasks', [
+            'processesIManage' => 'true', 'non_system' => 'true',
+            'pmql' => '(status = "Self Service" or status = "In Progress" or status = "Completed")',
+        ]);
+        $response->assertStatus(200);
+        $this->assertSame([], $response->json('data'));
+        $this->assertEquals(0, $response->json('meta.total'));
+    }
+
+    public function testManagerVisibilityUsesNonSystemCategoryAndPublishedNonDeletedProcess()
+    {
+        $this->setManagerVisibilityHitl(false);
+        $this->user = User::factory()->create(['is_administrator' => true]);
+        $visible = $this->createManagedProcessForVisibilityTest($this->user);
+        $mixed = $this->createManagedProcessForVisibilityTest($this->user);
+        $system = $this->createManagedProcessForVisibilityTest($this->user, true);
+        $deleted = $this->createManagedProcessForVisibilityTest($this->user);
+        $unpublished = $this->createManagedProcessForVisibilityTest($this->user);
+        $noCategory = $this->createManagedProcessForVisibilityTest($this->user);
+        $inactive = $this->createManagedProcessForVisibilityTest($this->user);
+        $mixed->categories()->attach(ProcessCategory::factory()->create(['is_system' => true])->id);
+        $noCategory->categories()->detach();
+
+        $visibleTask = $this->createManagedTaskForVisibilityTest($visible);
+        $mixedTask = $this->createManagedTaskForVisibilityTest($mixed);
+        foreach ([$system, $deleted, $unpublished, $noCategory, $inactive] as $process) {
+            $this->createManagedTaskForVisibilityTest($process);
+        }
+        $connection = DB::connection('processmaker');
+        $connection->table('processes')->where('id', $deleted->id)->update(['deleted_at' => now()]);
+        $connection->table('processes')->where('id', $inactive->id)->update(['status' => 'INACTIVE']);
+        $connection->table('process_versions')->where('process_id', $unpublished->id)->update(['draft' => true]);
+
+        $response = $this->apiCall('GET', '/tasks', [
+            'processesIManage' => 'true', 'non_system' => 'true', 'per_page' => 100,
+        ]);
+        $response->assertStatus(200);
+        $this->assertEqualsCanonicalizing([$visibleTask->id, $mixedTask->id], collect($response->json('data'))->pluck('id')->all());
+        $this->assertEquals(2, $response->json('meta.total'));
+    }
+
+    public function testManyPublishedProcessVersionsDoNotChangeManagerResults()
+    {
+        $this->setManagerVisibilityHitl(false);
+        $this->user = User::factory()->create(['is_administrator' => true]);
+        $process = $this->createManagedProcessForVisibilityTest($this->user);
+        $task = $this->createManagedTaskForVisibilityTest($process);
+        $versions = DB::connection('processmaker')->table('process_versions');
+        $version = (array) $versions->where('process_id', $process->id)->where('draft', false)->first();
+        unset($version['id']);
+        for ($i = 0; $i < 230; $i++) {
+            DB::connection('processmaker')->table('process_versions')->insert($version);
+        }
+        $this->assertGreaterThanOrEqual(231, DB::connection('processmaker')->table('process_versions')
+            ->where('process_id', $process->id)->where('draft', false)->count());
+
+        $response = $this->apiCall('GET', '/tasks', ['processesIManage' => 'true', 'non_system' => 'true']);
+        $response->assertStatus(200);
+        $this->assertEquals([$task->id], collect($response->json('data'))->pluck('id')->all());
+        $this->assertEquals(1, $response->json('meta.total'));
+    }
+
+    public function testManagerCountDoesNotCorrelateProcessChecksOrSelfServiceSubquery()
+    {
+        $this->setManagerVisibilityHitl(false);
+        $this->user = User::factory()->create(['is_administrator' => true]);
+        $process = $this->createManagedProcessForVisibilityTest($this->user);
+        $this->createManagedTaskForVisibilityTest($process, ['is_self_service' => 1, 'user_id' => null]);
+        $filters = [
+            ['pmql' => '(status = "Self Service" or status = "In Progress" or status = "Completed")'],
+            ['advanced_filter' => json_encode([['subject' => ['type' => 'Status'], 'operator' => '=', 'value' => ['Self Service', 'Completed']]])],
+        ];
+
+        foreach ($filters as $filter) {
+            $connection = DB::connection('processmaker');
+            $connection->flushQueryLog();
+            $connection->enableQueryLog();
+            try {
+                $response = $this->apiCall('GET', '/tasks', [
+                    'processesIManage' => 'true', 'non_system' => 'true',
+                ] + $filter);
+                $queries = $connection->getQueryLog();
+            } finally {
+                $connection->disableQueryLog();
+            }
+            $response->assertStatus(200);
+            $counts = collect($queries)->filter(function ($query) {
+                $sql = strtolower($query['query']);
+
+                return str_contains($sql, 'count(*)') && str_contains($sql, 'process_request_tokens')
+                    && str_contains($sql, 'element_type');
+            })->values();
+            $this->assertCount(1, $counts);
+            $sql = str_replace(['`', '"'], '', strtolower($counts[0]['query']));
+            $this->assertStringNotContainsString('exists (select', $sql);
+            $this->assertSame(1, substr_count($sql, 'from process_request_tokens'));
+            $this->assertStringNotContainsString('process_versions', $sql);
+            $this->assertStringNotContainsString('from processes', $sql);
+        }
+    }
+
+    public function testManagerVisibilityPreservesManualReviewExceptionAndNonSystemOption()
+    {
+        $this->user = User::factory()->create(['is_administrator' => true]);
+        $process = $this->createManagedProcessForVisibilityTest($this->user, true);
+        $regular = $this->createManagedTaskForVisibilityTest($process);
+        $review = $this->createManagedTaskForVisibilityTest($process, ['element_name' => 'Manual Document Review']);
+
+        $this->setManagerVisibilityHitl(true);
+        $response = $this->apiCall('GET', '/tasks', ['processesIManage' => 'true', 'non_system' => 'true']);
+        $response->assertStatus(200);
+        $this->assertEqualsCanonicalizing([$review->id], collect($response->json('data'))->pluck('id')->all());
+
+        $this->setManagerVisibilityHitl(false);
+        $response = $this->apiCall('GET', '/tasks', ['processesIManage' => 'true', 'non_system' => 'false']);
+        $response->assertStatus(200);
+        $this->assertEqualsCanonicalizing([$regular->id, $review->id], collect($response->json('data'))->pluck('id')->all());
     }
 
     public function testProcessManagerAdvancedStatusFilterCanReturnInProgressCompletedAndSelfServiceTasks()
