@@ -86,12 +86,19 @@ trait TaskResourceIncludes
             return $array;
         }
 
-        $draftPayload = $this->resource->relationLoaded('draft')
-            ? $this->draft
-            : ($array['draft'] ?? null);
+        if (TaskDraftIncludes::includesRootDraft($include)) {
+            $draftPayload = $this->resource->relationLoaded('draft')
+                ? $this->draft
+                : ($array['draft'] ?? null);
 
-        $array['draft'] = $this->resolveDraftPayloadForToken($this->resource, $draftPayload);
-        $this->redactNestedDraftsInArray($array);
+            $array['draft'] = $this->resolveDraftPayloadForToken($this->resource, $draftPayload);
+        } else {
+            unset($array['draft']);
+        }
+
+        if (TaskDraftIncludes::includesNestedDraft($include)) {
+            $this->redactNestedDraftsInArray($array);
+        }
 
         return $array;
     }

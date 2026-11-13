@@ -61,7 +61,7 @@ class Task extends ApiResource
         $this->process = $this->resource->process;
 
         foreach ($this->includeMethods as $key) {
-            if ($key === 'draft' && TaskDraftIncludes::includesDraft($include)) {
+            if ($key === 'draft' && TaskDraftIncludes::includesRootDraft($include)) {
                 continue;
             }
             if (!in_array($key, $include, true)) {

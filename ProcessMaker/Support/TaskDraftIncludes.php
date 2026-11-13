@@ -26,10 +26,33 @@ final class TaskDraftIncludes
 
     public static function includesDraft(array $includes): bool
     {
+        return self::includesRootDraft($includes) || self::includesNestedDraft($includes);
+    }
+
+    public static function includesRootDraft(array $includes): bool
+    {
         foreach ($includes as $token) {
-            if (self::isDraftToken($token)) {
+            $lower = strtolower(trim($token));
+            if ($lower === 'draft' || str_starts_with($lower, 'draft.')) {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    public static function includesNestedDraft(array $includes): bool
+    {
+        foreach ($includes as $token) {
+            if (!self::isDraftToken($token)) {
+                continue;
+            }
+            $lower = strtolower(trim($token));
+            if ($lower === 'draft' || str_starts_with($lower, 'draft.')) {
+                continue;
+            }
+
+            return true;
         }
 
         return false;
@@ -48,6 +71,38 @@ final class TaskDraftIncludes
     public static function constrainedEagerLoad(): \Closure
     {
         return fn ($q) => $q->select(self::EAGER_COLUMNS);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function rootDraftNestedRelations(array $includes): array
+    {
+        $relations = [];
+        foreach ($includes as $token) {
+            $lower = strtolower(trim($token));
+            if (!str_starts_with($lower, 'draft.') || $lower === 'draft') {
+                continue;
+            }
+            $suffix = substr($lower, strlen('draft.'));
+            if ($suffix !== '') {
+                $relations[] = $suffix;
+            }
+        }
+
+        return array_values(array_unique($relations));
+    }
+
+    public static function rootDraftEagerLoad(array $includes): \Closure
+    {
+        $nested = self::rootDraftNestedRelations($includes);
+
+        return function ($q) use ($nested) {
+            $q->select(self::EAGER_COLUMNS);
+            if ($nested !== []) {
+                $q->with($nested);
+            }
+        };
     }
 
     /**

@@ -62,8 +62,8 @@ trait TaskControllerIndexMethods
             'user',
         ]);
 
-        if (TaskDraftIncludes::includesDraft($includes)) {
-            $query->with(['draft' => TaskDraftIncludes::constrainedEagerLoad()]);
+        if (TaskDraftIncludes::includesRootDraft($includes)) {
+            $query->with(['draft' => TaskDraftIncludes::rootDraftEagerLoad($includes)]);
         }
 
         $nestedDraftWith = TaskDraftIncludes::nestedDraftEagerLoadMap($includes);
@@ -135,8 +135,8 @@ trait TaskControllerIndexMethods
             $with['user'] = fn ($q) => $q->select(['id', 'firstname', 'lastname', 'avatar', 'status']);
         }
 
-        if (TaskDraftIncludes::includesDraft($includes)) {
-            $with['draft'] = TaskDraftIncludes::constrainedEagerLoad();
+        if (TaskDraftIncludes::includesRootDraft($includes)) {
+            $with['draft'] = TaskDraftIncludes::rootDraftEagerLoad($includes);
         }
 
         if (in_array('process', $includes, true)) {

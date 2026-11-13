@@ -186,7 +186,7 @@ class TaskResource extends ApiResource
             if (!in_array($key, $include, true)) {
                 continue;
             }
-            if ($key === 'draft' && !in_array('draft', $parsed, true)) {
+            if ($key === 'draft' && !TaskDraftIncludes::includesRootDraft($parsed)) {
                 continue;
             }
 
@@ -198,7 +198,7 @@ class TaskResource extends ApiResource
             if (!in_array($key, $include, true)) {
                 continue;
             }
-            if ($key === 'draft' && !in_array('draft', $parsed, true)) {
+            if ($key === 'draft' && !TaskDraftIncludes::includesRootDraft($parsed)) {
                 continue;
             }
 
@@ -220,7 +220,7 @@ class TaskResource extends ApiResource
             if (!in_array($key, $include, true)) {
                 continue;
             }
-            if ($key === 'draft' && !in_array('draft', $parsed, true)) {
+            if ($key === 'draft' && !TaskDraftIncludes::includesRootDraft($parsed)) {
                 continue;
             }
 
@@ -258,7 +258,7 @@ class TaskResource extends ApiResource
         $include = self::parseV11RequestIncludes($request);
 
         foreach (self::$includeMethods as $key) {
-            if ($key === 'draft' && TaskDraftIncludes::includesDraft($include)) {
+            if ($key === 'draft' && TaskDraftIncludes::includesRootDraft($include)) {
                 continue;
             }
             if (!in_array($key, $include, true)) {
