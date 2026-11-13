@@ -123,7 +123,7 @@ abstract class BpmnAction implements ShouldQueue
         return $response;
     }
 
-    public function transferInternalContext(BpmnAction $action): void
+    public function transferInternalContext(self $action): void
     {
         $action->engine = $this->engine;
         $action->instance = $this->instance;

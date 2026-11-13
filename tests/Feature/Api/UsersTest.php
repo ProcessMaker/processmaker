@@ -127,6 +127,41 @@ class UsersTest extends TestCase
         $response->assertStatus(201);
     }
 
+    public function testCreateUserAcceptsNamesUpTo255Characters(): void
+    {
+        $faker = Faker::create();
+        $response = $this->apiCall('POST', self::API_TEST_URL, [
+            'username' => 'longname255user',
+            'firstname' => str_repeat('f', 255),
+            'lastname' => str_repeat('l', 255),
+            'email' => $faker->unique()->safeEmail(),
+            'status' => 'ACTIVE',
+            'password' => $this->makePassword(),
+        ]);
+
+        $response->assertStatus(201);
+        $user = User::where('username', 'longname255user')->first();
+        $this->assertNotNull($user);
+        $this->assertSame(255, strlen($user->firstname));
+        $this->assertSame(255, strlen($user->lastname));
+    }
+
+    public function testCreateUserRejectsLastnameLongerThan255Characters(): void
+    {
+        $faker = Faker::create();
+        $response = $this->apiCall('POST', self::API_TEST_URL, [
+            'username' => 'longname256user',
+            'firstname' => 'Valid',
+            'lastname' => str_repeat('l', 256),
+            'email' => $faker->unique()->safeEmail(),
+            'status' => 'ACTIVE',
+            'password' => $this->makePassword(),
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors(['lastname']);
+        $this->assertDatabaseMissing('users', ['username' => 'longname256user']);
+    }
+
     /**
      * Create new user and the email task notification needs to enable per default
      */
@@ -700,6 +735,67 @@ class UsersTest extends TestCase
         // Assert that the user is listed
         $response = $this->apiCall('GET', self::API_TEST_URL);
         $response->assertJsonFragment(['id' => $id]);
+    }
+
+    public function testRestoreSoftDeletedUserDispatchesOneUpdatedEvent()
+    {
+        $deletedUser = null;
+        User::withoutEvents(function () use (&$deletedUser) {
+            $deletedUser = User::factory()->create([
+                'deleted_at' => now(),
+                'status' => 'INACTIVE',
+            ]);
+        });
+
+        $updatedEventCount = 0;
+        User::updated(function () use (&$updatedEventCount) {
+            $updatedEventCount++;
+        });
+
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/restore', [
+            'id' => $deletedUser->id,
+        ]);
+
+        $response->assertStatus(200);
+
+        $restoredUser = User::find($deletedUser->id);
+        $this->assertSame('ACTIVE', $restoredUser->status);
+        $this->assertNull($restoredUser->deleted_at);
+        $this->assertFalse($restoredUser->trashed());
+        $this->assertSame(1, $updatedEventCount);
+    }
+
+    public function testDeleteUserDispatchesDeletedWithoutUpdatedEvent()
+    {
+        $user = User::factory()->create();
+        $group = Group::factory()->create();
+        $user->groups()->attach($group->id);
+
+        $updatedEventCount = 0;
+        $deletedEventCount = 0;
+        User::updated(function () use (&$updatedEventCount) {
+            $updatedEventCount++;
+        });
+        User::deleted(function () use (&$deletedEventCount) {
+            $deletedEventCount++;
+        });
+
+        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/' . $user->id);
+
+        $response->assertStatus(204);
+
+        $deletedUser = User::withTrashed()->findOrFail($user->id);
+        $this->assertSame('INACTIVE', $deletedUser->status);
+        $this->assertNotNull($deletedUser->deleted_at);
+        $this->assertTrue($deletedUser->trashed());
+        $this->assertSame(0, $updatedEventCount);
+        $this->assertSame(1, $deletedEventCount);
+
+        $this->assertDatabaseMissing('group_members', [
+            'group_id' => $group->id,
+            'member_id' => $user->id,
+            'member_type' => User::class,
+        ]);
     }
 
     public function testCreateWithoutPassword()
@@ -1478,6 +1574,194 @@ class UsersTest extends TestCase
             'filter' => $user->firstname,
         ]);
         $result->assertStatus(200);
+    }
+
+    public function testPostUsersTaskCountExcludesAuthenticatedUserForReassignment()
+    {
+        config(['app.reassign_restrict_to_assignable_users' => true]);
+
+        $admin = $this->user;
+        $otherManager = User::factory()->create(['status' => 'ACTIVE']);
+
+        $bpmn = file_get_contents(__DIR__ . '/processes/AssignmentByProcessVariable.bpmn');
+        $bpmn = str_replace('[ASSIGNMENT]', 'requester', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_USERS]', '', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_GROUPS]', '', $bpmn);
+        $bpmn = str_replace('[IS_SELF_SERVICE]', 'false', $bpmn);
+        $bpmn = str_replace('[ASSIGNMENT_RULES]', '', $bpmn);
+
+        $process = Process::factory()->create([
+            'manager_id' => [$admin->id, $otherManager->id],
+            'bpmn' => $bpmn,
+        ]);
+
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $admin->id,
+        ]);
+
+        $task = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'task1_node',
+            'user_id' => $admin->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        $result = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'assignable_for_task_id' => $task->id,
+        ]);
+
+        $result->assertStatus(200);
+        $userIds = array_column($result->json()['data'], 'id');
+        $this->assertNotContains($admin->id, $userIds);
+        $this->assertContains($otherManager->id, $userIds);
+    }
+
+    public function testPostUsersTaskCountWithRuleExpressionAssignment()
+    {
+        config(['app.reassign_restrict_to_assignable_users' => true]);
+
+        $admin = $this->user;
+        $assignableUser = User::factory()->create(['status' => 'ACTIVE']);
+        $otherUser = User::factory()->create(['status' => 'ACTIVE']);
+
+        $rules = [
+            ['type' => 'user', 'assignee' => $assignableUser->id, 'expression' => 'TestVar < 10'],
+            ['type' => 'user', 'assignee' => $otherUser->id, 'expression' => 'TestVar > 10'],
+        ];
+
+        $bpmn = file_get_contents(__DIR__ . '/processes/AssignmentByProcessVariable.bpmn');
+        $bpmn = str_replace('[ASSIGNMENT]', 'rule_expression', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_USERS]', '', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_GROUPS]', '', $bpmn);
+        $bpmn = str_replace('[IS_SELF_SERVICE]', 'false', $bpmn);
+        $bpmn = str_replace('[ASSIGNMENT_RULES]', htmlspecialchars(json_encode($rules)), $bpmn);
+
+        $process = Process::factory()->create([
+            'user_id' => $admin->id,
+            'manager_id' => $admin->id,
+            'bpmn' => $bpmn,
+        ]);
+
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $admin->id,
+        ]);
+
+        $task = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'task1_node',
+            'user_id' => $assignableUser->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        $result = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'assignable_for_task_id' => $task->id,
+            'form_data' => ['TestVar' => 5],
+        ]);
+
+        $result->assertStatus(200);
+        $userIds = array_column($result->json()['data'], 'id');
+        $this->assertContains($assignableUser->id, $userIds);
+        $this->assertNotContains($otherUser->id, $userIds);
+    }
+
+    public function testPostUsersTaskCountWithRuleExpressionNoMatchReturnsEmptyList()
+    {
+        config(['app.reassign_restrict_to_assignable_users' => true]);
+
+        $assignableUser = User::factory()->create(['status' => 'ACTIVE']);
+        $unrestrictedUser = User::factory()->create(['status' => 'ACTIVE']);
+
+        $rules = [
+            ['type' => 'user', 'assignee' => $assignableUser->id, 'expression' => 'TestVar < 10'],
+        ];
+
+        $bpmn = file_get_contents(__DIR__ . '/processes/AssignmentByProcessVariable.bpmn');
+        $bpmn = str_replace('[ASSIGNMENT]', 'rule_expression', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_USERS]', '', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_GROUPS]', '', $bpmn);
+        $bpmn = str_replace('[IS_SELF_SERVICE]', 'false', $bpmn);
+        $bpmn = str_replace('[ASSIGNMENT_RULES]', htmlspecialchars(json_encode($rules)), $bpmn);
+
+        $process = Process::factory()->create(['bpmn' => $bpmn, 'manager_id' => null]);
+
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'data' => ['TestVar' => 99],
+        ]);
+
+        $task = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id,
+            'element_id' => 'task1_node',
+            'user_id' => $assignableUser->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        $result = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'assignable_for_task_id' => $task->id,
+            'form_data' => ['TestVar' => 99],
+        ]);
+
+        $result->assertStatus(200);
+        $userIds = array_column($result->json()['data'], 'id');
+        $this->assertEmpty($userIds);
+        $this->assertNotContains($unrestrictedUser->id, $userIds);
+    }
+
+    public function testPostUsersTaskCountWithRuleExpressionGroupAssignment()
+    {
+        config(['app.reassign_restrict_to_assignable_users' => true]);
+
+        $groupUser = User::factory()->create(['status' => 'ACTIVE']);
+        $group = Group::factory()->create();
+        GroupMember::factory()->create([
+            'group_id' => $group->id,
+            'member_id' => $groupUser->id,
+            'member_type' => User::class,
+        ]);
+
+        $rules = [
+            ['type' => 'group', 'assignee' => $group->id, 'expression' => 'TestVar<10'],
+        ];
+
+        $bpmn = file_get_contents(__DIR__ . '/processes/AssignmentByProcessVariable.bpmn');
+        $bpmn = str_replace('[ASSIGNMENT]', 'rule_expression', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_USERS]', '', $bpmn);
+        $bpmn = str_replace('[ASSIGNED_GROUPS]', '', $bpmn);
+        $bpmn = str_replace('[IS_SELF_SERVICE]', 'false', $bpmn);
+        $bpmn = str_replace('[ASSIGNMENT_RULES]', htmlspecialchars(json_encode($rules)), $bpmn);
+
+        $process = Process::factory()->create(['bpmn' => $bpmn]);
+
+        $route = route('api.process_events.trigger', [$process->id, 'event' => 'start_node']);
+        $response = $this->apiCall('POST', $route, ['TestVar' => 5]);
+        $requestId = $response->json()['id'];
+
+        $task = ProcessRequestToken::where([
+            'process_request_id' => $requestId,
+            'status' => 'ACTIVE',
+        ])->firstOrFail();
+
+        $result = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'assignable_for_task_id' => $task->id,
+            'form_data' => ['TestVar' => 5],
+        ]);
+
+        $result->assertStatus(200);
+        $userIds = array_column($result->json()['data'], 'id');
+        $this->assertContains($groupUser->id, $userIds);
+
+        $emptyFormDataResult = $this->apiCall('POST', route('api.users.users_task_count_post'), [
+            'assignable_for_task_id' => $task->id,
+            'form_data' => [],
+        ]);
+
+        $emptyFormDataResult->assertStatus(200);
+        $this->assertContains($groupUser->id, array_column($emptyFormDataResult->json()['data'], 'id'));
     }
 
     /**

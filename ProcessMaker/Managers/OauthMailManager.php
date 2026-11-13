@@ -12,6 +12,7 @@ use ProcessMaker\Mail\Transports\MicrosoftGraphTransport;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Packages\Connectors\Email\EmailConfig;
+use Symfony\Component\Mailer\Transport\Smtp\Auth\XOAuth2Authenticator;
 
 class OauthMailManager extends MailManager
 {
@@ -61,19 +62,13 @@ class OauthMailManager extends MailManager
     {
         $transport = parent::createSmtpTransport($config);
 
-        switch ($this->authMethod) {
-            case 'google':
-                $accessToken = $this->checkForExpiredAccessToken();
-                // Update Authentication Mode
-                $transport->setUsername($this->fromAddress)
+        if (in_array($this->authMethod, ['google', 'office365'], true)) {
+            $accessToken = $this->checkForExpiredAccessToken();
+            // OAuth access tokens must authenticate via XOAUTH2 only.
+            // Trying LOGIN/PLAIN first fails and can poison the SMTP session.
+            $transport->setAuthenticators([new XOAuth2Authenticator()]);
+            $transport->setUsername($this->fromAddress)
                 ->setPassword($accessToken);
-                break;
-            case 'office365':
-                $accessToken = $this->checkForExpiredAccessToken();
-                // Update Authentication Mode
-                $transport->setUsername($this->fromAddress)
-                ->setPassword($accessToken);
-                break;
         }
 
         return $transport;

@@ -70,10 +70,6 @@ const props = defineProps({
     type: Object,
     default: null,
   },
-  currentTaskUserId: {
-    type: Number,
-    default: null,
-  },
 });
 
 const emit = defineEmits(["on-reassign-user"]);
@@ -93,8 +89,7 @@ const loadReassignUsers = async (filter) => {
     const response = await getReassignUsers(
       filter,
       props.task?.id,
-      props.formData,
-      props.currentTaskUserId
+      props.formData
     );
 
     reassignUsers.value = [];

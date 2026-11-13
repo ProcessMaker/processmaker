@@ -2,12 +2,13 @@
 
 namespace Tests\Feature\Api;
 
-use PHPUnit\Framework\Attributes\Group as TestGroup;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\Group as TestGroup;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Comment;
@@ -23,7 +24,6 @@ use Tests\TestCase;
 
 /**
  * Tests routes related to processes / CRUD related methods
- *
  */
 #[TestGroup('process_tests')]
 class ProcessRequestsTest extends TestCase
@@ -1215,6 +1215,79 @@ class ProcessRequestsTest extends TestCase
     }
 
     /**
+     * Bug #41926: boundary timer tokens must not inflate Forms tab pagination.
+     *
+     * @group process_requests
+     */
+    public function testScreenRequestedPaginatesOnlyTaskTokens()
+    {
+        $screen = Screen::factory()->create();
+        $bpmn = '<?xml version="1.0"?>'
+            . '<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"'
+            . ' xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd">'
+            . '<bpmn:process id="ProcessId">'
+            . '<bpmn:task id="node_task" pm:screenRef="' . $screen->id . '" name="Form Task"/>'
+            . '<bpmn:boundaryEvent id="node_event" attachedToRef="node_task"/>'
+            . '</bpmn:process></bpmn:definitions>';
+
+        $process = Process::factory()->create([
+            'bpmn' => $bpmn,
+            'user_id' => $this->user->id,
+        ]);
+
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id,
+            'process_version_id' => $process->getLatestVersion()->id,
+        ]);
+
+        $baseTime = now()->subHours(3);
+        $iterations = 120;
+
+        for ($i = 0; $i < $iterations; $i++) {
+            ProcessRequestToken::factory()->create([
+                'process_id' => $process->id,
+                'process_request_id' => $request->id,
+                'element_id' => 'node_task',
+                'element_type' => 'task',
+                'status' => 'CLOSED',
+                'completed_at' => $baseTime->copy()->addMinutes($i),
+            ]);
+            ProcessRequestToken::factory()->create([
+                'process_id' => $process->id,
+                'process_request_id' => $request->id,
+                'element_id' => 'node_event',
+                'element_type' => 'event',
+                'status' => 'CLOSED',
+                'completed_at' => $baseTime->copy()->addMinutes($iterations + $i),
+            ]);
+        }
+
+        $route = route('api.requests.detail.screen', ['request' => $request->id]);
+        $params = [
+            'page' => 1,
+            'per_page' => 15,
+            'order_by' => 'completed_at',
+            'order_direction' => 'asc',
+        ];
+
+        $response = $this->apiCall('GET', $route, $params);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('meta.total', $iterations);
+        $response->assertJsonPath('meta.total_pages', 8);
+        $this->assertCount(15, $response->json('data'));
+
+        $lastPage = $this->apiCall('GET', $route, array_merge($params, ['page' => 8]));
+        $lastPage->assertStatus(200);
+        $this->assertCount(15, $lastPage->json('data'));
+
+        $beyondLastPage = $this->apiCall('GET', $route, array_merge($params, ['page' => 9]));
+        $beyondLastPage->assertStatus(200);
+        $this->assertCount(0, $beyondLastPage->json('data'));
+        $beyondLastPage->assertJsonPath('meta.total_pages', 8);
+    }
+
+    /**
      * Get a list of Requests by Cases.
      */
     public function testRequestByCase()
@@ -1319,5 +1392,56 @@ class ProcessRequestsTest extends TestCase
         // Check if the response is successful and contains the expected tasks
         $response = $this->apiCall('GET', $url);
         $this->assertCount(2, $response->json('data'));
+    }
+
+    public function testIndexListingUsesBoundedQueryCountWithIncludes(): void
+    {
+        ProcessRequest::query()->delete();
+        $this->user->is_administrator = true;
+        $this->user->save();
+
+        $process = Process::factory()->create();
+        $version = $process->getLatestVersion();
+
+        $requests = ProcessRequest::factory()->count(15)->create([
+            'process_id' => $process->id,
+            'process_version_id' => $version->id,
+            'user_id' => $this->user->id,
+            'data' => ['foo' => 'bar'],
+        ]);
+
+        foreach ($requests as $request) {
+            ProcessRequestToken::factory()->create([
+                'process_request_id' => $request->id,
+                'process_id' => $process->id,
+                'status' => 'ACTIVE',
+                'element_type' => 'task',
+                'element_name' => 'Review Task',
+            ]);
+        }
+
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $response = $this->apiCall(
+            'GET',
+            self::API_TEST_URL . '?include=process,participants,activeTasks,data&per_page=15'
+        );
+
+        $queryCount = count(DB::getQueryLog());
+
+        $response->assertStatus(200);
+        $this->assertCount(15, $response->json('data'));
+        $this->assertLessThanOrEqual(
+            12,
+            $queryCount,
+            'Listing with includes should not scale linearly with page size. Query count: ' . $queryCount
+        );
+
+        $first = $response->json('data.0');
+        $this->assertSame($process->id, $first['process']['id']);
+        $this->assertNotEmpty($first['active_tasks']);
+        $this->assertSame('bar', $first['data']['foo']);
+        $this->assertArrayHasKey('process_version_alternative', $first);
     }
 }
