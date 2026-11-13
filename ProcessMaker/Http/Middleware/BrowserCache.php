@@ -21,14 +21,23 @@ class BrowserCache
 
         $response = $next($request);
 
+        $cacheControl = strtolower((string) $response->headers->get('Cache-Control', ''));
+
         // from vendor/laravel/framework/src/Illuminate/Http/Middleware/SetCacheHeaders.php
         $shouldSetNoStore = $request->isMethodCacheable()
             && $response->getContent()
-            && !$response->headers->has('ETag');
+            && !(str_contains($cacheControl, 'private') && str_contains($cacheControl, 'must-revalidate'));
 
         if ($shouldSetNoStore) {
-            $response->header('pragma', 'no-cache');
-            $response->header('Cache-Control', 'no-store');
+            if (method_exists($response, 'setCache')) {
+                $response->setCache([
+                    'no_store' => true,
+                    'no_cache' => true,
+                    'private' => false,
+                ]);
+            }
+
+            $response->headers->set('pragma', 'no-cache', false);
         }
 
         return $response;

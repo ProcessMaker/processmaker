@@ -11,6 +11,7 @@ use Laravel\Scout\ModelObserver;
 use Laravel\Scout\Searchable;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ScheduledTask;
 
 class TokenPersistenceRawRepository
 {
@@ -67,6 +68,8 @@ class TokenPersistenceRawRepository
             'data',
             'token_properties',
         ]);
+
+        $this->deleteScheduledTasksForToken($token);
     }
 
     /**
@@ -175,5 +178,17 @@ class TokenPersistenceRawRepository
         }
 
         (new ModelObserver)->saved($model);
+    }
+
+    private function deleteScheduledTasksForToken(ProcessRequestToken $token): void
+    {
+        $tokenId = (int) $token->getKey();
+        if ($tokenId <= 0) {
+            return;
+        }
+
+        ScheduledTask::query()
+            ->where('process_request_token_id', $tokenId)
+            ->delete();
     }
 }
