@@ -173,6 +173,11 @@ class ScriptController extends Controller
      *                 property="nonce",
      *                 type="string",
      *             ),
+     *             @OA\Property(
+     *                 property="run_in_process",
+     *                 type="boolean",
+     *                 description="When true (and Core Service Task enabled), preview via in-process PHP runner instead of Docker/microservice. Also auto-enabled when the script has allow_in_process=true.",
+     *             ),
      *           ),
      *         ),
      *
@@ -189,10 +194,27 @@ class ScriptController extends Controller
         $config = $this->getRequestArray($request->get('config'));
         $code = $request->get('code');
         $nonce = $request->get('nonce');
+        $runInProcess = $this->shouldPreviewInProcess($request, $script);
 
-        TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce)->onQueue('bpmn');
+        TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce, $runInProcess)->onQueue('bpmn');
 
-        return ['status' => 'success'];
+        return ['status' => 'success', 'run_in_process' => $runInProcess];
+    }
+
+    /**
+     * Decide if script preview should use Core Service Task in-process runner.
+     */
+    private function shouldPreviewInProcess(Request $request, Script $script): bool
+    {
+        if (!config('core-service-task.enabled') || strtolower((string) $script->language) !== 'php') {
+            return false;
+        }
+
+        if ($request->boolean('run_in_process')) {
+            return true;
+        }
+
+        return (bool) $script->allow_in_process;
     }
 
     /**
@@ -347,6 +369,7 @@ class ScriptController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorizeModulesExecution($request);
         $request->validate(Script::rules());
         $script = new Script();
         $script->fill($request->input());
@@ -399,6 +422,7 @@ class ScriptController extends Controller
      */
     public function update(Script $script, Request $request)
     {
+        $this->authorizeModulesExecution($request, $script);
         $request->validate(Script::rules($script));
         $script->fill($request->input());
         $original = array_intersect_key($script->getOriginal(), $script->getDirty());
@@ -413,6 +437,20 @@ class ScriptController extends Controller
         ScriptUpdated::dispatch($script, $changes, $original);
 
         return response($request, 204);
+    }
+
+    private function authorizeModulesExecution(Request $request, ?Script $script = null): void
+    {
+        $executionMode = $request->input('execution_mode', $script?->execution_mode);
+        if ($executionMode !== Script::EXECUTION_MODE_MODULES) {
+            return;
+        }
+
+        if ($this->canUseModules($request)) {
+            return;
+        }
+
+        $request->merge(['execution_mode' => Script::EXECUTION_MODE_BARE]);
     }
 
     /**
@@ -492,6 +530,7 @@ class ScriptController extends Controller
      */
     public function duplicate(Script $script, Request $request)
     {
+        $this->authorizeModulesExecution($request, $script);
         $request->validate(Script::rules());
         $newScript = new Script();
 
@@ -510,10 +549,25 @@ class ScriptController extends Controller
             $newScript->description = $request->input('description');
         }
 
+        $newScript->execution_mode = $request->input(
+            'execution_mode',
+            $script->execution_mode === Script::EXECUTION_MODE_MODULES
+                && $this->canUseModules($request)
+                ? Script::EXECUTION_MODE_MODULES
+                : Script::EXECUTION_MODE_BARE
+        );
         $newScript->saveOrFail();
         ScriptDuplicated::dispatch($newScript, $newScript->getChanges());
 
         return new ScriptResource($newScript);
+    }
+
+    private function canUseModules(Request $request): bool
+    {
+        return (bool) (
+            $request->user()?->is_administrator
+            || $request->user()?->can('run-in-process-modules')
+        );
     }
 
     /**

@@ -22,7 +22,7 @@ class SmartExtractEnvironmentVariablesTest extends TestCase
     {
         $this->createApiHost();
         $executor = ScriptExecutor::factory()->create(['language' => 'php']);
-        $runner = new class ($executor) extends Base {
+        $runner = new class($executor) extends Base {
             public function config($code, array $dockerConfig)
             {
                 return $dockerConfig;
@@ -66,7 +66,7 @@ class SmartExtractEnvironmentVariablesTest extends TestCase
         config(['smart-extract.api_host' => 'https://legacy.example.com']);
 
         $executor = ScriptExecutor::factory()->create(['language' => 'php']);
-        $localRunner = new class ($executor) extends Base {
+        $localRunner = new class($executor) extends Base {
             public function config($code, array $dockerConfig)
             {
                 return $dockerConfig;
@@ -106,7 +106,7 @@ class SmartExtractEnvironmentVariablesTest extends TestCase
         ]);
 
         $executor = ScriptExecutor::factory()->create(['language' => 'php']);
-        $localRunner = new class ($executor) extends Base {
+        $localRunner = new class($executor) extends Base {
             public function config($code, array $dockerConfig)
             {
                 return $dockerConfig;

@@ -103,7 +103,7 @@ class EditDataTest extends TestCase
      *
      * @param User $userAssigned
      *
-     * @return \ProcessMaker\Models\Process
+     * @return Process
      */
     private function createSingleTaskProcessUserAssignment(User $userAssigned)
     {
@@ -132,7 +132,7 @@ class EditDataTest extends TestCase
     /**
      * Start a process
      *
-     * @param \ProcessMaker\Models\Process $process
+     * @param Process $process
      * @param string $startEvent
      * @param array $data
      *
@@ -149,10 +149,10 @@ class EditDataTest extends TestCase
     /**
      * Complete task
      *
-     * @param \ProcessMaker\Models\ProcessRequestToken $task
+     * @param ProcessRequestToken $task
      * @param array $data
      *
-     * @return \ProcessMaker\Models\ProcessRequestToken
+     * @return ProcessRequestToken
      */
     private function completeTask(ProcessRequestToken $task, $data = [])
     {

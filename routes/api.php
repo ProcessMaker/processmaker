@@ -10,6 +10,9 @@ use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
 use ProcessMaker\Http\Controllers\Api\DebugController;
+use ProcessMaker\Http\Controllers\Api\DeployProcess;
+use ProcessMaker\Http\Controllers\Api\DeployScreen;
+use ProcessMaker\Http\Controllers\Api\DeployScript;
 use ProcessMaker\Http\Controllers\Api\DevLinkController;
 use ProcessMaker\Http\Controllers\Api\EncryptedDataController;
 use ProcessMaker\Http\Controllers\Api\EnvironmentVariablesController;
@@ -22,6 +25,7 @@ use ProcessMaker\Http\Controllers\Api\InboxRulesController;
 use ProcessMaker\Http\Controllers\Api\NotificationController;
 use ProcessMaker\Http\Controllers\Api\OpenAIController;
 use ProcessMaker\Http\Controllers\Api\PermissionController;
+use ProcessMaker\Http\Controllers\Api\PluginController;
 use ProcessMaker\Http\Controllers\Api\ProcessCategoryController;
 use ProcessMaker\Http\Controllers\Api\ProcessController;
 use ProcessMaker\Http\Controllers\Api\ProcessLaunchpadController;
@@ -47,6 +51,13 @@ use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 
 Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->prefix('api/1.0')->name('api.')->group(function () {
+    // Plugins
+    Route::get('plugins', [PluginController::class, 'index'])->name('plugins.index')->middleware('can:manage-plugins');
+    Route::post('plugins/install', [PluginController::class, 'install'])->name('plugins.install')->middleware('can:manage-plugins');
+    Route::post('plugins/{name}/reinstall', [PluginController::class, 'reinstall'])->name('plugins.reinstall')->middleware('can:manage-plugins');
+    Route::delete('plugins/{name}', [PluginController::class, 'destroy'])->name('plugins.destroy')->middleware('can:manage-plugins');
+    Route::patch('plugins/{name}/toggle', [PluginController::class, 'toggle'])->name('plugins.toggle')->middleware('can:manage-plugins');
+
     // Users
     Route::get('users', [UserController::class, 'index'])->name('users.index'); // Permissions handled in the controller
     Route::get('users/{user}', [UserController::class, 'show'])->name('users.show'); // Permissions handled in the controller
@@ -132,6 +143,26 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->p
     Route::post('scripts/execute/{script_id}/{script_key?}', [ScriptController::class, 'execute'])->name('scripts.execute');
     Route::get('scripts/execution/{key}', [ScriptController::class, 'execution'])->name('scripts.execution');
     Route::post('scripts/microservice/execution', [ScriptController::class, 'microserviceExecution']);
+
+    // Deploy / sync helpers (core). Canonical paths + package-skeleton aliases for BC.
+    Route::post('deploy-script', [DeployScript::class, 'deployScript'])->name('deploy-script');
+    Route::get('script-php', [DeployScript::class, 'getScriptPhp'])->name('script-php');
+    Route::post('deploy-screen', [DeployScreen::class, 'deployScreen'])->name('deploy-screen');
+    Route::get('screen-yaml', [DeployScreen::class, 'getScreenYaml'])->name('screen-yaml');
+    Route::post('deploy-process', [DeployProcess::class, 'deployProcess'])->name('deploy-process');
+    Route::get('process-bpmn', [DeployProcess::class, 'getProcessBpmn'])->name('process-bpmn');
+    Route::post('package-skeleton/deploy-script', [DeployScript::class, 'deployScript'])
+        ->name('package-skeleton.deploy-script');
+    Route::get('package-skeleton/script-php', [DeployScript::class, 'getScriptPhp'])
+        ->name('package-skeleton.script-php');
+    Route::post('package-skeleton/deploy-screen', [DeployScreen::class, 'deployScreen'])
+        ->name('package-skeleton.deploy-screen');
+    Route::get('package-skeleton/screen-yaml', [DeployScreen::class, 'getScreenYaml'])
+        ->name('package-skeleton.screen-yaml');
+    Route::post('package-skeleton/deploy-process', [DeployProcess::class, 'deployProcess'])
+        ->name('package-skeleton.deploy-process');
+    Route::get('package-skeleton/process-bpmn', [DeployProcess::class, 'getProcessBpmn'])
+        ->name('package-skeleton.process-bpmn');
 
     // Script Categories
     Route::get('script_categories', [ScriptCategoryController::class, 'index'])->name('script_categories.index')->middleware('can:view-script-categories');

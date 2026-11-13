@@ -81,6 +81,38 @@
                             {{ html()->textarea('description')->id('description')->rows(4)->class('form-control')->attribute('v-model', 'formData.description')->attribute('v-bind:class', '{"form-control":true, "is-invalid":errors.description}')->required()->attribute('aria-required', 'true') }}
                             <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
                         </div>
+                        <div class="form-group" v-if="isPhpScript">
+                            <div class="custom-control custom-switch">
+                                <input
+                                    type="checkbox"
+                                    class="custom-control-input"
+                                    id="allow_in_process"
+                                    v-model="formData.allow_in_process"
+                                >
+                                <label class="custom-control-label" for="allow_in_process">
+                                    {{ __('Allow Run Script without Docker') }}
+                                </label>
+                            </div>
+                            <small class="form-text text-muted">
+                                {{ __('Run this trusted PHP script in the ProcessMaker worker (no Docker). Requires CORE_SERVICE_TASK_ENABLED. Use Script Runtime modules for package helpers.') }}
+                            </small>
+                            <div class="invalid-feedback d-block" role="alert" v-if="errors.allow_in_process">
+                                @{{ errors.allow_in_process[0] }}
+                            </div>
+                            <div class="form-group mt-2" v-if="canRunModules">
+                                {{ html()->label(__('Execution mode'), 'execution_mode') }}
+                                {{ html()->select('execution_mode', [
+                                    'bare' => __('Bare subprocess'),
+                                    'modules' => __('Laravel modules'),
+                                ])->class('form-control')->attribute('v-model', 'formData.execution_mode')->attribute('v-bind:class', '{"form-control":true, "is-invalid":errors.execution_mode}') }}
+                                <small class="form-text text-muted">
+                                    {{ __('Laravel modules run inside the worker and should only be used for trusted scripts.') }}
+                                </small>
+                                <div class="invalid-feedback d-block" role="alert" v-if="errors.execution_mode">
+                                    @{{ errors.execution_mode[0] }}
+                                </div>
+                            </div>
+                        </div>
 
                         <slider-with-input
                             :label="$t('Timeout')"
@@ -168,17 +200,35 @@
                 'timeout': null,
                 'retry_attempts': null,
                 'retry_wait_time': null,
+                'allow_in_process': null,
+                'execution_mode': null,
                 'status': null
               },
+              canRunModules: @json(
+                config('core-service-task.modules_enabled', false)
+                && (auth()->user()?->is_administrator || auth()->user()?->can('run-in-process-modules'))
+              ),
               editScriptHooks: [],
             }
+          },
+          computed: {
+            isPhpScript() {
+              const executor = this.scriptExecutors[this.formData.script_executor_id];
+              return executor && String(executor.language).toLowerCase() === 'php';
+            },
           },
           watch: {
             selectedProjects: {
               handler() {
                 this.formData.projects = this.selectedProjects;
               }
-            }
+            },
+            isPhpScript(isPhp) {
+              if (!isPhp) {
+                this.formData.allow_in_process = false;
+                this.formData.execution_mode = 'bare';
+              }
+            },
           },
           methods: {
             resetErrors() {
@@ -186,6 +236,8 @@
                 title: null,
                 language: null,
                 description: null,
+                allow_in_process: null,
+                execution_mode: null,
                 status: null
               });
             },
@@ -207,6 +259,8 @@
                 retry_attempts: this.formData.retry_attempts,
                 retry_wait_time: this.formData.retry_wait_time,
                 script_executor_id: this.formData.script_executor_id,
+                allow_in_process: this.isPhpScript ? !!this.formData.allow_in_process : false,
+                execution_mode: this.isPhpScript ? (this.formData.execution_mode || 'bare') : 'bare',
               })
                 .then(() => {
                   ProcessMaker.alert(this.$t('The script was saved.'), 'success');
@@ -226,6 +280,8 @@
           },
           mounted() {
             this.selectedProjects = this.assignedProjects.length > 0 ? this.assignedProjects.map(project => project.id) : null;
+            this.formData.allow_in_process = !!this.formData.allow_in_process;
+            this.formData.execution_mode = this.formData.execution_mode || 'bare';
           }
         });
       });

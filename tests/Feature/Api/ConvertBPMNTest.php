@@ -24,7 +24,7 @@ class ConvertBPMNTest extends TestCase
     public $withPermissions = true;
 
     /**
-     * Test convert subProcess to callActivity
+     * Embedded subProcess BPMN is persisted as-is on save (no callActivity conversion).
      */
     public function testConvertSubProcess()
     {
@@ -32,8 +32,14 @@ class ConvertBPMNTest extends TestCase
             'status' => 'ACTIVE',
             'bpmn' => file_get_contents(__DIR__ . '/processes/CP.01.00 Create new customer.bpmn'),
         ]);
-        $this->assertStringNotContainsString('subProcess', $process->bpmn);
-        $this->assertEquals(2, Process::count());
+        $this->assertEquals(1, Process::count());
+
+        $document = new BpmnDocument();
+        $document->loadXML($process->bpmn);
+        $subProcesses = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'subProcess');
+        $this->assertGreaterThan(0, $subProcesses->length);
+        $callActivities = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'callActivity');
+        $this->assertSame(0, $callActivities->length);
     }
 
     /**

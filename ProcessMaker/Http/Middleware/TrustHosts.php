@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Http\Middleware;
 
-use Illuminate\Http\Middleware\TrustHosts as Middleware;
 use Closure;
+use Illuminate\Http\Middleware\TrustHosts as Middleware;
 use Illuminate\Http\Request;
 
 class TrustHosts extends Middleware
@@ -49,6 +49,7 @@ class TrustHosts extends Middleware
             if (! $trusted) {
                 \Log::warning('Rejected request with untrusted X-Forwarded-Host', [
                     'forwarded_host' => $forwardedHost,
+                    'trusted_pattern' => $this->hosts(),
                 ]);
                 abort(400, 'Invalid Host Header');
             }
@@ -67,4 +68,4 @@ class TrustHosts extends Middleware
 
         return preg_match('/' . str_replace('/', '\/', $pattern) . '/i', $host) === 1;
     }
-} 
+}

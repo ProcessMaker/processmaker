@@ -4,6 +4,7 @@ namespace ProcessMaker\Traits;
 
 use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;
+
 trait InteractsWithRawFilter
 {
     private const MAX_INTERVAL = 365;

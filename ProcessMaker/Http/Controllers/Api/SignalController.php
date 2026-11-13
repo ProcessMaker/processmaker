@@ -24,7 +24,7 @@ class SignalController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      *
      * @OA\Get(
      *     path="/signals",

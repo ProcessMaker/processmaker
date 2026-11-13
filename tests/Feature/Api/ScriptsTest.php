@@ -29,6 +29,8 @@ class ScriptsTest extends TestCase
 {
     use RequestHelper;
 
+    public $withPermissions = true;
+
     const API_TEST_SCRIPT = '/scripts';
 
     const STRUCTURE = [
@@ -423,6 +425,178 @@ class ScriptsTest extends TestCase
 
             return $response['exception'] === ScriptLanguageNotSupported::class;
         });
+    }
+
+    /**
+     * Preview via Core Service Task in-process runner when allow_in_process is set.
+     */
+    public function testPreviewScriptInProcess()
+    {
+        config(['core-service-task.enabled' => true]);
+        $this->withPersonalAccessClient();
+
+        Event::fake([
+            ScriptResponseEvent::class,
+        ]);
+
+        $script = $this->getScript('php');
+        $script->allow_in_process = true;
+        $script->saveOrFail();
+
+        $url = route('api.scripts.preview', $script->id);
+        $response = $this->apiCall('POST', $url, [
+            'data' => '{"ping":"1"}',
+            'code' => '<?php return ["pong" => $data["ping"]];',
+            'nonce' => 'in-process-nonce',
+        ]);
+        $response->assertStatus(200);
+        $response->assertJson(['status' => 'success', 'run_in_process' => true]);
+
+        Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
+            return ($event->response['output']['pong'] ?? null) === '1'
+                && $event->nonce === 'in-process-nonce';
+        });
+    }
+
+    /**
+     * Explicit run_in_process request flag for preview (before saving allow_in_process).
+     */
+    public function testPreviewScriptInProcessWithRequestFlag()
+    {
+        config(['core-service-task.enabled' => true]);
+        $this->withPersonalAccessClient();
+
+        Event::fake([
+            ScriptResponseEvent::class,
+        ]);
+
+        $script = $this->getScript('php');
+        $script->allow_in_process = false;
+        $script->saveOrFail();
+
+        $url = route('api.scripts.preview', $script->id);
+        $response = $this->apiCall('POST', $url, [
+            'data' => '{}',
+            'code' => '<?php return ["via" => "flag"];',
+            'nonce' => 'flag-nonce',
+            'run_in_process' => true,
+        ]);
+        $response->assertStatus(200);
+        $response->assertJson(['run_in_process' => true]);
+
+        Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
+            return ($event->response['output']['via'] ?? null) === 'flag'
+                && $event->nonce === 'flag-nonce';
+        });
+    }
+
+    public function testAdminCanSelectModulesExecutionMode(): void
+    {
+        config([
+            'core-service-task.enabled' => true,
+            'core-service-task.modules_enabled' => true,
+        ]);
+
+        $script = $this->getScript('php');
+        $response = $this->apiCall('PUT', route('api.scripts.update', $script), [
+            'title' => $script->title,
+            'language' => 'php',
+            'code' => $script->code,
+            'description' => $script->description,
+            'run_as_user_id' => $script->run_as_user_id,
+            'script_executor_id' => $script->script_executor_id,
+            'script_category_id' => $script->script_category_id,
+            'allow_in_process' => true,
+            'execution_mode' => Script::EXECUTION_MODE_MODULES,
+        ]);
+
+        $response->assertNoContent();
+        $this->assertSame(
+            Script::EXECUTION_MODE_MODULES,
+            $script->refresh()->execution_mode
+        );
+    }
+
+    public function testNonPrivilegedUserFallsBackToBareWhenSelectingModules(): void
+    {
+        $editor = User::factory()->create(['is_administrator' => false]);
+        $editor->giveDirectPermission('edit-scripts');
+        $script = $this->getScript('php');
+
+        $response = $this->actingAs($editor, 'api')->putJson(
+            route('api.scripts.update', $script),
+            [
+                'title' => $script->title,
+                'language' => 'php',
+                'code' => $script->code,
+                'description' => $script->description,
+                'run_as_user_id' => $script->run_as_user_id,
+                'script_executor_id' => $script->script_executor_id,
+                'script_category_id' => $script->script_category_id,
+                'allow_in_process' => true,
+                'execution_mode' => Script::EXECUTION_MODE_MODULES,
+            ]
+        );
+
+        $response->assertNoContent();
+        $this->assertSame(
+            Script::EXECUTION_MODE_BARE,
+            $script->refresh()->execution_mode
+        );
+    }
+
+    public function testNonPrivilegedUserEditingModulesScriptFallsBackToBare(): void
+    {
+        $editor = User::factory()->create(['is_administrator' => false]);
+        $editor->giveDirectPermission('edit-scripts');
+        $editor->giveDirectPermission('create-scripts');
+        $script = $this->getScript('php');
+        $script->update([
+            'allow_in_process' => true,
+            'execution_mode' => Script::EXECUTION_MODE_MODULES,
+        ]);
+
+        $response = $this->actingAs($editor, 'api')->putJson(
+            route('api.scripts.update', $script),
+            [
+                'title' => 'Updated without modules',
+                'language' => 'php',
+                'code' => $script->code,
+                'description' => $script->description,
+                'run_as_user_id' => $script->run_as_user_id,
+                'script_executor_id' => $script->script_executor_id,
+                'script_category_id' => $script->script_category_id,
+                'allow_in_process' => true,
+            ]
+        );
+
+        $response->assertNoContent();
+        $this->assertSame(
+            Script::EXECUTION_MODE_BARE,
+            $script->refresh()->execution_mode
+        );
+    }
+
+    public function testNonPrivilegedUserDuplicatesModulesScriptAsBare(): void
+    {
+        $editor = User::factory()->create(['is_administrator' => false]);
+        $editor->giveDirectPermission('edit-scripts');
+        $script = $this->getScript('php');
+        $script->update([
+            'allow_in_process' => true,
+            'execution_mode' => Script::EXECUTION_MODE_MODULES,
+        ]);
+
+        $response = $this->actingAs($editor, 'api')->putJson(
+            route('api.scripts.duplicate', $script),
+            ['title' => 'Duplicate without modules']
+        );
+
+        $response->assertCreated();
+        $this->assertSame(
+            Script::EXECUTION_MODE_BARE,
+            Script::findOrFail($response->json('id'))->execution_mode
+        );
     }
 
     /**

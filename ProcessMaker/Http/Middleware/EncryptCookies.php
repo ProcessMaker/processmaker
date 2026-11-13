@@ -21,6 +21,6 @@ class EncryptCookies extends BaseEncrypter
          */
         'device_id',
         'fromTriggerStartEvent',
-        'language'
+        'language',
     ];
 }

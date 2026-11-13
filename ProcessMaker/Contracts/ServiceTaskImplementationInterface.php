@@ -14,7 +14,10 @@ interface ServiceTaskImplementationInterface
      * @param array $config
      * @param string $tokenId
      *
-     * @return string $tokenId
+     * @return mixed
+     *
+     * Implementations may accept an optional 4th argument `$timeout` (seconds).
+     * WorkflowManager passes it when available (see CoreServiceTask).
      */
     public function run(array $data, array $config, $tokenId = '');
 }
