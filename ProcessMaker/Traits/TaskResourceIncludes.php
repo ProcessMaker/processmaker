@@ -244,31 +244,27 @@ trait TaskResourceIncludes
      */
     private function taskDraftForToken(ProcessRequestToken $token, mixed $draft): ?TaskDraft
     {
+        $resolved = null;
+
         if ($draft instanceof TaskDraft) {
-            if ((int) $draft->task_id !== (int) $token->id) {
-                return null;
+            if ((int) $draft->task_id === (int) $token->id) {
+                $resolved = $draft;
             }
-
-            return $draft;
-        }
-
-        $boundQuery = fn () => TaskDraft::query()
-            ->where('task_id', $token->id)
-            ->first(['id', 'task_id', 'data']);
-
-        if ($draft === null) {
-            return $boundQuery();
-        }
-
-        $draftId = $this->draftIdFromPayload($draft);
-        if ($draftId !== null) {
-            return TaskDraft::query()
-                ->whereKey($draftId)
+        } elseif ($draft === null) {
+            $resolved = TaskDraft::query()
                 ->where('task_id', $token->id)
                 ->first(['id', 'task_id', 'data']);
+        } else {
+            $draftId = $this->draftIdFromPayload($draft);
+            if ($draftId !== null) {
+                $resolved = TaskDraft::query()
+                    ->whereKey($draftId)
+                    ->where('task_id', $token->id)
+                    ->first(['id', 'task_id', 'data']);
+            }
         }
 
-        return null;
+        return $resolved;
     }
 
     private function draftIdFromPayload(mixed $draft): int|string|null
