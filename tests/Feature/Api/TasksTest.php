@@ -706,6 +706,53 @@ class TasksTest extends TestCase
         $this->assertArrayNotHasKey('draft', $row);
     }
 
+    public function testTaskIndexNestedDraftWithDraftsDisabledDoesNotDeleteOtherAssigneeDraftForManager()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => false,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $manager = User::factory()->create();
+        $assignee = User::factory()->create();
+        $this->user = $manager;
+
+        $process = Process::factory()->create([
+            'properties' => ['manager_id' => [$manager->id]],
+        ]);
+        $processRequest = ProcessRequest::factory()->create(['process_id' => $process->id]);
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        $managerTask = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $manager->id,
+        ]);
+        $otherDraft = TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'manager-nested-must-not-delete'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'processRequest.tokens.draft',
+        ]));
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('task_drafts', [
+            'id' => $otherDraft->id,
+            'task_id' => $otherTask->id,
+        ]);
+        $row = collect($response->json('data'))->firstWhere('id', $managerTask->id);
+        $nested = collect($row['process_request']['tokens'] ?? [])->keyBy('id')[$otherTask->id]['draft'] ?? null;
+        $this->assertNull($nested);
+    }
+
     public function testTaskIndexWithDraftsDisabledDoesNotDeleteAnotherUsersDraft()
     {
         $this->initializePermissions();
