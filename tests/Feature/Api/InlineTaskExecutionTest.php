@@ -48,7 +48,6 @@ class InlineTaskExecutionTest extends TestCase
         foreach ($implementations as $implementation => $class) {
             $this->assertTrue(WorkflowManager::registerServiceImplementation($implementation, $class));
         }
-
     }
 
     public function teardownInlineTaskExecution(): void

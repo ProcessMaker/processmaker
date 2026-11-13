@@ -157,12 +157,13 @@ class User extends Authenticatable implements HasMedia
 
         static::deleting(function ($user) {
             $user->status = 'INACTIVE';
-            $user->save();
+            // Persist the inactive status without treating the delete as a user update.
+            $user->saveQuietly();
         });
 
         static::restoring(function ($user) {
+            // SoftDeletes::restore() saves this with deleted_at=null; avoid a second updated event.
             $user->status = 'ACTIVE';
-            $user->save();
         });
 
         static::deleted(function ($user) {
@@ -185,8 +186,8 @@ class User extends Authenticatable implements HasMedia
         return [
             // The following characters where not included in the regexp: & %  ' " ? /
             'username' /****/ => ['required', 'regex:/^[a-zA-Z0-9.!#$*+=^_`|~\-@]+$/', 'min:2', 'max:255', $unique],
-            'firstname' /***/ => ['required', 'max:50', new PlainText()],
-            'lastname' /****/ => ['required', 'max:50', new PlainText()],
+            'firstname' /***/ => ['required', 'max:255', new PlainText()],
+            'lastname' /****/ => ['required', 'max:255', new PlainText()],
             'email' /*******/ => ['required', 'email'],
             'title' /*******/ => ['nullable', 'max:255', new PlainText()],
             'birthdate' /***/ => ['nullable', 'date'],
