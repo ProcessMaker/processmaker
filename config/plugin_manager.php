@@ -18,4 +18,17 @@ return [
     | supervisorctl restart target: "all" or a program name (e.g. processmaker-horizon).
     */
     'supervisor_restart_target' => env('PLUGIN_SUPERVISOR_RESTART_TARGET', 'all'),
+
+    /*
+    | Allow install() to treat repo argument as a local directory (CLI operator use).
+    | Keep false in production; API install always requires https URLs regardless.
+    */
+    'allow_local_install_path' => env('PLUGIN_INSTALL_ALLOW_LOCAL_PATH', false),
+
+    /*
+    | When MULTITENANCY is true, publish plugin public assets onto the tenant
+    | public disk (storage/tenant_{id}/app/public/vendor/...). URLs stay
+    | /storage/vendor/... and are served by the storage/{path} route.
+    */
+    'tenant_plugin_assets_enabled' => env('PLUGIN_TENANT_ASSETS_ENABLED', true),
 ];
