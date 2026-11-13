@@ -9,6 +9,21 @@ use Illuminate\Support\Facades\Lang;
 class ResetPassword extends LaravelResetPassword
 {
     /**
+     * Build the reset link from the configured application URL, not the request Host.
+     *
+     * @param  mixed  $notifiable
+     */
+    protected function resetUrl($notifiable): string
+    {
+        $path = route('password.reset', [
+            'token' => $this->token,
+            'email' => $notifiable->getEmailForPasswordReset(),
+        ], absolute: false);
+
+        return rtrim((string) config('app.url'), '/') . $path;
+    }
+
+    /**
      * Get the reset password notification mail message for the given URL.
      *
      * @param  string  $url

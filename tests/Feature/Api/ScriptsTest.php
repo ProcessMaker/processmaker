@@ -5,11 +5,14 @@ namespace Tests\Feature\Api;
 use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Jobs\TestScript;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
@@ -420,6 +423,63 @@ class ScriptsTest extends TestCase
 
             return $response['exception'] === ScriptLanguageNotSupported::class;
         });
+    }
+
+    /**
+     * A user with only view-scripts must not be able to run arbitrary code through preview (FOUR-34242)
+     */
+    public function testPreviewScriptIsDeniedWithoutEditScriptsPermission()
+    {
+        Bus::fake([TestScript::class]);
+        $script = $this->getScript('php');
+        $this->actAsUserWithPermissions(['view-scripts']);
+
+        $response = $this->apiCall('POST', route('api.scripts.preview', $script->id), [
+            'data' => '{}',
+            'code' => '<?php return ["response"=>1];',
+            'nonce' => '123abc',
+        ]);
+
+        $response->assertStatus(403);
+        Bus::assertNotDispatched(TestScript::class);
+    }
+
+    /**
+     * A user with edit-scripts can still run preview from the script editor
+     */
+    public function testPreviewScriptIsAllowedWithEditScriptsPermission()
+    {
+        Bus::fake([TestScript::class]);
+        $script = $this->getScript('php');
+        $this->actAsUserWithPermissions(['view-scripts', 'edit-scripts']);
+
+        $response = $this->apiCall('POST', route('api.scripts.preview', $script->id), [
+            'data' => '{}',
+            'code' => '<?php return ["response"=>1];',
+            'nonce' => '123abc',
+        ]);
+
+        $response->assertStatus(200);
+        Bus::assertDispatched(TestScript::class);
+    }
+
+    /**
+     * Replace the default administrator test user with a non-admin user that has only the given permissions
+     */
+    private function actAsUserWithPermissions(array $permissions): void
+    {
+        // Seeds permissions, boots AuthServiceProvider and registers the named gates (defineGates)
+        $this->initializePermissions();
+
+        // Make sure a denied request is caused by the missing permission and not by an undefined gate
+        foreach ($permissions as $permission) {
+            $this->assertTrue(Gate::has($permission), "Gate {$permission} is not defined");
+        }
+
+        $this->user = User::factory()->create(['is_administrator' => false]);
+        foreach ($permissions as $permission) {
+            $this->user->giveDirectPermission($permission);
+        }
     }
 
     /**
