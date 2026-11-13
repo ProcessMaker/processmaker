@@ -165,45 +165,71 @@
           this.loading = true;
           let results = [];
 
+          // showAlert: false + local catch: a stale/missing assignee must not
+          // surface as a global 404 toast or leave the picker loading forever.
           let usersPromise = Promise.all(
             value.users.map(item => {
+              let id = null;
               if (typeof item == 'number' || typeof item == 'string') {
-                return ProcessMaker.apiClient.get("users/" + item);
-              } else {
-                if (item.assignee) {
-                  let id = item.assignee;
-                  return ProcessMaker.apiClient.get("users/" + id);
-                }
+                id = item;
+              } else if (item && item.assignee) {
+                id = item.assignee;
               }
+              if (!id) {
+                return Promise.resolve(null);
+              }
+              return ProcessMaker.apiClient.get("users/" + id, { showAlert: false })
+                .then(response => this.addUsernameToFullName(response.data))
+                .catch(error => {
+                  if (error?.config) {
+                    error.config._defaultErrorShown = true;
+                  }
+                  return null;
+                });
             })
           )
             .then(items => {
               items.forEach(item => {
-                results.push(this.addUsernameToFullName(item.data));
+                if (item) {
+                  results.push(item);
+                }
               });
             });
 
           let groupsPromise = Promise.all(
             value.groups.map(item => {
+              let id = null;
               if (typeof item == 'number' || typeof item == 'string' ) {
-                return ProcessMaker.apiClient.get("groups/" + item);
-              } else {
-                if (item.assignee) {
-                  let id = this.unformatGroup(item.assignee);
-                  return ProcessMaker.apiClient.get("groups/" + id);
-                }
+                id = item;
+              } else if (item && item.assignee) {
+                id = this.unformatGroup(item.assignee);
               }
+              if (!id) {
+                return Promise.resolve(null);
+              }
+              return ProcessMaker.apiClient.get("groups/" + id, { showAlert: false })
+                .then(response => this.formatGroup(response.data))
+                .catch(error => {
+                  if (error?.config) {
+                    error.config._defaultErrorShown = true;
+                  }
+                  return null;
+                });
             })
           )
             .then(items => {
               items.forEach(item => {
-                results.push(this.formatGroup(item.data));
+                if (item) {
+                  results.push(item);
+                }
               });
             });
 
           Promise.all([usersPromise, groupsPromise])
             .then(() => {
               this.content = results;
+            })
+            .finally(() => {
               this.loading = false;
             });
         }

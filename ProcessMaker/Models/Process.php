@@ -22,6 +22,7 @@ use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\ThereIsNoProcessManagerAssignedException;
 use ProcessMaker\Facades\WorkflowUserManager;
+use ProcessMaker\ImportExport\AssignmentRulesReconciliation;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Bpmn\Models\Activity;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -916,65 +917,92 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     private function getNextUserByRule($activity, $token)
     {
         $assignmentRules = $activity->getProperty('assignmentRules', null);
-
         $instanceData = $token->getInstance()->getDataStore()->getData();
 
-        if ($assignmentRules && $instanceData) {
-            $list = json_decode($assignmentRules);
-            $list = ($list === null) ? [] : $list;
-            foreach ($list as $item) {
-                $formalExp = new FormalExpression();
-                $formalExp->setLanguage('FEEL');
-                $formalExp->setBody($item->expression);
-                $eval = $formalExp($instanceData);
-                if ($eval) {
-                    switch ($item->type) {
-                        case 'user_group':
-                            $users = [];
-                            foreach ($item->assignee->users as $user) {
-                                $users[$user] = $user;
-                            }
-                            foreach ($item->assignee->groups as $group) {
-                                $this->getConsolidatedUsers($group, $users);
-                            }
-                            $user = $this->getNextUserFromGroupAssignment(
-                                $activity->getId(),
-                                $users
-                            );
-                            break;
-                        case 'group':
-                            $users = [];
-                            $user = $this->getNextUserFromGroupAssignment(
-                                $activity->getId(),
-                                $this->getConsolidatedUsers($item->assignee, $users)
-                            );
-                            break;
-                        case 'user':
-                            $user = $item->assignee;
-                            break;
-                        case 'requester':
-                            $user = $this->getRequester($activity, $token);
-                            break;
-                        case 'manual':
-                        case 'self_service':
-                            $user = null;
-                            break;
-                        case 'user_by_id':
-                            $mustache = new Mustache_Engine();
-                            $assigneeId = $mustache->render($item->assignee, $instanceData);
-                            $user = $assigneeId;
-                            break;
-                        case 'script':
-                        default:
-                            $user = null;
-                    }
+        if (!$assignmentRules || !$instanceData) {
+            return null;
+        }
 
-                    return $user ? User::where('id', $user)->first() : null;
-                }
+        $list = json_decode($assignmentRules) ?? [];
+        foreach ($list as $item) {
+            if (!$this->assignmentRuleExpressionMatches($item->expression ?? null, $instanceData)) {
+                continue;
             }
+
+            // Unresolved import assignees must not assign or escalate to the Process Manager.
+            if (AssignmentRulesReconciliation::isUnresolvedRule($item)) {
+                throw new TaskDoesNotHaveUsersException($activity->getName());
+            }
+
+            $userId = $this->resolveAssigneeIdFromMatchedRule($item, $activity, $token, $instanceData);
+
+            return $userId ? User::where('id', $userId)->first() : null;
         }
 
         return null;
+    }
+
+    /**
+     * Evaluate a FEEL assignment-rule expression against request data.
+     */
+    private function assignmentRuleExpressionMatches(?string $expression, array $instanceData): bool
+    {
+        $formalExp = new FormalExpression();
+        $formalExp->setLanguage('FEEL');
+        $formalExp->setBody($expression);
+
+        return (bool) $formalExp($instanceData);
+    }
+
+    /**
+     * Resolve the assignee user id for a matched assignment rule.
+     *
+     * @param object $item
+     * @param mixed $activity
+     * @param mixed $token
+     */
+    private function resolveAssigneeIdFromMatchedRule($item, $activity, $token, array $instanceData)
+    {
+        return match ($item->type ?? null) {
+            'user_group' => $this->resolveUserGroupRuleAssignee($item, $activity),
+            'group' => $this->resolveGroupRuleAssignee($item, $activity),
+            'user' => $item->assignee,
+            'requester' => $this->getRequester($activity, $token),
+            'user_by_id' => (new Mustache_Engine())->render($item->assignee, $instanceData),
+            'manual', 'self_service', 'script' => null,
+            default => null,
+        };
+    }
+
+    /**
+     * @param object $item
+     * @param mixed $activity
+     */
+    private function resolveUserGroupRuleAssignee($item, $activity)
+    {
+        $users = [];
+        foreach ($item->assignee->users as $user) {
+            $users[$user] = $user;
+        }
+        foreach ($item->assignee->groups as $group) {
+            $this->getConsolidatedUsers($group, $users);
+        }
+
+        return $this->getNextUserFromGroupAssignment($activity->getId(), $users);
+    }
+
+    /**
+     * @param object $item
+     * @param mixed $activity
+     */
+    private function resolveGroupRuleAssignee($item, $activity)
+    {
+        $users = [];
+
+        return $this->getNextUserFromGroupAssignment(
+            $activity->getId(),
+            $this->getConsolidatedUsers($item->assignee, $users)
+        );
     }
 
     /**
@@ -991,41 +1019,78 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $instanceData = $token->getInstance()->getDataStore()->getData();
         $groups = [];
         $users = [];
-        $default = [];
-        if ($assignmentRules && $instanceData) {
-            $list = json_decode($assignmentRules);
-            $list = ($list === null) ? [] : $list;
-            foreach ($list as $item) {
-                if (is_null($item->expression)) {
-                    $default[] = $item;
-                    continue;
-                }
-                $formalExp = new FormalExpression();
-                $formalExp->setLanguage('FEEL');
-                $formalExp->setBody($item->expression);
-                $eval = $formalExp($instanceData);
-                if ($eval) {
-                    if ($item->type === 'group') {
-                        $groups[] = $item->assignee;
-                    } elseif ($item->type === 'user') {
-                        $users[] = $item->assignee;
-                    }
-                }
+
+        if (!$assignmentRules || !$instanceData) {
+            return compact('users', 'groups');
+        }
+
+        $defaults = [];
+        foreach (json_decode($assignmentRules) ?? [] as $item) {
+            if (is_null($item->expression)) {
+                $defaults[] = $item;
+                continue;
             }
 
-            // If no rule was applied, use the default configured user/group
-            if (empty($users) && empty($groups)) {
-                foreach ($default as $item) {
-                    if ($item->type === 'group') {
-                        $groups[] = $item->assignee;
-                    } elseif ($item->type === 'user') {
-                        $users[] = $item->assignee;
-                    }
-                }
+            if (!$this->assignmentRuleExpressionMatches($item->expression, $instanceData)) {
+                continue;
             }
+
+            $this->assertAssignmentRuleResolved($item, $activity);
+            $this->appendExpressionRuleAssignee($item, $users, $groups);
+        }
+
+        if (empty($users) && empty($groups)) {
+            $this->appendDefaultExpressionRuleAssignees($defaults, $activity, $users, $groups);
         }
 
         return compact('users', 'groups');
+    }
+
+    /**
+     * @param object $item
+     * @param mixed $activity
+     *
+     * @throws TaskDoesNotHaveUsersException
+     */
+    private function assertAssignmentRuleResolved($item, $activity): void
+    {
+        if (AssignmentRulesReconciliation::isUnresolvedRule($item)) {
+            throw new TaskDoesNotHaveUsersException($activity->getName());
+        }
+    }
+
+    /**
+     * @param object $item
+     * @param array<int, mixed> $users
+     * @param array<int, mixed> $groups
+     */
+    private function appendExpressionRuleAssignee($item, array &$users, array &$groups): void
+    {
+        if (($item->type ?? null) === 'group') {
+            $groups[] = $item->assignee;
+
+            return;
+        }
+
+        if (($item->type ?? null) === 'user') {
+            $users[] = $item->assignee;
+        }
+    }
+
+    /**
+     * @param array<int, object> $defaults
+     * @param mixed $activity
+     * @param array<int, mixed> $users
+     * @param array<int, mixed> $groups
+     *
+     * @throws TaskDoesNotHaveUsersException
+     */
+    private function appendDefaultExpressionRuleAssignees(array $defaults, $activity, array &$users, array &$groups): void
+    {
+        foreach ($defaults as $item) {
+            $this->assertAssignmentRuleResolved($item, $activity);
+            $this->appendExpressionRuleAssignee($item, $users, $groups);
+        }
     }
 
     /**
