@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Laravel\Scout\ModelObserver;
+use Laravel\Scout\Searchable;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 
@@ -102,6 +105,7 @@ class TokenPersistenceRawRepository
 
         $this->runUpdate('process_requests', (int) $instance->getKey(), $payload);
         $instance->syncChanges();
+        $this->syncSearchIndexAfterRawPersist($instance);
     }
 
     /**
@@ -128,6 +132,7 @@ class TokenPersistenceRawRepository
 
         $this->runUpdate('process_request_tokens', $tokenId, $payload);
         $token->syncChanges();
+        $this->syncSearchIndexAfterRawPersist($token);
     }
 
     /**
@@ -158,5 +163,17 @@ class TokenPersistenceRawRepository
         }
 
         return $value;
+    }
+
+    /**
+     * Raw UPDATE bypasses Eloquent save(); run Scout's saved handler on searchable models.
+     */
+    private function syncSearchIndexAfterRawPersist(Model $model): void
+    {
+        if (!in_array(Searchable::class, class_uses_recursive($model), true)) {
+            return;
+        }
+
+        (new ModelObserver)->saved($model);
     }
 }

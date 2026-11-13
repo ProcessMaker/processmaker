@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Api;
 
-use PHPUnit\Framework\Attributes\Group as TestGroup;
 use Carbon\Carbon;
 use Database\Seeders\PermissionSeeder;
 use Facades\ProcessMaker\RollbackProcessRequest;
@@ -10,6 +9,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Mockery;
+use PHPUnit\Framework\Attributes\Group as TestGroup;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Api\TaskController;
 use ProcessMaker\Models\Group;
@@ -23,6 +23,7 @@ use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Providers\AuthServiceProvider;
@@ -35,7 +36,6 @@ use Tests\TestCase;
  * Tests routes related to tokens list and show
  * the creation, update and deletion are controller by the engine
  * and should not be changed by endpoints
- *
  */
 #[TestGroup('process_tests')]
 class TasksTest extends TestCase
@@ -191,6 +191,725 @@ class TasksTest extends TestCase
 
         // should only see the 3 closed tasks, not the active one
         $this->assertEquals(count($response->json()['data']), 3);
+    }
+
+    /**
+     * Task list with include=draft must not expose another assignee's draft payload
+     * to users who only have view-all_requests (list) without ProcessRequestTokenPolicy::view.
+     */
+    public function testTaskIndexExcludesOtherUsersDraftDataWithoutViewPermission()
+    {
+        $this->initializePermissions();
+        config(['app.task_drafts_enabled' => true]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+
+        $assignee = User::factory()->create();
+        $processRequest = ProcessRequest::factory()->create();
+
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'other-user-draft'],
+        ]);
+
+        $ownTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $viewer->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $ownTask->id,
+            'data' => ['mine' => 'own-draft'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', ['include' => 'draft']));
+        $response->assertStatus(200);
+
+        $tasks = collect($response->json('data'))->keyBy('id');
+
+        $otherDraft = $tasks[$otherTask->id]['draft'];
+        $this->assertNotNull($otherDraft);
+        $this->assertArrayNotHasKey('data', $otherDraft);
+
+        $ownDraft = $tasks[$ownTask->id]['draft'];
+        $this->assertEquals('own-draft', $ownDraft['data']['mine'] ?? null);
+    }
+
+    public function testTaskIndexIncludesOwnDraftDataWhenTokenProjectionOmitsUserId()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $assignee = User::factory()->create();
+        $this->user = $assignee;
+
+        $processRequest = ProcessRequest::factory()->create();
+        $task = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $task->id,
+            'data' => ['field' => 'assignee-draft'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'draft',
+            'fields' => 'id,element_name,status',
+        ]));
+
+        $response->assertStatus(200);
+        $tasks = collect($response->json('data'))->keyBy('id');
+        $this->assertEquals('assignee-draft', $tasks[$task->id]['draft']['data']['field'] ?? null);
+    }
+
+    public function testTaskIndexIncludesDraftDataForProcessManagerWithStringManagerIds()
+    {
+        $this->initializePermissions();
+        config(['app.task_drafts_enabled' => true]);
+
+        $manager = User::factory()->create();
+        $manager->giveDirectPermission('view-all_requests');
+        $assignee = User::factory()->create();
+        $this->user = $manager;
+
+        $process = Process::factory()->create([
+            'properties' => ['manager_id' => [(string) $manager->id]],
+        ]);
+        $processRequest = ProcessRequest::factory()->create(['process_id' => $process->id]);
+        $task = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $task->id,
+            'data' => ['manager_visible' => 'manager-draft'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', ['include' => 'draft']));
+        $response->assertStatus(200);
+
+        $draft = collect($response->json('data'))->keyBy('id')[$task->id]['draft'];
+        $this->assertEquals('manager-draft', $draft['data']['manager_visible'] ?? null);
+    }
+
+    public function testLegacyTaskIndexDraftMediaDoesNotExposeOtherUsersDraftData()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => false,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'legacy-draft-media'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', ['include' => 'draft.media']));
+        $response->assertStatus(200);
+
+        $draft = collect($response->json('data'))->keyBy('id')[$otherTask->id]['draft'] ?? null;
+        $this->assertNotNull($draft);
+        $this->assertArrayNotHasKey('data', $draft);
+    }
+
+    public function testTaskIndexNestedDraftIncludeDoesNotExposeOtherUsersDraftData()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'nested-bypass'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', ['include' => 'draft.media']));
+        $response->assertStatus(200);
+
+        $draft = collect($response->json('data'))->keyBy('id')[$otherTask->id]['draft'] ?? null;
+        $this->assertNotNull($draft);
+        $this->assertArrayNotHasKey('data', $draft);
+    }
+
+    public function testTaskIndexNestedDraftIncludeWithDraftsDisabledDoesNotDeleteOwnParentDraft()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => false,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $assignee = User::factory()->create();
+        $this->user = $assignee;
+        $processRequest = ProcessRequest::factory()->create();
+        $parentTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => User::factory()->create()->id,
+        ]);
+        $parentDraft = TaskDraft::factory()->create([
+            'task_id' => $parentTask->id,
+            'data' => ['parent' => 'must-survive-nested-include'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'processRequest.tokens.draft',
+        ]));
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('task_drafts', [
+            'id' => $parentDraft->id,
+            'task_id' => $parentTask->id,
+        ]);
+        $row = collect($response->json('data'))->keyBy('id')[$parentTask->id];
+        $this->assertArrayNotHasKey('draft', $row);
+        $nestedDraft = collect($row['process_request']['tokens'] ?? [])
+            ->firstWhere('id', $parentTask->id)['draft'] ?? null;
+        $this->assertNull($nestedDraft);
+    }
+
+    public function testTaskIndexProcessRequestsTokensDraftWithDraftsDisabledDoesNotDeleteOwnParentDraft()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => false,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $assignee = User::factory()->create();
+        $this->user = $assignee;
+        $process = Process::factory()->create();
+        $processRequest = ProcessRequest::factory()->create(['process_id' => $process->id]);
+        $parentTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        $parentDraft = TaskDraft::factory()->create([
+            'task_id' => $parentTask->id,
+            'data' => ['parent' => 'must-survive-process-requests'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'process,process.requests.tokens.draft',
+        ]));
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('task_drafts', [
+            'id' => $parentDraft->id,
+            'task_id' => $parentTask->id,
+        ]);
+        $row = collect($response->json('data'))->keyBy('id')[$parentTask->id];
+        $this->assertArrayNotHasKey('draft', $row);
+    }
+
+    public function testTaskIndexProcessRequestTokensDraftDoesNotExposeOtherUsersDraftData()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'nested-process-request-token'],
+        ]);
+
+        $ownTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $viewer->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $ownTask->id,
+            'data' => ['mine' => 'own-nested-pr'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'processRequest.tokens.draft',
+        ]));
+        $response->assertStatus(200);
+
+        $row = collect($response->json('data'))->firstWhere('id', $ownTask->id);
+        $tokens = collect($row['process_request']['tokens'] ?? [])->keyBy('id');
+
+        $otherDraft = $tokens[$otherTask->id]['draft'] ?? null;
+        $this->assertNotNull($otherDraft);
+        $this->assertArrayNotHasKey('data', $otherDraft);
+
+        $ownDraft = $tokens[$ownTask->id]['draft'] ?? null;
+        $this->assertEquals('own-nested-pr', $ownDraft['data']['mine'] ?? null);
+    }
+
+    public function testTaskIndexProcessRequestTokensDraftCaseInsensitiveDoesNotExposeOtherUsersDraftData()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'case-insensitive-nested'],
+        ]);
+
+        $ownTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $viewer->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'processRequest.tokens.Draft',
+        ]));
+        $response->assertStatus(200);
+
+        $row = collect($response->json('data'))->firstWhere('id', $ownTask->id);
+        $tokens = collect($row['process_request']['tokens'] ?? [])->keyBy('id');
+        $otherDraft = $tokens[$otherTask->id]['draft'] ?? null;
+
+        $this->assertNotNull($otherDraft);
+        $this->assertArrayNotHasKey('data', $otherDraft);
+    }
+
+    public function testTaskIndexProcessRequestTokensDraftWildcardSelectDoesNotExposeOtherUsersDraftData()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'laravel-include-wildcard'],
+        ]);
+
+        $ownTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $viewer->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'processRequest.tokens.draft:*',
+        ]));
+        $response->assertStatus(200);
+
+        $row = collect($response->json('data'))->firstWhere('id', $ownTask->id);
+        $tokens = collect($row['process_request']['tokens'] ?? [])->keyBy('id');
+        $otherDraft = $tokens[$otherTask->id]['draft'] ?? null;
+
+        $this->assertNotNull($otherDraft);
+        $this->assertArrayNotHasKey('data', $otherDraft);
+        $json = json_encode($response->json());
+        $this->assertStringNotContainsString('laravel-include-wildcard', $json);
+    }
+
+    public function testTaskIndexProcessRequestTokensDraftTrailingColonDoesNotExposeOtherUsersDraftData()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'laravel-include-trailing-colon'],
+        ]);
+
+        $ownTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $viewer->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'processRequest.tokens.draft:',
+        ]));
+        $response->assertStatus(200);
+
+        $row = collect($response->json('data'))->firstWhere('id', $ownTask->id);
+        $tokens = collect($row['process_request']['tokens'] ?? [])->keyBy('id');
+        $otherDraft = $tokens[$otherTask->id]['draft'] ?? null;
+
+        $this->assertNotNull($otherDraft);
+        $this->assertArrayNotHasKey('data', $otherDraft);
+    }
+
+    public function testTaskIndexProcessRequestsTokensDraftDoesNotExposeOtherUsersDraftData()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $process = Process::factory()->create();
+        $viewerRequest = ProcessRequest::factory()->create(['process_id' => $process->id]);
+        $otherRequest = ProcessRequest::factory()->create(['process_id' => $process->id]);
+
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $otherRequest->id,
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'nested-process-requests'],
+        ]);
+
+        $ownTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $viewerRequest->id,
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'user_id' => $viewer->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'process.requests.tokens.draft',
+        ]));
+        $response->assertStatus(200);
+
+        $row = collect($response->json('data'))->firstWhere('id', $ownTask->id);
+        $otherDraft = collect($row['process']['requests'] ?? [])
+            ->flatMap(fn ($request) => $request['tokens'] ?? [])
+            ->firstWhere('id', $otherTask->id)['draft'] ?? null;
+
+        $this->assertNotNull($otherDraft);
+        $this->assertArrayNotHasKey('data', $otherDraft);
+    }
+
+    public function testLegacyTaskIndexWithoutIncludeDoesNotEmbedDraftRelation()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => false,
+        ]);
+
+        $assignee = User::factory()->create();
+        $this->user = $assignee;
+        $processRequest = ProcessRequest::factory()->create();
+        $task = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $task->id,
+            'data' => ['leaked' => 'legacy-index'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index'));
+        $response->assertStatus(200);
+
+        $row = collect($response->json('data'))->keyBy('id')[$task->id];
+        $this->assertArrayNotHasKey('draft', $row);
+    }
+
+    public function testTaskIndexNestedDraftWithDraftsDisabledDoesNotDeleteOtherAssigneeDraftForManager()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => false,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $manager = User::factory()->create();
+        $assignee = User::factory()->create();
+        $this->user = $manager;
+
+        $process = Process::factory()->create([
+            'properties' => ['manager_id' => [$manager->id]],
+        ]);
+        $processRequest = ProcessRequest::factory()->create(['process_id' => $process->id]);
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        $managerTask = ProcessRequestToken::factory()->create([
+            'process_id' => $process->id,
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $manager->id,
+        ]);
+        $otherDraft = TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'manager-nested-must-not-delete'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'processRequest.tokens.draft',
+        ]));
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('task_drafts', [
+            'id' => $otherDraft->id,
+            'task_id' => $otherTask->id,
+        ]);
+        $row = collect($response->json('data'))->firstWhere('id', $managerTask->id);
+        $nested = collect($row['process_request']['tokens'] ?? [])->keyBy('id')[$otherTask->id]['draft'] ?? null;
+        $this->assertNull($nested);
+    }
+
+    public function testTaskIndexWithDraftsDisabledDoesNotDeleteAnotherUsersDraft()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => false,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        $draft = TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'must-survive'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', ['include' => 'draft']));
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('task_drafts', ['id' => $draft->id, 'task_id' => $otherTask->id]);
+        $otherRow = collect($response->json('data'))->keyBy('id')[$otherTask->id];
+        $this->assertNull($otherRow['draft'] ?? null);
+    }
+
+    public function testTaskIndexDraftMediaWithDraftsDisabledDoesNotDeleteAnotherUsersDraft()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => false,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        $draft = TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'must-survive-media'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', ['include' => 'draft.media']));
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('task_drafts', ['id' => $draft->id, 'task_id' => $otherTask->id]);
+        $otherRow = collect($response->json('data'))->keyBy('id')[$otherTask->id];
+        $this->assertNull($otherRow['draft'] ?? null);
+    }
+
+    public function testV11TaskShowOmitsDraftWithoutIncludeDespiteFastPathPreload()
+    {
+        $this->initializePermissions();
+        config(['app.task_drafts_enabled' => true]);
+
+        $assignee = User::factory()->create();
+        $this->user = $assignee;
+        $processRequest = ProcessRequest::factory()->create();
+        $task = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $task->id,
+            'data' => ['field' => 'show-fast-preload'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.1.1.tasks.show', $task->id));
+        $response->assertStatus(200);
+        $this->assertArrayNotHasKey('draft', $response->json());
+    }
+
+    public function testTaskShowIncludesDraftWhenRequested()
+    {
+        $this->initializePermissions();
+        config(['app.task_drafts_enabled' => true]);
+
+        $assignee = User::factory()->create();
+        $this->user = $assignee;
+        $processRequest = ProcessRequest::factory()->create();
+        $task = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $task->id,
+            'data' => ['field' => 'show-with-include'],
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.show', $task->id) . '?include=draft');
+        $response->assertStatus(200);
+        $this->assertEquals('show-with-include', $response->json('draft.data.field'));
+    }
+
+    public function testV11TaskShowIgnoresPlantedDraftObjectsInRequestData()
+    {
+        $this->initializePermissions();
+        config(['app.task_drafts_enabled' => true]);
+
+        $assignee = User::factory()->create();
+        $this->user = $assignee;
+        $otherAssignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $ownTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $otherAssignee->id,
+        ]);
+        $otherDraft = TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'request-data-plant'],
+        ]);
+
+        $processRequest->update([
+            'data' => [
+                'draft_trap' => [
+                    'id' => $ownTask->id,
+                    'user_id' => $assignee->id,
+                    'draft' => [
+                        'id' => $otherDraft->id,
+                        'task_id' => $ownTask->id,
+                    ],
+                ],
+            ],
+        ]);
+
+        $response = $this->apiCall(
+            'GET',
+            route('api.1.1.tasks.show', $ownTask->id) . '?include=draft,requestData'
+        );
+        $response->assertStatus(200);
+
+        $json = json_encode($response->json());
+        $this->assertStringNotContainsString('request-data-plant', $json);
+        $this->assertDatabaseHas('task_drafts', ['id' => $otherDraft->id]);
     }
 
     /**
