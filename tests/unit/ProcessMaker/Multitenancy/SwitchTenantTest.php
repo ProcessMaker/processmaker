@@ -7,6 +7,7 @@ namespace Tests\Unit\ProcessMaker\Multitenancy;
 use Illuminate\Broadcasting\BroadcastManager;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Passport\ClientRepository;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\ResourceServer;
@@ -66,6 +67,33 @@ class SwitchTenantTest extends TestCase
         } finally {
             $switch->forgetCurrent();
         }
+    }
+
+    public function test_make_current_flushes_cached_filesystem_disks_to_tenant_root(): void
+    {
+        // Warm the landlord disk the way a Horizon worker might before the first tenant job.
+        $landlordPath = Storage::disk('local')->path('import/options.json');
+        $this->assertStringContainsString('/storage/app/', $landlordPath);
+
+        $tenant = $this->fakeTenant();
+        $switch = new SwitchTenant();
+
+        try {
+            $switch->makeCurrent($tenant);
+
+            $tenantPath = Storage::disk('local')->path('import/options.json');
+            $this->assertSame(
+                storage_path('app/import/options.json'),
+                $tenantPath
+            );
+            $this->assertStringContainsString('/storage/tenant_' . $tenant->id . '/', $tenantPath);
+            $this->assertStringNotContainsString('/storage/app/', $tenantPath);
+        } finally {
+            $switch->forgetCurrent();
+        }
+
+        $restoredPath = Storage::disk('local')->path('import/options.json');
+        $this->assertSame($landlordPath, $restoredPath);
     }
 
     private function fakeTenant(): Tenant

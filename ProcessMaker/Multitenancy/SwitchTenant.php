@@ -5,6 +5,7 @@ namespace ProcessMaker\Multitenancy;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Env;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Passport\ApiTokenCookieFactory;
 use Laravel\Passport\ClientRepository;
 use League\OAuth2\Server\AuthorizationServer;
@@ -65,11 +66,24 @@ class SwitchTenant implements SwitchTenantTask
         $app->useStoragePath(base_path('storage'));
         Env::getRepository()->clear('APP_ROUTES_CACHE');
 
+        // Restore landlord disk roots. Cached adapters still point at the previous
+        // tenant until flushFilesystemDisks() runs below.
+        foreach ($this->landlordConfig('filesystems.disks') ?? [] as $disk => $config) {
+            if (isset($config['root'])) {
+                $this->setConfig('filesystems.disks.' . $disk . '.root', $config['root']);
+            }
+            if (isset($config['url'])) {
+                $this->setConfig('filesystems.disks.' . $disk . '.url', $config['url']);
+            }
+        }
+
+        $app->useLangPath(resource_path('lang'));
+        $this->setConfig('filesystems.disks.lang.root', lang_path());
+        $this->flushFilesystemDisks($app);
+
         $this->setConfig('logging.channels.daily.path', storage_path('logs/processmaker.log'));
         $app->make('log')->reset();
         $app->forgetInstance('log');
-
-        $app->useLangPath(resource_path('lang'));
 
         // app key / encrypter
         $this->setConfig('app.key', $this->landlordConfig('app.key'));
@@ -98,6 +112,20 @@ class SwitchTenant implements SwitchTenantTask
         if ($app->resolved('auth')) {
             $app->make('auth')->forgetGuards();
         }
+    }
+
+    /**
+     * Drop cached filesystem disks so Storage picks up the tenant (or landlord) root.
+     *
+     * Horizon/Octane reuse the same worker process across tenants. FilesystemManager
+     * caches disk adapters, so without this, Storage keeps writing/reading the previous
+     * root (often landlord storage/app) after config roots were already rewritten.
+     */
+    private function flushFilesystemDisks(Application $app): void
+    {
+        $disks = array_keys($this->landlordConfig('filesystems.disks') ?? config('filesystems.disks', []));
+        Storage::forgetDisk($disks);
+        $app->forgetInstance('filesystem');
     }
 
     private function landlordConfig($key)
@@ -181,6 +209,7 @@ class SwitchTenant implements SwitchTenantTask
         // Lang path
         $app->useLangPath(resource_path('lang/tenant_' . $tenant->id));
         $this->setConfig('filesystems.disks.lang.root', lang_path());
+        $this->flushFilesystemDisks($app);
 
         // app key / encrypter
         $landlordEncrypter = $app->make('encrypter');

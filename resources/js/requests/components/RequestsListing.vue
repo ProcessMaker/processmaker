@@ -34,7 +34,7 @@
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
-            <PMColumnFilterPopover v-if="column.sortable"
+            <PMColumnFilterPopover v-if="column.sortable && column.filterable !== false"
                                    :key="index"
                                    :id="'pm-table-column-'+index"
                                    :type="getTypeColumnFilter(column.field)"

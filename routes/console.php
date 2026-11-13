@@ -41,7 +41,16 @@ Artisan::command('check {path}', function ($path) {
     }
 })->purpose('Display an inspiring quote');
 
-Artisan::command('metrics:clear', function () {
+Artisan::command('metrics:clear {--stagger : Random delay before clear (scheduler only)}', function () {
+    if ($this->option('stagger')) {
+        $intervalSeconds = max(0, (int) config('metrics.clear_interval', 1440) * 60);
+        $staggerMax = max(0, (int) config('metrics.clear_stagger_max_seconds', 60));
+        $maxSeconds = min($staggerMax, $intervalSeconds);
+        if ($maxSeconds > 0) {
+            sleep(random_int(0, $maxSeconds));
+        }
+    }
+
     ProcessMaker\Facades\Metrics::clearMetrics();
     echo "Metrics cleared.\n";
 })->purpose('Clear all metrics using Metrics::clearMetrics');
