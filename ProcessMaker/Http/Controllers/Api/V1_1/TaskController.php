@@ -21,8 +21,8 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\ProcessTranslations\TranslationManager;
 use ProcessMaker\Repositories\TaskV11ShowFastRepository;
-use ProcessMaker\Traits\TaskControllerIndexMethods;
 use ProcessMaker\Services\TaskCompletionRawService;
+use ProcessMaker\Traits\TaskControllerIndexMethods;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TaskController extends Controller
@@ -61,12 +61,16 @@ class TaskController extends Controller
         $query = $this->indexOptimizedBaseQuery($request);
         $this->applyIndexFieldSelection($query, $request);
         $this->applyFilters($query, $request);
-        $this->excludeNonVisibleTasks($query, $request);
+        $resolveManagedProcessVisibility = $this->excludeNonVisibleTasks(
+            $query,
+            $request,
+            $request->input('processesIManage') === 'true'
+        );
         $this->applyColumnOrdering($query, $request);
         $this->applyStatusFilter($query, $request);
 
         if ($request->input('processesIManage') === 'true') {
-            $this->applyProcessManager($query, $user, $request);
+            $this->applyProcessManager($query, $user, $request, $resolveManagedProcessVisibility);
         } else {
             $this->applyForCurrentUser($query, $user);
         }

@@ -210,17 +210,13 @@ trait TaskResourceIncludes
             return $this->resource;
         }
 
-        if (array_key_exists($tokenId, $this->draftPolicyTokenCache)) {
-            return $this->draftPolicyTokenCache[$tokenId];
+        if (!array_key_exists($tokenId, $this->draftPolicyTokenCache)) {
+            $this->draftPolicyTokenCache[$tokenId] = ProcessRequestToken::query()
+                ->whereKey($tokenId)
+                ->first(self::DRAFT_POLICY_TOKEN_COLUMNS);
         }
 
-        $loaded = ProcessRequestToken::query()
-            ->whereKey($tokenId)
-            ->first(self::DRAFT_POLICY_TOKEN_COLUMNS);
-
-        $this->draftPolicyTokenCache[$tokenId] = $loaded;
-
-        return $loaded;
+        return $this->draftPolicyTokenCache[$tokenId];
     }
 
     private function tokenHasDraftPolicyAttributes(ProcessRequestToken $token): bool
@@ -403,25 +399,47 @@ trait TaskResourceIncludes
     private function arrayContainsNestedTokenDrafts(array $array): bool
     {
         foreach ($array as $key => $value) {
-            if (!is_array($value) || in_array($key, self::DRAFT_REDACT_EXCLUDED_KEYS, true)) {
+            if (!$this->isNestedDraftTraversalCandidate($key, $value)) {
                 continue;
             }
 
-            if ($key === 'tokens' && array_is_list($value)) {
-                foreach ($value as $item) {
-                    if (is_array($item) && array_key_exists('draft', $item)) {
-                        return true;
-                    }
-                }
-                continue;
-            }
-
-            if ($this->arrayContainsNestedTokenDrafts($value)) {
+            if ($this->nestedTokenDraftsPresentAtKey($key, $value)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * @param  array<string, mixed>  $value
+     */
+    private function nestedTokenDraftsPresentAtKey(string|int $key, array $value): bool
+    {
+        if ($key === 'tokens' && array_is_list($value)) {
+            return $this->serializedTokenListContainsDraft($value);
+        }
+
+        return $this->arrayContainsNestedTokenDrafts($value);
+    }
+
+    /**
+     * @param  list<mixed>  $tokens
+     */
+    private function serializedTokenListContainsDraft(array $tokens): bool
+    {
+        foreach ($tokens as $item) {
+            if (is_array($item) && array_key_exists('draft', $item)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isNestedDraftTraversalCandidate(mixed $key, mixed $value): bool
+    {
+        return is_array($value) && !in_array($key, self::DRAFT_REDACT_EXCLUDED_KEYS, true);
     }
 
     private function includeComponent()
@@ -588,12 +606,8 @@ trait TaskResourceIncludes
      */
     private function tokenDraftPolicyAttributesAreAuthoritative(ProcessRequestToken $token): bool
     {
-        if (!$this->tokenHasDraftPolicyAttributes($token)) {
-            return false;
-        }
-
         $tokenId = $token->getKey();
-        if ($tokenId === null || $tokenId === '') {
+        if (!$this->tokenHasDraftPolicyAttributes($token) || $tokenId === null || $tokenId === '') {
             return false;
         }
 
