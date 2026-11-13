@@ -10,7 +10,7 @@ class BrowserCache
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  Closure  $next
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -30,11 +30,19 @@ class BrowserCache
 
         if ($shouldSetNoStore) {
             if (method_exists($response, 'setCache')) {
-                $response->setCache([
-                    'no_store' => true,
-                    'no_cache' => true,
-                    'private' => false,
-                ]);
+                if ($response->headers->has('ETag')) {
+                    // Allow If-None-Match revalidation; avoid no-store stripping the validator.
+                    $response->setCache([
+                        'private' => true,
+                        'no_cache' => true,
+                        'must_revalidate' => true,
+                    ]);
+                } else {
+                    $response->setCache([
+                        'no_store' => true,
+                        'no_cache' => true,
+                    ]);
+                }
             }
 
             $response->headers->set('pragma', 'no-cache', false);
