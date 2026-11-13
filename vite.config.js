@@ -206,6 +206,8 @@ export default defineConfig(({ mode }) => {
           "resources/js/vite/tasks/loaderTasks.js",
           "resources/js/vite/tasks/tasks.js",
 
+          "resources/js/admin/plugins/index.js",
+
           "resources/js/tasks/loaderEdit.js",
           "resources/js/tasks/edit.js",
           "resources/js/tasks/loaderPreview.js",

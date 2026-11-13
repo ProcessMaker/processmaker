@@ -42,6 +42,12 @@ class SwitchTenant implements SwitchTenantTask
         request()->headers->set('host', $tenant->domain);
 
         $this->overrideConfigs($app, $tenant);
+
+        // Configure the tenant-specific route cache before Laravel checks whether it
+        // exists. This lets `TENANT=<id> php artisan route:cache` create or refresh
+        // the cache for a tenant after a plugin is installed, enabled, or disabled.
+        Env::getRepository()->set('APP_ROUTES_CACHE', storage_path('routes-v7.php'));
+        $this->reloadRouteCache($app);
     }
 
     /**
@@ -53,6 +59,7 @@ class SwitchTenant implements SwitchTenantTask
     {
         $app = app();
         $app->useStoragePath(base_path('storage'));
+        Env::getRepository()->clear('APP_ROUTES_CACHE');
 
         // Restore landlord disk roots. Cached adapters still point at the previous
         // tenant until flushFilesystemDisks() runs below.
@@ -131,6 +138,36 @@ class SwitchTenant implements SwitchTenantTask
         putenv("$key=$value");
         $_SERVER[$key] = $value;
         $_ENV[$key] = $value;
+    }
+
+    /**
+     * Reload the tenant's cached routes when the router can persist in memory.
+     *
+     * Octane keeps the router in memory between requests. The console and test
+     * environments may also initialize the router before a tenant is made
+     * current. Updating APP_ROUTES_CACHE alone is insufficient in those cases.
+     *
+     * Always forget the stale `routes.cached` binding from the landlord path so
+     * RouteServiceProvider re-checks existence against
+     * storage/tenant_{id}/routes-v7.php (including APP_RUNNING_IN_CONSOLE=false).
+     * Only require the file when it exists and the router may already be loaded.
+     */
+    private function reloadRouteCache(Application $app): void
+    {
+        $app->forgetInstance('routes.cached');
+
+        if (!$this->shouldReinitializeRouter() || !$app->routesAreCached()) {
+            return;
+        }
+
+        require $app->getCachedRoutesPath();
+    }
+
+    private function shouldReinitializeRouter(): bool
+    {
+        return isset($_SERVER['LARAVEL_OCTANE'])
+            || app()->runningInConsole()
+            || app()->runningUnitTests();
     }
 
     private function overrideConfigs(Application $app, IsTenant $tenant)

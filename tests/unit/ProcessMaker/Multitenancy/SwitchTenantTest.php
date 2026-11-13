@@ -6,6 +6,7 @@ namespace Tests\Unit\ProcessMaker\Multitenancy;
 
 use Illuminate\Broadcasting\BroadcastManager;
 use Illuminate\Encryption\Encrypter;
+use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Passport\ClientRepository;
@@ -66,6 +67,58 @@ class SwitchTenantTest extends TestCase
             $this->assertNotSame($previousEncrypter, $app->make('encrypter'));
         } finally {
             $switch->forgetCurrent();
+        }
+    }
+
+    public function test_make_current_does_not_require_missing_tenant_route_cache(): void
+    {
+        $app = app();
+        // Simulate landlord route cache already evaluated during boot.
+        $app->instance('routes.cached', true);
+
+        $tenant = $this->fakeTenant();
+        $tenantRouteCache = base_path('storage/tenant_' . $tenant->id . '/routes-v7.php');
+        $this->assertFileDoesNotExist($tenantRouteCache);
+
+        $switch = new SwitchTenant();
+
+        try {
+            $switch->makeCurrent($tenant);
+
+            $this->assertSame($tenantRouteCache, $app->getCachedRoutesPath());
+            $this->assertFalse($app->routesAreCached());
+        } finally {
+            $switch->forgetCurrent();
+            Env::getRepository()->clear('APP_ROUTES_CACHE');
+            $app->forgetInstance('routes.cached');
+        }
+    }
+
+    public function test_make_current_invalidates_routes_cached_when_not_running_in_console(): void
+    {
+        $app = app();
+        $app->instance('routes.cached', true);
+
+        // Mirror APP_RUNNING_IN_CONSOLE=false: shouldReinitializeRouter() is false,
+        // but the stale landlord routes.cached binding must still be cleared.
+        $property = (new ReflectionObject($app))->getProperty('isRunningInConsole');
+        $previousRunningInConsole = $property->getValue($app);
+        $property->setValue($app, false);
+
+        $tenant = $this->fakeTenant();
+        $this->assertFileDoesNotExist(base_path('storage/tenant_' . $tenant->id . '/routes-v7.php'));
+
+        $switch = new SwitchTenant();
+
+        try {
+            $switch->makeCurrent($tenant);
+
+            $this->assertFalse($app->routesAreCached());
+        } finally {
+            $switch->forgetCurrent();
+            Env::getRepository()->clear('APP_ROUTES_CACHE');
+            $app->forgetInstance('routes.cached');
+            $property->setValue($app, $previousRunningInConsole);
         }
     }
 

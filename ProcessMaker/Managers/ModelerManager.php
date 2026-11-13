@@ -15,6 +15,7 @@ class ModelerManager
     public function __construct()
     {
         $this->javascriptRegistry = [];
+        $this->javascriptParamsRegistry = [];
         // Include our default javascript for our core controls
         $this->addScript(mix('js/processes/modeler/initialLoad.js'));
     }
@@ -32,6 +33,15 @@ class ModelerManager
      */
     public function addScript($script, array $params = [])
     {
+        // Skip a URL that is already registered; the same script must render only one <script> tag.
+        // Compare as strings: mix() returns an HtmlString object.
+        $src = (string) $script;
+        foreach ($this->javascriptParamsRegistry as $registered) {
+            if ((string) $registered['src'] === $src) {
+                return;
+            }
+        }
+
         // Add the script URL to the JavaScript registry
         $this->javascriptRegistry[] = $script;
 
