@@ -94,7 +94,7 @@ trait TaskResourceIncludes
                 ? $this->draft
                 : ($array['draft'] ?? null);
 
-            $array['draft'] = $this->resolveDraftPayloadForToken($this->resource, $draftPayload);
+            $array['draft'] = $this->resolveDraftPayloadForToken($this->resource, $draftPayload, true);
         } else {
             unset($array['draft']);
         }
@@ -109,8 +109,11 @@ trait TaskResourceIncludes
     /**
      * @return array<string, mixed>|TaskDraft|null
      */
-    private function resolveDraftPayloadForToken(ProcessRequestToken $token, mixed $draft): array|TaskDraft|null
-    {
+    private function resolveDraftPayloadForToken(
+        ProcessRequestToken $token,
+        mixed $draft,
+        bool $consumeDraftWhenDisabled = false,
+    ): array|TaskDraft|null {
         $token = $this->tokenFromPersistedId($token->getKey());
         $draft = $token !== null ? $this->taskDraftForToken($token, $draft) : null;
         if ($token === null || $draft === null) {
@@ -118,7 +121,12 @@ trait TaskResourceIncludes
         }
 
         if (!TaskDraft::draftsEnabled()) {
-            return $this->resolveDraftPayloadWhenDraftsDisabled(Auth::user(), $token, $draft);
+            return $this->resolveDraftPayloadWhenDraftsDisabled(
+                Auth::user(),
+                $token,
+                $draft,
+                $consumeDraftWhenDisabled
+            );
         }
 
         return $this->resolveDraftPayloadWhenDraftsEnabled(Auth::user(), $token, $draft);
@@ -127,13 +135,19 @@ trait TaskResourceIncludes
     /**
      * @return array<string, mixed>|null
      */
-    private function resolveDraftPayloadWhenDraftsDisabled(?User $user, ProcessRequestToken $token, TaskDraft $draft): ?array
-    {
+    private function resolveDraftPayloadWhenDraftsDisabled(
+        ?User $user,
+        ProcessRequestToken $token,
+        TaskDraft $draft,
+        bool $consumeDraftWhenDisabled,
+    ): ?array {
         if (!$user || !$this->callerCanViewTaskForDraft($user, $token)) {
             return null;
         }
 
-        $draft->delete();
+        if ($consumeDraftWhenDisabled) {
+            $draft->delete();
+        }
 
         return null;
     }

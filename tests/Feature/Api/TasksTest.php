@@ -386,6 +386,11 @@ class TasksTest extends TestCase
             'status' => 'ACTIVE',
             'user_id' => $assignee->id,
         ]);
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => User::factory()->create()->id,
+        ]);
         $parentDraft = TaskDraft::factory()->create([
             'task_id' => $parentTask->id,
             'data' => ['parent' => 'must-survive-nested-include'],
@@ -402,6 +407,9 @@ class TasksTest extends TestCase
         ]);
         $row = collect($response->json('data'))->keyBy('id')[$parentTask->id];
         $this->assertArrayNotHasKey('draft', $row);
+        $nestedDraft = collect($row['process_request']['tokens'] ?? [])
+            ->firstWhere('id', $parentTask->id)['draft'] ?? null;
+        $this->assertNull($nestedDraft);
     }
 
     public function testTaskIndexProcessRequestsTokensDraftWithDraftsDisabledDoesNotDeleteOwnParentDraft()
