@@ -32,8 +32,8 @@ final class TaskDraftIncludes
     public static function includesRootDraft(array $includes): bool
     {
         foreach ($includes as $token) {
-            $lower = strtolower(trim($token));
-            if ($lower === 'draft' || str_starts_with($lower, 'draft.')) {
+            $path = strtolower(self::relationPathFromIncludeToken($token));
+            if ($path === 'draft' || str_starts_with($path, 'draft.')) {
                 return true;
             }
         }
@@ -47,8 +47,8 @@ final class TaskDraftIncludes
             if (!self::isDraftToken($token)) {
                 continue;
             }
-            $lower = strtolower(trim($token));
-            if ($lower === 'draft' || str_starts_with($lower, 'draft.')) {
+            $path = strtolower(self::relationPathFromIncludeToken($token));
+            if ($path === 'draft' || str_starts_with($path, 'draft.')) {
                 continue;
             }
 
@@ -58,14 +58,32 @@ final class TaskDraftIncludes
         return false;
     }
 
+    /**
+     * Laravel include tokens may end with :col or :*; only the relation path is significant here.
+     */
+    public static function relationPathFromIncludeToken(string $token): string
+    {
+        $token = trim($token);
+        if ($token === '') {
+            return '';
+        }
+
+        $colonAt = strpos($token, ':');
+        if ($colonAt === false) {
+            return $token;
+        }
+
+        return substr($token, 0, $colonAt);
+    }
+
     public static function isDraftToken(string $token): bool
     {
-        $lower = strtolower($token);
+        $path = strtolower(self::relationPathFromIncludeToken($token));
 
-        return $lower === 'draft'
-            || str_starts_with($lower, 'draft.')
-            || str_ends_with($lower, '.draft')
-            || str_contains($lower, '.draft.');
+        return $path === 'draft'
+            || str_starts_with($path, 'draft.')
+            || str_ends_with($path, '.draft')
+            || str_contains($path, '.draft.');
     }
 
     public static function constrainedEagerLoad(): \Closure
@@ -80,11 +98,11 @@ final class TaskDraftIncludes
     {
         $relations = [];
         foreach ($includes as $token) {
-            $lower = strtolower(trim($token));
-            if (!str_starts_with($lower, 'draft.') || $lower === 'draft') {
+            $path = strtolower(self::relationPathFromIncludeToken($token));
+            if (!str_starts_with($path, 'draft.') || $path === 'draft') {
                 continue;
             }
-            $suffix = substr($lower, strlen('draft.'));
+            $suffix = substr($path, strlen('draft.'));
             if ($suffix !== '') {
                 $relations[] = $suffix;
             }
@@ -114,13 +132,13 @@ final class TaskDraftIncludes
         $constrained = fn ($q) => $q->with(['draft' => self::constrainedEagerLoad()]);
 
         foreach ($includes as $token) {
-            $lower = strtolower($token);
-            if (!self::isDraftToken($token) || $lower === 'draft' || str_starts_with($lower, 'draft.')) {
+            $path = strtolower(self::relationPathFromIncludeToken($token));
+            if (!self::isDraftToken($token) || $path === 'draft' || str_starts_with($path, 'draft.')) {
                 continue;
             }
             foreach (self::NESTED_DRAFT_RELATIONS as $relation) {
                 $relationLower = strtolower($relation);
-                if ($lower === "{$relationLower}.draft" || str_starts_with($lower, "{$relationLower}.")) {
+                if ($path === "{$relationLower}.draft" || str_starts_with($path, "{$relationLower}.")) {
                     $with[$relation] = $constrained;
                     break;
                 }

@@ -533,6 +533,94 @@ class TasksTest extends TestCase
         $this->assertArrayNotHasKey('data', $otherDraft);
     }
 
+    public function testTaskIndexProcessRequestTokensDraftWildcardSelectDoesNotExposeOtherUsersDraftData()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'laravel-include-wildcard'],
+        ]);
+
+        $ownTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $viewer->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'processRequest.tokens.draft:*',
+        ]));
+        $response->assertStatus(200);
+
+        $row = collect($response->json('data'))->firstWhere('id', $ownTask->id);
+        $tokens = collect($row['process_request']['tokens'] ?? [])->keyBy('id');
+        $otherDraft = $tokens[$otherTask->id]['draft'] ?? null;
+
+        $this->assertNotNull($otherDraft);
+        $this->assertArrayNotHasKey('data', $otherDraft);
+        $json = json_encode($response->json());
+        $this->assertStringNotContainsString('laravel-include-wildcard', $json);
+    }
+
+    public function testTaskIndexProcessRequestTokensDraftTrailingColonDoesNotExposeOtherUsersDraftData()
+    {
+        $this->initializePermissions();
+        config([
+            'app.task_drafts_enabled' => true,
+            'app.processmaker_optimized_tasks_enabled' => true,
+        ]);
+
+        $viewer = User::factory()->create();
+        $viewer->giveDirectPermission('view-all_requests');
+        $this->user = $viewer;
+        $assignee = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create();
+        $otherTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $assignee->id,
+        ]);
+        TaskDraft::factory()->create([
+            'task_id' => $otherTask->id,
+            'data' => ['secret' => 'laravel-include-trailing-colon'],
+        ]);
+
+        $ownTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
+            'status' => 'ACTIVE',
+            'user_id' => $viewer->id,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.tasks.index', [
+            'include' => 'processRequest.tokens.draft:',
+        ]));
+        $response->assertStatus(200);
+
+        $row = collect($response->json('data'))->firstWhere('id', $ownTask->id);
+        $tokens = collect($row['process_request']['tokens'] ?? [])->keyBy('id');
+        $otherDraft = $tokens[$otherTask->id]['draft'] ?? null;
+
+        $this->assertNotNull($otherDraft);
+        $this->assertArrayNotHasKey('data', $otherDraft);
+    }
+
     public function testTaskIndexProcessRequestsTokensDraftDoesNotExposeOtherUsersDraftData()
     {
         $this->initializePermissions();

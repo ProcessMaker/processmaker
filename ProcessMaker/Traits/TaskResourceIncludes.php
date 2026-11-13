@@ -82,6 +82,9 @@ trait TaskResourceIncludes
 
         if (!TaskDraftIncludes::includesDraft($include)) {
             unset($array['draft']);
+            if ($this->arrayContainsNestedTokenDrafts($array)) {
+                $this->redactNestedDraftsInArray($array);
+            }
 
             return $array;
         }
@@ -253,6 +256,33 @@ trait TaskResourceIncludes
         }
 
         $row['draft'] = $this->resolveDraftPayloadForToken($token, $row['draft']);
+    }
+
+    /**
+     * @param  array<string, mixed>  $array
+     */
+    private function arrayContainsNestedTokenDrafts(array $array): bool
+    {
+        foreach ($array as $key => $value) {
+            if (!is_array($value) || in_array($key, self::DRAFT_REDACT_EXCLUDED_KEYS, true)) {
+                continue;
+            }
+
+            if ($key === 'tokens' && array_is_list($value)) {
+                foreach ($value as $item) {
+                    if (is_array($item) && array_key_exists('draft', $item)) {
+                        return true;
+                    }
+                }
+                continue;
+            }
+
+            if ($this->arrayContainsNestedTokenDrafts($value)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function includeComponent()
