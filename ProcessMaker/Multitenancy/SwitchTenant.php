@@ -43,11 +43,6 @@ class SwitchTenant implements SwitchTenantTask
 
         $this->overrideConfigs($app, $tenant);
 
-        // Extend BroadcastManager to our custom implementation that prefixes the channel names with the tenant id.
-        $app->extend(BroadcastManager::class, function ($manager, $app) use ($tenant) {
-            return new TenantAwareBroadcastManager($app, $tenant->id);
-        });
-
         // Configure the tenant-specific route cache before Laravel checks whether it
         // exists. This lets `TENANT=<id> php artisan route:cache` create or refresh
         // the cache for a tenant after a plugin is installed, enabled, or disabled.
@@ -151,10 +146,17 @@ class SwitchTenant implements SwitchTenantTask
      * Octane keeps the router in memory between requests. The console and test
      * environments may also initialize the router before a tenant is made
      * current. Updating APP_ROUTES_CACHE alone is insufficient in those cases.
+     *
+     * Always forget the stale `routes.cached` binding from the landlord path so
+     * RouteServiceProvider re-checks existence against
+     * storage/tenant_{id}/routes-v7.php (including APP_RUNNING_IN_CONSOLE=false).
+     * Only require the file when it exists and the router may already be loaded.
      */
     private function reloadRouteCache(Application $app): void
     {
-        if (!$app->routesAreCached() || !$this->shouldReinitializeRouter()) {
+        $app->forgetInstance('routes.cached');
+
+        if (!$this->shouldReinitializeRouter() || !$app->routesAreCached()) {
             return;
         }
 
