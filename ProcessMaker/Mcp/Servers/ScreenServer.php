@@ -36,7 +36,8 @@ type is usually FORM or DISPLAY.
 config is the screen builder page array; every control in page.items must include `"inspector": []` (or a real inspector list) or the designer crashes.
 create/update reject configs with empty FormSelectList options (missing optionsList).
 New FORM/DISPLAY screens are built as a Vue Component Editor mount (VueComponentRenderTemplate with a thin contentVue); do not add native FileUpload / FormSelectList / SignaturePad siblings.
-For the full rules (control shape, component registration, domain fields, refactor parity), follow the `pm4-screen` skill from the ProcessMaker Skills repository (`npx skills add processmaker/skills`).
+On every create and every Vue refactor, set `preview_presets`: named Preview payloads covering empty/start, happy path, and each major UI branch. Each item is `{ "title": "...", "data": "<json-string>" }` — `data` must be a JSON string so `{}` survives PHP decode.
+For the full rules (control shape, component registration, domain fields, refactor parity, preview presets), follow the `pm4-screen` skill from the ProcessMaker Skills repository (`npx skills add processmaker/skills`), especially `preview-presets.md`.
 update-screen changes only the fields you send.
 delete-screen cannot remove a default screen.
 MARKDOWN)]

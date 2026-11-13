@@ -31,6 +31,7 @@ use ProcessMaker\Validation\CategoryRule;
  * @property array computed
  * @property array custom_css
  * @property array watchers
+ * @property array preview_presets
  * @property string label
  * @property Carbon type
  * @property Carbon $updated_at
@@ -44,6 +45,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   @OA\Property(property="config", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="computed", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="watchers", type="array", @OA\Items(type="object")),
+ *   @OA\Property(property="preview_presets", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="custom_css", type="string"),
  *   @OA\Property(property="screen_category_id", type="string"),
  * ),
@@ -89,6 +91,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface, PrometheusMet
         'config' => 'array',
         'computed' => 'array',
         'watchers' => 'array',
+        'preview_presets' => 'array',
         'translations' => 'array',
     ];
 

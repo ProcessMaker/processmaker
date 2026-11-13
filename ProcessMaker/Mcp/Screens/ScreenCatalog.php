@@ -45,7 +45,7 @@ class ScreenCatalog
     /**
      * @var list<string>
      */
-    private const JSON_FIELDS = ['config', 'computed', 'watchers'];
+    private const JSON_FIELDS = ['config', 'computed', 'watchers', 'preview_presets'];
 
     private const JSON_FIELD_MESSAGE = ' must be a JSON object or array.';
 
@@ -151,7 +151,7 @@ class ScreenCatalog
         $attributes = $this->writable($validated);
         if ($attributes === []) {
             throw ValidationException::withMessages([
-                'screen' => 'Provide at least one field to update: title, description, type, screen_category_id, config, computed, watchers, or custom_css.',
+                'screen' => 'Provide at least one field to update: title, description, type, screen_category_id, config, computed, watchers, preview_presets, or custom_css.',
             ]);
         }
 
@@ -321,7 +321,46 @@ class ScreenCatalog
             $input['config'] = $this->normalizeConfig($input['config']);
         }
 
+        if (isset($input['preview_presets']) && is_array($input['preview_presets'])) {
+            $input['preview_presets'] = $this->normalizePreviewPresets($input['preview_presets']);
+        }
+
         return $input;
+    }
+
+    /**
+     * Designer stores each preset.data as a JSON string so empty objects survive PHP json_decode.
+     *
+     * @param array<int, mixed> $presets
+     * @return list<array{title: string, data: string}>
+     */
+    private function normalizePreviewPresets(array $presets): array
+    {
+        $normalized = [];
+        foreach ($presets as $preset) {
+            if (!is_array($preset)) {
+                continue;
+            }
+            $title = isset($preset['title']) && is_string($preset['title']) ? $preset['title'] : '';
+            $data = $preset['data'] ?? '{}';
+            if (is_array($data)) {
+                $data = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '{}';
+            } elseif (!is_string($data)) {
+                $data = '{}';
+            } else {
+                try {
+                    json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+                } catch (JsonException) {
+                    $data = '{}';
+                }
+            }
+            $normalized[] = [
+                'title' => $title,
+                'data' => $data,
+            ];
+        }
+
+        return $normalized;
     }
 
     /**
@@ -404,7 +443,7 @@ class ScreenCatalog
      */
     private function writable(array $input): array
     {
-        $fields = ['title', 'description', 'type', 'screen_category_id', 'config', 'computed', 'custom_css', 'watchers'];
+        $fields = ['title', 'description', 'type', 'screen_category_id', 'config', 'computed', 'custom_css', 'watchers', 'preview_presets'];
 
         return array_intersect_key($input, array_flip($fields));
     }
@@ -434,6 +473,7 @@ class ScreenCatalog
             'config' => $screen->config,
             'computed' => $screen->computed,
             'watchers' => $screen->watchers,
+            'preview_presets' => $screen->preview_presets,
             'custom_css' => $screen->custom_css,
             'created_at' => $this->timestamp($screen->created_at),
         ];
