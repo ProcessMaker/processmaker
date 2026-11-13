@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Cases;
 
+use Database\Factories\CaseParticipatedFactory;
 use Database\Factories\CaseStartedFactory;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\Log;
@@ -112,6 +113,69 @@ class CasesTaskTest extends TestCase
             'tasks->[0]->name' => $this->token->element_name,
             'tasks->[0]->process_id' => $this->token->process_id,
             'tasks->[0]->status' => $this->token->status,
+        ]);
+    }
+
+    public function test_update_case_participated_task_status_only_updates_row_containing_task()
+    {
+        $user2 = User::factory()->create();
+        $token2 = ProcessRequestToken::factory()->create([
+            'user_id' => $user2->id,
+            'process_request_id' => $this->instance->id,
+            'element_type' => 'task',
+            'status' => 'ACTIVE',
+        ]);
+
+        // Two participant rows for the same case, each with a different task at index 0.
+        // Completing user1's task must not apply $[0] status to user2's row.
+        CaseParticipatedFactory::new()->create([
+            'case_number' => $this->instance->case_number,
+            'user_id' => $this->user->id,
+            'case_status' => 'IN_PROGRESS',
+            'tasks' => [
+                [
+                    'id' => (string) $this->token->id,
+                    'element_id' => $this->token->element_id,
+                    'name' => $this->token->element_name,
+                    'process_id' => $this->token->process_id,
+                    'status' => 'ACTIVE',
+                    'user_id' => $this->user->id,
+                ],
+            ],
+        ]);
+        CaseParticipatedFactory::new()->create([
+            'case_number' => $this->instance->case_number,
+            'user_id' => $user2->id,
+            'case_status' => 'IN_PROGRESS',
+            'tasks' => [
+                [
+                    'id' => (string) $token2->id,
+                    'element_id' => $token2->element_id,
+                    'name' => $token2->element_name,
+                    'process_id' => $token2->process_id,
+                    'status' => 'ACTIVE',
+                    'user_id' => $user2->id,
+                ],
+            ],
+        ]);
+
+        $this->assertDatabaseCount('cases_participated', 2);
+
+        $this->token->status = 'COMPLETED';
+        $taskRepo = new CaseTaskRepository($this->instance->case_number, $this->token);
+        $taskRepo->updateCaseParticipatedTaskStatus();
+
+        $this->assertDatabaseHas('cases_participated', [
+            'case_number' => $this->instance->case_number,
+            'user_id' => $this->user->id,
+            'tasks->[0]->id' => (string) $this->token->id,
+            'tasks->[0]->status' => 'COMPLETED',
+        ]);
+        $this->assertDatabaseHas('cases_participated', [
+            'case_number' => $this->instance->case_number,
+            'user_id' => $user2->id,
+            'tasks->[0]->id' => (string) $token2->id,
+            'tasks->[0]->status' => 'ACTIVE',
         ]);
     }
 
