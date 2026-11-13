@@ -792,11 +792,19 @@ class ProcessRequestController extends Controller
     public function screenRequested(Request $httpRequest, ProcessRequest $request)
     {
         $elementTypes = ['task', 'userTask', 'startEvent'];
+        $statuses = ['CLOSED', 'TRIGGERED'];
+
+        // Only BPMN elements that resolve to a screen belong in the Forms tab. Gateway/startEvent
+        // tokens without a screen must not inflate the pagination total, so the eligible elements
+        // are resolved first (once per element, not once per token) and used to filter in SQL.
+        $screenElementIds = $this->elementIdsWithRequestedScreen($request, $elementTypes, $statuses);
+
         $query = ProcessRequestToken::query();
         $query->select('id', 'element_id', 'process_id', 'process_request_id', 'data', 'token_properties')
             ->where('process_request_id', $request->id)
             ->whereIn('element_type', $elementTypes)
-            ->whereIn('status', ['CLOSED', 'TRIGGERED'])
+            ->whereIn('status', $statuses)
+            ->whereIn('element_id', $screenElementIds)
             ->orderBy('completed_at');
 
         $response =
@@ -807,14 +815,6 @@ class ProcessRequestController extends Controller
 
         $collection = $response->getCollection()
             ->transform(function ($token): ?object {
-                $definition = $token->getDefinition();
-                if (!array_key_exists('screenRef', $definition)) {
-                    $config = isset($definition['config']) ? json_decode($definition['config']) : null;
-                    $screenRef = (isset($config) && isset($config->web_entry)) ? $config->web_entry->screen_id ?? null : null;
-                    if (!$screenRef) {
-                        return null;
-                    }
-                }
                 $screen = $token->getScreenVersion() ?? null;
 
                 if ($screen) {
@@ -832,6 +832,57 @@ class ProcessRequestController extends Controller
         $response->setCollection($collection);
 
         return new ApiCollection($response);
+    }
+
+    /**
+     * Get the BPMN element ids of the request tokens that have a screen configured.
+     *
+     * The definition only depends on the element, so it is evaluated once per distinct
+     * element_id using a single lightweight token (without the heavy data columns).
+     *
+     * @return array<int, string>
+     */
+    private function elementIdsWithRequestedScreen(ProcessRequest $request, array $elementTypes, array $statuses): array
+    {
+        $sampleTokenIds = ProcessRequestToken::query()
+            ->where('process_request_id', $request->id)
+            ->whereIn('element_type', $elementTypes)
+            ->whereIn('status', $statuses)
+            ->groupBy('element_id')
+            ->selectRaw('MIN(id) as id')
+            ->pluck('id');
+
+        return ProcessRequestToken::query()
+            ->select('id', 'element_id', 'process_request_id')
+            ->whereIn('id', $sampleTokenIds)
+            ->get()
+            ->filter(function (ProcessRequestToken $token) use ($request) {
+                $token->setRelation('processRequest', $request);
+
+                return $this->tokenHasRequestedScreen($token);
+            })
+            ->pluck('element_id')
+            ->all();
+    }
+
+    /**
+     * Whether a token should appear in the Forms tab (has a configured screen).
+     */
+    private function tokenHasRequestedScreen(ProcessRequestToken $token): bool
+    {
+        $definition = $token->getDefinition();
+        // Keep the original semantics: the presence of the key is enough (empty values
+        // fall back to the default form screen in ProcessRequestToken::getScreen()).
+        if (array_key_exists('screenRef', $definition)) {
+            return true;
+        }
+
+        $config = isset($definition['config']) ? json_decode($definition['config']) : null;
+        $screenRef = (isset($config) && isset($config->web_entry))
+            ? ($config->web_entry->screen_id ?? null)
+            : null;
+
+        return (bool) $screenRef;
     }
 
     /**
