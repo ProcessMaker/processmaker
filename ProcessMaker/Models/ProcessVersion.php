@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Contracts\ProcessModelInterface;
+use ProcessMaker\Traits\HasAggregationAttribute;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
 use ProcessMaker\Traits\ProcessTrait;
@@ -27,8 +28,18 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
     use HasSelfServiceTasks;
     use HasCategories;
     use ProcessTrait;
+    use HasAggregationAttribute;
 
     const categoryClass = ProcessCategory::class;
+
+    /**
+     * Version rows are snapshots. An aggregation stored before validation existed must not
+     * stop draft save, publish, or any other write that copies the process attributes.
+     */
+    protected function rejectsInvalidAggregation(): bool
+    {
+        return false;
+    }
 
     protected $connection = 'processmaker';
 

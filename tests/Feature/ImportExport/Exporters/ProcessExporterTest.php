@@ -7,6 +7,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Importer;
@@ -116,6 +117,48 @@ class ProcessExporterTest extends TestCase
         $this->assertFileExists(Storage::disk('public')->path($fakeFilePath));
         $this->assertEquals('a value', $media->getCustomProperty('a_custom_property'));
         $this->assertEquals(1, $process->embed()->count());
+    }
+
+    public function testImportKeepsValidAggregation()
+    {
+        $process = $this->createProcess('basic-process', [
+            'name' => 'aggregation process',
+            'aggregation' => 'grant.total',
+        ]);
+
+        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process) {
+            $process->forceDelete();
+        });
+
+        $imported = Process::where('name', 'aggregation process')->firstOrFail();
+        $this->assertSame('grant.total', $imported->aggregation);
+    }
+
+    public function testImportRejectsMaliciousAggregation()
+    {
+        $process = $this->createProcess('basic-process', [
+            'name' => 'malicious aggregation process',
+            'aggregation' => 'amount',
+        ]);
+
+        $this->addGlobalSignalProcess();
+        $payload = $this->export($process, ProcessExporter::class);
+
+        Arr::set(
+            $payload,
+            'export.' . $process->uuid . '.attributes.aggregation',
+            "amount')) AS x, (SELECT 1) AS y, SUM(CAST(JSON_EXTRACT(data, '\$.amount"
+        );
+        $process->forceDelete();
+
+        try {
+            $this->import($payload);
+            $this->fail('The import should have been rejected.');
+        } catch (ValidationException $e) {
+            $this->assertArrayHasKey('aggregation', $e->errors());
+        }
+
+        $this->assertSame(0, Process::where('name', 'malicious aggregation process')->count());
     }
 
     public function testSignals()

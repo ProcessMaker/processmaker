@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -33,9 +34,12 @@ use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use ProcessMaker\Repositories\ProcessExecutionRawRepository;
+use ProcessMaker\Rules\AggregationVariable;
 use ProcessMaker\Rules\BPMNValidation;
+use ProcessMaker\Support\JsonDataPath;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\ExtendedPMQL;
+use ProcessMaker\Traits\HasAggregationAttribute;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
 use ProcessMaker\Traits\HasVersioning;
@@ -160,12 +164,15 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     use ProcessTrait;
     use Exportable;
     use ProjectAssetTrait;
+    use HasAggregationAttribute;
 
     const categoryClass = ProcessCategory::class;
 
     const ASSIGNMENT_PROCESS = 'Assignment process';
 
     const NOT_ASSIGNABLE_USER_STATUS = ['INACTIVE', 'OUT_OF_OFFICE'];
+
+    const DEFAULT_AGGREGATION = 'amount';
 
     protected $connection = 'processmaker';
 
@@ -426,6 +433,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             'bpmn' => 'nullable',
             'case_title' => 'nullable|max:200',
             'alternative' => 'nullable|in:A,B',
+            'aggregation' => ['nullable', 'string', 'max:255', new AggregationVariable()],
         ];
     }
 
@@ -2049,13 +2057,16 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             ->toArray();
     }
 
-    protected static function getProcessStageCounts(int $processId, string $amountKey = 'amount'): array
+    protected static function getProcessStageCounts(int $processId, ?string $amountKey = 'amount'): array
     {
-        $rawSql = sprintf('last_stage_id, COUNT(*) AS count, SUM(CAST(JSON_EXTRACT(data, \'$.%s\') AS DECIMAL(10, 2))) AS var_aggregation_sum', $amountKey);
+        $amountPath = self::resolveAggregationJsonPath($processId, $amountKey);
 
         $results = ProcessRequest::where('process_id', $processId)
             ->groupBy('last_stage_id')
-            ->selectRaw($rawSql)
+            ->selectRaw(
+                'last_stage_id, COUNT(*) AS count, SUM(CAST(JSON_EXTRACT(data, ?) AS DECIMAL(10, 2))) AS var_aggregation_sum',
+                [$amountPath]
+            )
             ->get()
             ->toArray();
 
@@ -2074,6 +2085,31 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $stageData['total_count'] = $totalCount;
 
         return $stageData;
+    }
+
+    /**
+     * Builds the JSON path used to aggregate the process request data.
+     *
+     * The stored value is never trusted: it is validated here even though it is validated on
+     * write, because older rows may already contain arbitrary text. An invalid or empty value
+     * falls back to the default `amount` variable and the path is always passed as a bound
+     * parameter, never interpolated into SQL.
+     */
+    private static function resolveAggregationJsonPath(int $processId, ?string $amountKey): string
+    {
+        if ($amountKey === null || $amountKey === '') {
+            return JsonDataPath::fromDotNotation(self::DEFAULT_AGGREGATION);
+        }
+
+        if (!JsonDataPath::isValid($amountKey)) {
+            Log::warning('Invalid aggregation variable stored for process, using default.', [
+                'process_id' => $processId,
+            ]);
+
+            return JsonDataPath::fromDotNotation(self::DEFAULT_AGGREGATION);
+        }
+
+        return JsonDataPath::fromDotNotation($amountKey);
     }
 
     /**
