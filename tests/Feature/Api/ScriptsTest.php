@@ -26,6 +26,8 @@ class ScriptsTest extends TestCase
 {
     use RequestHelper;
 
+    public $withPermissions = true;
+
     const API_TEST_SCRIPT = '/scripts';
 
     const STRUCTURE = [
