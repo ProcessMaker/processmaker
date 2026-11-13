@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\ResetPassword as ResetPasswordNotification;
+use ReflectionMethod;
 use Tests\TestCase;
 
 class PasswordResetTest extends TestCase
@@ -44,6 +45,67 @@ class PasswordResetTest extends TestCase
 
         $response->assertSessionHas('status');
         Notification::assertNothingSent();
+    }
+
+    public function testForgotPasswordRejectsUntrustedForwardedHost(): void
+    {
+        config([
+            'app.url' => 'http://processmaker2.test',
+            'trustedproxy.proxies' => '*',
+        ]);
+
+        $user = User::factory()->create([
+            'email' => 'host-poison-forgot@example.com',
+            'status' => 'ACTIVE',
+        ]);
+
+        $response = $this->post(route('password.email'), [
+            'email' => $user->email,
+        ], [
+            'X-Forwarded-Host' => 'attacker.example',
+        ]);
+
+        $response->assertStatus(400);
+    }
+
+    public function testForgotPasswordAcceptsTrustedForwardedHost(): void
+    {
+        Notification::fake();
+
+        config([
+            'app.url' => 'http://processmaker2.test',
+            'trustedproxy.proxies' => '*',
+        ]);
+
+        $user = User::factory()->create([
+            'email' => 'host-trusted-forgot@example.com',
+            'status' => 'ACTIVE',
+        ]);
+
+        $response = $this->post(route('password.email'), [
+            'email' => $user->email,
+        ], [
+            'X-Forwarded-Host' => 'processmaker2.test',
+        ]);
+
+        $response->assertSessionHas('status');
+        Notification::assertSentTo($user, ResetPasswordNotification::class);
+    }
+
+    public function testResetPasswordNotificationUsesConfiguredAppUrl(): void
+    {
+        config(['app.url' => 'https://processmaker.example.test']);
+
+        $user = User::factory()->make([
+            'email' => 'reset-url@example.com',
+        ]);
+
+        $notification = new ResetPasswordNotification('test-token');
+        $resetUrl = (new ReflectionMethod($notification, 'resetUrl'))
+            ->invoke($notification, $user);
+
+        $this->assertStringStartsWith('https://processmaker.example.test/password/reset/', $resetUrl);
+        $this->assertStringContainsString('email=reset-url%40example.com', $resetUrl);
     }
 
     public function testForgotPasswordSendsNotificationToActiveUser(): void
