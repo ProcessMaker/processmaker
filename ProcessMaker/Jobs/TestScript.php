@@ -15,6 +15,7 @@ use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\InProcessPhpRunner;
 use ProcessMaker\ScriptRuntime\ScriptExecutionContext;
+use ProcessMaker\Services\ScriptExecutionModeResolver;
 use Throwable;
 
 class TestScript implements ShouldQueue
@@ -133,7 +134,15 @@ class TestScript implements ShouldQueue
         }
         $timeout = max(1, $timeout);
 
-        if (config('core-service-task.execution', 'modules') === 'modules') {
+        $executionMode = app(ScriptExecutionModeResolver::class)->resolve($this->script);
+        if (
+            $executionMode === Script::EXECUTION_MODE_MODULES
+            && !$this->canUseModules()
+        ) {
+            $executionMode = Script::EXECUTION_MODE_BARE;
+        }
+
+        if ($executionMode === Script::EXECUTION_MODE_MODULES) {
             $context = new ScriptExecutionContext(
                 data: $this->data,
                 config: $this->configuration,
@@ -156,6 +165,14 @@ class TestScript implements ShouldQueue
 
         // Match runScript() response shape expected by the Script Editor UI
         return ['output' => $output];
+    }
+
+    private function canUseModules(): bool
+    {
+        return (bool) (
+            $this->current_user?->is_administrator
+            || $this->current_user?->can('run-in-process-modules')
+        );
     }
 
     /**

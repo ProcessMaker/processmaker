@@ -10,6 +10,7 @@ use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRuntime\ScriptExecutionContext;
+use ProcessMaker\Services\ScriptExecutionModeResolver;
 
 class ScriptRunner
 {
@@ -115,7 +116,10 @@ class ScriptRunner
     {
         $effectiveTimeout = $this->resolveTimeout((int) $timeout, (int) $this->script->timeout);
 
-        if (config('core-service-task.execution', 'modules') === 'modules') {
+        if (
+            app(ScriptExecutionModeResolver::class)->resolve($this->script)
+            === Script::EXECUTION_MODE_MODULES
+        ) {
             $context = new ScriptExecutionContext(
                 data: $data,
                 config: $config,

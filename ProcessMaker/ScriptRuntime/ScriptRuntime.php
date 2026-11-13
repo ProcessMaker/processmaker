@@ -59,6 +59,7 @@ class ScriptRuntime
     {
         $instances = $this->instantiateModules($context);
         $scriptPath = $this->writeTempScript($code);
+        $hasExplicitReturn = $this->hasExplicitReturn($code);
         $accessToken = null;
         $envSnapshot = null;
 
@@ -75,15 +76,28 @@ class ScriptRuntime
                 'modules' => array_keys($instances),
             ]);
 
-            return (static function (string $__scriptPath, ScriptExecutionContext $__context, array $__instances) {
+            $result = (static function (
+                string $__scriptPath,
+                ScriptExecutionContext $__context,
+                array $__instances,
+                bool $__hasExplicitReturn
+            ) {
+                $result = ['response' => 'Error: add a result array'];
                 extract([
                     'data' => $__context->data,
                     'config' => $__context->config,
                     'modules' => $__instances,
-                ] + $__instances, EXTR_SKIP);
+                ], EXTR_SKIP);
+                extract($__instances, EXTR_SKIP);
 
-                return include $__scriptPath;
-            })($scriptPath, $context, $instances);
+                $output = include $__scriptPath;
+
+                return (($output === 1 || $output === null) && !$__hasExplicitReturn)
+                    ? $result
+                    : $output;
+            })($scriptPath, $context, $instances, $hasExplicitReturn);
+
+            return $result;
         } catch (Throwable $exception) {
             throw new ScriptException($exception->getMessage(), (int) $exception->getCode(), $exception);
         } finally {
@@ -222,5 +236,83 @@ class ScriptRuntime
         }
 
         return "<?php\n" . $code;
+    }
+
+    private function hasExplicitReturn(string $code): bool
+    {
+        $braceDepth = 0;
+        $functionBodyDepths = [];
+        $pendingFunctionBody = false;
+
+        foreach (token_get_all($code) as $token) {
+            if (is_array($token)) {
+                if ($this->isTopLevelReturn($token, $functionBodyDepths)) {
+                    return true;
+                }
+
+                $this->processArrayToken($token, $braceDepth, $pendingFunctionBody);
+                continue;
+            }
+
+            if ($token === '{') {
+                $this->openBrace(
+                    $braceDepth,
+                    $functionBodyDepths,
+                    $pendingFunctionBody
+                );
+                continue;
+            }
+
+            if ($token === '}') {
+                $this->closeBrace($braceDepth, $functionBodyDepths);
+                continue;
+            }
+
+            if ($token === ';') {
+                $pendingFunctionBody = false;
+            }
+        }
+
+        return false;
+    }
+
+    private function isTopLevelReturn(array $token, array $functionBodyDepths): bool
+    {
+        return $token[0] === T_RETURN && empty($functionBodyDepths);
+    }
+
+    private function processArrayToken(
+        array $token,
+        int &$braceDepth,
+        bool &$pendingFunctionBody
+    ): void {
+        if ($token[0] === T_FUNCTION) {
+            $pendingFunctionBody = true;
+        }
+
+        if ($token[0] === T_CURLY_OPEN) {
+            $braceDepth++;
+        }
+    }
+
+    private function openBrace(
+        int &$braceDepth,
+        array &$functionBodyDepths,
+        bool &$pendingFunctionBody
+    ): void {
+        $braceDepth++;
+        if ($pendingFunctionBody) {
+            $functionBodyDepths[] = $braceDepth;
+            $pendingFunctionBody = false;
+        }
+    }
+
+    private function closeBrace(int &$braceDepth, array &$functionBodyDepths): void
+    {
+        if (!empty($functionBodyDepths) && end($functionBodyDepths) === $braceDepth) {
+            array_pop($functionBodyDepths);
+        }
+
+        $braceDepth--;
     }
 }

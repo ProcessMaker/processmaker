@@ -30,7 +30,10 @@ return [
     | bare:    legacy PHP subprocess without Laravel/autoload (no modules).
     |
     */
-    'execution' => env('CORE_SERVICE_TASK_EXECUTION', 'modules'),
+    'execution' => env('CORE_SERVICE_TASK_EXECUTION', 'bare'),
+
+    // Modules must be enabled globally before a script can select them.
+    'modules_enabled' => env('CORE_SERVICE_TASK_MODULES_ENABLED', false),
 
     /*
     | Optional dedicated queue name for RunServiceTask nodes that set
