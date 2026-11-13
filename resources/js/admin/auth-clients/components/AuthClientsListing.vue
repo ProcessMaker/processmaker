@@ -148,6 +148,7 @@ export default {
         this.fetch();
     },
     onPageChange(page) {
+      const previousPage = this.page;
       if (page == "next") {
         this.page = this.page + 1;
       } else if (page == "prev") {
@@ -161,6 +162,10 @@ export default {
       let meta = this.$refs.pagination.tablePagination;
       if (this.page > meta.last_page) {
         this.page = meta.last_page;
+      }
+      // Skip fetch when nav is disabled (already on first/last) or page is unchanged
+      if (this.page === previousPage) {
+        return;
       }
       this.fetch();
     },

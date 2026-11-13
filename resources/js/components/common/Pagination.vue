@@ -123,9 +123,13 @@ export default {
   }
   &.disabled {
     cursor: not-allowed;
+    opacity: 0.5 !important;
   }
   &:hover {
     background-color: white;
+  }
+  &:hover.disabled {
+    background-color: #f7f9fb;
   }
 }
 .pagination-nav-drop {
