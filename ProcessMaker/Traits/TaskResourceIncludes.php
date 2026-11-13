@@ -181,10 +181,14 @@ trait TaskResourceIncludes
         }
 
         if (!array_key_exists('data', $draft->getAttributes())) {
-            $draft = TaskDraft::query()
+            $data = TaskDraft::query()
                 ->whereKey($draft->getKey())
                 ->where('task_id', $token->id)
-                ->first(['id', 'task_id', 'data']);
+                ->value('data');
+            if ($data === null) {
+                return null;
+            }
+            $draft->setAttribute('data', $data);
         }
 
         return $draft;
@@ -240,6 +244,14 @@ trait TaskResourceIncludes
      */
     private function taskDraftForToken(ProcessRequestToken $token, mixed $draft): ?TaskDraft
     {
+        if ($draft instanceof TaskDraft) {
+            if ((int) $draft->task_id !== (int) $token->id) {
+                return null;
+            }
+
+            return $draft;
+        }
+
         $boundQuery = fn () => TaskDraft::query()
             ->where('task_id', $token->id)
             ->first(['id', 'task_id', 'data']);
@@ -256,7 +268,7 @@ trait TaskResourceIncludes
                 ->first(['id', 'task_id', 'data']);
         }
 
-        return $draft instanceof TaskDraft ? $boundQuery() : null;
+        return null;
     }
 
     private function draftIdFromPayload(mixed $draft): int|string|null
