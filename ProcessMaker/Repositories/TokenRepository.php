@@ -6,10 +6,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
+use ProcessMaker\Helpers\AbeRecipientSignature;
 use ProcessMaker\Jobs\CaseUpdate;
 use ProcessMaker\Mail\TaskActionByEmail;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\FeelExpressionEvaluator;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessCollaboration;
@@ -203,40 +205,14 @@ class TokenRepository implements TokenRepositoryInterface
         try {
             $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
             Log::Info('Activity isActionsByEmail: ' . $isActionsByEmail);
-            $to = $user && $user->email ? $user->email : '';
-            if ($to === '' && $token->is_self_service && is_array($token->self_service_groups)) {
-                $userIds = array_map('intval', array_filter(
-                    $token->self_service_groups['users'] ?? [],
-                    fn ($id) => is_numeric($id) && (int) $id > 0
-                ));
-                $groupIds = array_values(array_filter(
-                    $token->self_service_groups['groups'] ?? [],
-                    fn ($id) => $id !== '' && $id !== null
-                ));
-                if ($groupIds !== []) {
-                    $fromGroups = [];
-                    $token->getInstance()->getProcess()->getOwnerDocument()->getModel()
-                        ->getConsolidatedUsers($groupIds, $fromGroups);
-                    $userIds = array_unique(array_merge($userIds, $fromGroups));
-                }
-                if ($userIds !== []) {
-                    $to = User::query()
-                        ->whereIn('id', $userIds)
-                        ->whereNotIn('status', Process::NOT_ASSIGNABLE_USER_STATUS)
-                        ->whereNotNull('email')
-                        ->where('email', '!=', '')
-                        ->pluck('email')
-                        ->unique()
-                        ->implode(', ');
-                }
-            }
+            $recipients = $this->resolveAbeRecipients($token, $user);
             // If the actionByEmail is enable
-            if ($isActionsByEmail === 'true' && !empty($to)) {
+            if ($isActionsByEmail === 'true' && $recipients !== []) {
                 $configEmail = json_decode($activity->getProperty('configEmail'), true);
                 if (!empty($configEmail)) {
                     Log::info('Activity configEmail: ', $configEmail);
                     $abeRequestToken = new ProcessAbeRequestToken();
-                    $requireLogin = ($configEmail['requireLogin']) ? 1 : 0;
+                    $requireLogin = !empty($configEmail['requireLogin']) ? 1 : 0;
                     $screenCompleted = !empty($configEmail['screenCompleteRef'])
                         ? $configEmail['screenCompleteRef']
                         : null;
@@ -246,13 +222,25 @@ class TokenRepository implements TokenRepositoryInterface
                         'require_login' => $requireLogin,
                         'completed_screen_id' => $screenCompleted,
                     ]);
-                    $data = $token->getInstance()->getDataStore()->getData();
+                    $baseData = $token->getInstance()->getDataStore()->getData();
                     // Set custom variables defined in the link
-                    $data['abe_uri'] = config('app.url');
-                    $data['token_abe'] = $tokenAbe->uuid;
+                    $baseData['abe_uri'] = config('app.url');
+                    $baseData['token_abe'] = $tokenAbe->uuid;
 
-                    // Send Email
-                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $data);
+                    $mailer = new TaskActionByEmail();
+                    // One personalized email per unique address. Overlapping group
+                    // membership is collapsed in resolveAbeRecipients (groups merged).
+                    foreach ($recipients as $recipient) {
+                        $signedQuery = AbeRecipientSignature::queryString(
+                            $tokenAbe->uuid,
+                            $recipient['email'],
+                            $recipient['user_id'],
+                            $recipient['groups']
+                        );
+                        $mailer->sendAbeEmail($configEmail, $recipient['email'], $baseData, $signedQuery);
+                    }
+
+                    return true;
                 }
             }
         } catch (\Exception $e) {
@@ -261,6 +249,127 @@ class TokenRepository implements TokenRepositoryInterface
                 'error' => $e->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * Resolve ABE recipients as one personalized entry per unique email.
+     * Users in multiple assigned groups are collapsed into one entry with
+     * groups recorded as [{id,name}]. When two users share an email, the
+     * first resolved user wins (one signature / one email).
+     *
+     * @return array<int, array{email:string,user_id:int,groups:array}>
+     */
+    private function resolveAbeRecipients(TokenInterface $token, ?User $user): array
+    {
+        if ($user && $user->email) {
+            return [[
+                'email' => $user->email,
+                'user_id' => (int) $user->id,
+                'groups' => [],
+            ]];
+        }
+
+        if (!$token->is_self_service || !is_array($token->self_service_groups)) {
+            return [];
+        }
+
+        $assignedUserIds = array_map('intval', array_filter(
+            $token->self_service_groups['users'] ?? [],
+            fn ($id) => is_numeric($id) && (int) $id > 0
+        ));
+        $groupIds = array_values(array_unique(array_map(
+            'intval',
+            array_filter(
+                $token->self_service_groups['groups'] ?? [],
+                fn ($id) => $id !== '' && $id !== null && is_numeric($id)
+            )
+        )));
+
+        $processModel = $this->processModelForAbeToken($token);
+        $groupsById = $groupIds === []
+            ? collect()
+            : Group::query()->whereIn('id', $groupIds)->get(['id', 'name'])->keyBy('id');
+
+        $groupsByUserId = [];
+        $groupUsers = [];
+        foreach ($groupIds as $groupId) {
+            $membersForGroup = [];
+            $processModel->getConsolidatedUsers($groupId, $membersForGroup);
+            $group = $groupsById->get($groupId);
+            foreach ($membersForGroup as $memberId) {
+                $memberId = (int) $memberId;
+                $groupUsers[] = $memberId;
+                if ($group) {
+                    $groupsByUserId[$memberId][$groupId] = [
+                        'id' => (int) $group->id,
+                        'name' => (string) $group->name,
+                    ];
+                }
+            }
+        }
+
+        $allUserIds = array_values(array_unique(array_merge($assignedUserIds, $groupUsers)));
+        if ($allUserIds === []) {
+            return [];
+        }
+
+        $users = User::query()
+            ->whereIn('id', $allUserIds)
+            ->whereNotIn('status', Process::NOT_ASSIGNABLE_USER_STATUS)
+            ->whereNotNull('email')
+            ->where('email', '!=', '')
+            ->orderBy('id')
+            ->get()
+            ->keyBy('id');
+
+        $recipients = [];
+        $seenEmails = [];
+        foreach ($users as $userId => $recipientUser) {
+            $emailKey = strtolower(trim((string) $recipientUser->email));
+            if ($emailKey === '' || isset($seenEmails[$emailKey])) {
+                continue;
+            }
+            $seenEmails[$emailKey] = true;
+
+            $recipients[] = [
+                'email' => $recipientUser->email,
+                'user_id' => (int) $recipientUser->id,
+                'groups' => array_values($groupsByUserId[(int) $userId] ?? []),
+            ];
+        }
+
+        return $recipients;
+    }
+
+    /**
+     * Resolve the Process model used for consolidated group membership lookups.
+     */
+    private function processModelForAbeToken(TokenInterface $token): Process
+    {
+        if (method_exists($token, 'getInstance')) {
+            $instance = $token->getInstance();
+            if ($instance && method_exists($instance, 'getProcess')) {
+                $process = $instance->getProcess();
+                if ($process && method_exists($process, 'getOwnerDocument')) {
+                    $document = $process->getOwnerDocument();
+                    if ($document && method_exists($document, 'getModel')) {
+                        $model = $document->getModel();
+                        if ($model instanceof Process) {
+                            return $model;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (method_exists($token, 'getAttribute')) {
+            $processId = $token->getAttribute('process_id');
+            if ($processId) {
+                return Process::findOrFail($processId);
+            }
+        }
+
+        throw new \RuntimeException('Unable to resolve Process model for ABE recipients');
     }
 
     /**
