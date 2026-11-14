@@ -28,10 +28,11 @@ class TaskActionByEmail
      *                       - screenEmailRef: Reference ID to a custom email screen (integer, optional, default: 0).
      * @param string $to Recipient email address.
      * @param array $data Additional data for rendering the email content (optional).
+     * @param string|null $signedQuery Optional signed ABE query string to append to action links.
      *
      * @return void
      */
-    public function sendAbeEmail($config, $to, $data)
+    public function sendAbeEmail($config, $to, $data, ?string $signedQuery = null)
     {
         try {
             // Get parameters to send the email
@@ -52,7 +53,10 @@ class TaskActionByEmail
                 // Retrieve and render custom screen if specified
                 $customScreen = Screen::findOrFail($emailScreenRef);
                 $infoRenderer = $this->emailProvider->screenRenderer($customScreen->config, $data, $customScreen);
-                $emailConfig['body'] = $infoRenderer['body'] ?? __('No body configured');
+                $body = $infoRenderer['body'] ?? __('No body configured');
+                $emailConfig['body'] = $signedQuery
+                    ? $this->appendSignedParamsToAbeLinks($body, $signedQuery)
+                    : $body;
                 $emailConfig['styles'] = $infoRenderer['styles'] ?? '';
             } else {
                 // Default message if no custom screen is configured
@@ -72,6 +76,30 @@ class TaskActionByEmail
         }
 
         return true;
+    }
+
+    /**
+     * Append signed recipient params to known ABE action URLs only.
+     */
+    public function appendSignedParamsToAbeLinks(string $html, string $signedQuery): string
+    {
+        if ($signedQuery === '' || $html === '') {
+            return $html;
+        }
+
+        return preg_replace_callback(
+            '/(\b(?:href)=["\'])([^"\']*\/tasks\/update_variable\/[^"\']*)(["\'])/i',
+            static function (array $matches) use ($signedQuery) {
+                $url = html_entity_decode($matches[2], ENT_QUOTES | ENT_HTML5);
+                if (str_contains($url, 'abe_sig=')) {
+                    return $matches[0];
+                }
+                $separator = str_contains($url, '?') ? '&' : '?';
+
+                return $matches[1] . $url . $separator . $signedQuery . $matches[3];
+            },
+            $html
+        ) ?? $html;
     }
 
     private function mustache($str, $data)
