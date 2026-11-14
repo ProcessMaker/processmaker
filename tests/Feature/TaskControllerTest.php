@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Helpers\AbeRecipientSignature;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessRequest;
@@ -145,5 +146,49 @@ class TaskControllerTest extends TestCase
         );
         $response->assertSee('Token not found');
         $response->assertStatus(404);
+    }
+
+    /**
+     * ABE click metadata is nested under abe_responder (not flat top-level keys).
+     */
+    public function testActionByEmailStoresResponderMetadataNestedInRequestData(): void
+    {
+        $process = Process::factory()->create([
+            'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/action_by_email_process_no_require_login.bpmn'),
+        ]);
+        Screen::factory()->create();
+
+        $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
+        $this->apiCall('POST', $route, []);
+
+        $processAbeRequest = ProcessAbeRequestToken::firstOrFail();
+        $signedQuery = AbeRecipientSignature::queryString(
+            $processAbeRequest->uuid,
+            'recipient@example.com',
+            55,
+            [['id' => 9, 'name' => 'Approvers']]
+        );
+
+        $response = $this->webCall(
+            'GET',
+            'tasks/update_variable/' . $processAbeRequest->uuid . '?varName=res&varValue=yes&' . $signedQuery
+        );
+        $response->assertStatus(200);
+
+        $request = ProcessRequest::findOrFail($processAbeRequest->process_request_id);
+        $data = $request->data;
+
+        $this->assertSame('yes', $data['res'] ?? null);
+        $this->assertArrayHasKey('abe_responder', $data);
+        $this->assertIsArray($data['abe_responder']);
+        $this->assertSame('recipient@example.com', $data['abe_responder']['email']);
+        $this->assertSame(55, $data['abe_responder']['user_id']);
+        $this->assertSame([['id' => 9, 'name' => 'Approvers']], $data['abe_responder']['groups']);
+        $this->assertArrayHasKey('acted_at', $data['abe_responder']);
+        // Must not leak as top-level request-data keys (develop never set these there)
+        $this->assertArrayNotHasKey('email', $data);
+        $this->assertArrayNotHasKey('acted_at', $data);
+        $this->assertArrayNotHasKey('identity_mismatch', $data);
+        $this->assertArrayNotHasKey('user_id', $data);
     }
 }

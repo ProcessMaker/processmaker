@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Request;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Filters\SaveSession;
+use ProcessMaker\Helpers\AbeResponder;
 use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
@@ -304,8 +305,13 @@ class TaskController extends Controller
                     if ($task->status === 'CLOSED') {
                         return $this->returnErrorResponse(__('Task already closed'), 404);
                     }
-                    // Update the data
-                    $data[$request->varName] = $request->varValue;
+                    // Update the data: action variable + nested abe_responder metadata.
+                    // develop does not set top-level user_id/acted_at on request data
+                    // (those live on the ABE token row), so both belong under abe_responder.
+                    $data = [
+                        $request->varName => $request->varValue,
+                        'abe_responder' => AbeResponder::fromRequest($request, $abe->uuid),
+                    ];
                     $abe->data = json_encode($data);
                     // Define the answered_at and is_answered
                     $abe->is_answered = true;
