@@ -149,13 +149,16 @@ class TaskControllerTest extends TestCase
     }
 
     /**
-     * ABE click metadata is nested under abe_responder (not flat top-level keys).
+     * ABE click metadata is nested under abe_responder when trackResponder is enabled.
      */
     public function testActionByEmailStoresResponderMetadataNestedInRequestData(): void
     {
-        $process = Process::factory()->create([
-            'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/action_by_email_process_no_require_login.bpmn'),
-        ]);
+        $bpmn = str_replace(
+            '&#34;requireLogin&#34;:false',
+            '&#34;requireLogin&#34;:false,&#34;trackResponder&#34;:true',
+            file_get_contents(__DIR__ . '/../Fixtures/action_by_email_process_no_require_login.bpmn')
+        );
+        $process = Process::factory()->create(['bpmn' => $bpmn]);
         Screen::factory()->create();
 
         $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
@@ -190,5 +193,32 @@ class TaskControllerTest extends TestCase
         $this->assertArrayNotHasKey('acted_at', $data);
         $this->assertArrayNotHasKey('identity_mismatch', $data);
         $this->assertArrayNotHasKey('user_id', $data);
+    }
+
+    /**
+     * Without trackResponder, request data must not include abe_responder.
+     */
+    public function testActionByEmailOmitsResponderMetadataWhenTrackingDisabled(): void
+    {
+        $process = Process::factory()->create([
+            'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/action_by_email_process_no_require_login.bpmn'),
+        ]);
+        Screen::factory()->create();
+
+        $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
+        $this->apiCall('POST', $route, []);
+
+        $processAbeRequest = ProcessAbeRequestToken::firstOrFail();
+        $response = $this->webCall(
+            'GET',
+            'tasks/update_variable/' . $processAbeRequest->uuid . '?varName=res&varValue=yes'
+        );
+        $response->assertStatus(200);
+
+        $request = ProcessRequest::findOrFail($processAbeRequest->process_request_id);
+        $data = $request->data;
+
+        $this->assertSame('yes', $data['res'] ?? null);
+        $this->assertArrayNotHasKey('abe_responder', $data);
     }
 }

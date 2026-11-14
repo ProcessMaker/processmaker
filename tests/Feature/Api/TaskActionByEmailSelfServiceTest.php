@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
@@ -104,8 +105,18 @@ class TaskActionByEmailSelfServiceTest extends TestCase
         }
 
         $bpmn = str_replace(
-            ['[ASSIGNED_USERS]', '[ASSIGNED_GROUPS]', '&#34;screenEmailRef&#34;:10'],
-            ['', $groupA->id . ',' . $groupB->id, '&#34;screenEmailRef&#34;:0'],
+            [
+                '[ASSIGNED_USERS]',
+                '[ASSIGNED_GROUPS]',
+                '&#34;screenEmailRef&#34;:10',
+                '&#34;requireLogin&#34;:true',
+            ],
+            [
+                '',
+                $groupA->id . ',' . $groupB->id,
+                '&#34;screenEmailRef&#34;:0',
+                '&#34;requireLogin&#34;:true,&#34;trackResponder&#34;:true',
+            ],
             file_get_contents(__DIR__ . '/processes/TaskActionByEmailSelfService.bpmn')
         );
 
@@ -154,6 +165,8 @@ class TaskActionByEmailSelfServiceTest extends TestCase
                 return $this->config;
             })->call($job);
             $to = $config['addEmails'] ?? $config['email'] ?? '';
+            // Personalized path: one recipient address per job (not comma-joined).
+            $this->assertStringNotContainsString(',', (string) $to);
             if ($to === 'shared-abe@example.com') {
                 $sharedDispatches++;
             }
@@ -191,8 +204,18 @@ class TaskActionByEmailSelfServiceTest extends TestCase
         }
 
         $bpmn = str_replace(
-            ['[ASSIGNED_USERS]', '[ASSIGNED_GROUPS]', '&#34;screenEmailRef&#34;:10'],
-            ['', (string) $group->id, '&#34;screenEmailRef&#34;:0'],
+            [
+                '[ASSIGNED_USERS]',
+                '[ASSIGNED_GROUPS]',
+                '&#34;screenEmailRef&#34;:10',
+                '&#34;requireLogin&#34;:true',
+            ],
+            [
+                '',
+                (string) $group->id,
+                '&#34;screenEmailRef&#34;:0',
+                '&#34;requireLogin&#34;:true,&#34;trackResponder&#34;:true',
+            ],
             file_get_contents(__DIR__ . '/processes/TaskActionByEmailSelfService.bpmn')
         );
 
@@ -220,5 +243,202 @@ class TaskActionByEmailSelfServiceTest extends TestCase
         $this->assertSame($userOne->id, $recipients[0]['user_id']);
 
         Bus::assertDispatchedTimes(SendEmail::class, 1);
+    }
+
+    /**
+     * Without trackResponder, ABE sends one shared email (comma-joined To), not one per recipient.
+     */
+    public function testWithoutTrackResponderSendsOneSharedAbeEmail(): void
+    {
+        Bus::fake([SendEmail::class]);
+
+        $group = Group::factory()->create(['status' => 'ACTIVE', 'name' => 'ABE Legacy Shared']);
+        $users = collect([
+            User::factory()->create(['status' => 'ACTIVE', 'email' => 'legacy-a@example.com']),
+            User::factory()->create(['status' => 'ACTIVE', 'email' => 'legacy-b@example.com']),
+            User::factory()->create(['status' => 'ACTIVE', 'email' => 'legacy-c@example.com']),
+        ]);
+
+        foreach ($users as $user) {
+            GroupMember::factory()->create([
+                'group_id' => $group->id,
+                'member_id' => $user->id,
+                'member_type' => User::class,
+            ]);
+        }
+
+        $bpmn = str_replace(
+            [
+                '[ASSIGNED_USERS]',
+                '[ASSIGNED_GROUPS]',
+                '&#34;screenEmailRef&#34;:10',
+            ],
+            [
+                '',
+                (string) $group->id,
+                '&#34;screenEmailRef&#34;:0',
+            ],
+            file_get_contents(__DIR__ . '/processes/TaskActionByEmailSelfService.bpmn')
+        );
+        $this->assertStringNotContainsString('trackResponder', $bpmn);
+
+        $process = Process::factory()->create(['bpmn' => $bpmn]);
+        ProcessTaskAssignment::factory()->create([
+            'process_id' => $process->id,
+            'process_task_id' => 'node_2',
+            'assignment_id' => $group->id,
+            'assignment_type' => Group::class,
+        ]);
+
+        $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
+        $response = $this->apiCall('POST', $route, []);
+        $response->assertStatus(201);
+
+        Bus::assertDispatchedTimes(SendEmail::class, 1);
+
+        $job = Bus::dispatched(SendEmail::class)->first();
+        $config = (function () {
+            return $this->config;
+        })->call($job);
+        $to = (string) ($config['addEmails'] ?? $config['email'] ?? '');
+
+        foreach ($users->pluck('email') as $email) {
+            $this->assertStringContainsString($email, $to);
+        }
+        $this->assertStringContainsString(',', $to);
+        $this->assertTrue($job->delay === null || $job->delay === 0);
+    }
+
+    /**
+     * With trackResponder, personalized sends are staggered by abe_email_stagger_seconds.
+     */
+    public function testTrackResponderStaggersPersonalizedAbeEmailDispatches(): void
+    {
+        Bus::fake([SendEmail::class]);
+
+        $now = Carbon::parse('2026-11-13 12:00:00');
+        Carbon::setTestNow($now);
+        config(['app.abe_email_stagger_seconds' => 3]);
+
+        try {
+            $group = Group::factory()->create(['status' => 'ACTIVE', 'name' => 'ABE Stagger']);
+            $emails = [
+                'stagger-a@example.com',
+                'stagger-b@example.com',
+                'stagger-c@example.com',
+            ];
+            foreach ($emails as $email) {
+                $user = User::factory()->create([
+                    'status' => 'ACTIVE',
+                    'email' => $email,
+                ]);
+                GroupMember::factory()->create([
+                    'group_id' => $group->id,
+                    'member_id' => $user->id,
+                    'member_type' => User::class,
+                ]);
+            }
+
+            $bpmn = str_replace(
+                [
+                    '[ASSIGNED_USERS]',
+                    '[ASSIGNED_GROUPS]',
+                    '&#34;screenEmailRef&#34;:10',
+                    '&#34;requireLogin&#34;:true',
+                ],
+                [
+                    '',
+                    (string) $group->id,
+                    '&#34;screenEmailRef&#34;:0',
+                    '&#34;requireLogin&#34;:true,&#34;trackResponder&#34;:true',
+                ],
+                file_get_contents(__DIR__ . '/processes/TaskActionByEmailSelfService.bpmn')
+            );
+
+            $process = Process::factory()->create(['bpmn' => $bpmn]);
+            ProcessTaskAssignment::factory()->create([
+                'process_id' => $process->id,
+                'process_task_id' => 'node_2',
+                'assignment_id' => $group->id,
+                'assignment_type' => Group::class,
+            ]);
+
+            $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
+            $response = $this->apiCall('POST', $route, []);
+            $response->assertStatus(201);
+
+            $jobs = Bus::dispatched(SendEmail::class);
+            $this->assertCount(3, $jobs);
+
+            $delaySeconds = $jobs->map(function (SendEmail $job) use ($now) {
+                $config = (function () {
+                    return $this->config;
+                })->call($job);
+                $to = (string) ($config['addEmails'] ?? $config['email'] ?? '');
+                $this->assertStringNotContainsString(',', $to);
+
+                if ($job->delay === null || $job->delay === 0) {
+                    return 0;
+                }
+
+                return (int) $now->diffInSeconds(Carbon::parse($job->delay));
+            })->sort()->values()->all();
+
+            $this->assertSame([0, 3, 6], $delaySeconds);
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    /**
+     * Zero stagger still personalizes, but all dispatches run without delay.
+     */
+    public function testTrackResponderWithZeroStaggerDispatchesWithoutDelay(): void
+    {
+        Bus::fake([SendEmail::class]);
+        config(['app.abe_email_stagger_seconds' => 0]);
+
+        $group = Group::factory()->create(['status' => 'ACTIVE', 'name' => 'ABE Zero Stagger']);
+        foreach (['zero-a@example.com', 'zero-b@example.com'] as $email) {
+            $user = User::factory()->create(['status' => 'ACTIVE', 'email' => $email]);
+            GroupMember::factory()->create([
+                'group_id' => $group->id,
+                'member_id' => $user->id,
+                'member_type' => User::class,
+            ]);
+        }
+
+        $bpmn = str_replace(
+            [
+                '[ASSIGNED_USERS]',
+                '[ASSIGNED_GROUPS]',
+                '&#34;screenEmailRef&#34;:10',
+                '&#34;requireLogin&#34;:true',
+            ],
+            [
+                '',
+                (string) $group->id,
+                '&#34;screenEmailRef&#34;:0',
+                '&#34;requireLogin&#34;:true,&#34;trackResponder&#34;:true',
+            ],
+            file_get_contents(__DIR__ . '/processes/TaskActionByEmailSelfService.bpmn')
+        );
+
+        $process = Process::factory()->create(['bpmn' => $bpmn]);
+        ProcessTaskAssignment::factory()->create([
+            'process_id' => $process->id,
+            'process_task_id' => 'node_2',
+            'assignment_id' => $group->id,
+            'assignment_type' => Group::class,
+        ]);
+
+        $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
+        $response = $this->apiCall('POST', $route, []);
+        $response->assertStatus(201);
+
+        Bus::assertDispatchedTimes(SendEmail::class, 2);
+        foreach (Bus::dispatched(SendEmail::class) as $job) {
+            $this->assertTrue($job->delay === null || $job->delay === 0);
+        }
     }
 }

@@ -136,8 +136,18 @@ class AbeLargeRecipientGroupTest extends TestCase
     private function startAbeSelfServiceTask(array $groupIds): ProcessRequestToken
     {
         $bpmn = str_replace(
-            ['[ASSIGNED_USERS]', '[ASSIGNED_GROUPS]', '&#34;screenEmailRef&#34;:10'],
-            ['', implode(',', $groupIds), '&#34;screenEmailRef&#34;:0'],
+            [
+                '[ASSIGNED_USERS]',
+                '[ASSIGNED_GROUPS]',
+                '&#34;screenEmailRef&#34;:10',
+                '&#34;requireLogin&#34;:true',
+            ],
+            [
+                '',
+                implode(',', $groupIds),
+                '&#34;screenEmailRef&#34;:0',
+                '&#34;requireLogin&#34;:true,&#34;trackResponder&#34;:true',
+            ],
             file_get_contents(__DIR__ . '/Api/processes/TaskActionByEmailSelfService.bpmn')
         );
 
