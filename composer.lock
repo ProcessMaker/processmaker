@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "62dedd56119a01d7b4f80b50f9ff5f74",
+    "content-hash": "3e4f3c100e439ee06f57979886d9880a",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -8047,16 +8047,16 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.12.4",
+            "version": "dev-FOUR-34376",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "19d721d6bd27f80d33288125488b244e83b6e191"
+                "reference": "930f9287469a2162c045e7b6e10bb1535e274d77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/19d721d6bd27f80d33288125488b244e83b6e191",
-                "reference": "19d721d6bd27f80d33288125488b244e83b6e191",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/930f9287469a2162c045e7b6e10bb1535e274d77",
+                "reference": "930f9287469a2162c045e7b6e10bb1535e274d77",
                 "shasum": ""
             },
             "require-dev": {
@@ -8075,9 +8075,9 @@
             "description": "BPMN compliant engine",
             "support": {
                 "issues": "https://github.com/ProcessMaker/nayra/issues",
-                "source": "https://github.com/ProcessMaker/nayra/tree/v1.12.4"
+                "source": "https://github.com/ProcessMaker/nayra/tree/FOUR-34376"
             },
-            "time": "2025-12-11T00:15:43+00:00"
+            "time": "2026-11-12T14:56:27+00:00"
         },
         {
             "name": "processmaker/pmql",
@@ -16654,7 +16654,8 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "pion/laravel-chunk-upload": 20,
-        "processmaker/laravel-i18next": 20
+        "processmaker/laravel-i18next": 20,
+        "processmaker/nayra": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
