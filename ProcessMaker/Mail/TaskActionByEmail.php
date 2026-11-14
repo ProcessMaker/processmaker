@@ -29,10 +29,11 @@ class TaskActionByEmail
      * @param string $to Recipient email address.
      * @param array $data Additional data for rendering the email content (optional).
      * @param string|null $signedQuery Optional signed ABE query string to append to action links.
+     * @param int $delaySeconds Queue delay before the job runs (throttle bulk personalized sends).
      *
      * @return void
      */
-    public function sendAbeEmail($config, $to, $data, ?string $signedQuery = null)
+    public function sendAbeEmail($config, $to, $data, ?string $signedQuery = null, int $delaySeconds = 0)
     {
         try {
             // Get parameters to send the email
@@ -63,8 +64,9 @@ class TaskActionByEmail
                 $emailConfig['body'] = __('No screen configured');
             }
 
-            // Send the email using emailProvider
-            $this->emailProvider->sendAsync($emailConfig);
+            // Personalized ABE sends are one message per recipient (unique signed link).
+            // Stagger queue dispatch so SMTP test providers (e.g. Mailtrap) are not rate-limited.
+            $this->emailProvider->sendAsync($emailConfig, $delaySeconds);
         } catch (\Exception $e) {
             Log::error('Error sending ABE email', [
                 'to' => $to,

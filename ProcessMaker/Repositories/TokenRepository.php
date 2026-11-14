@@ -228,16 +228,34 @@ class TokenRepository implements TokenRepositoryInterface
                     $baseData['token_abe'] = $tokenAbe->uuid;
 
                     $mailer = new TaskActionByEmail();
-                    // One personalized email per unique address. Overlapping group
-                    // membership is collapsed in resolveAbeRecipients (groups merged).
-                    foreach ($recipients as $recipient) {
+                    $trackResponder = !empty($configEmail['trackResponder']);
+
+                    if (!$trackResponder) {
+                        // Legacy: one email (shared link) to all recipients
+                        $to = implode(', ', array_column($recipients, 'email'));
+
+                        return $mailer->sendAbeEmail($configEmail, $to, $baseData);
+                    }
+
+                    // Opt-in responder tracking: one personalized email per unique address
+                    // with a signed link. Overlapping group membership is collapsed in
+                    // resolveAbeRecipients (groups merged). Stagger dispatches so providers
+                    // with per-second caps (Mailtrap, etc.) are less likely to throttle.
+                    $staggerSeconds = max(0, (int) config('app.abe_email_stagger_seconds', 1));
+                    foreach ($recipients as $index => $recipient) {
                         $signedQuery = AbeRecipientSignature::queryString(
                             $tokenAbe->uuid,
                             $recipient['email'],
                             $recipient['user_id'],
                             $recipient['groups']
                         );
-                        $mailer->sendAbeEmail($configEmail, $recipient['email'], $baseData, $signedQuery);
+                        $mailer->sendAbeEmail(
+                            $configEmail,
+                            $recipient['email'],
+                            $baseData,
+                            $signedQuery,
+                            $index * $staggerSeconds
+                        );
                     }
 
                     return true;
