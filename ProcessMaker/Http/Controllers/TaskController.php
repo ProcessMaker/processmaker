@@ -305,13 +305,14 @@ class TaskController extends Controller
                     if ($task->status === 'CLOSED') {
                         return $this->returnErrorResponse(__('Task already closed'), 404);
                     }
-                    // Update the data: action variable + nested abe_responder metadata.
-                    // develop does not set top-level user_id/acted_at on request data
-                    // (those live on the ABE token row), so both belong under abe_responder.
+                    // Action variable always; abe_responder only when the task opted into
+                    // responder tracking (personalized signed links).
                     $data = [
                         $request->varName => $request->varValue,
-                        'abe_responder' => AbeResponder::fromRequest($request, $abe->uuid),
                     ];
+                    if ($this->abeTrackResponderEnabled($task)) {
+                        $data['abe_responder'] = AbeResponder::fromRequest($request, $abe->uuid);
+                    }
                     $abe->data = json_encode($data);
                     // Define the answered_at and is_answered
                     $abe->is_answered = true;
@@ -344,6 +345,24 @@ class TaskController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Whether the task's Actions by Email config opted into responder tracking.
+     */
+    private function abeTrackResponderEnabled(ProcessRequestToken $task): bool
+    {
+        $definition = $task->getDefinition();
+        if (!is_array($definition)) {
+            return false;
+        }
+
+        $configEmail = $definition['configEmail'] ?? null;
+        if (is_string($configEmail)) {
+            $configEmail = json_decode($configEmail, true);
+        }
+
+        return is_array($configEmail) && !empty($configEmail['trackResponder']);
     }
 
     /**
