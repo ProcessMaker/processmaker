@@ -6,10 +6,13 @@ use Carbon\Carbon;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Str;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Filters\SaveSession;
+use ProcessMaker\Helpers\AbeRecipientSignature;
 use ProcessMaker\Helpers\AbeResponder;
 use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Helpers\MobileHelper;
@@ -257,6 +260,17 @@ class TaskController extends Controller
     }
 
     /**
+     * Short-lived cookie that points at a cache entry with the full ABE click query.
+     * Needed because showLoginForm clears the session cookie, so url.intended alone
+     * is not reliable for preserving signed recipient params across Require Login.
+     */
+    public const ABE_CLICK_TICKET_COOKIE = 'abe_click_ticket';
+
+    private const ABE_CLICK_CACHE_PREFIX = 'abe_click:';
+
+    private const ABE_CLICK_CACHE_TTL_MINUTES = 20;
+
+    /**
      * Update variable.
      *
      * @param HttpRequest $request
@@ -264,12 +278,6 @@ class TaskController extends Controller
      */
     public function updateVariable(HttpRequest $request, $abe_uuid)
     {
-        // Validar los parámetros GET
-        $request->validate([
-            'varName' => 'required|string',
-            'varValue' => 'required|string',
-        ]);
-
         try {
             // Verificar si la respuesta ya ha sido enviada
             $abe = ProcessAbeRequestToken::where('uuid', $abe_uuid)->first();
@@ -277,22 +285,19 @@ class TaskController extends Controller
             if (!$abe) {
                 return $this->returnErrorResponse(__('Token not found'), 404);
             }
+
+            // Restore signed click query if Require Login dropped it from the URL.
+            $this->restoreAbeClickQuery($request, $abe);
+
+            // Validar los parámetros GET (after restore so varName/varValue survive login)
+            $request->validate([
+                'varName' => 'required|string',
+                'varValue' => 'required|string',
+            ]);
+
             // Review if the autentication is required
             if ($abe->require_login && Auth::user()->username === AnonymousUser::ANONYMOUS_USERNAME) {
-                $request->session()->put('url.intended', url()->full());
-                $cookie = cookie(
-                    'processmaker_intended',
-                    url()->full(),
-                    10,
-                    '/',
-                    null,
-                    true,
-                    true,
-                    false,
-                    config('session.same_site') ?: 'lax'
-                );
-
-                return redirect('login')->withCookie($cookie);
+                return $this->redirectAbeClickToLogin($request, $abe);
             }
             if ($abe->is_answered) {
                 return $this->returnErrorResponse(__('This response has already been answered'), 200);
@@ -363,6 +368,82 @@ class TaskController extends Controller
         }
 
         return is_array($configEmail) && !empty($configEmail['trackResponder']);
+    }
+
+    /**
+     * Park the full ABE click query in cache and send the user to login.
+     * Login clears the session cookie, so a short ticket cookie is the durable key.
+     */
+    private function redirectAbeClickToLogin(HttpRequest $request, ProcessAbeRequestToken $abe)
+    {
+        $ticket = Str::random(40);
+        Cache::put(
+            self::ABE_CLICK_CACHE_PREFIX . $ticket,
+            [
+                'abe_uuid' => $abe->uuid,
+                'query' => $request->query(),
+            ],
+            now()->addMinutes(self::ABE_CLICK_CACHE_TTL_MINUTES)
+        );
+
+        // Keep a short intended URL; query is restored from cache after login.
+        $intended = route('tasks.abe.update', ['token_abe' => $abe->uuid]);
+        $request->session()->put('url.intended', $intended);
+
+        $sameSite = config('session.same_site') ?: 'lax';
+        $intendedCookie = cookie(
+            'processmaker_intended',
+            $intended,
+            self::ABE_CLICK_CACHE_TTL_MINUTES,
+            '/',
+            null,
+            true,
+            true,
+            false,
+            $sameSite
+        );
+        $ticketCookie = cookie(
+            self::ABE_CLICK_TICKET_COOKIE,
+            $ticket,
+            self::ABE_CLICK_CACHE_TTL_MINUTES,
+            '/',
+            null,
+            true,
+            true,
+            false,
+            $sameSite
+        );
+
+        return redirect('login')->withCookie($intendedCookie)->withCookie($ticketCookie);
+    }
+
+    /**
+     * Merge a parked ABE click query back onto the request when the signature is missing.
+     */
+    private function restoreAbeClickQuery(HttpRequest $request, ProcessAbeRequestToken $abe): void
+    {
+        if ((string) $request->query(AbeRecipientSignature::SIG, '') !== '') {
+            return;
+        }
+
+        $ticket = (string) $request->cookie(self::ABE_CLICK_TICKET_COOKIE, '');
+        if ($ticket === '') {
+            return;
+        }
+
+        $pending = Cache::pull(self::ABE_CLICK_CACHE_PREFIX . $ticket);
+        if (!is_array($pending) || ($pending['abe_uuid'] ?? null) !== $abe->uuid) {
+            return;
+        }
+
+        $query = $pending['query'] ?? null;
+        if (!is_array($query) || $query === []) {
+            return;
+        }
+
+        $request->query->replace(array_merge($request->query->all(), $query));
+        // Keep input() / validate() in sync for GET requests.
+        $request->request->replace(array_merge($request->request->all(), $query));
     }
 
     /**
