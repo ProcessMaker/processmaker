@@ -109,4 +109,25 @@ class AbeResponderTest extends TestCase
         $this->assertSame('desktop', $responder['device']);
         $this->assertSame('Outlook', $responder['email_client']);
     }
+
+    public function testAuthenticatedUnsignedClickOmitsIdentityMismatch(): void
+    {
+        $authUser = User::factory()->create([
+            'email' => 'logged-in@example.com',
+            'status' => 'ACTIVE',
+        ]);
+        $this->actingAs($authUser);
+
+        $request = Request::create('/tasks/update_variable/abe-token', 'GET', [
+            'varName' => 'res',
+            'varValue' => 'yes',
+        ]);
+
+        $responder = AbeResponder::fromRequest($request, 'abe-token');
+
+        $this->assertSame('logged-in@example.com', $responder['authenticated_email']);
+        $this->assertSame($authUser->id, $responder['authenticated_user_id']);
+        $this->assertArrayNotHasKey('email', $responder);
+        $this->assertArrayNotHasKey('identity_mismatch', $responder);
+    }
 }
