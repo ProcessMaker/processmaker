@@ -123,8 +123,40 @@ Notes:
 - If the clicker is logged in as a different person, the action is **still allowed**; mismatch is recorded via `identity_mismatch` plus `authenticated_*`.
 - Anonymous / public ABE sessions are not treated as authenticated identity.
 - **Unsigned / legacy links** (no valid signature): action still succeeds; `abe_responder` is sparse (timestamp, IP, UA, device, email client—and authenticated fields if logged in). No signed `email` / `user_id` / `groups`.
+- **Forwarded emails:** If User A receives a personalized ABE email and forwards it to User B, and User B clicks an action button, `abe_responder.email` / `user_id` / `groups` still record **User A** (the signed recipient). The link identity travels with the message; forwarding does not re-bind it to B. With **Require Login**, if B logs in as B, the action still completes and `identity_mismatch` is set to `true` with `authenticated_*` identifying B—ProcessMaker does **not** block the click today. Downstream processes can branch on `identity_mismatch` if they need to handle forwards.
 
 When `trackResponder` is **false**, request data contains only the action field (for example `res: "yes"`)—**not** `abe_responder`.
+
+## Require Login and signed params
+
+**Require Login** redirects anonymous clickers to the login page before the ABE action completes. The login form clears the ProcessMaker **session cookie**, which historically could drop the signed query string (`abe_email`, `abe_user_id`, `abe_groups`, `abe_sig`). After login as a different user, only the authenticated identity remained—so forwards looked like “User B was tracked” and `identity_mismatch` never became `true`.
+
+### How signed params survive login
+
+When Require Login redirects to login, ProcessMaker:
+
+1. Parks the **full click query** (action + signed recipient params) in **cache** for a short TTL (~20 minutes)
+2. Sets a short opaque cookie: `abe_click_ticket` (not encrypted; listed in `EncryptCookies` exceptions)
+3. Sets `processmaker_intended` / `url.intended` to the ABE `update_variable` route (query restored from cache, not only from the URL)
+
+When the user returns to `update_variable` after login, the handler restores the parked query from the ticket **even if the browser URL has no query string**, then builds `abe_responder` as usual.
+
+### Expected result after a forward + Require Login
+
+| Field | Value |
+| --- | --- |
+| `abe_responder.email` / `user_id` / `groups` | Original signed recipient (User A) |
+| `abe_responder.authenticated_email` / `authenticated_user_id` | Who logged in (User B) |
+| `abe_responder.identity_mismatch` | `true` when A’s signed email ≠ B’s login email |
+| ABE token row `user_id` | Logged-in user (User B) |
+
+`identity_mismatch` is only set when **both** a valid signed recipient and a real logged-in user are present. If the signature cannot be restored, signed `email` is omitted and `identity_mismatch` is omitted (not forced to `false`).
+
+### How to test forwards + Require Login
+
+1. Log out of ProcessMaker (or use a private window) before B clicks. If A’s session is still active, Require Login will **not** prompt, Auth stays A, and `identity_mismatch` stays `false`.
+2. Open the forwarded link while logged out → log in as **B**.
+3. Confirm request data: `email` = A, `authenticated_email` = B, `identity_mismatch` = `true`.
 
 ## Downstream usage
 
@@ -162,8 +194,10 @@ Recommendations:
 
 Other client/security notes:
 
-- Corporate link wrappers (Safe Links, etc.) usually preserve query params; if `abe_sig` is stripped, the click falls back to sparse `abe_responder`
+- Corporate link wrappers (Safe Links, etc.) usually preserve query params; if `abe_sig` is stripped **and** there is no `abe_click_ticket` restore, the click falls back to sparse `abe_responder`
 - `device` / `email_client` are best-effort User-Agent heuristics, not definitive device attestation
+- Forwarded personalized links cannot prove the clicker owns the intended inbox; signed attribution stays with the original recipient. `identity_mismatch` only appears when both a valid signature and a real logged-in user are present and their emails differ.
+- The `abe_click_ticket` cookie is a random cache key (no PII). Pending click payloads expire from cache after the TTL; a missing/expired ticket cannot restore the signature.
 
 ## Related code
 
@@ -174,7 +208,8 @@ Other client/security notes:
 | Link rewrite + queue send | `ProcessMaker/Mail/TaskActionByEmail.php` |
 | Signature | `ProcessMaker/Helpers/AbeRecipientSignature.php` |
 | Request-data builder | `ProcessMaker/Helpers/AbeResponder.php` |
-| Click handler | `ProcessMaker/Http/Controllers/TaskController.php` (`updateVariable`) |
+| Click handler + Require Login ticket | `ProcessMaker/Http/Controllers/TaskController.php` (`updateVariable`, `abe_click_ticket`) |
+| Unencrypted ticket cookie | `ProcessMaker/Http/Middleware/EncryptCookies.php` (`abe_click_ticket` in `$except`) |
 | Stagger helper | `package-actions-by-email` → `EmailProvider::sendAsync($config, $delaySeconds)` |
 
 ## Tests
@@ -184,4 +219,4 @@ Other client/security notes:
 - `tests/unit/Mail/TaskActionByEmailLinkRewriteTest.php`
 - `tests/Feature/Api/TaskActionByEmailSelfServiceTest.php`
 - `tests/Feature/AbeLargeRecipientGroupTest.php`
-- `tests/Feature/TaskControllerTest.php` (nested `abe_responder` when enabled; omitted when disabled)
+- `tests/Feature/TaskControllerTest.php` (nested `abe_responder` when enabled; omitted when disabled; Require Login preserves signed recipient and sets `identity_mismatch`)
