@@ -41,9 +41,14 @@ class AbeResponder
             $responder['authenticated_email'] = $authUser->email;
             $responder['authenticated_user_id'] = $authUser->id;
 
+            // Only compare when a signed recipient is present. If the signature
+            // is missing/invalid (e.g. query params dropped after login redirect),
+            // do not claim identity_mismatch false — there is nothing to match.
             $signedEmail = strtolower(trim((string) ($responder['email'] ?? '')));
-            $authEmail = strtolower(trim((string) $authUser->email));
-            $responder['identity_mismatch'] = $signedEmail !== '' && $signedEmail !== $authEmail;
+            if ($signedEmail !== '') {
+                $authEmail = strtolower(trim((string) $authUser->email));
+                $responder['identity_mismatch'] = $signedEmail !== $authEmail;
+            }
         }
 
         return $responder;
