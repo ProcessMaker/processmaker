@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3e4f3c100e439ee06f57979886d9880a",
+    "content-hash": "fc4dd8e4e66f6de08fac2542ebab5090",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -16650,7 +16650,14 @@
             "time": "2025-12-08T11:19:18+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "processmaker/nayra",
+            "version": "dev-FOUR-34376",
+            "alias": "1.12.99",
+            "alias_normalized": "1.12.99.0"
+        }
+    ],
     "minimum-stability": "dev",
     "stability-flags": {
         "pion/laravel-chunk-upload": 20,
