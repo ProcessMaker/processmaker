@@ -239,8 +239,10 @@ class TokenRepository implements TokenRepositoryInterface
 
                     // Opt-in responder tracking: one personalized email per unique address
                     // with a signed link. Overlapping group membership is collapsed in
-                    // resolveAbeRecipients (groups merged). Stagger dispatches so providers
-                    // with per-second caps (Mailtrap, etc.) are less likely to throttle.
+                    // resolveAbeRecipients (groups merged). The shared mailer instance
+                    // renders the email screen once; only signed links differ per send.
+                    // Stagger dispatches so providers with per-second caps (Mailtrap,
+                    // etc.) are less likely to throttle.
                     $staggerSeconds = max(0, (int) config('app.abe_email_stagger_seconds', 1));
                     foreach ($recipients as $index => $recipient) {
                         $signedQuery = AbeRecipientSignature::queryString(
