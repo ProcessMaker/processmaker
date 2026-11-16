@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Filters\SaveSession;
@@ -344,6 +345,9 @@ class TaskController extends Controller
                     return $this->showScreen($abe->completed_screen_id);
                 }
             }
+        } catch (ValidationException $e) {
+            // Missing/invalid query after a failed Require Login restore must not become HTTP 500.
+            throw $e;
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error updating variable',
