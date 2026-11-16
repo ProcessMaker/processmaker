@@ -7,6 +7,7 @@ use Illuminate\Contracts\Broadcasting\Broadcaster as BroadcasterContract;
 use Illuminate\Contracts\Broadcasting\Factory as BroadcastingFactory;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\ServiceProvider;
+use ProcessMaker\Broadcasting\ValidatesPusherCredentials;
 use ProcessMaker\Multitenancy\Broadcasting\TenantAwareBroadcastManager;
 
 class BroadcastServiceProvider extends ServiceProvider
@@ -18,6 +19,8 @@ class BroadcastServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        ValidatesPusherCredentials::validate();
+
         if (config('app.multitenancy')) {
             $this->useTenantAwareBroadcastManager();
         }

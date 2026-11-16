@@ -217,6 +217,8 @@ class Install extends Command
         // Set laravel echo server settings
         $this->env['LARAVEL_ECHO_SERVER_AUTH_HOST'] = $this->option('echo-host') ? $this->option('echo-host') : $this->env['APP_URL'];
 
+        $this->ensurePusherCredentials();
+
         // Set path and Docker settings
         Storage::disk('local')->makeDirectory('scripts');
         $this->env['PROCESSMAKER_SCRIPTS_HOME'] = storage_path('app/scripts');
@@ -315,6 +317,28 @@ class Install extends Command
         }
 
         return 0;
+    }
+
+    /**
+     * Generate unique Pusher credentials when broadcasting uses the pusher driver.
+     */
+    private function ensurePusherCredentials(): void
+    {
+        if (($this->env['BROADCAST_DRIVER'] ?? '') !== 'pusher') {
+            return;
+        }
+
+        if (empty($this->env['PUSHER_APP_ID'])) {
+            $this->env['PUSHER_APP_ID'] = 'pm-' . Str::lower(Str::random(12));
+        }
+
+        if (empty($this->env['PUSHER_APP_KEY'])) {
+            $this->env['PUSHER_APP_KEY'] = Str::random(32);
+        }
+
+        if (empty($this->env['PUSHER_APP_SECRET'])) {
+            $this->env['PUSHER_APP_SECRET'] = Str::random(64);
+        }
     }
 
     /**
