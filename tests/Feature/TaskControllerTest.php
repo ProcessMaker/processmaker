@@ -288,4 +288,30 @@ class TaskControllerTest extends TestCase
         $this->assertSame($forwardedUser->id, $responder['authenticated_user_id']);
         $this->assertTrue($responder['identity_mismatch']);
     }
+
+    /**
+     * Failed Require Login restore (expired ticket / missing query) must be a
+     * validation error, not HTTP 500 "Error updating variable".
+     */
+    public function testMissingAbeClickQueryAfterFailedRestoreReturnsValidationError(): void
+    {
+        $process = Process::factory()->create([
+            'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/action_by_email_process_require_login.bpmn'),
+        ]);
+        Screen::factory()->create();
+
+        $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
+        $this->apiCall('POST', $route, []);
+
+        $processAbeRequest = ProcessAbeRequestToken::firstOrFail();
+        $user = User::factory()->create(['status' => 'ACTIVE']);
+
+        $response = $this->actingAs($user, 'web')
+            ->withUnencryptedCookie(TaskController::ABE_CLICK_TICKET_COOKIE, 'expired-or-unknown-ticket')
+            ->getJson('tasks/update_variable/' . $processAbeRequest->uuid);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['varName', 'varValue']);
+        $response->assertJsonMissing(['message' => 'Error updating variable']);
+    }
 }
