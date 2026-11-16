@@ -177,7 +177,7 @@ Example Mustache / data path:
 
 ## Limitations and operational risks
 
-Personalized tracking means **N recipients ≈ N email sends**.
+Personalized tracking means **N recipients ≈ N email sends**. The email **screen is rendered once** per task activation and reused for every personalized recipient; only signed action-link params are applied per send. Queue dispatch is still staggered per recipient.
 
 Large assignment groups can hit:
 
