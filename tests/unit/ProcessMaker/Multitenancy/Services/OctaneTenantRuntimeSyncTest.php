@@ -118,7 +118,8 @@ class OctaneTenantRuntimeSyncTest extends TestCase
         $this->assertFileExists($this->edgeCaddyfile);
 
         $edge = file_get_contents($this->edgeCaddyfile);
-        $this->assertStringContainsString('127.0.0.1:8001', $edge);
+        $this->assertStringContainsString('auto_https off', $edge);
+        $this->assertStringContainsString('http://127.0.0.1:8001', $edge);
         $this->assertStringContainsString('host tenant-one.example.com', $edge);
         $this->assertStringContainsString('reverse_proxy 127.0.0.1:8101', $edge);
         $this->assertStringContainsString('reverse_proxy 127.0.0.1:8102', $edge);
@@ -133,6 +134,8 @@ class OctaneTenantRuntimeSyncTest extends TestCase
         $this->assertStringContainsString('--port=8101', $tenant1);
         $this->assertStringContainsString('--admin-port=9101', $tenant1);
         $this->assertStringContainsString('TENANT="1"', $tenant1);
+        $this->assertStringContainsString('--max-requests=500', $tenant1);
+        $this->assertStringNotContainsString('ENV_OCTANE_MAX_REQUESTS', $tenant1);
 
         $this->assertCount(2, $result['tenants']);
     }

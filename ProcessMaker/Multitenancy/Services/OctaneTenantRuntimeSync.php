@@ -183,9 +183,10 @@ class OctaneTenantRuntimeSync
             '# Do not edit by hand; run php artisan tenants:octane-sync',
             '{',
             '	admin off',
+            '	auto_https off',
             '}',
             '',
-            "{$host}:{$port} {",
+            "http://{$host}:{$port} {",
         ];
 
         if ($tenantPlans === []) {
@@ -248,9 +249,7 @@ class OctaneTenantRuntimeSync
             '--host=' . $host,
             '--port=' . $plan['port'],
             '--admin-port=' . $plan['admin_port'],
-            '--max-requests=%(ENV_OCTANE_MAX_REQUESTS)s',
-            '--workers=%(ENV_OCTANE_WORKERS)s',
-            '--task-workers=%(ENV_OCTANE_TASK_WORKERS)s',
+            ...$this->octaneWorkerCliFlags(),
             '--caddyfile=Caddyfile',
         ]);
 
@@ -278,9 +277,7 @@ class OctaneTenantRuntimeSync
             '--server=frankenphp',
             '--host=' . $host,
             '--port=' . $port,
-            '--max-requests=%(ENV_OCTANE_MAX_REQUESTS)s',
-            '--workers=%(ENV_OCTANE_WORKERS)s',
-            '--task-workers=%(ENV_OCTANE_TASK_WORKERS)s',
+            ...$this->octaneWorkerCliFlags(),
             '--caddyfile=Caddyfile',
         ]);
 
@@ -317,6 +314,18 @@ class OctaneTenantRuntimeSync
         ];
 
         return implode("\n", $lines);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function octaneWorkerCliFlags(): array
+    {
+        return [
+            '--max-requests=' . (int) config('octane_tenants.max_requests'),
+            '--workers=' . (int) config('octane_tenants.workers'),
+            '--task-workers=' . (int) config('octane_tenants.task_workers'),
+        ];
     }
 
     private function defaultEnvironment(): string

@@ -59,6 +59,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Octane CLI flags (written literally into supervisor command= lines)
+    |--------------------------------------------------------------------------
+    |
+    | Supervisor cannot expand %(ENV_OCTANE_*)s unless those vars exist in
+    | supervisord's environment; resolve them here when running tenants:octane-sync.
+    |
+    */
+
+    'max_requests' => (int) env('OCTANE_MAX_REQUESTS', 500),
+
+    'workers' => (int) env('OCTANE_WORKERS', 4),
+
+    'task_workers' => (int) env('OCTANE_TASK_WORKERS', 0),
+
+    /*
+    |--------------------------------------------------------------------------
     | Supervisorctl (optional --apply)
     |--------------------------------------------------------------------------
     */
