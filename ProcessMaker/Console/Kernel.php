@@ -56,36 +56,7 @@ class Kernel extends ConsoleKernel
             }
         }
 
-        $clearInterval = config('metrics.clear_interval', 10);
-        switch ((int) $clearInterval) {
-            case 1:
-                $schedule->command('metrics:clear')->everyMinute();
-                break;
-            case 2:
-                $schedule->command('metrics:clear')->everyTwoMinutes();
-                break;
-            case 5:
-                $schedule->command('metrics:clear')->everyFiveMinutes();
-                break;
-            case 10:
-                $schedule->command('metrics:clear')->everyTenMinutes();
-                break;
-            case 15:
-                $schedule->command('metrics:clear')->everyFifteenMinutes();
-                break;
-            case 30:
-                $schedule->command('metrics:clear')->everyThirtyMinutes();
-                break;
-            case 60:
-                $schedule->command('metrics:clear')->hourly();
-                break;
-            case 1440:
-                $schedule->command('metrics:clear')->daily();
-                break;
-            default:
-                $schedule->command('metrics:clear')->cron("*/{$clearInterval} * * * *");
-                break;
-        }
+        $this->scheduleMetricsClear($schedule);
 
         // evaluate cases retention policy
         $schedule->command('cases:retention:evaluate')
@@ -96,6 +67,48 @@ class Kernel extends ConsoleKernel
 
         // 5 minutes is recommended in https://laravel.com/docs/12.x/horizon#metrics
         $schedule->command('horizon:snapshot')->everyFiveMinutes();
+    }
+
+    protected function scheduleMetricsClear(Schedule $schedule): void
+    {
+        if (!config('metrics.enabled', false)) {
+            return;
+        }
+
+        $clearInterval = (int) config('metrics.clear_interval', 1440);
+
+        $event = $schedule->command('metrics:clear --stagger');
+        switch ($clearInterval) {
+            case 1:
+                $event->everyMinute();
+                break;
+            case 2:
+                $event->everyTwoMinutes();
+                break;
+            case 5:
+                $event->everyFiveMinutes();
+                break;
+            case 10:
+                $event->everyTenMinutes();
+                break;
+            case 15:
+                $event->everyFifteenMinutes();
+                break;
+            case 30:
+                $event->everyThirtyMinutes();
+                break;
+            case 60:
+                $event->hourly();
+                break;
+            case 1440:
+                $event->daily();
+                break;
+            default:
+                $event->cron("*/{$clearInterval} * * * *");
+                break;
+        }
+
+        $event->runInBackground()->withoutOverlapping($clearInterval);
     }
 
     /**

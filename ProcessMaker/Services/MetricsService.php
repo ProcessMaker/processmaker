@@ -6,6 +6,7 @@ use Exception;
 use Laravel\Horizon\Contracts\JobRepository;
 use Laravel\Horizon\Contracts\MetricsRepository;
 use Laravel\Horizon\Contracts\WorkloadRepository;
+use ProcessMaker\Exception\MetricsDisabledException;
 use ProcessMaker\Facades\Metrics;
 use ProcessMaker\Multitenancy\Tenant;
 use Prometheus\CollectorRegistry;
@@ -22,9 +23,9 @@ class MetricsService
     /**
      * The CollectorRegistry instance used by the MetricsService.
      *
-     * @var CollectorRegistry
+     * @var CollectorRegistry|null
      */
-    private $collectionRegistry;
+    private ?CollectorRegistry $collectionRegistry = null;
 
     /**
      * The namespace used by the MetricsService.
@@ -41,8 +42,21 @@ class MetricsService
     public function __construct(private $adapter = null)
     {
         $this->namespace = config('app.prometheus_namespace', 'app');
+        if (!$this->isEnabled() && $adapter === null) {
+            return;
+        }
+
+        $this->initializeRegistry($adapter);
+    }
+
+    public function isEnabled(): bool
+    {
+        return filter_var(config('metrics.enabled', false), FILTER_VALIDATE_BOOLEAN);
+    }
+
+    private function initializeRegistry($adapter = null): void
+    {
         try {
-            // Set up Redis as the adapter if none is provided
             if ($adapter === null) {
                 $redis = app('redis')->client();
                 $adapter = PrometheusRedis::fromExistingConnection($redis);
@@ -57,6 +71,19 @@ class MetricsService
         }
     }
 
+    private function registry(): CollectorRegistry
+    {
+        if (!$this->isEnabled()) {
+            throw new MetricsDisabledException();
+        }
+
+        if (!isset($this->collectionRegistry)) {
+            $this->initializeRegistry($this->adapter);
+        }
+
+        return $this->collectionRegistry;
+    }
+
     /**
      * Get the collection registry.
      *
@@ -64,7 +91,7 @@ class MetricsService
      */
     public function getCollectionRegistry(): CollectorRegistry
     {
-        return $this->collectionRegistry;
+        return $this->registry();
     }
 
     /**
@@ -79,7 +106,7 @@ class MetricsService
     {
         $help = $help ?? $name;
 
-        return $this->collectionRegistry->getOrRegisterCounter(
+        return $this->registry()->getOrRegisterCounter(
             $this->namespace,
             $name,
             $help,
@@ -99,7 +126,7 @@ class MetricsService
     {
         $help = $help ?? $name;
 
-        return $this->collectionRegistry->getOrRegisterGauge(
+        return $this->registry()->getOrRegisterGauge(
             $this->namespace,
             $name,
             $help,
@@ -120,7 +147,7 @@ class MetricsService
     {
         $help = $help ?? $name;
 
-        return $this->collectionRegistry->getOrRegisterHistogram(
+        return $this->registry()->getOrRegisterHistogram(
             $this->namespace,
             $name,
             $help,
@@ -138,7 +165,11 @@ class MetricsService
      */
     public function setGauge(string $name, float $value, array $labelValues = []): void
     {
-        $gauge = $this->collectionRegistry->getGauge($this->namespace, $name);
+        if (!$this->isEnabled()) {
+            return;
+        }
+
+        $gauge = $this->registry()->getGauge($this->namespace, $name);
         $gauge->set($value, $labelValues);
     }
 
@@ -149,6 +180,10 @@ class MetricsService
      */
     public function renderMetrics(): string
     {
+        if (!$this->isEnabled() || !isset($this->collectionRegistry)) {
+            return '';
+        }
+
         $renderer = new RenderTextFormat();
         $metrics = $this->collectionRegistry->getMetricFamilySamples();
 
@@ -166,6 +201,10 @@ class MetricsService
      */
     public function counterInc(string $name, string $help = null, array $labels = []): void
     {
+        if (!$this->isEnabled()) {
+            return;
+        }
+
         // Add system labels
         $labels = $this->addSystemLabels($labels);
         $labelKeys = array_keys($labels);
@@ -185,6 +224,10 @@ class MetricsService
      */
     public function histogramObserve(string $name, string $help = null, array $labels = [], array $buckets = [0.1, 1, 5, 10], float $executionTime = 0): void
     {
+        if (!$this->isEnabled()) {
+            return;
+        }
+
         // Add system labels
         $labels = $this->addSystemLabels($labels);
         $labelKeys = array_keys($labels);
@@ -220,6 +263,10 @@ class MetricsService
 
     public function clearMetrics(): void
     {
+        if (!$this->isEnabled() || !isset($this->collectionRegistry)) {
+            return;
+        }
+
         $this->collectionRegistry->wipeStorage();
     }
 
@@ -243,6 +290,10 @@ class MetricsService
      */
     public function collectQueueMetrics(): void
     {
+        if (!$this->isEnabled()) {
+            return;
+        }
+
         $metricsRepository = app(MetricsRepository::class);
         $jobsRepository = app(JobRepository::class);
         $workloadRepository = app(WorkloadRepository::class);
