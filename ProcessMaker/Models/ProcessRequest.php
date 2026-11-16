@@ -1098,7 +1098,13 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
                 $len += mb_strlen($part);
             }
         } else {
-            $mustache = new MustacheExpressionEvaluator();
+            $mustache = new MustacheExpressionEvaluator([
+                'escape' => function ($value) {
+                    return is_scalar($value) || $value === null
+                        ? (string) $value
+                        : '';
+                },
+            ]);
             $title = $mustache->render($mustacheTitle, $data);
             // multi-byte 200 characters limit
             $title = mb_substr($title, 0, 200);
