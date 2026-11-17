@@ -281,7 +281,7 @@ class TaskController extends Controller
             $abe = ProcessAbeRequestToken::where('uuid', $abe_uuid)->first();
             // Check if the token is available
             if (!$abe) {
-                return $this->returnErrorResponse(__('Token not found'), 404);
+                return $this->returnErrorResponse(__('Token not found'), 404, __('This link could not be found.'));
             }
             // Review if the autentication is required
             if ($abe->require_login && Auth::user()->username === AnonymousUser::ANONYMOUS_USERNAME) {
@@ -301,15 +301,15 @@ class TaskController extends Controller
                 return redirect('login')->withCookie($cookie);
             }
             if ($abe->is_answered) {
-                return $this->returnErrorResponse(__('This response has already been answered'), 200);
+                return $this->returnErrorResponse(__('This response has already been answered'), 200, __('This task has already been answered. No changes were made.'));
             } else {
                 // Get the token related
                 $task = ProcessRequestToken::find($abe->process_request_token_id);
                 if (!$task) {
-                    return $this->returnErrorResponse(__('Process request token not found'), 404);
+                    return $this->returnErrorResponse(__('Process request token not found'), 404, __('This task could not be found.'));
                 } else {
                     if ($task->status === 'CLOSED') {
-                        return $this->returnErrorResponse(__('Task already closed'), 404);
+                        return $this->returnErrorResponse(__('Task already closed'), 404, __('This task is already closed.'));
                     }
                     // Update the data
                     $data[$request->varName] = $request->varValue;
@@ -340,10 +340,16 @@ class TaskController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error updating variable',
-                'error' => $e->getMessage(),
-            ], 500);
+            report($e);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Error updating variable',
+                    'error' => $e->getMessage(),
+                ], 500);
+            }
+
+            return $this->returnErrorResponse(__('An error occurred while processing your response.'), 500);
         }
     }
 
@@ -365,12 +371,19 @@ class TaskController extends Controller
     }
 
     /**
-     * Return response
+     * Return an ABE result in the format requested by the client.
      * @param string $message
      * @param int $status
+     * @param string|null $htmlMessage
      */
-    public function returnErrorResponse(string $message, int $status)
+    public function returnErrorResponse(string $message, int $status, ?string $htmlMessage = null)
     {
+        if (!request()->expectsJson()) {
+            return response()->view('tasks.abe-response', [
+                'message' => $htmlMessage ?? $message,
+            ], $status);
+        }
+
         return response()->json([
             'message' => $message,
         ], $status);
