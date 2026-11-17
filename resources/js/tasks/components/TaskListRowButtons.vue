@@ -5,7 +5,7 @@
         <slot name="body">
           <span v-for="(button, index) in buttons" :key="index">
             <b-button :id="button.id + rowIndex"
-                      v-if="button.show"
+                      v-if="shouldShow(button)"
                       aria-label="button.title"
                       @click="onClick(button)"
                       variant="light"
@@ -19,6 +19,7 @@
                    :alt="button.title"/>
             </b-button>
             <b-tooltip
+              v-if="shouldShow(button)"
               :target="button.id + rowIndex"
               :title="button.title"
               custom-class="task-hover-tooltip"
@@ -27,7 +28,7 @@
               boundary="viewport"
               :no-fade="true"
               />
-            <div v-if="index < buttons.length - 1 && button.show"
+            <div v-if="index < buttons.length - 1 && shouldShow(button)"
                  class="task-vertical-separator">
             </div>
           </span>
@@ -51,6 +52,12 @@
       showButtons: null
     },
     methods: {
+      shouldShow(button) {
+        if (typeof button.show === "function") {
+          return button.show(this.row);
+        }
+        return button.show;
+      },
       show() {
         this.triggerFloatingButtons(() => {
           if (!this.showButtons) {

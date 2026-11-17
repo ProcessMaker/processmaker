@@ -21,6 +21,7 @@ class ScreenCacheFactoryTest extends TestCase
     {
         parent::setUp();
         ScreenCacheFactory::setTestInstance(null);
+        Config::set('metrics.enabled', true);
 
         // Bind necessary dependencies
         $this->app->singleton(ScreenCompiledManager::class);
