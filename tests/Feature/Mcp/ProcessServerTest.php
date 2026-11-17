@@ -12,6 +12,7 @@ use ProcessMaker\Mcp\Servers\ProcessServer;
 use ProcessMaker\Mcp\Tools\GetMcpGuidanceTool;
 use ProcessMaker\Mcp\Tools\GetMcpSkillTool;
 use ProcessMaker\Mcp\Tools\Processes\CreateProcessTool;
+use ProcessMaker\Mcp\Tools\Processes\EnableProcessAlternativeBTool;
 use ProcessMaker\Mcp\Tools\Processes\GetProcessTool;
 use ProcessMaker\Mcp\Tools\Processes\ListGroupsTool;
 use ProcessMaker\Mcp\Tools\Processes\ListProcessesTool;
@@ -257,6 +258,48 @@ XML;
         $this->assertCount(1, $resources);
         $this->assertInstanceOf(McpSkillResource::class, $resources->first());
         $this->assertSame('pm://mcp/skills/process-naming', $resources->first()->uri());
+    }
+
+    public function testEnableProcessAlternativeBAndUpdateDraftOnB(): void
+    {
+        if (!class_exists(\ProcessMaker\Package\PackageABTesting\Models\Alternative::class)) {
+            $this->markTestSkipped('package-ab-testing is not installed.');
+        }
+
+        $bpmnA = Process::getProcessTemplate('OnlyStartElement.bpmn');
+        $process = Process::factory()->create(['bpmn' => $bpmnA]);
+
+        ProcessServer::actingAs($this->user)->tool(EnableProcessAlternativeBTool::class, [
+            'id' => $process->id,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('b_enabled', true)
+                ->where('package_installed', true)
+                ->etc());
+
+        $bpmnB = str_replace('name="ProcessName"', 'name="ProcessNameB"', $bpmnA);
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'alternative' => 'B',
+            'bpmn' => $bpmnB,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('alternative', 'B')
+                ->etc());
+
+        $draftB = $process->refresh()->getDraftVersion('B');
+        $this->assertNotNull($draftB);
+        $this->assertStringContainsString('ProcessNameB', (string) $draftB->bpmn);
+
+        $draftA = $process->getDraftVersion('A');
+        $bpmnDraftA = $draftA ? $draftA->bpmn : $process->getLatestVersion('A')->bpmn;
+        $this->assertStringNotContainsString('ProcessNameB', (string) $bpmnDraftA);
+
+        ProcessServer::actingAs($this->user)->tool(GetProcessTool::class, [
+            'id' => $process->id,
+            'alternative' => 'B',
+        ])->assertOk()->assertSee('ProcessNameB');
     }
 
     private function seedMcpGuidance(): void

@@ -27,11 +27,13 @@ class GetProcessTool extends ProcessTool
         return $this->respond(function () use ($request, $processes): array {
             $validated = $request->validate([
                 'id' => 'required|integer|min:1',
+                'alternative' => 'nullable|in:A,B',
             ]);
 
             return $processes->find(
                 $processes->actor($request->user()),
                 (int) $validated['id'],
+                $validated['alternative'] ?? 'A',
             );
         });
     }
@@ -43,6 +45,7 @@ class GetProcessTool extends ProcessTool
     {
         return [
             'id' => ProcessFields::id($schema),
+            'alternative' => ProcessFields::alternative($schema),
         ];
     }
 }

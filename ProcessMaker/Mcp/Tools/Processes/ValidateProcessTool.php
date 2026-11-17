@@ -38,6 +38,7 @@ class ValidateProcessTool extends ProcessTool
         return [
             'bpmn' => ProcessFields::bpmn($schema, false),
             'id' => $schema->integer()->description('Existing process id whose BPMN should be validated when bpmn is omitted.'),
+            'alternative' => ProcessFields::alternative($schema),
         ];
     }
 }
