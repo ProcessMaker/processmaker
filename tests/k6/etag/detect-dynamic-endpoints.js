@@ -1,5 +1,5 @@
 import http from 'k6/http';
-import { config, headers } from './config.js';
+import { config, getHeaders, validateConfiguration } from './config.js';
 
 export let options = {
   vus: 1,
@@ -16,7 +16,13 @@ const etagHistory = {};
 // Limit to determine when an endpoint is considered dynamic.
 const ETAG_HISTORY_LIMIT = 5;
 
+export function setup() {
+  validateConfiguration();
+}
+
 export default function () {
+  const headers = getHeaders();
+
   endpoints.forEach((url) => {
     const res1 = http.get(url, { headers });
     const etag = res1.headers['Etag'];

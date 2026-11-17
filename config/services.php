@@ -41,9 +41,12 @@ return [
 
     'github' => [
         'base_url' => 'https://raw.githubusercontent.com/processmaker/',
+        'api_url' => env('DEFAULT_TEMPLATE_API_URL', 'https://api.github.com/repos/processmaker/'),
         'template_repo' => env('DEFAULT_TEMPLATE_REPO', 'process-templates'),
         'template_branch' => env('DEFAULT_TEMPLATE_BRANCH', '2023-fall'),
         'template_categories' => env('DEFAULT_TEMPLATE_CATEGORIES', 'accounting-and-finance,customer-success,human-resources,marketing-and-sales,operations,it'),
+        // Baked into the PM docker image; used when present so CI/upgrades do not need GitHub.
+        'template_local_path' => env('DEFAULT_TEMPLATE_LOCAL_PATH', '/opt/process-templates'),
     ],
 
     'screen_templates_github' => [

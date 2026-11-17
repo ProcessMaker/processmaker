@@ -34,6 +34,7 @@ $app = Application::configure(basePath: realpath(__DIR__ . '/../'))
             Illuminate\Http\Middleware\TrustHosts::class,
             ProcessMakerMiddleware\TrustHosts::class
         );
+        $middleware->trustHosts(subdomains: true);
         $middleware->replace(
             Illuminate\Http\Middleware\TrustProxies::class,
             ProcessMakerMiddleware\TrustProxies::class
@@ -114,6 +115,7 @@ $app = Application::configure(basePath: realpath(__DIR__ . '/../'))
             'admin' => ProcessMakerMiddleware\IsAdmin::class,
             'manager' => ProcessMakerMiddleware\IsManager::class,
             'etag' => ProcessMakerMiddleware\Etag\HandleEtag::class,
+            'tasks-page-etag' => ProcessMakerMiddleware\Etag\TasksPageEtag::class,
             'file_size_check' => ProcessMakerMiddleware\FileSizeCheck::class,
             'auth.basic' => Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
             'throttle' => Illuminate\Routing\Middleware\ThrottleRequests::class,

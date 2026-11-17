@@ -12,6 +12,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\Services\SmartExtractConfiguration;
+use ProcessMaker\Support\TaskDraftIncludes;
 use ProcessMaker\Traits\TaskResourceIncludes;
 
 class Task extends ApiResource
@@ -52,13 +53,18 @@ class Task extends ApiResource
      */
     public function toArray($request)
     {
+        $include = TaskDraftIncludes::parseIncludeList((string) $request->input('include', ''));
+
         $array = parent::toArray($request);
-        $include = explode(',', $request->input('include', ''));
+        $array = $this->sanitizeDraftInTaskArray($array, $request);
 
         $this->process = $this->resource->process;
 
         foreach ($this->includeMethods as $key) {
-            if (!in_array($key, $include)) {
+            if ($key === 'draft' && TaskDraftIncludes::includesRootDraft($include)) {
+                continue;
+            }
+            if (!in_array($key, $include, true)) {
                 continue;
             }
             $method = 'include' . ucfirst($key);
@@ -82,9 +88,10 @@ class Task extends ApiResource
 
     private function addCanViewParentRequest(&$array, $request)
     {
-        $parentProcessRequest = $this->processRequest->parentRequest;
+        $processRequest = $this->processRequest;
+        $parentProcessRequest = $processRequest?->parentRequest;
         $array['can_view_parent_request'] =
-            $parentProcessRequest && $request->user()->can('view', $parentProcessRequest);
+            $parentProcessRequest && $request->user()?->can('view', $parentProcessRequest);
     }
 
     private function addAssignableUsers(&$array, $include)

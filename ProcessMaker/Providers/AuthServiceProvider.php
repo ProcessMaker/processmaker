@@ -103,7 +103,7 @@ class AuthServiceProvider extends ServiceProvider
             }
 
             Gate::define('view-designer', function ($user) {
-                return $user->canAny('view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables|view-projects');
+                return $user->canAny('view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables|view-projects|view-collections');
             });
         } catch (\Exception $e) {
             Log::notice('Unable to register gates. Either no database connection or no permissions table exists.');
