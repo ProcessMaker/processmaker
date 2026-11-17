@@ -779,8 +779,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             return function ($query) use ($user, $expression) {
                 $query->whereIn('id', function ($subquery) use ($user, $expression) {
                     $subquery->select('process_request_id')->from('process_request_tokens')
-                        ->where('user_id', $expression->operator, $user->id)
-                        ->whereIn('element_type', ['task', 'userTask', 'startEvent']);
+                        ->where('user_id', $expression->operator, $user->id);
                 });
             };
         } else {
@@ -802,8 +801,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
                         $subquery->select('id')
                             ->from('users')
                             ->whereRaw("CONCAT(firstname, ' ', lastname) " . $expression->operator . ' ?', [$value]);
-                    })
-                    ->whereIn('element_type', ['task', 'userTask', 'startEvent']);
+                    });
             });
         };
     }
