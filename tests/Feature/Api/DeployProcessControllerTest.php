@@ -40,6 +40,29 @@ class DeployProcessControllerTest extends TestCase
         $this->assertStringContainsString('pm:scriptRef="' . $script->id . '"', $process->bpmn);
     }
 
+    public function testDeployProcessAcceptsDescription(): void
+    {
+        $summary = 'Brief summary for the process catalog.';
+
+        $this->apiCall('POST', self::DEPLOY_ENDPOINT, [
+            'name' => 'described-process',
+            'description' => $summary,
+            'bpmn' => $this->sampleBpmn('', ''),
+        ])->assertOk();
+
+        $process = Process::where('name', 'described-process')->firstOrFail();
+        $this->assertSame($summary, $process->description);
+
+        $updated = $summary . ' Updated.';
+        $this->apiCall('POST', self::DEPLOY_ENDPOINT, [
+            'name' => 'described-process',
+            'description' => $updated,
+            'bpmn' => $this->sampleBpmn('', ''),
+        ])->assertOk();
+
+        $this->assertSame($updated, $process->refresh()->description);
+    }
+
     public function testGetProcessBpmnRestoresNamedReferences(): void
     {
         Screen::factory()->create(['title' => 'restore-screen']);

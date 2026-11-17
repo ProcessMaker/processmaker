@@ -5,11 +5,14 @@ namespace Tests\Feature\Api;
 use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Jobs\TestScript;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
@@ -25,6 +28,8 @@ use Tests\TestCase;
 class ScriptsTest extends TestCase
 {
     use RequestHelper;
+
+    public $withPermissions = true;
 
     const API_TEST_SCRIPT = '/scripts';
 
@@ -483,6 +488,172 @@ class ScriptsTest extends TestCase
             return ($event->response['output']['via'] ?? null) === 'flag'
                 && $event->nonce === 'flag-nonce';
         });
+    }
+
+    public function testAdminCanSelectModulesExecutionMode(): void
+    {
+        config([
+            'core-service-task.enabled' => true,
+            'core-service-task.modules_enabled' => true,
+        ]);
+
+        $script = $this->getScript('php');
+        $response = $this->apiCall('PUT', route('api.scripts.update', $script), [
+            'title' => $script->title,
+            'language' => 'php',
+            'code' => $script->code,
+            'description' => $script->description,
+            'run_as_user_id' => $script->run_as_user_id,
+            'script_executor_id' => $script->script_executor_id,
+            'script_category_id' => $script->script_category_id,
+            'allow_in_process' => true,
+            'execution_mode' => Script::EXECUTION_MODE_MODULES,
+        ]);
+
+        $response->assertNoContent();
+        $this->assertSame(
+            Script::EXECUTION_MODE_MODULES,
+            $script->refresh()->execution_mode
+        );
+    }
+
+    public function testNonPrivilegedUserFallsBackToBareWhenSelectingModules(): void
+    {
+        $editor = User::factory()->create(['is_administrator' => false]);
+        $editor->giveDirectPermission('edit-scripts');
+        $script = $this->getScript('php');
+
+        $response = $this->actingAs($editor, 'api')->putJson(
+            route('api.scripts.update', $script),
+            [
+                'title' => $script->title,
+                'language' => 'php',
+                'code' => $script->code,
+                'description' => $script->description,
+                'run_as_user_id' => $script->run_as_user_id,
+                'script_executor_id' => $script->script_executor_id,
+                'script_category_id' => $script->script_category_id,
+                'allow_in_process' => true,
+                'execution_mode' => Script::EXECUTION_MODE_MODULES,
+            ]
+        );
+
+        $response->assertNoContent();
+        $this->assertSame(
+            Script::EXECUTION_MODE_BARE,
+            $script->refresh()->execution_mode
+        );
+    }
+
+    public function testNonPrivilegedUserEditingModulesScriptFallsBackToBare(): void
+    {
+        $editor = User::factory()->create(['is_administrator' => false]);
+        $editor->giveDirectPermission('edit-scripts');
+        $editor->giveDirectPermission('create-scripts');
+        $script = $this->getScript('php');
+        $script->update([
+            'allow_in_process' => true,
+            'execution_mode' => Script::EXECUTION_MODE_MODULES,
+        ]);
+
+        $response = $this->actingAs($editor, 'api')->putJson(
+            route('api.scripts.update', $script),
+            [
+                'title' => 'Updated without modules',
+                'language' => 'php',
+                'code' => $script->code,
+                'description' => $script->description,
+                'run_as_user_id' => $script->run_as_user_id,
+                'script_executor_id' => $script->script_executor_id,
+                'script_category_id' => $script->script_category_id,
+                'allow_in_process' => true,
+            ]
+        );
+
+        $response->assertNoContent();
+        $this->assertSame(
+            Script::EXECUTION_MODE_BARE,
+            $script->refresh()->execution_mode
+        );
+    }
+
+    public function testNonPrivilegedUserDuplicatesModulesScriptAsBare(): void
+    {
+        $editor = User::factory()->create(['is_administrator' => false]);
+        $editor->giveDirectPermission('edit-scripts');
+        $script = $this->getScript('php');
+        $script->update([
+            'allow_in_process' => true,
+            'execution_mode' => Script::EXECUTION_MODE_MODULES,
+        ]);
+
+        $response = $this->actingAs($editor, 'api')->putJson(
+            route('api.scripts.duplicate', $script),
+            ['title' => 'Duplicate without modules']
+        );
+
+        $response->assertCreated();
+        $this->assertSame(
+            Script::EXECUTION_MODE_BARE,
+            Script::findOrFail($response->json('id'))->execution_mode
+        );
+    }
+
+    /**
+     * A user with only view-scripts must not be able to run arbitrary code through preview (FOUR-34242)
+     */
+    public function testPreviewScriptIsDeniedWithoutEditScriptsPermission()
+    {
+        Bus::fake([TestScript::class]);
+        $script = $this->getScript('php');
+        $this->actAsUserWithPermissions(['view-scripts']);
+
+        $response = $this->apiCall('POST', route('api.scripts.preview', $script->id), [
+            'data' => '{}',
+            'code' => '<?php return ["response"=>1];',
+            'nonce' => '123abc',
+        ]);
+
+        $response->assertStatus(403);
+        Bus::assertNotDispatched(TestScript::class);
+    }
+
+    /**
+     * A user with edit-scripts can still run preview from the script editor
+     */
+    public function testPreviewScriptIsAllowedWithEditScriptsPermission()
+    {
+        Bus::fake([TestScript::class]);
+        $script = $this->getScript('php');
+        $this->actAsUserWithPermissions(['view-scripts', 'edit-scripts']);
+
+        $response = $this->apiCall('POST', route('api.scripts.preview', $script->id), [
+            'data' => '{}',
+            'code' => '<?php return ["response"=>1];',
+            'nonce' => '123abc',
+        ]);
+
+        $response->assertStatus(200);
+        Bus::assertDispatched(TestScript::class);
+    }
+
+    /**
+     * Replace the default administrator test user with a non-admin user that has only the given permissions
+     */
+    private function actAsUserWithPermissions(array $permissions): void
+    {
+        // Seeds permissions, boots AuthServiceProvider and registers the named gates (defineGates)
+        $this->initializePermissions();
+
+        // Make sure a denied request is caused by the missing permission and not by an undefined gate
+        foreach ($permissions as $permission) {
+            $this->assertTrue(Gate::has($permission), "Gate {$permission} is not defined");
+        }
+
+        $this->user = User::factory()->create(['is_administrator' => false]);
+        foreach ($permissions as $permission) {
+            $this->user->giveDirectPermission($permission);
+        }
     }
 
     /**

@@ -79,6 +79,46 @@ class ScriptExporterTest extends TestCase
         $this->assertEquals($script->categories->first()->uuid, $existingUuid);
     }
 
+    public function testImportDowngradesModulesForUnauthorizedImportingUser(): void
+    {
+        $script = Script::factory()->create([
+            'title' => 'modules script',
+            'language' => 'php',
+            'allow_in_process' => true,
+            'execution_mode' => Script::EXECUTION_MODE_MODULES,
+        ]);
+        $payload = $this->export($script, ScriptExporter::class);
+        $user = User::factory()->create(['is_administrator' => false]);
+        $options = new Options([
+            $script->uuid => ['mode' => 'copy'],
+        ], $user->id);
+
+        $this->import($payload, $options);
+
+        $copy = Script::where('title', 'modules script 2')->firstOrFail();
+        $this->assertSame(Script::EXECUTION_MODE_BARE, $copy->execution_mode);
+    }
+
+    public function testImportPreservesModulesForAuthorizedImportingUser(): void
+    {
+        $script = Script::factory()->create([
+            'title' => 'authorized modules script',
+            'language' => 'php',
+            'allow_in_process' => true,
+            'execution_mode' => Script::EXECUTION_MODE_MODULES,
+        ]);
+        $payload = $this->export($script, ScriptExporter::class);
+        $admin = User::where('is_administrator', true)->firstOrFail();
+        $options = new Options([
+            $script->uuid => ['mode' => 'copy'],
+        ], $admin->id);
+
+        $this->import($payload, $options);
+
+        $copy = Script::where('title', 'authorized modules script 2')->firstOrFail();
+        $this->assertSame(Script::EXECUTION_MODE_MODULES, $copy->execution_mode);
+    }
+
     public function testHiddenUsesParentMode()
     {
         $scriptCategory1 = ScriptCategory::factory()->create(['name' => 'test category A']);

@@ -66,6 +66,7 @@ class PermissionSeeder extends Seeder
             'delete-scripts',
             'edit-scripts',
             'view-scripts',
+            'run-in-process-modules',
             'create-script-categories',
             'delete-script-categories',
             'edit-script-categories',

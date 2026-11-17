@@ -16,6 +16,7 @@ class ScriptRunnerInProcessTest extends TestCase
         config([
             'core-service-task.enabled' => true,
             'core-service-task.execution' => 'modules',
+            'core-service-task.modules_enabled' => true,
             // Ensure local runner path is available for non-in-process fallback construction
             'script-runner-microservice.enabled' => false,
             'script-runners.php.runner' => 'MockRunner',
@@ -30,6 +31,7 @@ class ScriptRunnerInProcessTest extends TestCase
             'code' => '<?php return ["via" => "docker"];',
             'run_as_user_id' => $user->id,
             'allow_in_process' => true,
+            'execution_mode' => Script::EXECUTION_MODE_MODULES,
             'timeout' => 30,
         ]);
 

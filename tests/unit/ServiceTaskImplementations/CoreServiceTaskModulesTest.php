@@ -21,6 +21,7 @@ class CoreServiceTaskModulesTest extends TestCase
         config([
             'core-service-task.enabled' => true,
             'core-service-task.execution' => 'modules',
+            'core-service-task.modules_enabled' => true,
         ]);
 
         ScriptRuntime::clearResolvedInstances();
@@ -41,6 +42,7 @@ class CoreServiceTaskModulesTest extends TestCase
             'code' => '<?php return ["out" => $demo->value()];',
             'run_as_user_id' => $user->id,
             'allow_in_process' => true,
+            'execution_mode' => Script::EXECUTION_MODE_MODULES,
             'timeout' => 30,
         ]);
 

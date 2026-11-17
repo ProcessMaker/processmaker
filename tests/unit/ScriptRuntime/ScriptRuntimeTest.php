@@ -53,6 +53,96 @@ class ScriptRuntimeTest extends TestCase
         $this->assertContains('echo', $output['keys']);
     }
 
+    public function testRunScriptWithLegacyResultVariable(): void
+    {
+        $output = ScriptRuntime::run(
+            '<?php $result = ["pong" => $data["ping"]];',
+            new ScriptExecutionContext(
+                data: ['ping' => 'hello'],
+                config: [],
+                user: null,
+                source: 'preview',
+            )
+        );
+
+        $this->assertSame(['pong' => 'hello'], $output);
+    }
+
+    public function testLegacyResultIgnoresNestedReturns(): void
+    {
+        $output = ScriptRuntime::run(
+            <<<'PHP'
+<?php
+function helper(): bool
+{
+    return true;
+}
+
+$result = ['ok' => helper()];
+PHP,
+            new ScriptExecutionContext(
+                data: [],
+                config: [],
+                user: null,
+                source: 'preview',
+            )
+        );
+
+        $this->assertSame(['ok' => true], $output);
+    }
+
+    public function testLegacyResultIgnoresReturnsInsideInterpolatedStrings(): void
+    {
+        $output = ScriptRuntime::run(
+            <<<'PHP'
+<?php
+$helper = static function (string $value): string {
+    return "value: {$value}";
+};
+
+$result = ['value' => $helper('ok')];
+PHP,
+            new ScriptExecutionContext(
+                data: [],
+                config: [],
+                user: null,
+                source: 'preview',
+            )
+        );
+
+        $this->assertSame(['value' => 'value: ok'], $output);
+    }
+
+    public function testRunScriptWithExplicitScalarReturn(): void
+    {
+        $output = ScriptRuntime::run(
+            '<?php return 1;',
+            new ScriptExecutionContext(
+                data: [],
+                config: [],
+                user: null,
+                source: 'preview',
+            )
+        );
+
+        $this->assertSame(1, $output);
+    }
+
+    public function testRunScriptWithExplicitNullReturn(): void
+    {
+        $output = ScriptRuntime::run(
+            '<?php return null;',
+            new ScriptExecutionContext(
+                data: [],
+                config: [],
+                user: null,
+                source: 'preview',
+            )
+        );
+
+        $this->assertNull($output);
+    }
+
     public function testRejectsReservedModuleKey(): void
     {
         $this->expectException(\InvalidArgumentException::class);

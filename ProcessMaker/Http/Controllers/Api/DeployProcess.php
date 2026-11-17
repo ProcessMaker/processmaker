@@ -37,6 +37,7 @@ class DeployProcess extends Controller
         $validator = Validator::make($request->all(), [
             'bpmn' => 'required|string',
             'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:65535',
         ]);
 
         if ($validator->fails()) {
@@ -87,9 +88,11 @@ class DeployProcess extends Controller
             if ($created) {
                 $process = new Process();
                 $process->name = $request->input('name');
-                $process->description = '';
+                $process->description = (string) $request->input('description', '');
                 $process->status = 'ACTIVE';
                 $process->user_id = $request->user()->id;
+            } elseif ($request->has('description')) {
+                $process->description = (string) $request->input('description');
             }
 
             $process->bpmn = $bpmn;

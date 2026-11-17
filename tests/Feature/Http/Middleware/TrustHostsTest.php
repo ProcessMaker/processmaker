@@ -32,6 +32,48 @@ class TrustHostsTest extends TestCase
         $this->assertEquals(200, $response->status());
     }
 
+    public function test_valid_trusted_host_with_port()
+    {
+        Config::set('app.url', 'https://example.processmaker.net');
+
+        $request = Request::create('https://subdomain.example.processmaker.net');
+        $request->headers->set('X-Forwarded-Host', 'subdomain.example.processmaker.net:443');
+
+        $response = $this->middleware->handle($request, function ($req) {
+            return response()->json(['status' => 'success']);
+        });
+
+        $this->assertEquals(200, $response->status());
+    }
+
+    public function test_valid_trusted_host_with_mixed_case()
+    {
+        Config::set('app.url', 'https://example.processmaker.net');
+
+        $request = Request::create('https://subdomain.example.processmaker.net');
+        $request->headers->set('X-Forwarded-Host', 'SubDomain.Example.ProcessMaker.NET');
+
+        $response = $this->middleware->handle($request, function ($req) {
+            return response()->json(['status' => 'success']);
+        });
+
+        $this->assertEquals(200, $response->status());
+    }
+
+    public function test_valid_trusted_host_with_mixed_case_and_port()
+    {
+        Config::set('app.url', 'https://example.processmaker.net');
+
+        $request = Request::create('https://subdomain.example.processmaker.net');
+        $request->headers->set('X-Forwarded-Host', 'SubDomain.Example.ProcessMaker.NET:8443');
+
+        $response = $this->middleware->handle($request, function ($req) {
+            return response()->json(['status' => 'success']);
+        });
+
+        $this->assertEquals(200, $response->status());
+    }
+
     public function test_invalid_trusted_host()
     {
         // Set app URL for testing
@@ -39,6 +81,21 @@ class TrustHostsTest extends TestCase
 
         $request = Request::create('https://malicious-site.com');
         $request->headers->set('X-Forwarded-Host', 'malicious-site.com');
+
+        $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+        $this->expectExceptionMessage('Invalid Host Header');
+
+        $this->middleware->handle($request, function ($req) {
+            return response()->json(['status' => 'success']);
+        });
+    }
+
+    public function test_invalid_trusted_host_with_port_still_rejected()
+    {
+        Config::set('app.url', 'https://example.processmaker.net');
+
+        $request = Request::create('https://malicious-site.com');
+        $request->headers->set('X-Forwarded-Host', 'malicious-site.com:443');
 
         $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
         $this->expectExceptionMessage('Invalid Host Header');

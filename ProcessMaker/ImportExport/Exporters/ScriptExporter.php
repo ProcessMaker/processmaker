@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\Models\EnvironmentVariable;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 
@@ -51,6 +52,13 @@ class ScriptExporter extends ExporterBase
         // Update environment variable references in script code
         $this->updateEnvironmentVariableReferences();
 
+        if (
+            $this->model->execution_mode === Script::EXECUTION_MODE_MODULES
+            && !$this->canUseModules()
+        ) {
+            $this->model->execution_mode = Script::EXECUTION_MODE_BARE;
+        }
+
         // Pre-save cleanup for data source scripts to prevent constraint violations
         if ($this->mode === 'update' && $this->model->exists) {
             // Check if this script has any data source relationships that might cause conflicts
@@ -68,6 +76,15 @@ class ScriptExporter extends ExporterBase
         }
 
         return $this->model->save();
+    }
+
+    private function canUseModules(): bool
+    {
+        $user = $this->options->importingUserId
+            ? User::find($this->options->importingUserId)
+            : auth()->user();
+
+        return (bool) ($user?->is_administrator || $user?->can('run-in-process-modules'));
     }
 
     private function getEnvironmentVariables() : array

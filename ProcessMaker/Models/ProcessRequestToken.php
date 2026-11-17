@@ -202,6 +202,28 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * Determine if the model existed in the search index prior to an update.
+     * Prevents unnecessary RemoveFromSearch jobs when indexed search is disabled.
+     *
+     * @return bool
+     */
+    public function wasSearchableBeforeUpdate()
+    {
+        return $this->shouldBeSearchable();
+    }
+
+    /**
+     * Determine if the model existed in the search index prior to deletion.
+     * Prevents unnecessary RemoveFromSearch jobs when indexed search is disabled.
+     *
+     * @return bool
+     */
+    public function wasSearchableBeforeDelete()
+    {
+        return $this->shouldBeSearchable();
+    }
+
+    /**
      * Boot application as a process instance.
      *
      * @param array $argument
@@ -790,13 +812,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
                 if ($isProcessManager) {
                     // When processesIManage is active, include self-service tasks from managed processes
-                    $selfServiceTaskIds = ProcessRequestToken::select(['id'])
-                        ->whereIn('process_id', $finalProcessManagerIds)
-                        ->where('is_self_service', 1)
-                        ->whereNull('user_id')
-                        ->where('status', 'ACTIVE');
-
-                    $query->whereIn('process_request_tokens.id', $selfServiceTaskIds);
+                    $query->whereIn('process_request_tokens.process_id', $finalProcessManagerIds)
+                        ->where('process_request_tokens.is_self_service', 1)
+                        ->whereNull('process_request_tokens.user_id')
+                        ->where('process_request_tokens.status', 'ACTIVE');
                 } elseif ($user) {
                     $query->whereIn('process_request_tokens.id', $user->availableSelfServiceTasksQuery());
                 } else {
