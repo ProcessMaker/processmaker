@@ -152,23 +152,18 @@ class ScreenBuilderManager
      */
     private function resolvePluginPackageName(string $pluginPath, string $folderName): string
     {
+        $packageName = $folderName;
+
         $composerPath = $pluginPath . '/composer.json';
-        if (!is_file($composerPath)) {
-            return $folderName;
+        if (is_file($composerPath)) {
+            $data = json_decode((string) file_get_contents($composerPath), true);
+            $name = is_array($data) ? ($data['name'] ?? null) : null;
+            if (is_string($name) && str_contains($name, '/')) {
+                $packageName = substr($name, strrpos($name, '/') + 1);
+            }
         }
 
-        $content = file_get_contents($composerPath);
-        $data = json_decode($content, true);
-        if (!is_array($data)) {
-            return $folderName;
-        }
-
-        $name = $data['name'] ?? null;
-        if (is_string($name) && str_contains($name, '/')) {
-            return substr($name, strrpos($name, '/') + 1);
-        }
-
-        return $folderName;
+        return $packageName;
     }
 
     /**
@@ -181,20 +176,21 @@ class ScreenBuilderManager
             return null;
         }
 
-        if (str_starts_with($path, '/')) {
-            $publicRoot = str_replace('\\', '/', realpath(public_path()) ?: public_path());
-            if (str_starts_with($path, $publicRoot)) {
-                return '/' . ltrim(substr($path, strlen($publicRoot)), '/');
-            }
+        if (!str_starts_with($path, '/')) {
+            return '/' . ltrim($path, '/');
+        }
 
-            $baseRoot = str_replace('\\', '/', realpath(base_path()) ?: base_path());
-            if (str_starts_with($path, $baseRoot)) {
-                return '/' . ltrim(substr($path, strlen($baseRoot)), '/');
-            }
+        return $this->publicPathRelativeToRoot($path, public_path())
+            ?? $this->publicPathRelativeToRoot($path, base_path());
+    }
 
+    private function publicPathRelativeToRoot(string $absolutePath, string $root): ?string
+    {
+        $root = str_replace('\\', '/', realpath($root) ?: $root);
+        if (!str_starts_with($absolutePath, $root)) {
             return null;
         }
 
-        return '/' . ltrim($path, '/');
+        return '/' . ltrim(substr($absolutePath, strlen($root)), '/');
     }
 }

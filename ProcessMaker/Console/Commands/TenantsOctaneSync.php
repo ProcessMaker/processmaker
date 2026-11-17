@@ -33,22 +33,56 @@ class TenantsOctaneSync extends Command
     {
         $dryRun = (bool) $this->option('dry-run');
 
-        if ($dryRun) {
-            $this->warn('Dry run: no files will be written or removed.');
-        }
+        $this->warnIfDryRun($dryRun);
 
-        try {
-            $result = $sync->sync($dryRun);
-        } catch (Throwable $exception) {
-            $this->error($exception->getMessage());
-
+        $result = $this->runSync($sync, $dryRun);
+        if ($result === null) {
             return self::FAILURE;
         }
 
+        $this->displaySyncOverview($result);
+        $this->displayTenantPlans($result);
+        $this->displayFileChanges($result, $dryRun);
+
+        return $this->finishWithSupervisor($sync, $dryRun);
+    }
+
+    private function warnIfDryRun(bool $dryRun): void
+    {
+        if ($dryRun) {
+            $this->warn('Dry run: no files will be written or removed.');
+        }
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function runSync(OctaneTenantRuntimeSync $sync, bool $dryRun): ?array
+    {
+        try {
+            return $sync->sync($dryRun);
+        } catch (Throwable $exception) {
+            $this->error($exception->getMessage());
+
+            return null;
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $result
+     */
+    private function displaySyncOverview(array $result): void
+    {
         $this->info('Mode: ' . $result['mode']);
         $this->line('Supervisor dir: ' . config('octane_tenants.supervisor_dir'));
         $this->line('Edge Caddyfile: ' . config('octane_tenants.edge_caddyfile'));
+    }
 
+    /**
+     * @param  array<string, mixed>  $result
+     */
+    private function displayTenantPlans(array $result): void
+    {
         if ($result['tenants'] !== []) {
             $this->table(
                 ['Tenant ID', 'Domain', 'Octane port', 'Admin port'],
@@ -59,46 +93,75 @@ class TenantsOctaneSync extends Command
                     $plan['admin_port'],
                 ])->all()
             );
-        } elseif ($result['mode'] === 'multitenant') {
+
+            return;
+        }
+
+        if ($result['mode'] === 'multitenant') {
             $this->warn('No tenants found in the landlord database.');
         }
+    }
 
-        if ($result['written'] !== []) {
-            $this->info(($dryRun ? 'Would write' : 'Wrote') . ':');
-            foreach ($result['written'] as $path) {
-                $this->line('  + ' . $path);
-            }
+    /**
+     * @param  array<string, mixed>  $result
+     */
+    private function displayFileChanges(array $result, bool $dryRun): void
+    {
+        $this->displayPathList($result['written'], $dryRun, '+', 'Would write', 'Wrote');
+        $this->displayPathList($result['removed'], $dryRun, '-', 'Would remove', 'Removed');
+    }
+
+    /**
+     * @param  list<string>  $paths
+     */
+    private function displayPathList(
+        array $paths,
+        bool $dryRun,
+        string $marker,
+        string $dryRunLabel,
+        string $appliedLabel,
+    ): void {
+        if ($paths === []) {
+            return;
         }
 
-        if ($result['removed'] !== []) {
-            $this->info(($dryRun ? 'Would remove' : 'Removed') . ':');
-            foreach ($result['removed'] as $path) {
-                $this->line('  - ' . $path);
-            }
+        $this->info(($dryRun ? $dryRunLabel : $appliedLabel) . ':');
+        foreach ($paths as $path) {
+            $this->line('  ' . $marker . ' ' . $path);
         }
+    }
 
-        if ($this->option('apply')) {
-            if ($dryRun) {
-                $this->warn('Skipping --apply during dry run.');
-
-                return self::SUCCESS;
-            }
-
-            try {
-                $output = $sync->applySupervisor();
-            } catch (Throwable $exception) {
-                $this->error($exception->getMessage());
-
-                return self::FAILURE;
-            }
-
-            if ($output !== '') {
-                $this->line($output);
-            }
-            $this->info('supervisorctl reread/update completed.');
-        } else {
+    private function finishWithSupervisor(OctaneTenantRuntimeSync $sync, bool $dryRun): int
+    {
+        if (! $this->option('apply')) {
             $this->comment('Files synced. Run with --apply to execute supervisorctl reread/update.');
+
+            return self::SUCCESS;
         }
+
+        if ($dryRun) {
+            $this->warn('Skipping --apply during dry run.');
+
+            return self::SUCCESS;
+        }
+
+        return $this->applySupervisor($sync);
+    }
+
+    private function applySupervisor(OctaneTenantRuntimeSync $sync): int
+    {
+        try {
+            $output = $sync->applySupervisor();
+        } catch (Throwable $exception) {
+            $this->error($exception->getMessage());
+
+            return self::FAILURE;
+        }
+
+        if ($output !== '') {
+            $this->line($output);
+        }
+        $this->info('supervisorctl reread/update completed.');
 
         return self::SUCCESS;
     }

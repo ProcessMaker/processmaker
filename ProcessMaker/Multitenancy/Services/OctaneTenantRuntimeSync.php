@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ProcessMaker\Multitenancy\Services;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use ProcessMaker\Multitenancy\Tenant;
 use RuntimeException;
@@ -16,11 +15,23 @@ use RuntimeException;
  */
 class OctaneTenantRuntimeSync
 {
-    public const MANAGED_MARKER = 'Managed by tenants:octane-sync';
+    public const MANAGED_MARKER = OctaneRuntimeRenderer::MANAGED_MARKER;
 
-    public const SINGLE_PROGRAM = 'octane';
+    public const SINGLE_PROGRAM = OctaneRuntimeRenderer::SINGLE_PROGRAM;
 
-    public const EDGE_PROGRAM = 'octane-edge';
+    public const EDGE_PROGRAM = OctaneRuntimeRenderer::EDGE_PROGRAM;
+
+    private OctaneRuntimeRenderer $renderer;
+
+    private OctaneRuntimeFilesystem $filesystem;
+
+    public function __construct(
+        ?OctaneRuntimeRenderer $renderer = null,
+        ?OctaneRuntimeFilesystem $filesystem = null,
+    ) {
+        $this->renderer = $renderer ?? new OctaneRuntimeRenderer();
+        $this->filesystem = $filesystem ?? new OctaneRuntimeFilesystem();
+    }
 
     /**
      * @return array{
@@ -32,7 +43,7 @@ class OctaneTenantRuntimeSync
      */
     public function sync(bool $dryRun = false): array
     {
-        $this->ensureSupervisorDirectory($dryRun);
+        $this->filesystem->ensureSupervisorDirectory($dryRun);
 
         if (!config('app.multitenancy')) {
             return $this->syncSingleOctane($dryRun);
@@ -61,6 +72,14 @@ class OctaneTenantRuntimeSync
     }
 
     /**
+     * @param  list<array{id:int,domain:string,port:int,admin_port:int}>  $tenantPlans
+     */
+    public function renderEdgeCaddyfile(array $tenantPlans): string
+    {
+        return $this->renderer->renderEdgeCaddyfile($tenantPlans);
+    }
+
+    /**
      * @return array{
      *     mode: string,
      *     written: list<string>,
@@ -71,18 +90,18 @@ class OctaneTenantRuntimeSync
     private function syncSingleOctane(bool $dryRun): array
     {
         $written = [];
-        $removed = $this->removeRuntimeFiles(
+        $removed = $this->filesystem->removeRuntimeFiles(
             [
-                $this->supervisorPath($this->edgeIniName()),
-                ...$this->existingTenantIniPaths(),
+                $this->filesystem->supervisorPath($this->filesystem->edgeIniName()),
+                ...$this->filesystem->existingTenantIniPaths(),
                 config('octane_tenants.edge_caddyfile'),
             ],
             $dryRun
         );
 
-        $octaneIni = $this->supervisorPath($this->singleIniName());
-        $contents = $this->renderSingleSupervisorProgram();
-        $this->writeFile($octaneIni, $contents, $dryRun);
+        $octaneIni = $this->filesystem->supervisorPath($this->filesystem->singleIniName());
+        $contents = $this->renderer->renderSingleSupervisorProgram();
+        $this->filesystem->writeFile($octaneIni, $contents, $dryRun);
         $written[] = $octaneIni;
 
         return [
@@ -107,13 +126,15 @@ class OctaneTenantRuntimeSync
         $tenantPlans = $tenants->map(fn (Tenant $tenant) => $this->planForTenant($tenant))->all();
 
         $desiredTenantInis = collect($tenantPlans)
-            ->map(fn (array $plan) => $this->supervisorPath($this->tenantIniName($plan['id'])))
+            ->map(fn (array $plan) => $this->filesystem->supervisorPath(
+                $this->filesystem->tenantIniName($plan['id'])
+            ))
             ->all();
 
-        $removed = $this->removeRuntimeFiles(
+        $removed = $this->filesystem->removeRuntimeFiles(
             [
-                $this->supervisorPath($this->singleIniName()),
-                ...array_diff($this->existingTenantIniPaths(), $desiredTenantInis),
+                $this->filesystem->supervisorPath($this->filesystem->singleIniName()),
+                ...array_diff($this->filesystem->existingTenantIniPaths(), $desiredTenantInis),
             ],
             $dryRun
         );
@@ -121,16 +142,16 @@ class OctaneTenantRuntimeSync
         $written = [];
 
         $edgeCaddyfile = config('octane_tenants.edge_caddyfile');
-        $this->writeFile($edgeCaddyfile, $this->renderEdgeCaddyfile($tenantPlans), $dryRun);
+        $this->filesystem->writeFile($edgeCaddyfile, $this->renderer->renderEdgeCaddyfile($tenantPlans), $dryRun);
         $written[] = $edgeCaddyfile;
 
-        $edgeIni = $this->supervisorPath($this->edgeIniName());
-        $this->writeFile($edgeIni, $this->renderEdgeSupervisorProgram(), $dryRun);
+        $edgeIni = $this->filesystem->supervisorPath($this->filesystem->edgeIniName());
+        $this->filesystem->writeFile($edgeIni, $this->renderer->renderEdgeSupervisorProgram(), $dryRun);
         $written[] = $edgeIni;
 
         foreach ($tenantPlans as $plan) {
-            $path = $this->supervisorPath($this->tenantIniName($plan['id']));
-            $this->writeFile($path, $this->renderTenantSupervisorProgram($plan), $dryRun);
+            $path = $this->filesystem->supervisorPath($this->filesystem->tenantIniName($plan['id']));
+            $this->filesystem->writeFile($path, $this->renderer->renderTenantSupervisorProgram($plan), $dryRun);
             $written[] = $path;
         }
 
@@ -169,267 +190,6 @@ class OctaneTenantRuntimeSync
             'port' => (int) config('octane_tenants.tenant_port_base') + $id,
             'admin_port' => (int) config('octane_tenants.tenant_admin_port_base') + $id,
         ];
-    }
-
-    /**
-     * @param  list<array{id:int,domain:string,port:int,admin_port:int}>  $tenantPlans
-     */
-    public function renderEdgeCaddyfile(array $tenantPlans): string
-    {
-        $host = config('octane_tenants.edge_host');
-        $port = (int) config('octane_tenants.edge_port');
-        $lines = [
-            '# ' . self::MANAGED_MARKER,
-            '# Do not edit by hand; run php artisan tenants:octane-sync',
-            '{',
-            '	admin off',
-            '	auto_https off',
-            '}',
-            '',
-            "http://{$host}:{$port} {",
-        ];
-
-        if ($tenantPlans === []) {
-            $lines[] = '	respond "No tenants configured" 503';
-            $lines[] = '}';
-            $lines[] = '';
-
-            return implode("\n", $lines);
-        }
-
-        foreach ($tenantPlans as $plan) {
-            $matcher = '@tenant' . $plan['id'];
-            $lines[] = "	{$matcher} host {$plan['domain']}";
-            $lines[] = "	handle {$matcher} {";
-            $lines[] = "		reverse_proxy {$this->tenantUpstream($plan['port'])}";
-            $lines[] = '	}';
-            $lines[] = '';
-        }
-
-        $lines[] = '	handle {';
-        $lines[] = '		respond "Unknown tenant host" 502';
-        $lines[] = '	}';
-        $lines[] = '}';
-        $lines[] = '';
-
-        return implode("\n", $lines);
-    }
-
-    public function renderEdgeSupervisorProgram(): string
-    {
-        $binary = config('octane_tenants.frankenphp_binary');
-        $caddyfile = config('octane_tenants.edge_caddyfile');
-        $directory = config('octane_tenants.app_directory');
-        $user = config('octane_tenants.supervisor_user');
-
-        return $this->renderSupervisorIni(self::EDGE_PROGRAM, [
-            'command' => "{$binary} run --config {$caddyfile} --adapter caddyfile",
-            'directory' => $directory,
-            'user' => $user,
-            'environment' => $this->defaultEnvironment(),
-        ]);
-    }
-
-    /**
-     * @param  array{id:int,domain:string,port:int,admin_port:int}  $plan
-     */
-    public function renderTenantSupervisorProgram(array $plan): string
-    {
-        $directory = config('octane_tenants.app_directory');
-        $user = config('octane_tenants.supervisor_user');
-        $php = config('octane_tenants.php_binary');
-        $host = config('octane_tenants.tenant_host');
-        $artisan = $directory . '/artisan';
-
-        $command = implode(' ', [
-            $php,
-            $artisan,
-            'octane:start',
-            '--server=frankenphp',
-            '--host=' . $host,
-            '--port=' . $plan['port'],
-            '--admin-port=' . $plan['admin_port'],
-            ...$this->octaneWorkerCliFlags(),
-            '--caddyfile=Caddyfile',
-        ]);
-
-        return $this->renderSupervisorIni($this->tenantProgramName($plan['id']), [
-            'command' => $command,
-            'directory' => $directory,
-            'user' => $user,
-            'environment' => $this->tenantEnvironment($plan['id']),
-        ]);
-    }
-
-    public function renderSingleSupervisorProgram(): string
-    {
-        $directory = config('octane_tenants.app_directory');
-        $user = config('octane_tenants.supervisor_user');
-        $php = config('octane_tenants.php_binary');
-        $host = config('octane_tenants.edge_host');
-        $port = (int) config('octane_tenants.edge_port');
-        $artisan = $directory . '/artisan';
-
-        $command = implode(' ', [
-            $php,
-            $artisan,
-            'octane:start',
-            '--server=frankenphp',
-            '--host=' . $host,
-            '--port=' . $port,
-            ...$this->octaneWorkerCliFlags(),
-            '--caddyfile=Caddyfile',
-        ]);
-
-        return $this->renderSupervisorIni(self::SINGLE_PROGRAM, [
-            'command' => $command,
-            'directory' => $directory,
-            'user' => $user,
-            'environment' => $this->defaultEnvironment(),
-        ]);
-    }
-
-    /**
-     * @param  array{command:string,directory:string,user:string,environment:string}  $attrs
-     */
-    private function renderSupervisorIni(string $program, array $attrs): string
-    {
-        $lines = [
-            '; ' . self::MANAGED_MARKER,
-            "[program:{$program}]",
-            'command = ' . $attrs['command'],
-            'directory = ' . $attrs['directory'],
-            'user = ' . $attrs['user'],
-            'process_name = %(program_name)s_%(process_num)02d',
-            'numprocs = 1',
-            'autostart = true',
-            'autorestart = true',
-            'startsecs = 0',
-            'redirect_stderr = true',
-            'stdout_logfile = /dev/stdout',
-            'stdout_logfile_maxbytes = 0',
-            'stderr_logfile_maxbytes = 0',
-            'environment = ' . $attrs['environment'],
-            '',
-        ];
-
-        return implode("\n", $lines);
-    }
-
-    /**
-     * @return list<string>
-     */
-    private function octaneWorkerCliFlags(): array
-    {
-        return [
-            '--max-requests=' . (int) config('octane_tenants.max_requests'),
-            '--workers=' . (int) config('octane_tenants.workers'),
-            '--task-workers=' . (int) config('octane_tenants.task_workers'),
-        ];
-    }
-
-    private function defaultEnvironment(): string
-    {
-        return 'HOME="/home/nginx",XDG_CONFIG_HOME="/tmp/.config",XDG_DATA_HOME="/tmp/.local/share"';
-    }
-
-    private function tenantEnvironment(int $tenantId): string
-    {
-        return 'TENANT="' . $tenantId . '",' . $this->defaultEnvironment();
-    }
-
-    private function tenantUpstream(int $port): string
-    {
-        return config('octane_tenants.tenant_host') . ':' . $port;
-    }
-
-    private function supervisorPath(string $filename): string
-    {
-        return rtrim((string) config('octane_tenants.supervisor_dir'), '/') . '/' . $filename;
-    }
-
-    private function singleIniName(): string
-    {
-        return self::SINGLE_PROGRAM . '.ini';
-    }
-
-    private function edgeIniName(): string
-    {
-        return self::EDGE_PROGRAM . '.ini';
-    }
-
-    public function tenantProgramName(int $tenantId): string
-    {
-        return 'octane-tenant-' . $tenantId;
-    }
-
-    private function tenantIniName(int $tenantId): string
-    {
-        return $this->tenantProgramName($tenantId) . '.ini';
-    }
-
-    /**
-     * @return list<string>
-     */
-    private function existingTenantIniPaths(): array
-    {
-        $dir = config('octane_tenants.supervisor_dir');
-        if (!is_dir($dir)) {
-            return [];
-        }
-
-        return array_values(array_filter(
-            glob(rtrim($dir, '/') . '/octane-tenant-*.ini') ?: [],
-            'is_file'
-        ));
-    }
-
-    /**
-     * @param  list<string>  $paths
-     * @return list<string>
-     */
-    private function removeRuntimeFiles(array $paths, bool $dryRun): array
-    {
-        $removed = [];
-        foreach (array_unique($paths) as $path) {
-            if (!$path || !is_file($path)) {
-                continue;
-            }
-            if (!$dryRun) {
-                File::delete($path);
-            }
-            $removed[] = $path;
-        }
-
-        return $removed;
-    }
-
-    private function writeFile(string $path, string $contents, bool $dryRun): void
-    {
-        if ($dryRun) {
-            return;
-        }
-
-        $directory = dirname($path);
-        if (!is_dir($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
-
-        File::put($path, $contents);
-    }
-
-    private function ensureSupervisorDirectory(bool $dryRun): void
-    {
-        $dir = config('octane_tenants.supervisor_dir');
-        if (is_dir($dir)) {
-            return;
-        }
-
-        if ($dryRun) {
-            return;
-        }
-
-        File::makeDirectory($dir, 0755, true);
     }
 
     /**

@@ -26,9 +26,11 @@ class PluginController extends Controller
 
     public function install(Request $request): JsonResponse
     {
+        $maxZipKilobytes = (int) config('plugin_manager.zip_max_kilobytes', 51200);
+
         $request->validate([
             'url' => 'required_without:zip|nullable|string|starts_with:https://',
-            'zip' => 'required_without:url|nullable|file|mimes:zip',
+            'zip' => "required_without:url|nullable|file|mimes:zip|max:{$maxZipKilobytes}",
             'branch' => 'prohibits:tag|nullable|string',
             'tag' => 'prohibits:branch|nullable|string',
             'git_username' => 'nullable|string|max:255',

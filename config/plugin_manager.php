@@ -26,6 +26,12 @@ return [
     'allow_local_install_path' => env('PLUGIN_INSTALL_ALLOW_LOCAL_PATH', false),
 
     /*
+    | Max plugin ZIP upload for API validation (kilobytes; Laravel file `max` rule).
+    | Default 51200 KiB (~50 MiB).
+    */
+    'zip_max_kilobytes' => (int) env('PLUGIN_ZIP_MAX_KILOBYTES', 51200),
+
+    /*
     | When MULTITENANCY is true, publish plugin public assets onto the tenant
     | public disk (storage/tenant_{id}/app/public/vendor/...). URLs stay
     | /storage/vendor/... and are served by the storage/{path} route.

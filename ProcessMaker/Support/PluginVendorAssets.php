@@ -17,6 +17,8 @@ use InvalidArgumentException;
  */
 class PluginVendorAssets
 {
+    public const STORAGE_URL_PREFIX = '/storage/';
+
     public const VENDOR_PACKAGES_PREFIX = 'vendor/processmaker/packages';
 
     public static function isEnabled(): bool
@@ -120,7 +122,7 @@ class PluginVendorAssets
      */
     public static function webPrefix(string $packageName): string
     {
-        return '/storage/' . self::relativeVendorPath($packageName);
+        return self::STORAGE_URL_PREFIX . self::relativeVendorPath($packageName);
     }
 
     /**
@@ -155,25 +157,19 @@ class PluginVendorAssets
     public static function publishedVendorPackageIsAvailable(string $manifestDirectory): bool
     {
         $manifestDirectory = trim(str_replace('\\', '/', $manifestDirectory), '/');
-        if ($manifestDirectory === '') {
-            return false;
+        $available = false;
+
+        if ($manifestDirectory !== '' && is_dir(public_path($manifestDirectory))) {
+            $available = true;
+        } elseif ($manifestDirectory !== '' && self::isEnabled()) {
+            $packageName = self::parsePackageFromManifestDirectory($manifestDirectory);
+            $tenantId = self::currentTenantId();
+            if ($packageName !== null && $tenantId !== null) {
+                $available = is_file(self::mixManifestPath($tenantId, $packageName));
+            }
         }
 
-        if (is_dir(public_path($manifestDirectory))) {
-            return true;
-        }
-
-        if (!self::isEnabled()) {
-            return false;
-        }
-
-        $packageName = self::parsePackageFromManifestDirectory($manifestDirectory);
-        $tenantId = self::currentTenantId();
-        if ($packageName === null || $tenantId === null) {
-            return false;
-        }
-
-        return is_file(self::mixManifestPath($tenantId, $packageName));
+        return $available;
     }
 
     /**
@@ -182,7 +178,7 @@ class PluginVendorAssets
     public static function filesystemPathForStorageUrl(string $webPath): ?string
     {
         $path = explode('?', str_replace('\\', '/', $webPath), 2)[0];
-        $prefix = '/storage/' . self::VENDOR_PACKAGES_PREFIX . '/';
+        $prefix = self::STORAGE_URL_PREFIX . self::VENDOR_PACKAGES_PREFIX . '/';
 
         if (!str_starts_with($path, $prefix) || str_contains($path, '..')) {
             return null;
@@ -193,6 +189,6 @@ class PluginVendorAssets
             return null;
         }
 
-        return self::tenantPublicDiskRoot($tenantId) . '/' . substr($path, strlen('/storage/'));
+        return self::tenantPublicDiskRoot($tenantId) . '/' . substr($path, strlen(self::STORAGE_URL_PREFIX));
     }
 }

@@ -151,20 +151,13 @@ class PluginRuntimeReload
 
     private function tenantId(): ?string
     {
-        if (!app()->bound('currentTenant')) {
-            return null;
-        }
-
-        $tenant = app('currentTenant');
+        $tenant = app()->bound('currentTenant') ? app('currentTenant') : null;
         if (!$tenant) {
             return null;
         }
 
         $tenantId = method_exists($tenant, 'getKey') ? $tenant->getKey() : ($tenant->id ?? null);
-        if ($tenantId === null || $tenantId === '') {
-            return null;
-        }
 
-        return (string) $tenantId;
+        return ($tenantId === null || $tenantId === '') ? null : (string) $tenantId;
     }
 }

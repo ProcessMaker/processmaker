@@ -119,9 +119,11 @@ class OctaneTenantRuntimeSyncTest extends TestCase
 
         $edge = file_get_contents($this->edgeCaddyfile);
         $this->assertStringContainsString('auto_https off', $edge);
-        $this->assertStringContainsString('http://127.0.0.1:8001', $edge);
+        $this->assertStringContainsString(':8001 {', $edge);
+        $this->assertStringContainsString('protocols h1 h2', $edge);
         $this->assertStringContainsString('host tenant-one.example.com', $edge);
         $this->assertStringContainsString('reverse_proxy 127.0.0.1:8101', $edge);
+        $this->assertStringContainsString('flush_interval -1', $edge);
         $this->assertStringContainsString('reverse_proxy 127.0.0.1:8102', $edge);
 
         $edgeIni = file_get_contents($this->supervisorDir . '/octane-edge.ini');
