@@ -29,11 +29,6 @@ class TaskController extends Controller
 {
     use TaskControllerIndexMethods;
 
-    public function __construct(
-        private readonly TaskCompletionRawService $taskCompletionRawService,
-    ) {
-    }
-
     public $doNotSanitize = [
         'data',
         'pmql',
@@ -312,7 +307,7 @@ class TaskController extends Controller
         }
 
         try {
-            $task = $this->taskCompletionRawService->completeTask(
+            $task = app(TaskCompletionRawService::class)->completeTask(
                 $taskId,
                 json_optimize_decode($request->getContent(), true) ?: [],
                 $request->user(),
