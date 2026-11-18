@@ -323,6 +323,24 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * Scope: tokens that are still open for self-service claiming.
+     *
+     * A self-service flag alone is not enough: the flag is only reset when a task is
+     * claimed or reassigned, so tokens closed by e.g. an interrupting boundary event
+     * keep is_self_service = 1. Only ACTIVE, unassigned tokens can still be claimed.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder $query
+     */
+    public function scopeWhereOpenSelfService($query)
+    {
+        return $query->where([
+            'process_request_tokens.is_self_service' => 1,
+            'process_request_tokens.status' => 'ACTIVE',
+            'process_request_tokens.user_id' => null,
+        ]);
+    }
+
+    /**
      * Scope to filter by case_number through the processRequest relationship
      */
     public function scopeFilterByCaseNumber($query, $request)
@@ -813,17 +831,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 if ($isProcessManager) {
                     // When processesIManage is active, include self-service tasks from managed processes
                     $query->whereIn('process_request_tokens.process_id', $finalProcessManagerIds)
-                        ->where('process_request_tokens.is_self_service', 1)
-                        ->whereNull('process_request_tokens.user_id')
-                        ->where('process_request_tokens.status', 'ACTIVE');
+                        ->whereOpenSelfService();
                 } elseif ($user) {
                     $query->whereIn('process_request_tokens.id', $user->availableSelfServiceTasksQuery());
                 } else {
-                    $query->where([
-                        'process_request_tokens.is_self_service' => 1,
-                        'process_request_tokens.status' => 'ACTIVE',
-                        'process_request_tokens.user_id' => null,
-                    ]);
+                    $query->whereOpenSelfService();
                 }
             } elseif (array_key_exists($value, $statusMap)) {
                 $query->where('process_request_tokens.is_self_service', 0);
