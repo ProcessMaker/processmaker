@@ -61,12 +61,11 @@ class AbeResponder
         }
 
         $user = Auth::user();
-        if (!$user instanceof User) {
-            return null;
-        }
-
         // Anonymous session used for public ABE clicks is not a real identity
-        if (($user->username ?? null) === AnonymousUser::ANONYMOUS_USERNAME) {
+        if (
+            !$user instanceof User
+            || ($user->username ?? null) === AnonymousUser::ANONYMOUS_USERNAME
+        ) {
             return null;
         }
 
