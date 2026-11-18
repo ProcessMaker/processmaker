@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use ProcessMaker\Events\ProcessCreated;
+use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Validation\CategoryRule;
@@ -93,11 +95,30 @@ class ProcessCatalog
     /**
      * @return array<string, mixed>
      */
-    public function find(User $user, int $id): array
+    public function find(User $user, int $id, string $alternative = 'A'): array
     {
         $this->assertCan($user, self::VIEW);
+        $alternative = $this->normalizeAlternative($alternative);
 
-        return $this->detail(Process::query()->findOrFail($id));
+        return $this->detail(
+            Process::query()->findOrFail($id),
+            $alternative,
+            $user->can(self::EDIT),
+        );
+    }
+
+    /**
+     * Enable Alternative B for a process (clone draft A → B).
+     *
+     * @return array<string, mixed>
+     */
+    public function enableAlternativeB(User $user, int $id): array
+    {
+        $this->assertCan($user, self::EDIT);
+        $process = Process::query()->findOrFail($id);
+        $this->ensureAlternativeBExists($process);
+
+        return $this->alternativesPayload($process);
     }
 
     /**
@@ -145,9 +166,21 @@ class ProcessCatalog
         $input = $this->normalize($input);
         $validated = validator($input, array_merge([
             'id' => 'required|integer|min:1',
+            'alternative' => 'nullable|in:A,B',
+            'create_alternative_b' => 'nullable|boolean',
         ], $this->updateRules($input)))->validate();
 
         $process = Process::query()->findOrFail((int) $validated['id']);
+        $alternative = $this->normalizeAlternative($validated['alternative'] ?? 'A');
+
+        if (!empty($validated['create_alternative_b'])) {
+            $this->ensureAlternativeBExists($process);
+        }
+
+        if ($alternative === 'B') {
+            $this->assertAlternativeBReady($process);
+        }
+
         $attributes = $this->writable($validated);
         if ($attributes === []) {
             throw ValidationException::withMessages([
@@ -160,10 +193,24 @@ class ProcessCatalog
             $attributes['bpmn'] = BpmnDocument::replaceHtmlEntities($attributes['bpmn']);
         }
 
-        $process->fill($attributes);
-        $process->saveOrFail();
+        if (isset($attributes['bpmn'])) {
+            // Hydrate only for draft BPMN writes. Metadata-only updates must not
+            // copy draft/B bpmn+stages onto the live process via saveOrFail.
+            $this->hydrateProcessFromAlternativeVersion($process, $alternative);
+            $process->fill($attributes);
+            try {
+                $process->alternative = $alternative;
+                $process->saveDraft($alternative);
+            } catch (TaskDoesNotHaveUsersException $e) {
+                throw ValidationException::withMessages(['bpmn' => $e->getMessage()]);
+            }
 
-        return $this->detail($process->refresh());
+            $this->persistLiveMetadata($process, array_diff_key($attributes, ['bpmn' => true]), $user);
+        } else {
+            $this->persistLiveMetadata($process, $attributes, $user);
+        }
+
+        return $this->detail($process->refresh(), $alternative);
     }
 
     /**
@@ -176,11 +223,17 @@ class ProcessCatalog
         $validated = validator($input, [
             'bpmn' => 'nullable|string',
             'id' => 'nullable|integer|min:1',
+            'alternative' => 'nullable|in:A,B',
         ])->validate();
 
         $bpmn = $validated['bpmn'] ?? null;
         if (($bpmn === null || $bpmn === '') && isset($validated['id'])) {
-            $bpmn = Process::query()->findOrFail((int) $validated['id'])->bpmn;
+            $process = Process::query()->findOrFail((int) $validated['id']);
+            $alternative = $this->normalizeAlternative($validated['alternative'] ?? 'A');
+            // Same gate as get-process: view-only must not validate draft / Alt B XML.
+            $bpmn = $user->can(self::EDIT)
+                ? ($this->bpmnForAlternative($process, $alternative) ?? $process->bpmn)
+                : $process->bpmn;
         }
 
         return $this->validator->validate(is_string($bpmn) ? $bpmn : null);
@@ -312,15 +365,162 @@ class ProcessCatalog
     }
 
     /**
+     * Persist name/description/status/category on the live process without
+     * HasVersioning publish + deleteDraft (which wipe unpublished BPMN).
+     *
+     * @param array<string, mixed> $metadata
+     */
+    private function persistLiveMetadata(Process $process, array $metadata, User $user): void
+    {
+        if ($metadata === []) {
+            return;
+        }
+
+        // Drop any hydrated draft/B bpmn+stages before touching the live row.
+        $process->refresh();
+
+        $hasCategory = array_key_exists('process_category_id', $metadata);
+        $categoryValue = $metadata['process_category_id'] ?? null;
+
+        Process::withoutEvents(function () use ($process, $metadata, $hasCategory, $categoryValue, $user): void {
+            $process->fill($metadata);
+            // withoutEvents skips Process::updating (updated_by + project-assets cache).
+            $process->updated_by = $user->id;
+            $process->saveOrFail();
+
+            // Mass/eventless save skips setProcessCategoryIdAttribute's saved sync.
+            if ($hasCategory) {
+                $ids = ($categoryValue === null || $categoryValue === '')
+                    ? []
+                    : array_values(array_filter(
+                        explode(',', (string) $categoryValue),
+                        static fn (string $id): bool => $id !== '',
+                    ));
+                $process->categories()->sync($ids);
+            }
+        });
+
+        $this->forgetProjectAssetCache($user);
+    }
+
+    /**
      * @return array<string, mixed>
      */
-    private function detail(Process $process): array
+    private function detail(Process $process, string $alternative = 'A', bool $includeVersionBpmn = true): array
     {
+        $alternative = $this->normalizeAlternative($alternative);
+        // view-processes alone must not reveal unpublished draft / Alt B BPMN.
+        // Live processes.bpmn is alternative A; do not mislabel it as B.
+        if (!$includeVersionBpmn) {
+            $alternative = 'A';
+            $bpmn = $process->bpmn;
+        } else {
+            $bpmn = $this->bpmnForAlternative($process, $alternative) ?? $process->bpmn;
+        }
+
         return [
             ...$this->summary($process),
-            'bpmn' => $process->bpmn,
+            'alternative' => $alternative,
+            'alternatives' => $this->alternativesMeta($process),
+            'bpmn' => $bpmn,
             'created_at' => $this->timestamp($process->created_at),
         ];
+    }
+
+    private function normalizeAlternative(string $alternative): string
+    {
+        return strtoupper($alternative) === 'B' ? 'B' : 'A';
+    }
+
+    private function hydrateProcessFromAlternativeVersion(Process $process, string $alternative): void
+    {
+        $version = $this->versionForAlternative($process, $alternative);
+        if ($version instanceof ProcessVersion) {
+            $process->bpmn = $version->bpmn;
+            $process->stages = $version->stages;
+        }
+        $process->alternative = $alternative;
+    }
+
+    private function versionForAlternative(Process $process, string $alternative): ?ProcessVersion
+    {
+        $version = $process->getDraftVersion($alternative);
+        if ($version instanceof ProcessVersion) {
+            return $version;
+        }
+
+        $version = $process->getDraftOrPublishedLatestVersion($alternative);
+
+        return $version instanceof ProcessVersion ? $version : null;
+    }
+
+    private function bpmnForAlternative(Process $process, string $alternative): ?string
+    {
+        return $this->versionForAlternative($process, $alternative)?->bpmn;
+    }
+
+    /**
+     * @return array{b_enabled: bool, package_installed: bool}
+     */
+    private function alternativesMeta(Process $process): array
+    {
+        if (!class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative')) {
+            return [
+                'package_installed' => false,
+                'b_enabled' => false,
+            ];
+        }
+
+        $record = \ProcessMaker\Package\PackageABTesting\Models\Alternative::forProcess($process)->first();
+
+        return [
+            'package_installed' => true,
+            'b_enabled' => (bool) ($record?->version_b_enabled),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function alternativesPayload(Process $process): array
+    {
+        return [
+            'id' => $process->id,
+            'name' => $process->name,
+            ...$this->alternativesMeta($process),
+        ];
+    }
+
+    private function ensureAlternativeBExists(Process $process): void
+    {
+        if (!class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative')) {
+            throw ValidationException::withMessages([
+                'create_alternative_b' => 'package-ab-testing is not installed on this instance.',
+            ]);
+        }
+
+        $alternative = \ProcessMaker\Package\PackageABTesting\Models\Alternative::findOrCreateForProcess($process);
+        if ($alternative->version_b_enabled) {
+            return;
+        }
+
+        $alternative->enableAlternativeB();
+        $alternative->save();
+    }
+
+    private function assertAlternativeBReady(Process $process): void
+    {
+        $meta = $this->alternativesMeta($process);
+        if (!$meta['package_installed']) {
+            throw ValidationException::withMessages([
+                'alternative' => 'Alternative B requires package-ab-testing.',
+            ]);
+        }
+        if (!$meta['b_enabled']) {
+            throw ValidationException::withMessages([
+                'alternative' => 'Alternative B is not enabled for this process. Call enable-process-alternative-b or set create_alternative_b on update-process.',
+            ]);
+        }
     }
 
     private function timestamp(mixed $value): ?string
