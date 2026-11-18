@@ -214,11 +214,11 @@ export default {
       return this.permission.includes(`view-${asset.resource}`);
     },
     canCreate(asset) {
-      return this.permission.includes(`create-${asset.resource}`);
+      return this.canView(asset) && this.permission.includes(`create-${asset.resource}`);
     },
     hasAssetPermission(asset) {
       return (!asset.package || this.isPackageInstalled(asset.package))
-        && (this.canView(asset) || this.canCreate(asset));
+        && this.canView(asset);
     },
     isPackageInstalled(packageName) {
       return window.ProcessMaker?.packages?.includes(packageName);
