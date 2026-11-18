@@ -7,7 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Events\TenantResolved;
-use ProcessMaker\Exception\PluginInstallException;
+use ProcessMaker\Exception\PluginValidationException;
 use Throwable;
 
 /**
@@ -85,7 +85,7 @@ class PluginServiceProvider extends ServiceProvider
         $composerJson = json_decode($content, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw PluginInstallException::invalidComposerJson($composerJsonPath, json_last_error_msg());
+            throw PluginValidationException::invalidComposerJson($composerJsonPath, json_last_error_msg());
         }
 
         return $composerJson;
@@ -118,7 +118,7 @@ class PluginServiceProvider extends ServiceProvider
             $fullPath = $pluginPath . '/' . $path;
 
             if (!is_dir($fullPath)) {
-                throw PluginInstallException::psr4PathDoesNotExist($pluginPath, $path);
+                throw PluginValidationException::psr4PathDoesNotExist($pluginPath, $path);
             }
 
             $loader->addPsr4($namespace, $fullPath);

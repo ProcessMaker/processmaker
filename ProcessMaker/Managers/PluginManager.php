@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Process;
 use function Illuminate\Support\php_binary;
 use ProcessMaker\Events\PluginLog;
 use ProcessMaker\Exception\PluginFilesystemException;
+use ProcessMaker\Exception\PluginGitException;
 use ProcessMaker\Exception\PluginInstallException;
+use ProcessMaker\Exception\PluginValidationException;
 use ProcessMaker\Exception\PluginNotFoundException;
 use ProcessMaker\Exception\PluginReinstallException;
 use ProcessMaker\Exception\PluginToggleException;
@@ -580,13 +582,13 @@ class PluginManager
         try {
             $process = Process::timeout(3600)->run(['git', 'clone', $repoUrl, $destination]);
         } catch (ProcessTimedOutException) {
-            throw PluginInstallException::gitCloneTimedOut($repoName);
+            throw PluginGitException::gitCloneTimedOut($repoName);
         }
 
         if (!$process->successful()) {
             $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
             $this->logError('Failed to clone repository: ' . $stderr, $repoName, $userId);
-            throw PluginInstallException::failedToCloneRepository($stderr);
+            throw PluginGitException::failedToCloneRepository($stderr);
         }
 
         $cleanOrigin = $this->stripEmbeddedCredentialsFromHttpUrl($canonicalRepoUrl ?? $repoUrl);
@@ -799,7 +801,7 @@ class PluginManager
         if (!$process->successful()) {
             $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
             $this->logError('Failed to fetch repository: ' . $stderr, $repoName, $userId);
-            throw PluginInstallException::failedToFetchRepository($stderr);
+            throw PluginGitException::failedToFetchRepository($stderr);
         }
     }
 
@@ -831,7 +833,7 @@ class PluginManager
         }
 
         $this->logError('Could not determine default branch for plugin repository', $repoName, $userId);
-        throw PluginInstallException::cannotDetermineDefaultBranch();
+        throw PluginGitException::cannotDetermineDefaultBranch();
     }
 
     protected function pullRepository(string $pluginPath, string $repoName, ?int $userId = null, ?string $branch = null): void
@@ -845,7 +847,7 @@ class PluginManager
         if (!$process->successful()) {
             $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
             $this->logError('Failed to pull repository: ' . $stderr, $repoName, $userId);
-            throw PluginInstallException::failedToPullRepository($stderr);
+            throw PluginGitException::failedToPullRepository($stderr);
         }
     }
 
@@ -864,7 +866,7 @@ class PluginManager
         if (!$process->successful()) {
             $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
             $this->logError('Failed to checkout branch: ' . $stderr, $repoName, $userId);
-            throw PluginInstallException::failedToCheckoutBranch($branch, $stderr);
+            throw PluginGitException::failedToCheckoutBranch($branch, $stderr);
         }
     }
 
@@ -883,7 +885,7 @@ class PluginManager
         if (!$process->successful()) {
             $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
             $this->logError('Failed to checkout tag: ' . $stderr, $repoName, $userId);
-            throw PluginInstallException::failedToCheckoutTag($tag, $stderr);
+            throw PluginGitException::failedToCheckoutTag($tag, $stderr);
         }
     }
 
@@ -900,7 +902,7 @@ class PluginManager
 
         if (!file_exists($composerJsonPath)) {
             $this->logError('composer.json not found in plugin: ' . $pluginPath, $repoName, $userId);
-            throw PluginInstallException::composerJsonNotFound($pluginPath);
+            throw PluginValidationException::composerJsonNotFound($pluginPath);
         }
 
         $content = file_get_contents($composerJsonPath);
@@ -908,7 +910,7 @@ class PluginManager
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $this->logError('Invalid JSON in composer.json at ' . $composerJsonPath . ': ' . json_last_error_msg(), $repoName, $userId);
-            throw PluginInstallException::invalidComposerJson($composerJsonPath, json_last_error_msg());
+            throw PluginValidationException::invalidComposerJson($composerJsonPath, json_last_error_msg());
         }
 
         // Check if require or require-dev is an empty array ([]), if so change for empty object and save to file
@@ -930,7 +932,7 @@ class PluginManager
 
         if (empty($psr4Namespaces)) {
             $this->logError('Plugin must have PSR-4 autoload configuration in composer.json', $repoName, $userId);
-            throw PluginInstallException::missingPsr4Autoload();
+            throw PluginValidationException::missingPsr4Autoload();
         }
 
         $valid = false;
@@ -948,7 +950,7 @@ class PluginManager
 
         if (!$valid) {
             $this->logError('Plugin PSR-4 namespace must start with ' . implode(', ', $prefixes) . '. Found: ' . implode(', ', array_keys($psr4Namespaces)), $repoName, $userId);
-            throw PluginInstallException::invalidPsr4Namespace(implode(', ', array_keys($psr4Namespaces)));
+            throw PluginValidationException::invalidPsr4Namespace(implode(', ', array_keys($psr4Namespaces)));
         }
     }
 
@@ -965,7 +967,7 @@ class PluginManager
         if (!$process->successful()) {
             $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
             $this->logError('Failed to fetch branches: ' . $stderr, $repoName, $userId);
-            throw PluginInstallException::failedToFetchBranches($stderr);
+            throw PluginGitException::failedToFetchBranches($stderr);
         }
     }
 

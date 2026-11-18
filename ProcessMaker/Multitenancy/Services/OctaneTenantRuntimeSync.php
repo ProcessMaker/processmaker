@@ -6,8 +6,8 @@ namespace ProcessMaker\Multitenancy\Services;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Process;
+use ProcessMaker\Exception\OctaneRuntimeSyncException;
 use ProcessMaker\Multitenancy\Tenant;
-use RuntimeException;
 
 /**
  * Materializes Caddyfile.edge + supervisor programs for single-Octane or
@@ -60,12 +60,12 @@ class OctaneTenantRuntimeSync
         $command = $this->supervisorctlBase();
         $reread = Process::run([...$command, 'reread']);
         if (!$reread->successful()) {
-            throw new RuntimeException('supervisorctl reread failed: ' . $reread->errorOutput());
+            throw OctaneRuntimeSyncException::supervisorRereadFailed($reread->errorOutput());
         }
 
         $update = Process::run([...$command, 'update']);
         if (!$update->successful()) {
-            throw new RuntimeException('supervisorctl update failed: ' . $update->errorOutput());
+            throw OctaneRuntimeSyncException::supervisorUpdateFailed($update->errorOutput());
         }
 
         return trim($reread->output() . "\n" . $update->output());
@@ -181,7 +181,7 @@ class OctaneTenantRuntimeSync
         $id = (int) $tenant->id;
         $domain = trim((string) $tenant->domain);
         if ($domain === '') {
-            throw new RuntimeException("Tenant {$id} has an empty domain; cannot build edge routes.");
+            throw OctaneRuntimeSyncException::tenantDomainEmpty($id);
         }
 
         return [

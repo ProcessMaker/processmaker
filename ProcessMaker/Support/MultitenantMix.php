@@ -28,11 +28,7 @@ class MultitenantMix extends Mix
             return $tenantPluginUrl;
         }
 
-        if (!$this->hasCurrentTenant()) {
-            return parent::__invoke($path, $manifestDirectory);
-        }
-
-        $manifest = $this->getCachedMixManifest();
+        $manifest = $this->hasCurrentTenant() ? $this->getCachedMixManifest() : null;
         if ($manifest === null) {
             return parent::__invoke($path, $manifestDirectory);
         }
@@ -94,12 +90,8 @@ class MultitenantMix extends Mix
     private function resolveTenantPluginVendorUrl(string $path, string $manifestDirectory): ?HtmlString
     {
         $packageName = PluginVendorAssets::parsePackageFromManifestDirectory($manifestDirectory);
-        if ($packageName === null || !PluginVendorAssets::isEnabled()) {
-            return null;
-        }
-
         $tenantId = PluginVendorAssets::currentTenantId();
-        if ($tenantId === null) {
+        if ($packageName === null || !PluginVendorAssets::isEnabled() || $tenantId === null) {
             return null;
         }
 
@@ -115,12 +107,12 @@ class MultitenantMix extends Mix
 
         $key = '/' . ltrim(str_replace('\\', '/', $path), '/');
         $manifest = self::$tenantManifests[$manifestPath];
-        if (!isset($manifest[$key])) {
-            return null;
-        }
+        $asset = $manifest[$key] ?? null;
 
-        return new HtmlString(
-            (string) config('app.mix_url') . PluginVendorAssets::webPath($packageName, (string) $manifest[$key])
-        );
+        return $asset === null
+            ? null
+            : new HtmlString(
+                (string) config('app.mix_url') . PluginVendorAssets::webPath($packageName, (string) $asset)
+            );
     }
 }

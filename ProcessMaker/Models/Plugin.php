@@ -3,7 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Support\Facades\Process;
-use ProcessMaker\Exception\PluginInstallException;
+use ProcessMaker\Exception\PluginValidationException;
 use ProcessMaker\Exception\PluginNotFoundException;
 use RuntimeException;
 
@@ -90,14 +90,14 @@ class Plugin extends ProcessMakerModel
         $composerJsonPath = $this->path . '/composer.json';
 
         if (!file_exists($composerJsonPath)) {
-            throw PluginInstallException::composerJsonNotFound($this->path);
+            throw PluginValidationException::composerJsonNotFound($this->path);
         }
 
         $content = file_get_contents($composerJsonPath);
         $composerJson = json_decode($content, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw PluginInstallException::invalidComposerJson($composerJsonPath, json_last_error_msg());
+            throw PluginValidationException::invalidComposerJson($composerJsonPath, json_last_error_msg());
         }
 
         $this->composerJson = $composerJson;
