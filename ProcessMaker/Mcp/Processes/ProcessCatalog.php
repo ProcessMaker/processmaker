@@ -100,7 +100,11 @@ class ProcessCatalog
         $this->assertCan($user, self::VIEW);
         $alternative = $this->normalizeAlternative($alternative);
 
-        return $this->detail(Process::query()->findOrFail($id), $alternative);
+        return $this->detail(
+            Process::query()->findOrFail($id),
+            $alternative,
+            $user->can(self::EDIT),
+        );
     }
 
     /**
@@ -201,16 +205,9 @@ class ProcessCatalog
                 throw ValidationException::withMessages(['bpmn' => $e->getMessage()]);
             }
 
-            // saveDraft only snapshots the version row. Persist live metadata
-            // without saveOrFail (that publishes + deletes the draft) and without
-            // writing hydrated draft/B bpmn+stages onto processes.
-            $metadata = array_diff_key($attributes, ['bpmn' => true]);
-            if ($metadata !== []) {
-                Process::query()->whereKey($process->id)->update($metadata);
-            }
+            $this->persistLiveMetadata($process, array_diff_key($attributes, ['bpmn' => true]));
         } else {
-            $process->fill($attributes);
-            $process->saveOrFail();
+            $this->persistLiveMetadata($process, $attributes);
         }
 
         return $this->detail($process->refresh(), $alternative);
@@ -365,12 +362,50 @@ class ProcessCatalog
     }
 
     /**
+     * Persist name/description/status/category on the live process without
+     * HasVersioning publish + deleteDraft (which wipe unpublished BPMN).
+     *
+     * @param array<string, mixed> $metadata
+     */
+    private function persistLiveMetadata(Process $process, array $metadata): void
+    {
+        if ($metadata === []) {
+            return;
+        }
+
+        // Drop any hydrated draft/B bpmn+stages before touching the live row.
+        $process->refresh();
+
+        $hasCategory = array_key_exists('process_category_id', $metadata);
+        $categoryValue = $metadata['process_category_id'] ?? null;
+
+        Process::withoutEvents(function () use ($process, $metadata, $hasCategory, $categoryValue): void {
+            $process->fill($metadata);
+            $process->saveOrFail();
+
+            // Mass/eventless save skips setProcessCategoryIdAttribute's saved sync.
+            if ($hasCategory) {
+                $ids = ($categoryValue === null || $categoryValue === '')
+                    ? []
+                    : array_values(array_filter(
+                        explode(',', (string) $categoryValue),
+                        static fn (string $id): bool => $id !== '',
+                    ));
+                $process->categories()->sync($ids);
+            }
+        });
+    }
+
+    /**
      * @return array<string, mixed>
      */
-    private function detail(Process $process, string $alternative = 'A'): array
+    private function detail(Process $process, string $alternative = 'A', bool $includeVersionBpmn = true): array
     {
         $alternative = $this->normalizeAlternative($alternative);
-        $bpmn = $this->bpmnForAlternative($process, $alternative) ?? $process->bpmn;
+        // view-processes alone must not reveal unpublished draft / Alt B BPMN.
+        $bpmn = $includeVersionBpmn
+            ? ($this->bpmnForAlternative($process, $alternative) ?? $process->bpmn)
+            : $process->bpmn;
 
         return [
             ...$this->summary($process),
