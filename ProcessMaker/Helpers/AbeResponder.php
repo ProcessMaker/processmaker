@@ -88,32 +88,38 @@ class AbeResponder
     private static function detectEmailClient(string $userAgent): string
     {
         $ua = strtolower($userAgent);
-        if ($ua === '') {
-            return 'Unknown';
-        }
+
+        return $ua === '' ? 'Unknown' : self::resolveEmailClientName($ua);
+    }
+
+    private static function resolveEmailClientName(string $ua): string
+    {
         if (str_contains($ua, 'googleimageproxy') || str_contains($ua, 'gmail')) {
-            return 'Gmail';
+            $client = 'Gmail';
+        } elseif (str_contains($ua, 'outlook') || str_contains($ua, 'microsoft office') || str_contains($ua, 'ms-office')) {
+            $client = 'Outlook';
+        } elseif (str_contains($ua, 'thunderbird')) {
+            $client = 'Thunderbird';
+        } elseif (str_contains($ua, 'yahoo')) {
+            $client = 'Yahoo Mail';
+        } elseif (self::isAppleMailUserAgent($ua)) {
+            $client = 'Apple Mail';
+        } else {
+            $client = 'Unknown';
         }
-        if (str_contains($ua, 'outlook') || str_contains($ua, 'microsoft office') || str_contains($ua, 'ms-office')) {
-            return 'Outlook';
-        }
-        if (str_contains($ua, 'thunderbird')) {
-            return 'Thunderbird';
-        }
-        if (str_contains($ua, 'yahoo')) {
-            return 'Yahoo Mail';
-        }
-        // Apple Mail / iOS Mail often look like Safari; coarse best-effort
-        if (
-            str_contains($ua, 'applewebkit')
+
+        return $client;
+    }
+
+    /**
+     * Apple Mail / iOS Mail often look like Safari; coarse best-effort.
+     */
+    private static function isAppleMailUserAgent(string $ua): bool
+    {
+        return str_contains($ua, 'applewebkit')
             && (str_contains($ua, 'macintosh') || str_contains($ua, 'iphone') || str_contains($ua, 'ipad'))
             && !str_contains($ua, 'crios')
             && !str_contains($ua, 'fxios')
-            && !str_contains($ua, 'edgios')
-        ) {
-            return 'Apple Mail';
-        }
-
-        return 'Unknown';
+            && !str_contains($ua, 'edgios');
     }
 }
