@@ -287,71 +287,7 @@ class TaskController extends Controller
     public function updateVariable(HttpRequest $request, $abe_uuid)
     {
         try {
-            // Verificar si la respuesta ya ha sido enviada
-            $abe = ProcessAbeRequestToken::where('uuid', $abe_uuid)->first();
-            // Check if the token is available
-            if (!$abe) {
-                return $this->returnErrorResponse(__('Token not found'), 404);
-            }
-
-            // Restore signed click query if Require Login dropped it from the URL.
-            $this->restoreAbeClickQuery($request, $abe);
-
-            // Validar los parámetros GET (after restore so varName/varValue survive login)
-            $request->validate([
-                'varName' => 'required|string',
-                'varValue' => 'required|string',
-            ]);
-
-            // Review if the autentication is required
-            if ($abe->require_login && Auth::user()->username === AnonymousUser::ANONYMOUS_USERNAME) {
-                return $this->redirectAbeClickToLogin($request, $abe);
-            }
-            if ($abe->is_answered) {
-                return $this->returnErrorResponse(__('This response has already been answered'), 200);
-            } else {
-                // Get the token related
-                $task = ProcessRequestToken::find($abe->process_request_token_id);
-                if (!$task) {
-                    return $this->returnErrorResponse(__('Process request token not found'), 404);
-                } else {
-                    if ($task->status === 'CLOSED') {
-                        return $this->returnErrorResponse(__('Task already closed'), 404);
-                    }
-                    // Action variable always; abe_responder only when the task opted into
-                    // responder tracking (personalized signed links).
-                    $data = [
-                        $request->varName => $request->varValue,
-                    ];
-                    if ($this->abeTrackResponderEnabled($task)) {
-                        $data['abe_responder'] = AbeResponder::fromRequest($request, $abe->uuid);
-                    }
-                    $abe->data = json_encode($data);
-                    // Define the answered_at and is_answered
-                    $abe->is_answered = true;
-                    $abe->answered_at = Carbon::now();
-                    // Review if the user is autenticated
-                    if (Auth::check()) {
-                        $abe->user_id = Auth::id();
-                    }
-                    $abe->save();
-                    // Define the parameter for complete the task
-                    $process = Process::find($task->process_id);
-                    $instance = $task->processRequest;
-                    // Set the flag is_actionbyemail in true
-                    (new ProcessRequestController)->enableIsActionbyemail($task->id);
-                    // Complete the task related
-                    WorkflowManager::completeTask(
-                        $process,
-                        $instance,
-                        $task,
-                        $data
-                    );
-
-                    // Show the abe completed screen
-                    return $this->showScreen($abe->completed_screen_id);
-                }
-            }
+            return $this->handleAbeVariableUpdate($request, $abe_uuid);
         } catch (ValidationException $e) {
             // Missing/invalid query after a failed Require Login restore must not become HTTP 500.
             throw $e;
@@ -361,6 +297,89 @@ class TaskController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    private function handleAbeVariableUpdate(HttpRequest $request, string $abeUuid)
+    {
+        $abe = ProcessAbeRequestToken::where('uuid', $abeUuid)->first();
+        if (!$abe) {
+            return $this->returnErrorResponse(__('Token not found'), 404);
+        }
+
+        $this->restoreAbeClickQuery($request, $abe);
+
+        $request->validate([
+            'varName' => 'required|string',
+            'varValue' => 'required|string',
+        ]);
+
+        if ($abe->require_login && Auth::user()->username === AnonymousUser::ANONYMOUS_USERNAME) {
+            return $this->redirectAbeClickToLogin($request, $abe);
+        }
+
+        if ($abe->is_answered) {
+            return $this->returnErrorResponse(__('This response has already been answered'), 200);
+        }
+
+        $task = ProcessRequestToken::find($abe->process_request_token_id);
+        $taskError = $this->abeVariableUpdateTaskError($task);
+        if ($taskError !== null) {
+            return $taskError;
+        }
+
+        return $this->completeAbeVariableUpdate($request, $abe, $task);
+    }
+
+    private function abeVariableUpdateTaskError(?ProcessRequestToken $task)
+    {
+        if (!$task) {
+            return $this->returnErrorResponse(__('Process request token not found'), 404);
+        }
+
+        if ($task->status === 'CLOSED') {
+            return $this->returnErrorResponse(__('Task already closed'), 404);
+        }
+
+        return null;
+    }
+
+    /**
+     * @return \Illuminate\Http\Response|\Illuminate\View\View
+     */
+    private function completeAbeVariableUpdate(
+        HttpRequest $request,
+        ProcessAbeRequestToken $abe,
+        ProcessRequestToken $task
+    ) {
+        $data = [
+            $request->varName => $request->varValue,
+        ];
+        if ($this->abeTrackResponderEnabled($task)) {
+            $data['abe_responder'] = AbeResponder::fromRequest($request, $abe->uuid);
+        }
+
+        $abe->data = json_encode($data);
+        $abe->is_answered = true;
+        $abe->answered_at = Carbon::now();
+        if (Auth::check()) {
+            $abe->user_id = Auth::id();
+        }
+        $abe->save();
+
+        $process = Process::find($task->process_id);
+        $instance = $task->processRequest;
+        (new ProcessRequestController)->enableIsActionbyemail($task->id);
+        WorkflowManager::completeTask(
+            $process,
+            $instance,
+            $task,
+            $data
+        );
+
+        return $this->showScreen($abe->completed_screen_id);
     }
 
     /**
