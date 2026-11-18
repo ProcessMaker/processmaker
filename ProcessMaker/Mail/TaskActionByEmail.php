@@ -129,7 +129,7 @@ class TaskActionByEmail
         }
 
         return preg_replace_callback(
-            '/(\b(?:href)=["\'])([^"\']*\/tasks\/update_variable\/[^"\']*)(["\'])/i',
+            '/(\bhref=["\'])([^"\']*\/tasks\/update_variable\/[^"\']*)(["\'])/i',
             static function (array $matches) use ($signedQuery) {
                 $url = html_entity_decode($matches[2], ENT_QUOTES | ENT_HTML5);
                 if (str_contains($url, 'abe_sig=')) {
