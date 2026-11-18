@@ -222,6 +222,24 @@ class ErrorHandling
                 $message = $rawMessage ?: 'Script execution failed with unknown error';
             }
 
+            // Keep executor diagnostics before reducing the response to a UI exception.
+            // Do not log the response wholesale: metadata/output can contain request data or secrets.
+            Log::error('Script microservice execution failed', [
+                'message' => $message,
+                'diagnostics' => self::scriptErrorDiagnostics(Arr::only($result, [
+                    'error_message', 'error', 'exception', 'message',
+                ])),
+                'output_diagnostics' => self::scriptErrorDiagnostics(
+                    is_array($result['output'] ?? null)
+                        ? Arr::only($result['output'], ['error_message', 'error', 'exception', 'code', 'file', 'line', 'trace'])
+                        : []
+                ),
+                'correlation' => self::scriptErrorDiagnostics(Arr::only(
+                    is_array($result['metadata'] ?? null) ? $result['metadata'] : [],
+                    ['script_id', 'executor_uuid', 'executor_type', 'executor_version', 'instance_uuid', 'script_task']
+                )),
+            ]);
+
             throw new ScriptException($message);
         }
     }
@@ -243,14 +261,49 @@ class ErrorHandling
             $result['message'] ?? null,
         ];
 
+        $fallback = '';
         foreach ($candidates as $candidate) {
             $message = self::extractMessageCandidate($candidate);
             if (!empty($message)) {
-                return $message;
+                // Microservice 1.2.1 returns the exit status in error_message and the
+                // actionable cause in error.error (1.0.0 used message/output.error).
+                // Contract fixtures cover both formats; do not gate this on an executor image tag.
+                if (!preg_match('/^Script execution failed(?: with exit code:\s*-?\d+| with unknown error)?[.!]?$/i', $message)) {
+                    return $message;
+                }
+                $fallback = $fallback ?: $message;
             }
         }
 
-        return '';
+        return $fallback;
+    }
+
+    /**
+     * Retain bounded, sanitized executor diagnostics and identifiers, never stack arguments.
+     */
+    private static function scriptErrorDiagnostics(mixed $value, int $depth = 0): mixed
+    {
+        if (is_string($value)) {
+            return mb_strcut(self::redactScriptErrorDetails($value), 0, 8000, 'UTF-8');
+        }
+        if (is_int($value) || is_float($value) || is_bool($value) || $value === null) {
+            return $value;
+        }
+        if (!is_array($value) || $depth >= 4) {
+            return null;
+        }
+
+        $allowed = ['error_message', 'message', 'detail', 'error', 'exception', 'code', 'file', 'line',
+            'trace', 'class', 'function', 'type', 'script_id', 'executor_uuid', 'executor_type',
+            'executor_version', 'instance_uuid', 'script_task', 'definition_id', 'instance_id', 'token_id'];
+        $diagnostics = [];
+        foreach (array_slice($value, 0, 30, true) as $key => $item) {
+            if (is_int($key) || in_array($key, $allowed, true)) {
+                $diagnostics[$key] = self::scriptErrorDiagnostics($item, $depth + 1);
+            }
+        }
+
+        return $diagnostics;
     }
 
     /**
@@ -314,13 +367,18 @@ class ErrorHandling
     public static function redactScriptErrorDetails(string $details): string
     {
         $redacted = preg_replace(
-            '/\bauthorization\b\s*[:=]\s*[^\r\n]*/i',
-            'Authorization=[REDACTED]',
+            '/("(?:authorization|api[_-]?(?:token|key)|(?:access|refresh|callback)[_-]?token|client[_-]?secret|password)"\s*:\s*)"[^"\r\n]*"/i',
+            '$1"[REDACTED]"',
             $details
         ) ?? $details;
+        $redacted = preg_replace(
+            '/\bauthorization\b\s*[:=]\s*[^\r\n]*/i',
+            'Authorization=[REDACTED]',
+            $redacted
+        ) ?? $redacted;
         $redacted = preg_replace('/\bBearer\s+\S+/i', 'Bearer [REDACTED]', $redacted) ?? $redacted;
         $redacted = preg_replace(
-            '/\b(api[_-]?token|access[_-]?token|client[_-]?secret|password)\b\s*[:=]\s*[^\s,;]+/i',
+            '/\b(api[_-]?(?:token|key)|(?:access|refresh|callback)[_-]?token|client[_-]?secret|password)\b\s*[:=]\s*[^\s,;]+/i',
             '$1=[REDACTED]',
             $redacted
         ) ?? $redacted;
