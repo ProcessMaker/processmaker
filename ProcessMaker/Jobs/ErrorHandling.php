@@ -398,10 +398,10 @@ class ErrorHandling
     public static function redactScriptErrorDetails(string $details): string
     {
         $redacted = preg_replace(
-            '/("(?:authorization|api[_-]?(?:token|key)|(?:access|refresh|callback)[_-]?token|client[_-]?secret|password)"\s*:\s*)"(?:\\\\.|[^"\\\\\r\n])*"/i',
+            '/("(?:authorization|api[_-]?(?:token|key)|(?:access|refresh|callback)[_-]?token|client[_-]?secret|password)"\s*:\s*)"(?:\\\\.|[^"\\\\\r\n]++)*+"/i',
             '$1"[REDACTED]"',
             $details
-        ) ?? $details;
+        ) ?? '[REDACTED]';
         $redacted = preg_replace(
             '/\bauthorization\b\s*[:=]\s*[^\r\n]*/i',
             'Authorization=[REDACTED]',

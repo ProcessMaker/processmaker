@@ -4,6 +4,8 @@ namespace Tests\Unit;
 
 use Illuminate\Support\Facades\Log;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Exception\ScriptTimeoutException;
@@ -147,13 +149,39 @@ class ScriptMicroserviceErrorContractTest extends TestCase
         $this->assertSame('{"client_secret":"[REDACTED]", "callback_token":"[REDACTED]"}', $detail);
     }
 
-    public function testCredentialsAreRedactedBeforeTruncatingDiagnostics(): void
+    public static function pcreJitModes(): array
     {
-        $response = $this->fixture('1.2.1');
-        $response['error']['detail'] = json_encode(['Authorization' => 'Basic private-auth', 'password' => str_repeat('private-password', 1000)]);
-        $this->exceptionFor($response);
-        $detail = $this->logger->records[0]['context']['diagnostics']['error']['detail'];
-        $this->assertSame('{"Authorization":"[REDACTED]","password":"[REDACTED]"}', $detail);
+        return ['JIT enabled' => ['1'], 'JIT disabled' => ['0']];
+    }
+
+    #[DataProvider('pcreJitModes')]
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testCredentialsAreRedactedBeforeTruncatingDiagnostics(string $jit): void
+    {
+        $previousJit = ini_get('pcre.jit');
+        ini_set('pcre.jit', $jit);
+        try {
+            $response = $this->fixture('1.2.1');
+            $response['error']['detail'] = json_encode(['Authorization' => 'Basic private-auth', 'password' => str_repeat('private-password', 1000)]);
+            $this->exceptionFor($response);
+            $detail = $this->logger->records[0]['context']['diagnostics']['error']['detail'];
+            $this->assertSame('{"Authorization":"[REDACTED]","password":"[REDACTED]"}', $detail);
+        } finally {
+            ini_set('pcre.jit', $previousJit);
+        }
+    }
+
+    public function testRegexFailureNeverReturnsUnredactedDetails(): void
+    {
+        $previousLimit = ini_get('pcre.backtrack_limit');
+        ini_set('pcre.backtrack_limit', '1');
+        try {
+            $details = '{"password":"private-password"}';
+            $this->assertSame('[REDACTED]', ErrorHandling::redactScriptErrorDetails($details));
+        } finally {
+            ini_set('pcre.backtrack_limit', $previousLimit);
+        }
     }
 
     public static function unsafeTextTraces(): array
