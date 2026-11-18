@@ -1,6 +1,8 @@
 <?php
 
 use Laravel\Mcp\Facades\Mcp;
+use Illuminate\Support\Facades\Route;
+use ProcessMaker\Mcp\Http\McpProbeController;
 use ProcessMaker\Mcp\Servers\DataConnectorsServer;
 use ProcessMaker\Mcp\Servers\FlowGenieServer;
 use ProcessMaker\Mcp\Servers\ProcessServer;
@@ -36,3 +38,9 @@ Mcp::web('/mcp/flow-genies', FlowGenieServer::class)
     ->middleware(['auth:api']);
 
 Mcp::local('flow-genies', FlowGenieServer::class);
+
+Mcp::oauthRoutes();
+
+foreach (['screens', 'processes', 'data-connectors', 'flow-genies'] as $server) {
+    Route::get('/mcp/' . $server, McpProbeController::class);
+}
