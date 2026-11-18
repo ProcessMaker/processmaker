@@ -216,21 +216,46 @@ class PluginManager
      * @throws PluginReinstallException
      * @throws RuntimeException
      */
-    public function reinstall(string $pluginName, ?int $userId = null): void
-    {
+    public function reinstall(
+        string $pluginName,
+        ?int $userId = null,
+        ?string $branch = null,
+        ?string $tag = null,
+        ?string $gitUsername = null,
+        ?string $gitToken = null,
+    ): void {
         $pluginPath = $this->resolveInstalledPluginPath($pluginName);
 
         if (!is_dir($pluginPath . '/.git')) {
             throw PluginReinstallException::notGitRepositoryFromRemote($pluginName);
         }
 
-        $branch = $this->resolveCurrentBranch($pluginPath);
-        if ($branch === null) {
-            throw PluginReinstallException::notOnNamedBranch();
+        $branch = $branch !== null && trim($branch) !== '' ? trim($branch) : null;
+        $tag = $tag !== null && trim($tag) !== '' ? trim($tag) : null;
+
+        if ($tag === null && $branch === null) {
+            $branch = $this->resolveCurrentBranch($pluginPath);
+            if ($branch === null) {
+                throw PluginReinstallException::notOnNamedBranch();
+            }
         }
 
-        $this->logRunning("Starting reinstall of plugin: {$pluginName} on branch {$branch}", $pluginName, $userId);
-        $this->updateExistingRepository($pluginPath, $pluginName, $branch, null, $userId);
+        $canonicalUrl = $this->stripEmbeddedCredentialsFromHttpUrl(
+            Plugin::fromPath($pluginPath)->getUrl()
+        );
+        $authenticatedRepoUrl = $this->prepareGitUrl($canonicalUrl, $gitUsername, $gitToken);
+
+        $refLabel = $tag ?? $branch ?? 'current branch';
+        $this->logRunning("Starting reinstall of plugin: {$pluginName} on {$refLabel}", $pluginName, $userId);
+        $this->updateExistingRepository(
+            $pluginPath,
+            $pluginName,
+            $tag !== null ? null : $branch,
+            $tag,
+            $userId,
+            $canonicalUrl,
+            $authenticatedRepoUrl,
+        );
         $this->finishPluginSetup($pluginPath, $pluginName, $userId);
         $this->logDone('Plugin reinstalled successfully', $pluginName, $userId);
     }

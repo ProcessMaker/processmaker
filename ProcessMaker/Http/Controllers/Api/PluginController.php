@@ -66,7 +66,21 @@ class PluginController extends Controller
 
     public function reinstall(string $name, Request $request): JsonResponse
     {
-        ReinstallPlugin::dispatch($name, $request->user()->id);
+        $request->validate([
+            'branch' => 'prohibits:tag|nullable|string',
+            'tag' => 'prohibits:branch|nullable|string',
+            'git_username' => 'nullable|string|max:255',
+            'git_token' => 'nullable|string|max:4096',
+        ]);
+
+        ReinstallPlugin::dispatch(
+            $name,
+            $request->user()->id,
+            $request->input('branch'),
+            $request->input('tag'),
+            $request->input('git_username'),
+            $request->input('git_token'),
+        );
 
         return response()->json([
             'queued' => true,

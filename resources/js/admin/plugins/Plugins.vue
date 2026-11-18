@@ -60,22 +60,21 @@
             <div class="popout">
               <b-btn
                 variant="link"
-                @click="doReinstall(props.rowData)"
+                @click="openUpdatePlugin(props.rowData)"
                 v-b-tooltip.hover
                 :title="$t('Update')"
-                :class="props.rowData.source !== 'git' ? 'disabled' : ''"
-                :disabled="props.rowData.source !== 'git'"
+                :class="
+                  props.rowData.source !== 'git' ||
+                  props.rowData.enabled !== 'Enabled'
+                    ? 'disabled'
+                    : ''
+                "
+                :disabled="
+                  props.rowData.source !== 'git' ||
+                  props.rowData.enabled !== 'Enabled'
+                "
               >
                 <i class="fas fa-sync fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="edit(props.rowData)"
-                v-b-tooltip.hover
-                :title="$t('Edit')"
-                :class="props.rowData.enabled !== 'Enabled' ? 'disabled' : ''"
-              >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
               <b-btn
                 variant="link"
@@ -212,6 +211,84 @@
     </pm-modal>
 
     <pm-modal
+      ref="updatePluginModalRef"
+      id="updatePluginModal"
+      :title="updateModalTitle"
+      style="display: none"
+      :set-custom-buttons="true"
+      :custom-buttons="updateModalButtons"
+      @close="hideUpdatePluginModal"
+      @hidden="onUpdateModalHidden"
+      @continue="onUpdateContinue"
+    >
+      <b-container class="mb-2">
+        <b-form-group>
+          <template #label>
+            <span>{{ $t("Repository URL") }}</span>
+          </template>
+          <div class="d-flex align-items-center">
+            <b-form-input
+              :value="updateRepositoryUrl"
+              name="update_plugin_url"
+              readonly
+              :aria-readonly="true"
+            />
+            <b-button
+              variant="link"
+              class="py-0 ml-1"
+              type="button"
+              :aria-pressed="showUpdateGitCredentials ? 'true' : 'false'"
+              :aria-label="$t('Credentials')"
+              @click="showUpdateGitCredentials = !showUpdateGitCredentials"
+            >
+              <span v-b-tooltip.hover.bottom :title="$t('Credentials')">
+                <i class="fas fa-key" />
+              </span>
+            </b-button>
+          </div>
+        </b-form-group>
+        <b-collapse v-model="showUpdateGitCredentials" class="mb-3">
+          <b-row>
+            <b-col cols="12" md="6">
+              <b-form-group :label="$t('Username')">
+                <b-form-input
+                  v-model="updateGitUsername"
+                  name="update_git_username"
+                  autocomplete="username"
+                />
+              </b-form-group>
+            </b-col>
+            <b-col cols="12" md="6">
+              <b-form-group :label="$t('Token')">
+                <b-form-input
+                  v-model="updateGitToken"
+                  type="password"
+                  name="update_git_token"
+                  autocomplete="off"
+                  :aria-label="$t('Token')"
+                />
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </b-collapse>
+        <b-row>
+          <b-col cols="12" md="6">
+            <b-form-group :label="$t('Branch')">
+              <b-form-input v-model="updateBranch" name="update_branch" />
+              <b-form-text>{{ $t("Branch must be a valid branch name") }}</b-form-text>
+            </b-form-group>
+          </b-col>
+          <b-col cols="12" md="6">
+            <b-form-group :label="$t('Tag')">
+              <b-form-input v-model="updateTag" name="update_tag" />
+              <b-form-text>{{ $t("Tag must be a valid tag name") }}</b-form-text>
+            </b-form-group>
+          </b-col>
+        </b-row>
+      </b-container>
+    </pm-modal>
+
+    <pm-modal
       ref="pluginProgressModal"
       id="pluginProgressModal"
       :title="progressTitle"
@@ -254,6 +331,7 @@ import {
   onBeforeMount,
   onUnmounted,
   getCurrentInstance,
+  nextTick,
 } from "vue";
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import Pagination from "../../components/common/Pagination";
@@ -272,8 +350,18 @@ const instance = getCurrentInstance();
 const $t = (...args) => instance?.proxy?.$t(...args);
 
 const createPlugin = ref(null);
+const updatePluginModalRef = ref(null);
 const pluginProgressModal = ref(null);
 const pagination = ref(null);
+const updateModalTitle = ref("");
+const updateRepositoryUrl = ref("");
+const pendingReinstallItem = ref(null);
+const updateModalButtons = ref([]);
+const showUpdateGitCredentials = ref(false);
+const updateGitUsername = ref("");
+const updateGitToken = ref("");
+const updateBranch = ref("");
+const updateTag = ref("");
 
 const plugin = reactive({
   id: null,
@@ -621,6 +709,114 @@ const reloadAfterPluginChange = (message) => {
   window.location.reload();
 };
 
+const initUpdateModalButtons = () => {
+  updateModalButtons.value = [
+    {
+      content: "Cancel",
+      action: "close",
+      variant: "outline-secondary",
+      disabled: false,
+      hidden: false,
+    },
+    {
+      content: "Continue",
+      action: "continue",
+      variant: "primary",
+      disabled: false,
+      hidden: false,
+    },
+  ];
+};
+
+const resetUpdateModalForm = () => {
+  showUpdateGitCredentials.value = false;
+  updateGitUsername.value = "";
+  updateGitToken.value = "";
+  updateBranch.value = "";
+  updateTag.value = "";
+};
+
+const hideUpdatePluginModal = () => {
+  if (updatePluginModalRef.value?.hide) {
+    updatePluginModalRef.value.hide();
+  } else {
+    instance?.proxy?.$bvModal?.hide("updatePluginModal");
+  }
+};
+
+const showUpdatePluginModal = () => {
+  nextTick(() => {
+    if (updatePluginModalRef.value?.show) {
+      updatePluginModalRef.value.show();
+      return;
+    }
+    instance?.proxy?.$bvModal?.show("updatePluginModal");
+  });
+};
+
+const onUpdateModalHidden = () => {
+  pendingReinstallItem.value = null;
+  updateRepositoryUrl.value = "";
+  resetUpdateModalForm();
+};
+
+const onUpdateContinue = () => {
+  const item = pendingReinstallItem.value;
+  if (!item) {
+    return;
+  }
+  const gitUsername = updateGitUsername.value;
+  const gitToken = updateGitToken.value;
+  const branch = updateBranch.value?.trim() || undefined;
+  const tag = updateTag.value?.trim() || undefined;
+  hideUpdatePluginModal();
+  openPluginProgressModal({
+    title: $t("Update Plugin") + `: ${item.name}`,
+    outputTitle: $t("Plugin Update Output"),
+    successMessage: $t(
+      "Plugin successfully reinstalled. You can now close this window."
+    ),
+    errorMessage: $t("Error reinstalling plugin. See output above."),
+    verb: "reinstalled",
+  });
+  ProcessMaker.apiClient({
+    method: "POST",
+    url: `/plugins/${item.name}/reinstall`,
+    baseURL: "/api/1.0/",
+    timeout: 0,
+    data: {
+      ...(branch ? { branch } : {}),
+      ...(tag ? { tag } : {}),
+      ...(gitUsername || gitToken
+        ? {
+            git_username: gitUsername || undefined,
+            git_token: gitToken || undefined,
+          }
+        : {}),
+    },
+  })
+    .then(() => {
+      progressIsRunning.value = true;
+    })
+    .catch((error) => {
+      onPluginProgressApiError(error, $t("Unable to reinstall plugin."));
+    });
+};
+
+const openUpdatePlugin = (item) => {
+  if (item.source !== "git" || item.enabled !== "Enabled") {
+    return;
+  }
+  pendingReinstallItem.value = item;
+  updateModalTitle.value = $t("Update Plugin") + `: ${item.name}`;
+  resetUpdateModalForm();
+  updateRepositoryUrl.value = item.url || "";
+  updateBranch.value = item.branch || "";
+  updateTag.value = item.tag || "";
+  initUpdateModalButtons();
+  showUpdatePluginModal();
+};
+
 const initProgressModalButtons = () => {
   progressModalButtons.value = [
     {
@@ -751,27 +947,6 @@ const resetValues = () => {
   initCustomModalButtons();
 };
 
-const edit = (item) => {
-  if (item.enabled !== 'Enabled') {
-    return;
-  }
-  title.value = $t("Edit Plugin");
-  Object.assign(plugin, _.cloneDeep(item));
-  plugin.gitUsername = "";
-  plugin.gitPassword = "";
-  showGitCredentials.value = false;
-  errors.value = {
-    url: null,
-    branch: null,
-    tag: null,
-  };
-  disabled.value = false;
-  isRunning.value = false;
-  isDone.value = false;
-  initCustomModalButtons();
-  createPlugin.value?.show();
-};
-
 const onNavigate = (action, row) => {
   switch (action.value) {
     case "toggle-item":
@@ -805,32 +980,6 @@ const doToggle = (item) => {
     })
     .catch((error) => {
       onPluginProgressApiError(error, $t("Unable to toggle plugin."));
-    });
-};
-
-const doReinstall = (item) => {
-  if (item.source !== "git") {
-    return;
-  }
-  openPluginProgressModal({
-    title: $t("Update Plugin") + `: ${item.name}`,
-    outputTitle: $t("Plugin Update Output"),
-    successMessage: $t(
-      "Plugin successfully reinstalled. You can now close this window."
-    ),
-    errorMessage: $t("Error reinstalling plugin. See output above."),
-    verb: "reinstalled",
-  });
-  ProcessMaker.apiClient
-    .post(`/plugins/${item.name}/reinstall`, null, {
-      baseURL: "/api/1.0/",
-      timeout: 0,
-    })
-    .then(() => {
-      progressIsRunning.value = true;
-    })
-    .catch((error) => {
-      onPluginProgressApiError(error, $t("Unable to reinstall plugin."));
     });
 };
 
@@ -906,6 +1055,7 @@ onMounted(() => {
   ProcessMaker.EventBus.$on("api-data-loading", onApiDataLoading);
   ProcessMaker.EventBus.$on("api-data-no-results", onApiDataNoResults);
   initProgressModalButtons();
+  initUpdateModalButtons();
   fetch();
 });
 
