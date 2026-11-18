@@ -296,6 +296,14 @@ class TokenRepository implements TokenRepositoryInterface
             ]];
         }
 
+        return $this->resolveAbeSelfServiceRecipients($token);
+    }
+
+    /**
+     * @return array<int, array{email:string,user_id:int,groups:array}>
+     */
+    private function resolveAbeSelfServiceRecipients(TokenInterface $token): array
+    {
         if (!$token->is_self_service || !is_array($token->self_service_groups)) {
             return [];
         }
@@ -317,15 +325,33 @@ class TokenRepository implements TokenRepositoryInterface
             ? collect()
             : Group::query()->whereIn('id', $groupIds)->get(['id', 'name'])->keyBy('id');
 
+        $groupMembership = $this->abeGroupMembershipsByUserId($processModel, $groupIds, $groupsById);
+        $allUserIds = array_values(array_unique(array_merge(
+            $assignedUserIds,
+            $groupMembership['groupUserIds']
+        )));
+
+        return $this->abeRecipientsFromAssignees($allUserIds, $groupMembership['groupsByUserId']);
+    }
+
+    /**
+     * @param  \Illuminate\Support\Collection<int, Group>  $groupsById
+     * @return array{groupsByUserId: array<int, array<int, array{id:int, name:string}>>, groupUserIds: array<int>}
+     */
+    private function abeGroupMembershipsByUserId(
+        Process $processModel,
+        array $groupIds,
+        $groupsById
+    ): array {
         $groupsByUserId = [];
-        $groupUsers = [];
+        $groupUserIds = [];
         foreach ($groupIds as $groupId) {
             $membersForGroup = [];
             $processModel->getConsolidatedUsers($groupId, $membersForGroup);
             $group = $groupsById->get($groupId);
             foreach ($membersForGroup as $memberId) {
                 $memberId = (int) $memberId;
-                $groupUsers[] = $memberId;
+                $groupUserIds[] = $memberId;
                 if ($group) {
                     $groupsByUserId[$memberId][$groupId] = [
                         'id' => (int) $group->id,
@@ -335,7 +361,19 @@ class TokenRepository implements TokenRepositoryInterface
             }
         }
 
-        $allUserIds = array_values(array_unique(array_merge($assignedUserIds, $groupUsers)));
+        return [
+            'groupsByUserId' => $groupsByUserId,
+            'groupUserIds' => $groupUserIds,
+        ];
+    }
+
+    /**
+     * @param  array<int>  $allUserIds
+     * @param  array<int, array<int, array{id:int, name:string}>>  $groupsByUserId
+     * @return array<int, array{email:string,user_id:int,groups:array}>
+     */
+    private function abeRecipientsFromAssignees(array $allUserIds, array $groupsByUserId): array
+    {
         if ($allUserIds === []) {
             return [];
         }
