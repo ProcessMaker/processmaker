@@ -298,12 +298,43 @@ class ErrorHandling
             'executor_version', 'instance_uuid', 'script_task', 'definition_id', 'instance_id', 'token_id'];
         $diagnostics = [];
         foreach (array_slice($value, 0, 30, true) as $key => $item) {
+            if ($key === 'trace') {
+                // Text traces may contain unlabeled arguments. Keep only structured frames.
+                $frames = self::scriptTraceDiagnostics($item, $depth + 1);
+                if ($frames !== []) {
+                    $diagnostics[$key] = $frames;
+                }
+                continue;
+            }
             if (is_int($key) || in_array($key, $allowed, true)) {
                 $diagnostics[$key] = self::scriptErrorDiagnostics($item, $depth + 1);
             }
         }
 
         return $diagnostics;
+    }
+
+    private static function scriptTraceDiagnostics(mixed $trace, int $depth): array
+    {
+        if (!is_array($trace) || $depth >= 4) {
+            return [];
+        }
+
+        $frames = [];
+        foreach (array_slice(array_is_list($trace) ? $trace : [$trace], 0, 30) as $frame) {
+            if (!is_array($frame)) {
+                continue;
+            }
+            $fields = array_filter(
+                Arr::only($frame, ['file', 'line', 'class', 'function', 'type']),
+                fn ($field) => is_string($field) || is_int($field)
+            );
+            if ($fields !== []) {
+                $frames[] = self::scriptErrorDiagnostics($fields, $depth + 1);
+            }
+        }
+
+        return $frames;
     }
 
     /**
@@ -367,7 +398,7 @@ class ErrorHandling
     public static function redactScriptErrorDetails(string $details): string
     {
         $redacted = preg_replace(
-            '/("(?:authorization|api[_-]?(?:token|key)|(?:access|refresh|callback)[_-]?token|client[_-]?secret|password)"\s*:\s*)"[^"\r\n]*"/i',
+            '/("(?:authorization|api[_-]?(?:token|key)|(?:access|refresh|callback)[_-]?token|client[_-]?secret|password)"\s*:\s*)"(?:\\\\.|[^"\\\\\r\n])*"/i',
             '$1"[REDACTED]"',
             $details
         ) ?? $details;

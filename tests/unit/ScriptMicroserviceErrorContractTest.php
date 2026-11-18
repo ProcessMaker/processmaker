@@ -65,7 +65,7 @@ class ScriptMicroserviceErrorContractTest extends TestCase
             : $log['context']['output_diagnostics'];
         $this->assertSame('/opt/executor/script.php', $diagnostics['file']);
         $this->assertSame(88, $diagnostics['line']);
-        $this->assertStringContainsString('validateConfig()', $diagnostics['trace']);
+        $this->assertArrayNotHasKey('trace', $diagnostics);
         if ($version === '1.2.1') {
             $this->assertSame(42, $log['context']['correlation']['script_id']);
             $this->assertSame('v2026.12.2', $log['context']['correlation']['executor_version']);
@@ -133,27 +133,109 @@ class ScriptMicroserviceErrorContractTest extends TestCase
     public function testDiagnosticStringsAreBounded(): void
     {
         $response = $this->fixture('1.2.1');
-        $response['error']['trace'] = str_repeat('x', 20000);
+        $response['error']['detail'] = str_repeat('x', 20000);
         $this->exceptionFor($response);
-        $this->assertSame(8000, strlen($this->logger->records[0]['context']['diagnostics']['error']['trace']));
+        $this->assertSame(8000, strlen($this->logger->records[0]['context']['diagnostics']['error']['detail']));
     }
 
-    public function testJsonCredentialsInStringTracesAreRedacted(): void
+    public function testJsonCredentialsInDiagnosticDetailsAreRedacted(): void
     {
         $response = $this->fixture('1.2.1');
-        $response['error']['trace'] = '{"client_secret":"private-secret", "callback_token":"private-callback"}';
+        $response['error']['detail'] = '{"client_secret":"private-secret", "callback_token":"private-callback"}';
         $this->exceptionFor($response);
-        $trace = $this->logger->records[0]['context']['diagnostics']['error']['trace'];
-        $this->assertSame('{"client_secret":"[REDACTED]", "callback_token":"[REDACTED]"}', $trace);
+        $detail = $this->logger->records[0]['context']['diagnostics']['error']['detail'];
+        $this->assertSame('{"client_secret":"[REDACTED]", "callback_token":"[REDACTED]"}', $detail);
     }
 
     public function testCredentialsAreRedactedBeforeTruncatingDiagnostics(): void
     {
         $response = $this->fixture('1.2.1');
-        $response['error']['trace'] = json_encode(['Authorization' => 'Basic private-auth', 'password' => str_repeat('private-password', 1000)]);
+        $response['error']['detail'] = json_encode(['Authorization' => 'Basic private-auth', 'password' => str_repeat('private-password', 1000)]);
         $this->exceptionFor($response);
-        $trace = $this->logger->records[0]['context']['diagnostics']['error']['trace'];
-        $this->assertSame('{"Authorization":"[REDACTED]","password":"[REDACTED]"}', $trace);
+        $detail = $this->logger->records[0]['context']['diagnostics']['error']['detail'];
+        $this->assertSame('{"Authorization":"[REDACTED]","password":"[REDACTED]"}', $detail);
+    }
+
+    public static function unsafeTextTraces(): array
+    {
+        $trace = "#0 /opt/executor/script.php(88): validateConfig('private-document-content', 'unlabeled-secret')";
+
+        return [
+            'text trace' => [$trace],
+            'text frames in array' => [[$trace, '#1 {main}']],
+            'unknown trace format' => [['unexpected' => $trace]],
+            'mixed frames' => [[$trace, ['file' => '/opt/executor/bootstrap.php', 'line' => 20,
+                'function' => 'validateConfig', 'args' => ['private-document-content', 'unlabeled-secret']]]],
+        ];
+    }
+
+    #[DataProvider('unsafeTextTraces')]
+    public function testTextTraceArgumentsNeverReachDiagnosticLogs(mixed $trace): void
+    {
+        $response = $this->fixture('1.2.1');
+        $response['error']['trace'] = $trace;
+        $response['output']['trace'] = $trace;
+        $this->assertSame('variableName is required', $this->exceptionFor($response)->getMessage());
+
+        $context = $this->logger->records[0]['context'];
+        $encoded = json_encode($context, JSON_THROW_ON_ERROR);
+        $this->assertStringNotContainsString('private-document-content', $encoded);
+        $this->assertStringNotContainsString('unlabeled-secret', $encoded);
+        if (is_array($trace) && array_is_list($trace) && is_array(end($trace))) {
+            $expected = [['file' => '/opt/executor/bootstrap.php', 'line' => 20, 'function' => 'validateConfig']];
+            $this->assertSame($expected, $context['diagnostics']['error']['trace']);
+            $this->assertSame($expected, $context['output_diagnostics']['trace']);
+        } else {
+            $this->assertArrayNotHasKey('trace', $context['diagnostics']['error']);
+            $this->assertArrayNotHasKey('trace', $context['output_diagnostics']);
+        }
+    }
+
+    public function testSingleStructuredTraceFrameKeepsOnlyScalarFrameFields(): void
+    {
+        $response = $this->fixture('1.2.1');
+        $response['error']['trace'] = ['file' => '/opt/executor/script.php', 'line' => 88,
+            'class' => 'Validator', 'function' => 'validateConfig', 'type' => '::',
+            'args' => ['private-document-content'], 'object' => ['secret' => 'private-object'],
+            'unknown' => 'private-extra'];
+        $this->exceptionFor($response);
+        $this->assertSame([['file' => '/opt/executor/script.php', 'line' => 88,
+            'class' => 'Validator', 'function' => 'validateConfig', 'type' => '::']],
+            $this->logger->records[0]['context']['diagnostics']['error']['trace']);
+    }
+
+    public static function escapedCredentialValues(): array
+    {
+        return [
+            'escaped quote' => ['prefix"SECRET_SUFFIX'],
+            'escaped backslash' => ['prefix\\SECRET_SUFFIX'],
+            'backslash followed by quote' => ['prefix\\"SECRET_SUFFIX'],
+            'trailing backslash' => ['SECRET_SUFFIX\\'],
+        ];
+    }
+
+    #[DataProvider('escapedCredentialValues')]
+    public function testEscapedJsonCredentialsAreCompletelyRedacted(string $secret): void
+    {
+        $details = json_encode(['password' => $secret, 'client_secret' => $secret,
+            'Authorization' => $secret, 'detail' => 'Useful diagnostic'], JSON_THROW_ON_ERROR);
+        $expected = ['password' => '[REDACTED]', 'client_secret' => '[REDACTED]',
+            'Authorization' => '[REDACTED]', 'detail' => 'Useful diagnostic'];
+
+        $this->assertSame($expected, json_decode(ErrorHandling::redactScriptErrorDetails($details), true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->fixture('1.2.1');
+        $response['error']['detail'] = $details;
+        $this->exceptionFor($response);
+        $logged = $this->logger->records[0]['context']['diagnostics']['error']['detail'];
+        $this->assertSame($expected, json_decode($logged, true, 512, JSON_THROW_ON_ERROR));
+        $this->assertStringNotContainsString('SECRET_SUFFIX', $logged);
+    }
+
+    public function testExistingPlainTextCredentialRedactionRemainsCompatible(): void
+    {
+        $details = "Authorization: Basic private-auth\nBearer private-bearer\npassword=private-password";
+        $this->assertSame("Authorization=[REDACTED]\nBearer [REDACTED]\npassword=[REDACTED]",
+            ErrorHandling::redactScriptErrorDetails($details));
     }
 
     public static function fallbackResponses(): array

@@ -14,5 +14,11 @@ message retains precedence. An exit-status message is a fallback when no cause i
 Exit codes 1 and 255 follow the same policy. API versions and executor image versions are
 separate; response interpretation must not depend on an executor image tag.
 
+Text traces are deliberately omitted from diagnostic logs because positional arguments
+can contain document content or unlabeled secrets. Only structured frames with scalar
+`file`, `line`, `class`, `function`, and `type` fields are retained; arguments, objects,
+text entries, and unknown trace formats are excluded. The fixtures retain text traces
+to verify this omission for both response contracts.
+
 Future microservice upgrades should validate these contracts and add fixtures for changed
 responses. A valid error JSON response alone does not ensure compatible message selection.
