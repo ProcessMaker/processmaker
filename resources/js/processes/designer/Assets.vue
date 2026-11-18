@@ -13,6 +13,7 @@
       <b-card-group deck>
         <b-card
           v-for="(asset, index) in assetsCore"
+          v-if="hasAssetPermission(asset)"
           :key="index"
           bg-variant="light"
           class="text-center"
@@ -30,6 +31,8 @@
 
           <template v-if="showButtonsCore[index]">
             <asset-buttons
+              :can-view="canView(asset)"
+              :can-create="canCreate(asset)"
               :asset_name_all="asset.asset_name_all"
               :asset_name_new="asset.asset_name_new"
               :url-path="asset.urlPath"
@@ -43,7 +46,7 @@
       <b-card-group deck>
         <b-card
           v-for="(asset, index) in assetsPackage"
-          v-if="isPackageInstalled(asset.package)"
+          v-if="hasAssetPermission(asset)"
           :key="index"
           bg-variant="light"
           class="text-center"
@@ -61,6 +64,8 @@
 
           <template v-if="showButtonsPackage[index]">
             <asset-buttons
+              :can-view="canView(asset)"
+              :can-create="canCreate(asset)"
               :asset_name_all="asset.asset_name_all"
               :asset_name_new="asset.asset_name_new"
               :url-path="asset.urlPath"
@@ -74,7 +79,7 @@
       <b-card-group deck>
         <b-card
           v-for="(asset, index) in assetsPackageExtra"
-          v-if="isPackageInstalled(asset.package)"
+          v-if="hasAssetPermission(asset)"
           :key="index"
           bg-variant="light"
           class="text-center"
@@ -92,6 +97,8 @@
 
           <template v-if="showButtonsPackageExtra[index]">
             <asset-buttons
+              :can-view="canView(asset)"
+              :can-create="canCreate(asset)"
               :asset_name_all="asset.asset_name_all"
               :asset_name_new="asset.asset_name_new"
               :url-path="asset.urlPath"
@@ -122,6 +129,7 @@ export default {
           color: "#4DA2EB",
           icon: "fas fa-play-circle",
           asset_name: "Processes",
+          resource: "processes",
           asset_name_all: "View All Processes",
           asset_name_new: "New Process",
           urlPath: "/processes",
@@ -131,6 +139,7 @@ export default {
           color: "#8EB86F",
           icon: "fas fa-file-alt",
           asset_name: "Screens",
+          resource: "screens",
           asset_name_all: "View All Screens",
           asset_name_new: "New Screen",
           urlPath: "/designer/screens",
@@ -140,6 +149,7 @@ export default {
           color: "#F7CF5D",
           icon: "fas fa-code",
           asset_name: "Scripts",
+          resource: "scripts",
           asset_name_all: "View All Scripts",
           asset_name_new: "New Script",
           urlPath: "/designer/scripts",
@@ -151,6 +161,7 @@ export default {
           color: "#712F4A",
           icon: "fas fa-table",
           asset_name: "Decision Tables",
+          resource: "decision_tables",
           asset_name_all: "View All Decision Tables",
           asset_name_new: "New Decision Table",
           urlPath: "/designer/decision-tables",
@@ -161,6 +172,7 @@ export default {
           color: "#B5D3E7",
           icon: "fas fa-share-alt",
           asset_name: "Data Connectors",
+          resource: "data-sources",
           asset_name_all: "View All Data Connectors",
           asset_name_new: "New Data Connector",
           urlPath: "/designer/data-sources",
@@ -171,6 +183,7 @@ export default {
           color: "#556271",
           image_icon: "/img/flowGenieIcon.svg",
           asset_name: "FlowGenie",
+          resource: "flow_genies",
           asset_name_all: "View All Genies",
           asset_name_new: "New Genie",
           urlPath: "/designer/flow-genies",
@@ -183,6 +196,7 @@ export default {
           color: "#5E4FE2",
           icon: "fas fa-database",
           asset_name: "Collections",
+          resource: "collections",
           asset_name_all: "View All Collections",
           asset_name_new: "New Collection",
           urlPath: "/collections",
@@ -196,6 +210,16 @@ export default {
     };
   },
   methods: {
+    canView(asset) {
+      return this.permission.includes(`view-${asset.resource}`);
+    },
+    canCreate(asset) {
+      return this.permission.includes(`create-${asset.resource}`);
+    },
+    hasAssetPermission(asset) {
+      return (!asset.package || this.isPackageInstalled(asset.package))
+        && (this.canView(asset) || this.canCreate(asset));
+    },
     isPackageInstalled(packageName) {
       return window.ProcessMaker?.packages?.includes(packageName);
     },
@@ -211,16 +235,8 @@ export default {
       }
     },
     hasPermission() {
-      return this.permission.includes("view-processes")
-      || this.permission.includes("view-screens")
-      || this.permission.includes("view-data-sources")
-      || this.permission.includes("view-decision_tables")
-      || this.permission.includes("view-scripts")
-      || this.permission.includes("create-data-sources")
-      || this.permission.includes("create-decision_tables")
-      || this.permission.includes("create-processes")
-      || this.permission.includes("create-screens")
-      || this.permission.includes("create-scripts");
+      return [...this.assetsCore, ...this.assetsPackage, ...this.assetsPackageExtra]
+        .some((asset) => this.hasAssetPermission(asset));
     },
   },
 };
