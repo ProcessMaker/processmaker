@@ -114,9 +114,7 @@ class TwoFactorAuthentication
             : $this->getUserDeliveryTotpSecret($user);
 
         // Config OTP
-        $otp = $this->configureOtp(TOTP::createFromSecret($secret), $user, $forGoogleAuthApp);
-
-        return $otp;
+        return $this->configureOtp(TOTP::createFromSecret($secret), $user, $forGoogleAuthApp);
     }
 
     private function getCodeForEmailSms(User $user): string
