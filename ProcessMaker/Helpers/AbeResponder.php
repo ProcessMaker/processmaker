@@ -104,11 +104,15 @@ class AbeResponder
         if (str_contains($ua, 'yahoo')) {
             return 'Yahoo Mail';
         }
-        if (str_contains($ua, 'applewebkit') && (str_contains($ua, 'macintosh') || str_contains($ua, 'iphone') || str_contains($ua, 'ipad'))) {
-            // Apple Mail / iOS Mail often look like Safari; coarse best-effort
-            if (!str_contains($ua, 'crios') && !str_contains($ua, 'fxios') && !str_contains($ua, 'edgios')) {
-                return 'Apple Mail';
-            }
+        // Apple Mail / iOS Mail often look like Safari; coarse best-effort
+        if (
+            str_contains($ua, 'applewebkit')
+            && (str_contains($ua, 'macintosh') || str_contains($ua, 'iphone') || str_contains($ua, 'ipad'))
+            && !str_contains($ua, 'crios')
+            && !str_contains($ua, 'fxios')
+            && !str_contains($ua, 'edgios')
+        ) {
+            return 'Apple Mail';
         }
 
         return 'Unknown';
