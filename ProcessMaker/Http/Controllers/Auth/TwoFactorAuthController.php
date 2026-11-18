@@ -136,8 +136,12 @@ class TwoFactorAuthController extends Controller
         $user = $user->fresh() ?? $user;
         $methods = $user->getValid2FAPreferences();
 
+        $hasDeliveryMethod = in_array(TwoFactorAuthentication::EMAIL, $methods, true)
+            || in_array(TwoFactorAuthentication::SMS, $methods, true);
+
         if (!in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)
             || !empty($user->two_factor_secret)
+            || (empty($user->two_factor_secret) && $hasDeliveryMethod)
         ) {
             return redirect()->route('2fa');
         }

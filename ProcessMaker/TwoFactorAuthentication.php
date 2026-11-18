@@ -116,7 +116,12 @@ class TwoFactorAuthentication
         // The code is for Google Authenticator app?
         if (strlen($code) === 6) {
             $authSecret = $this->resolveAuthenticatorSecret($user);
+            $hasDeliveryMethod = in_array(self::EMAIL, $methods, true)
+                || in_array(self::SMS, $methods, true);
             if (in_array(self::AUTH_APP, $methods, true) && $authSecret !== null) {
+                if (empty($user->two_factor_secret) && $hasDeliveryMethod) {
+                    return false;
+                }
                 // Create OTP instance
                 $otp = $this->createOtpInstance($user, true);
 
