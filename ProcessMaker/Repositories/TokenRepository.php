@@ -205,69 +205,76 @@ class TokenRepository implements TokenRepositoryInterface
         try {
             $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
             Log::Info('Activity isActionsByEmail: ' . $isActionsByEmail);
-            $recipients = $this->resolveAbeRecipients($token, $user);
-            // If the actionByEmail is enable
-            if ($isActionsByEmail === 'true' && $recipients !== []) {
-                $configEmail = json_decode($activity->getProperty('configEmail'), true);
-                if (!empty($configEmail)) {
-                    Log::info('Activity configEmail: ', $configEmail);
-                    $abeRequestToken = new ProcessAbeRequestToken();
-                    $requireLogin = !empty($configEmail['requireLogin']) ? 1 : 0;
-                    $screenCompleted = !empty($configEmail['screenCompleteRef'])
-                        ? $configEmail['screenCompleteRef']
-                        : null;
-                    $tokenAbe = $abeRequestToken->updateOrCreate([
-                        'process_request_id' => $token->process_request_id ?? null,
-                        'process_request_token_id' => $token->getKey() ?? null,
-                        'require_login' => $requireLogin,
-                        'completed_screen_id' => $screenCompleted,
-                    ]);
-                    $baseData = $token->getInstance()->getDataStore()->getData();
-                    // Set custom variables defined in the link
-                    $baseData['abe_uri'] = config('app.url');
-                    $baseData['token_abe'] = $tokenAbe->uuid;
-
-                    $mailer = new TaskActionByEmail();
-                    $trackResponder = !empty($configEmail['trackResponder']);
-
-                    if (!$trackResponder) {
-                        // Legacy: one email (shared link) to all recipients
-                        $to = implode(', ', array_column($recipients, 'email'));
-
-                        return $mailer->sendAbeEmail($configEmail, $to, $baseData);
-                    }
-
-                    // Opt-in responder tracking: one personalized email per unique address
-                    // with a signed link. Overlapping group membership is collapsed in
-                    // resolveAbeRecipients (groups merged). The shared mailer instance
-                    // renders the email screen once; only signed links differ per send.
-                    // Stagger dispatches so providers with per-second caps (Mailtrap,
-                    // etc.) are less likely to throttle.
-                    $staggerSeconds = max(0, (int) config('app.abe_email_stagger_seconds', 1));
-                    foreach ($recipients as $index => $recipient) {
-                        $signedQuery = AbeRecipientSignature::queryString(
-                            $tokenAbe->uuid,
-                            $recipient['email'],
-                            $recipient['user_id'],
-                            $recipient['groups']
-                        );
-                        $mailer->sendAbeEmail(
-                            $configEmail,
-                            $recipient['email'],
-                            $baseData,
-                            $signedQuery,
-                            $index * $staggerSeconds
-                        );
-                    }
-
-                    return true;
-                }
+            if ($isActionsByEmail !== 'true') {
+                return;
             }
+
+            $recipients = $this->resolveAbeRecipients($token, $user);
+            if ($recipients === []) {
+                return;
+            }
+
+            $configEmail = json_decode($activity->getProperty('configEmail'), true);
+            if (empty($configEmail)) {
+                return;
+            }
+
+            Log::info('Activity configEmail: ', $configEmail);
+            $this->sendAbeEmailsForRecipients($token, $recipients, $configEmail);
         } catch (\Exception $e) {
             // Catch and log the error
             Log::error('Failed to validate and send action by email', [
                 'error' => $e->getMessage(),
             ]);
+        }
+    }
+
+    /**
+     * @param  array<int, array{email:string,user_id:int,groups:array}>  $recipients
+     */
+    private function sendAbeEmailsForRecipients(
+        TokenInterface $token,
+        array $recipients,
+        array $configEmail
+    ): void {
+        $abeRequestToken = new ProcessAbeRequestToken();
+        $requireLogin = !empty($configEmail['requireLogin']) ? 1 : 0;
+        $screenCompleted = !empty($configEmail['screenCompleteRef'])
+            ? $configEmail['screenCompleteRef']
+            : null;
+        $tokenAbe = $abeRequestToken->updateOrCreate([
+            'process_request_id' => $token->process_request_id ?? null,
+            'process_request_token_id' => $token->getKey() ?? null,
+            'require_login' => $requireLogin,
+            'completed_screen_id' => $screenCompleted,
+        ]);
+        $baseData = $token->getInstance()->getDataStore()->getData();
+        $baseData['abe_uri'] = config('app.url');
+        $baseData['token_abe'] = $tokenAbe->uuid;
+
+        $mailer = new TaskActionByEmail();
+        if (empty($configEmail['trackResponder'])) {
+            $to = implode(', ', array_column($recipients, 'email'));
+            $mailer->sendAbeEmail($configEmail, $to, $baseData);
+
+            return;
+        }
+
+        $staggerSeconds = max(0, (int) config('app.abe_email_stagger_seconds', 1));
+        foreach ($recipients as $index => $recipient) {
+            $signedQuery = AbeRecipientSignature::queryString(
+                $tokenAbe->uuid,
+                $recipient['email'],
+                $recipient['user_id'],
+                $recipient['groups']
+            );
+            $mailer->sendAbeEmail(
+                $configEmail,
+                $recipient['email'],
+                $baseData,
+                $signedQuery,
+                $index * $staggerSeconds
+            );
         }
     }
 
