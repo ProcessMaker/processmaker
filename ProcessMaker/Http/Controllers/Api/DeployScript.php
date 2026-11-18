@@ -7,12 +7,15 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use ProcessMaker\Http\Controllers\Api\Concerns\AppliesDeployVersionName;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Services\ScriptExecutorResolver;
 
 class DeployScript extends Controller
 {
+    use AppliesDeployVersionName;
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -38,10 +41,20 @@ class DeployScript extends Controller
      */
     public function deployScript(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'code' => 'required|string',
-            'name' => 'required|string',
-        ]);
+        $name = (string) $request->input('name');
+        $isUpdate = Script::where('title', $name)->exists();
+
+        if ($unavailable = $this->ensureDeployVersionHistoryAvailable($isUpdate)) {
+            return $unavailable;
+        }
+
+        $validator = Validator::make(
+            $request->all(),
+            $this->deployRulesForUpdate([
+                'code' => 'required|string',
+                'name' => 'required|string',
+            ], $isUpdate),
+        );
 
         if ($validator->fails()) {
             return response()->json([
@@ -50,9 +63,7 @@ class DeployScript extends Controller
             ], 422);
         }
 
-        $name = $request->input('name');
         $code = $request->input('code');
-
         $script = Script::where('title', $name)->first();
         $created = $script === null;
 
@@ -78,6 +89,7 @@ class DeployScript extends Controller
 
         $script->code = $code;
         $script->save();
+        $this->applyDeployVersionName($script, $request);
         $script->refresh();
 
         return response()->json([

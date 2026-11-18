@@ -3,6 +3,8 @@
 namespace Tests\Feature\Api;
 
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenVersion;
+use ProcessMaker\Package\Versions\Models\VersionHistory;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -45,6 +47,58 @@ YAML;
             ]);
 
         $this->assertNotNull(Screen::where('title', 'sample-screen')->first());
+    }
+
+    public function testDeployScreenUpdateRequiresVersionName(): void
+    {
+        $name = 'version-name-required-screen';
+        $yaml = "config: []\n";
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'yml_content' => $yaml,
+            'name' => $name,
+        ])->assertOk();
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'yml_content' => "config: []\ncomputed: []\n",
+            'name' => $name,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['version_name']);
+    }
+
+    public function testDeployScreenUpdateStoresVersionName(): void
+    {
+        if (!class_exists(VersionHistory::class)) {
+            $this->markTestSkipped('package-versions is not installed.');
+        }
+
+        $name = 'version-name-stored-screen';
+        $summary = 'Add computed properties';
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'yml_content' => "config: []\n",
+            'name' => $name,
+        ])->assertOk();
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'yml_content' => "config: []\ncomputed: []\n",
+            'name' => $name,
+            'version_name' => $summary,
+        ])->assertOk();
+
+        $screen = Screen::where('title', $name)->firstOrFail();
+        $version = $screen->versions()->orderByDesc('id')->first();
+        $this->assertInstanceOf(ScreenVersion::class, $version);
+
+        $history = VersionHistory::query()
+            ->where('versionable_id', $version->id)
+            ->where('versionable_type', ScreenVersion::class)
+            ->orderByDesc('id')
+            ->first();
+
+        $this->assertNotNull($history);
+        $this->assertSame($summary, $history->subject);
     }
 
     public function testGetScreenYamlReturnsYamlForPublishedScreen(): void

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Exception\MissingBpmnReferenceException;
+use ProcessMaker\Http\Controllers\Api\Concerns\AppliesDeployVersionName;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Services\ProcessBpmnReferenceService;
@@ -17,6 +18,8 @@ use Throwable;
 
 class DeployProcess extends Controller
 {
+    use AppliesDeployVersionName;
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -34,11 +37,21 @@ class DeployProcess extends Controller
 
     public function deployProcess(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'bpmn' => 'required|string',
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:65535',
-        ]);
+        $name = (string) $request->input('name');
+        $isUpdate = Process::where('name', $name)->exists();
+
+        if ($unavailable = $this->ensureDeployVersionHistoryAvailable($isUpdate)) {
+            return $unavailable;
+        }
+
+        $validator = Validator::make(
+            $request->all(),
+            $this->deployRulesForUpdate([
+                'bpmn' => 'required|string',
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string|max:65535',
+            ], $isUpdate),
+        );
 
         if ($validator->fails()) {
             return response()->json([
@@ -97,6 +110,8 @@ class DeployProcess extends Controller
 
             $process->bpmn = $bpmn;
             $process->saveOrFail();
+
+            $this->applyDeployVersionName($process, $request);
 
             return [$process->refresh(), $created];
         });

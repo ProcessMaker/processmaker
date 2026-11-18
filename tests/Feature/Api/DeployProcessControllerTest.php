@@ -3,8 +3,10 @@
 namespace Tests\Feature\Api;
 
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Package\Versions\Models\VersionHistory;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -58,9 +60,63 @@ class DeployProcessControllerTest extends TestCase
             'name' => 'described-process',
             'description' => $updated,
             'bpmn' => $this->sampleBpmn('', ''),
+            'version_name' => 'Update process description',
         ])->assertOk();
 
         $this->assertSame($updated, $process->refresh()->description);
+    }
+
+    public function testDeployProcessUpdateRequiresVersionName(): void
+    {
+        $name = 'version-name-process';
+
+        $this->apiCall('POST', self::DEPLOY_ENDPOINT, [
+            'name' => $name,
+            'bpmn' => $this->sampleBpmn('', ''),
+        ])->assertOk();
+
+        $this->apiCall('POST', self::DEPLOY_ENDPOINT, [
+            'name' => $name,
+            'bpmn' => $this->sampleBpmn('', ''),
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['version_name']);
+    }
+
+    public function testDeployProcessUpdateStoresVersionName(): void
+    {
+        if (!class_exists(VersionHistory::class)) {
+            $this->markTestSkipped('package-versions is not installed.');
+        }
+
+        $name = 'version-name-process-stored';
+        $summary = 'Adjust BPMN layout';
+
+        Screen::factory()->create(['title' => 'vn-screen']);
+
+        $this->apiCall('POST', self::DEPLOY_ENDPOINT, [
+            'name' => $name,
+            'bpmn' => $this->sampleBpmn('', ''),
+        ])->assertOk();
+
+        $this->apiCall('POST', self::DEPLOY_ENDPOINT, [
+            'name' => $name,
+            'bpmn' => $this->sampleBpmn('${screen:vn-screen}', ''),
+            'version_name' => $summary,
+        ])->assertOk();
+
+        $process = Process::where('name', $name)->firstOrFail();
+        $version = $process->versions()->orderByDesc('id')->first();
+        $this->assertInstanceOf(ProcessVersion::class, $version);
+
+        $history = VersionHistory::query()
+            ->where('versionable_id', $version->id)
+            ->where('versionable_type', ProcessVersion::class)
+            ->orderByDesc('id')
+            ->first();
+
+        $this->assertNotNull($history);
+        $this->assertSame($summary, $history->subject);
     }
 
     public function testGetProcessBpmnRestoresNamedReferences(): void
