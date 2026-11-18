@@ -411,30 +411,57 @@ class TokenRepository implements TokenRepositoryInterface
      */
     private function processModelForAbeToken(TokenInterface $token): Process
     {
-        if (method_exists($token, 'getInstance')) {
-            $instance = $token->getInstance();
-            if ($instance && method_exists($instance, 'getProcess')) {
-                $process = $instance->getProcess();
-                if ($process && method_exists($process, 'getOwnerDocument')) {
-                    $document = $process->getOwnerDocument();
-                    if ($document && method_exists($document, 'getModel')) {
-                        $model = $document->getModel();
-                        if ($model instanceof Process) {
-                            return $model;
-                        }
-                    }
-                }
-            }
+        $fromInstance = $this->abeProcessModelFromTokenInstance($token);
+        if ($fromInstance instanceof Process) {
+            return $fromInstance;
         }
 
-        if (method_exists($token, 'getAttribute')) {
-            $processId = $token->getAttribute('process_id');
-            if ($processId) {
-                return Process::findOrFail($processId);
-            }
+        $fromTokenAttribute = $this->abeProcessModelFromTokenAttribute($token);
+        if ($fromTokenAttribute instanceof Process) {
+            return $fromTokenAttribute;
         }
 
         throw new \RuntimeException('Unable to resolve Process model for ABE recipients');
+    }
+
+    private function abeProcessModelFromTokenInstance(TokenInterface $token): ?Process
+    {
+        if (!method_exists($token, 'getInstance')) {
+            return null;
+        }
+
+        $instance = $token->getInstance();
+        if (!$instance || !method_exists($instance, 'getProcess')) {
+            return null;
+        }
+
+        $process = $instance->getProcess();
+        if (!$process || !method_exists($process, 'getOwnerDocument')) {
+            return null;
+        }
+
+        $document = $process->getOwnerDocument();
+        if (!$document || !method_exists($document, 'getModel')) {
+            return null;
+        }
+
+        $model = $document->getModel();
+
+        return $model instanceof Process ? $model : null;
+    }
+
+    private function abeProcessModelFromTokenAttribute(TokenInterface $token): ?Process
+    {
+        if (!method_exists($token, 'getAttribute')) {
+            return null;
+        }
+
+        $processId = $token->getAttribute('process_id');
+        if (!$processId) {
+            return null;
+        }
+
+        return Process::findOrFail($processId);
     }
 
     /**
