@@ -456,24 +456,37 @@ class TaskController extends Controller
             return;
         }
 
-        $ticket = (string) $request->cookie(self::ABE_CLICK_TICKET_COOKIE, '');
-        if ($ticket === '') {
-            return;
-        }
-
-        $pending = Cache::pull(self::ABE_CLICK_CACHE_PREFIX . $ticket);
-        if (!is_array($pending) || ($pending['abe_uuid'] ?? null) !== $abe->uuid) {
-            return;
-        }
-
-        $query = $pending['query'] ?? null;
-        if (!is_array($query) || $query === []) {
+        $query = $this->pullPendingAbeClickQuery($request, $abe);
+        if ($query === null) {
             return;
         }
 
         $request->query->replace(array_merge($request->query->all(), $query));
         // Keep input() / validate() in sync for GET requests.
         $request->request->replace(array_merge($request->request->all(), $query));
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function pullPendingAbeClickQuery(HttpRequest $request, ProcessAbeRequestToken $abe): ?array
+    {
+        $ticket = (string) $request->cookie(self::ABE_CLICK_TICKET_COOKIE, '');
+        if ($ticket === '') {
+            return null;
+        }
+
+        $pending = Cache::pull(self::ABE_CLICK_CACHE_PREFIX . $ticket);
+        if (!is_array($pending) || ($pending['abe_uuid'] ?? null) !== $abe->uuid) {
+            return null;
+        }
+
+        $query = $pending['query'] ?? null;
+        if (!is_array($query) || $query === []) {
+            return null;
+        }
+
+        return $query;
     }
 
     /**
