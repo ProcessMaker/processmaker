@@ -852,6 +852,38 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * PMQL value alias for the raw is_self_service field.
+     *
+     * `is_self_service = 1` means "open self-service": flagged, ACTIVE and unassigned.
+     * The raw column is not reliable on its own because tokens closed without being
+     * claimed (e.g. by an interrupting boundary timer) keep the flag.
+     * `is_self_service = 0` (or `!= 1`) is the exact complement, so stale rows stay reachable.
+     *
+     * @param mixed $value
+     * @param \ProcessMaker\Query\Expression $expression
+     * @param mixed $callback
+     * @return callable
+     */
+    public function valueAliasIs_self_service($value, $expression, $callback = null, ?User $user = null)
+    {
+        $operator = $expression->operator;
+        $isTruthy = in_array(mb_strtolower((string) $value), ['1', 'true'], true);
+        $isFalsy = in_array(mb_strtolower((string) $value), ['0', 'false', ''], true);
+
+        return function ($query) use ($operator, $value, $isTruthy, $isFalsy) {
+            if (($operator === '=' && $isTruthy) || (in_array($operator, ['!=', '<>'], true) && $isFalsy)) {
+                $query->whereOpenSelfService();
+            } elseif (($operator === '=' && $isFalsy) || (in_array($operator, ['!=', '<>'], true) && $isTruthy)) {
+                $query->whereNot(function ($query) {
+                    $query->whereOpenSelfService();
+                });
+            } else {
+                $query->where('process_request_tokens.is_self_service', $operator, $value);
+            }
+        };
+    }
+
+    /**
      * PMQL value alias for request field
      *
      * @param string $value
