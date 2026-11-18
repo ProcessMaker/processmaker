@@ -256,6 +256,44 @@ class TasksTest extends TestCase
         $this->assertNotContains($active->id, $notSelfService);
         $this->assertContains($closed->id, $notSelfService);
         $this->assertContains($claimed->id, $notSelfService);
+
+        // NOT IN must not 500 on alias closures and must be the exact complement of IN
+        $notIn = $ids('is_self_service NOT IN [1]');
+        $this->assertNotContains($active->id, $notIn);
+        $this->assertContains($closed->id, $notIn);
+        $this->assertContains($failing->id, $notIn);
+        $this->assertContains($claimed->id, $notIn);
+
+        $notInZero = $ids('is_self_service NOT IN [0]');
+        $this->assertContains($active->id, $notInZero);
+        $this->assertNotContains($closed->id, $notInZero);
+    }
+
+    public function testNotInPmqlWithScopeBasedAliasesDoesNotFail()
+    {
+        $request = ProcessRequest::factory()->create();
+        $token = ProcessRequestToken::factory()->create([
+            'process_id' => $request->process_id,
+            'process_request_id' => $request->id,
+            'element_type' => 'task',
+            'status' => 'ACTIVE',
+            'user_id' => $this->user->id,
+            'is_self_service' => 0,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', [
+            'pmql' => 'case_number NOT IN [' . ($request->case_number + 100000) . ']',
+            'per_page' => 100,
+        ]));
+        $response->assertStatus(200);
+        $this->assertContains($token->id, array_column($response->json('data'), 'id'));
+
+        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', [
+            'pmql' => 'case_number NOT IN [' . $request->case_number . ']',
+            'per_page' => 100,
+        ]));
+        $response->assertStatus(200);
+        $this->assertNotContains($token->id, array_column($response->json('data'), 'id'));
     }
 
     /**

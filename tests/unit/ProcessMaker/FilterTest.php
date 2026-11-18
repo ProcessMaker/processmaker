@@ -399,6 +399,15 @@ class FilterTest extends TestCase
         }
     }
 
+    public function testTaskIsSelfServiceFieldNotInIsNegatedWithoutExists()
+    {
+        $sql = $this->pmqlSql('is_self_service NOT IN [1]');
+
+        $this->assertStringContainsString('not (', $sql);
+        $this->assertStringContainsString("`process_request_tokens`.`status` = 'ACTIVE'", $sql);
+        $this->assertStringNotContainsString('exists', $sql);
+    }
+
     private function pmqlSql(string $pmql): string
     {
         return ProcessRequestToken::pmql($pmql)->toRawSql();
