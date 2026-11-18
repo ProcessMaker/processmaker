@@ -1076,27 +1076,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             ]);
             $title = $mustache->render($mustacheTitle, $data);
             // multi-byte 200 characters limit
-            $titleParts = preg_split('/(<b>|<\/b>)/', $title, -1, PREG_SPLIT_DELIM_CAPTURE);
-            $title = '';
-            $size = 200;
-            $len = 0;
-            foreach ($titleParts as $i => $part) {
-                if ($part === '<b>' || $part === '</b>') {
-                    $title .= $part;
-                    continue;
-                }
-                if ($len + mb_strlen($part) >= $size) {
-                    $part = mb_substr($part, 0, $size - $len);
-                    $title .= $part;
-                    $nextPart = $titleParts[$i + 1] ?? '';
-                    if ($nextPart === '</b>') {
-                        $title .= $nextPart;
-                    }
-                    break;
-                }
-                $title .= $part;
-                $len += mb_strlen($part);
-            }
+            $title = $this->truncateFormattedCaseTitle($title);
         } else {
             $mustache = new MustacheExpressionEvaluator([
                 'escape' => function ($value) {
@@ -1108,6 +1088,32 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             $title = $mustache->render($mustacheTitle, $data);
             // multi-byte 200 characters limit
             $title = mb_substr($title, 0, 200);
+        }
+
+        return $title;
+    }
+
+    private function truncateFormattedCaseTitle(string $renderedTitle, int $size = 200): string
+    {
+        $titleParts = preg_split('/(<b>|<\/b>)/', $renderedTitle, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $title = '';
+        $len = 0;
+        foreach ($titleParts as $i => $part) {
+            if ($part === '<b>' || $part === '</b>') {
+                $title .= $part;
+                continue;
+            }
+            if ($len + mb_strlen($part) >= $size) {
+                $part = mb_substr($part, 0, $size - $len);
+                $title .= $part;
+                $nextPart = $titleParts[$i + 1] ?? '';
+                if ($nextPart === '</b>') {
+                    $title .= $nextPart;
+                }
+                break;
+            }
+            $title .= $part;
+            $len += mb_strlen($part);
         }
 
         return $title;
