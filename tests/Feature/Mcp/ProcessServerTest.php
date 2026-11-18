@@ -288,6 +288,7 @@ XML;
         $process->refresh();
         $this->assertSame('Renamed Without Publish', $process->name);
         $this->assertSame('Metadata only', $process->description);
+        $this->assertSame($this->user->id, (int) $process->updated_by);
         // Must keep the published definition; must not hydrate draft BPMN onto live.
         $this->assertSame($publishedBpmn, $process->bpmn);
         $this->assertStringNotContainsString('UnpublishedDraft', (string) $process->bpmn);
@@ -361,12 +362,41 @@ XML;
         ])->assertOk()
             ->assertStructuredContent(fn (AssertableJson $json) => $json
                 ->where('name', 'Secret Draft Process')
+                ->where('alternative', 'A')
                 ->where('bpmn', $publishedBpmn)
+                ->etc());
+
+        // Requesting B must not return live A XML labeled as B.
+        ProcessServer::actingAs($viewer)->tool(GetProcessTool::class, [
+            'id' => $process->id,
+            'alternative' => 'B',
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('alternative', 'A')
+                ->where('bpmn', $publishedBpmn)
+                ->etc());
+
+        // Invalid draft: view-only validates published; editor validates draft.
+        $process->bpmn = '<not-valid-bpmn/>';
+        $process->saveDraft('A');
+
+        ProcessServer::actingAs($viewer)->tool(ValidateProcessTool::class, [
+            'id' => $process->id,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('ok', true)
+                ->etc());
+
+        ProcessServer::actingAs($this->user)->tool(ValidateProcessTool::class, [
+            'id' => $process->id,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('ok', false)
                 ->etc());
 
         ProcessServer::actingAs($this->user)->tool(GetProcessTool::class, [
             'id' => $process->id,
-        ])->assertOk()->assertSee('UnpublishedSecret');
+        ])->assertOk()->assertSee('not-valid-bpmn');
     }
 
     public function testEnableProcessAlternativeBAndUpdateDraftOnB(): void

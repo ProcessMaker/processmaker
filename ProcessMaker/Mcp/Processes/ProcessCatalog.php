@@ -205,9 +205,9 @@ class ProcessCatalog
                 throw ValidationException::withMessages(['bpmn' => $e->getMessage()]);
             }
 
-            $this->persistLiveMetadata($process, array_diff_key($attributes, ['bpmn' => true]));
+            $this->persistLiveMetadata($process, array_diff_key($attributes, ['bpmn' => true]), $user);
         } else {
-            $this->persistLiveMetadata($process, $attributes);
+            $this->persistLiveMetadata($process, $attributes, $user);
         }
 
         return $this->detail($process->refresh(), $alternative);
@@ -230,7 +230,10 @@ class ProcessCatalog
         if (($bpmn === null || $bpmn === '') && isset($validated['id'])) {
             $process = Process::query()->findOrFail((int) $validated['id']);
             $alternative = $this->normalizeAlternative($validated['alternative'] ?? 'A');
-            $bpmn = $this->bpmnForAlternative($process, $alternative);
+            // Same gate as get-process: view-only must not validate draft / Alt B XML.
+            $bpmn = $user->can(self::EDIT)
+                ? ($this->bpmnForAlternative($process, $alternative) ?? $process->bpmn)
+                : $process->bpmn;
         }
 
         return $this->validator->validate(is_string($bpmn) ? $bpmn : null);
@@ -367,7 +370,7 @@ class ProcessCatalog
      *
      * @param array<string, mixed> $metadata
      */
-    private function persistLiveMetadata(Process $process, array $metadata): void
+    private function persistLiveMetadata(Process $process, array $metadata, User $user): void
     {
         if ($metadata === []) {
             return;
@@ -379,8 +382,10 @@ class ProcessCatalog
         $hasCategory = array_key_exists('process_category_id', $metadata);
         $categoryValue = $metadata['process_category_id'] ?? null;
 
-        Process::withoutEvents(function () use ($process, $metadata, $hasCategory, $categoryValue): void {
+        Process::withoutEvents(function () use ($process, $metadata, $hasCategory, $categoryValue, $user): void {
             $process->fill($metadata);
+            // withoutEvents skips Process::updating (updated_by + project-assets cache).
+            $process->updated_by = $user->id;
             $process->saveOrFail();
 
             // Mass/eventless save skips setProcessCategoryIdAttribute's saved sync.
@@ -394,6 +399,8 @@ class ProcessCatalog
                 $process->categories()->sync($ids);
             }
         });
+
+        $this->forgetProjectAssetCache($user);
     }
 
     /**
@@ -403,9 +410,13 @@ class ProcessCatalog
     {
         $alternative = $this->normalizeAlternative($alternative);
         // view-processes alone must not reveal unpublished draft / Alt B BPMN.
-        $bpmn = $includeVersionBpmn
-            ? ($this->bpmnForAlternative($process, $alternative) ?? $process->bpmn)
-            : $process->bpmn;
+        // Live processes.bpmn is alternative A; do not mislabel it as B.
+        if (!$includeVersionBpmn) {
+            $alternative = 'A';
+            $bpmn = $process->bpmn;
+        } else {
+            $bpmn = $this->bpmnForAlternative($process, $alternative) ?? $process->bpmn;
+        }
 
         return [
             ...$this->summary($process),
