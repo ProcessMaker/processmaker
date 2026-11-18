@@ -26,14 +26,30 @@ class TenantDomainCache
         }
 
         try {
-            return self::store()->remember(self::CACHE_KEY, self::TTL_SECONDS, function () {
-                return self::loadFromDatabase();
-            });
+            $cached = self::store()->get(self::CACHE_KEY);
+            if (is_array($cached)) {
+                return $cached;
+            }
         } catch (Throwable $e) {
             report($e);
-
-            return self::loadFromDatabase();
         }
+
+        try {
+            $map = self::loadFromDatabase();
+        } catch (QueryException $e) {
+            // Transient landlord DB failure — do not cache an empty map.
+            report($e);
+
+            return [];
+        }
+
+        try {
+            self::store()->put(self::CACHE_KEY, $map, self::TTL_SECONDS);
+        } catch (Throwable $e) {
+            report($e);
+        }
+
+        return $map;
     }
 
     /**
@@ -58,16 +74,12 @@ class TenantDomainCache
      */
     private static function loadFromDatabase(): array
     {
-        try {
-            return Tenant::query()
-                ->whereNotNull('domain')
-                ->where('domain', '!=', '')
-                ->pluck('id', 'domain')
-                ->map(fn ($id) => (int) $id)
-                ->all();
-        } catch (QueryException $e) {
-            return [];
-        }
+        return Tenant::query()
+            ->whereNotNull('domain')
+            ->where('domain', '!=', '')
+            ->pluck('id', 'domain')
+            ->map(fn ($id) => (int) $id)
+            ->all();
     }
 
     private static function store()

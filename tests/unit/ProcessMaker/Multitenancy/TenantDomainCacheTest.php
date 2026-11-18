@@ -6,6 +6,7 @@ namespace Tests\Unit\ProcessMaker\Multitenancy;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Multitenancy\Tenant;
 use ProcessMaker\Multitenancy\TenantDomainCache;
@@ -95,6 +96,21 @@ class TenantDomainCacheTest extends TestCase
             'config' => ['app.url' => 'https://after.example.test'],
         ]);
 
+        $this->assertFalse(
+            Cache::store(TenantDomainCache::STORE)->has(TenantDomainCache::CACHE_KEY)
+        );
+    }
+
+    public function test_map_does_not_cache_empty_result_when_database_query_fails(): void
+    {
+        config([
+            'database.connections.landlord.database' => 'nonexistent_landlord_' . uniqid(),
+        ]);
+        DB::purge('landlord');
+
+        $map = TenantDomainCache::map();
+
+        $this->assertSame([], $map);
         $this->assertFalse(
             Cache::store(TenantDomainCache::STORE)->has(TenantDomainCache::CACHE_KEY)
         );
