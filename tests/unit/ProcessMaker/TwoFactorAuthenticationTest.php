@@ -20,15 +20,6 @@ class TwoFactorAuthenticationTest extends TestCase
 
     private const USERNAME = 'pmadmin';
 
-    private function invokeGetUserTotpSecret(User $user): string
-    {
-        $class = new ReflectionClass(TwoFactorAuthentication::class);
-        $method = $class->getMethod('getUserTotpSecret');
-        $method->setAccessible(true);
-
-        return $method->invoke(new TwoFactorAuthentication(), $user);
-    }
-
     private function invokeGetUserDeliveryTotpSecret(User $user): string
     {
         $class = new ReflectionClass(TwoFactorAuthentication::class);
@@ -59,7 +50,10 @@ class TwoFactorAuthenticationTest extends TestCase
             'username' => self::USERNAME,
         ]);
 
-        $secret = $this->invokeGetUserTotpSecret($user);
+        $secret = TOTP::generate()->getSecret();
+        $user->two_factor_secret = $secret;
+        $user->saveQuietly();
+
         $predictable = trim(Base32::encodeUpper(self::UUID . '_' . self::USERNAME), '=');
 
         $this->assertNotSame($predictable, $secret);

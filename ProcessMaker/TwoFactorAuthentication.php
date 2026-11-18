@@ -46,24 +46,6 @@ class TwoFactorAuthentication
         }
     }
 
-    private function getUserTotpSecret(User $user): string
-    {
-        if (!empty($user->two_factor_secret)) {
-            return $user->two_factor_secret;
-        }
-
-        $secret = TOTP::generate()->getSecret();
-
-        if ($user->exists) {
-            $user->two_factor_secret = $secret;
-            $user->saveQuietly();
-        } else {
-            $user->setAttribute('two_factor_secret', $secret);
-        }
-
-        return $secret;
-    }
-
     private function getUserDeliveryTotpSecret(User $user): string
     {
         if (!empty($user->two_factor_delivery_secret)) {
