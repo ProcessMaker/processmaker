@@ -189,15 +189,24 @@ class ProcessCatalog
             $attributes['bpmn'] = BpmnDocument::replaceHtmlEntities($attributes['bpmn']);
         }
 
-        $this->hydrateProcessFromAlternativeVersion($process, $alternative);
-
         if (isset($attributes['bpmn'])) {
+            // Hydrate only for draft BPMN writes. Metadata-only updates must not
+            // copy draft/B bpmn+stages onto the live process via saveOrFail.
+            $this->hydrateProcessFromAlternativeVersion($process, $alternative);
             $process->fill($attributes);
             try {
                 $process->alternative = $alternative;
                 $process->saveDraft($alternative);
             } catch (TaskDoesNotHaveUsersException $e) {
                 throw ValidationException::withMessages(['bpmn' => $e->getMessage()]);
+            }
+
+            // saveDraft only snapshots the version row. Persist live metadata
+            // without saveOrFail (that publishes + deletes the draft) and without
+            // writing hydrated draft/B bpmn+stages onto processes.
+            $metadata = array_diff_key($attributes, ['bpmn' => true]);
+            if ($metadata !== []) {
+                Process::query()->whereKey($process->id)->update($metadata);
             }
         } else {
             $process->fill($attributes);

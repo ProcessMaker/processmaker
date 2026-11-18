@@ -260,6 +260,74 @@ XML;
         $this->assertSame('pm://mcp/skills/process-naming', $resources->first()->uri());
     }
 
+    public function testMetadataUpdateDoesNotPublishDraftBpmn(): void
+    {
+        $publishedBpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
+        $process = Process::factory()->create([
+            'name' => 'Published Definition',
+            'description' => 'Live',
+            'bpmn' => $publishedBpmn,
+        ]);
+
+        $draftBpmn = str_replace('name="ProcessName"', 'name="UnpublishedDraft"', $publishedBpmn);
+        $process->bpmn = $draftBpmn;
+        $process->saveDraft('A');
+        $process->refresh();
+
+        $this->assertSame($publishedBpmn, $process->bpmn);
+        $this->assertNotNull($process->getDraftVersion('A'));
+        $this->assertStringContainsString('UnpublishedDraft', (string) $process->getDraftVersion('A')->bpmn);
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'name' => 'Renamed Without Publish',
+            'description' => 'Metadata only',
+        ])->assertOk()->assertSee('Renamed Without Publish');
+
+        $process->refresh();
+        $this->assertSame('Renamed Without Publish', $process->name);
+        $this->assertSame('Metadata only', $process->description);
+        // Must keep the published definition; must not hydrate draft BPMN onto live.
+        $this->assertSame($publishedBpmn, $process->bpmn);
+        $this->assertStringNotContainsString('UnpublishedDraft', (string) $process->bpmn);
+    }
+
+    public function testCombinedBpmnAndMetadataUpdatePersistsLiveMetadata(): void
+    {
+        $publishedBpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
+        $process = Process::factory()->create([
+            'name' => 'Before Combined Update',
+            'description' => 'Old description',
+            'status' => 'ACTIVE',
+            'bpmn' => $publishedBpmn,
+        ]);
+
+        $draftBpmn = str_replace('name="ProcessName"', 'name="CombinedDraft"', $publishedBpmn);
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'name' => 'After Combined Update',
+            'description' => 'New description',
+            'status' => 'INACTIVE',
+            'bpmn' => $draftBpmn,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('name', 'After Combined Update')
+                ->where('description', 'New description')
+                ->where('status', 'INACTIVE')
+                ->etc());
+
+        $process->refresh();
+        $this->assertSame('After Combined Update', $process->name);
+        $this->assertSame('New description', $process->description);
+        $this->assertSame('INACTIVE', $process->status);
+        // Draft BPMN is saved; published process row keeps the prior definition.
+        $this->assertSame($publishedBpmn, $process->bpmn);
+        $draft = $process->getDraftVersion('A');
+        $this->assertNotNull($draft);
+        $this->assertStringContainsString('CombinedDraft', (string) $draft->bpmn);
+    }
+
     public function testEnableProcessAlternativeBAndUpdateDraftOnB(): void
     {
         if (!class_exists(\ProcessMaker\Package\PackageABTesting\Models\Alternative::class)) {
