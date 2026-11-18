@@ -379,6 +379,31 @@ class FilterTest extends TestCase
         $this->assertStringContainsString('`process_request_tokens`.`user_id` is null', $sql);
     }
 
+    public function testTaskIsSelfServiceFieldRequiresActiveUnassignedTask()
+    {
+        $sql = $this->pmqlSql('is_self_service = 1');
+
+        $this->assertStringContainsString('`process_request_tokens`.`is_self_service` = 1', $sql);
+        $this->assertStringContainsString("`process_request_tokens`.`status` = 'ACTIVE'", $sql);
+        $this->assertStringContainsString('`process_request_tokens`.`user_id` is null', $sql);
+        $this->assertStringNotContainsString('not (', $sql);
+    }
+
+    public function testTaskIsSelfServiceFieldComplement()
+    {
+        foreach (['is_self_service = 0', 'is_self_service != 1'] as $pmql) {
+            $sql = $this->pmqlSql($pmql);
+
+            $this->assertStringContainsString('not (', $sql, $pmql);
+            $this->assertStringContainsString("`process_request_tokens`.`status` = 'ACTIVE'", $sql, $pmql);
+        }
+    }
+
+    private function pmqlSql(string $pmql): string
+    {
+        return ProcessRequestToken::pmql($pmql)->toRawSql();
+    }
+
     public function testTaskStatusActive()
     {
         $user = User::factory()->create();

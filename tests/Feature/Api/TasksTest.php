@@ -209,6 +209,55 @@ class TasksTest extends TestCase
         $this->assertContains($assignedClosedTask->id, $taskIds);
     }
 
+    public function testIsSelfServicePmqlFieldOnlyMatchesOpenSelfServiceTasks()
+    {
+        $request = ProcessRequest::factory()->create();
+        ProcessRequest::where('id', $request->id)->update(['case_title' => 'FOUR-31702']);
+        $make = fn (string $status, int $isSelfService, ?int $userId = null) => ProcessRequestToken::factory()->create([
+            'process_id' => $request->process_id,
+            'process_request_id' => $request->id,
+            'element_type' => 'task',
+            'status' => $status,
+            'user_id' => $userId,
+            'is_self_service' => $isSelfService,
+            'self_service_groups' => ['users' => [(string) $this->user->id], 'groups' => []],
+        ]);
+
+        $active = $make('ACTIVE', 1);
+        $closed = $make('CLOSED', 1);
+        $failing = $make('FAILING', 1);
+        $claimed = $make('CLOSED', 0, $this->user->id);
+
+        $ids = function (string $pmql) {
+            $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', [
+                'pmql' => $pmql,
+                'per_page' => 100,
+            ]));
+            $response->assertStatus(200);
+
+            return array_column($response->json('data'), 'id');
+        };
+
+        $open = $ids('is_self_service = 1');
+        $this->assertContains($active->id, $open);
+        $this->assertNotContains($closed->id, $open);
+        $this->assertNotContains($failing->id, $open);
+        $this->assertNotContains($claimed->id, $open);
+
+        $withCaseTitle = $ids('is_self_service = 1 and case_title = "FOUR-31702"');
+        $this->assertContains($active->id, $withCaseTitle);
+        $this->assertNotContains($closed->id, $withCaseTitle);
+
+        $inList = $ids('is_self_service IN [1]');
+        $this->assertContains($active->id, $inList);
+        $this->assertNotContains($closed->id, $inList);
+
+        $notSelfService = $ids('is_self_service = 0');
+        $this->assertNotContains($active->id, $notSelfService);
+        $this->assertContains($closed->id, $notSelfService);
+        $this->assertContains($claimed->id, $notSelfService);
+    }
+
     /**
      * Return all tasks if we are only requesting closed tasks and if
      * the user can view the request.

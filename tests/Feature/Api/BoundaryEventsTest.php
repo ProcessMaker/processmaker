@@ -481,9 +481,13 @@ class BoundaryEventsTest extends TestCase
             $selfServiceToken->id,
             $this->taskIdsForPmql($instance, 'status = "Self Service"')
         );
-        $this->assertContains(
+        $this->assertNotContains(
             $selfServiceToken->id,
             $this->taskIdsForPmql($instance, 'is_self_service = 1')
+        );
+        $this->assertContains(
+            $selfServiceToken->id,
+            $this->taskIdsForPmql($instance, 'is_self_service = 0')
         );
     }
 
@@ -515,9 +519,13 @@ class BoundaryEventsTest extends TestCase
             $selfServiceToken->id,
             $this->taskIdsForPmql($instance, 'status = "Self Service"')
         );
-        $this->assertContains(
+        $this->assertNotContains(
             $selfServiceToken->id,
             $this->taskIdsForPmql($instance, 'is_self_service = 1')
+        );
+        $this->assertContains(
+            $selfServiceToken->id,
+            $this->taskIdsForPmql($instance, 'is_self_service = 0')
         );
     }
 
@@ -544,6 +552,10 @@ class BoundaryEventsTest extends TestCase
         $this->assertContains(
             $selfServiceToken->id,
             $this->taskIdsForPmql($instance, 'status = "Self Service"')
+        );
+        $this->assertContains(
+            $selfServiceToken->id,
+            $this->taskIdsForPmql($instance, 'is_self_service = 1')
         );
     }
 
