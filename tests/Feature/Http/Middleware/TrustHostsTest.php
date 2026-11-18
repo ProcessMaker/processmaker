@@ -2,10 +2,13 @@
 
 namespace Tests\Feature\Http\Middleware;
 
-use Tests\TestCase;
-use ProcessMaker\Http\Middleware\TrustHosts;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use ProcessMaker\Http\Middleware\TrustHosts;
+use ProcessMaker\Multitenancy\SwitchTenant;
+use ProcessMaker\Multitenancy\TenantDomainCache;
+use Tests\TestCase;
 
 class TrustHostsTest extends TestCase
 {
@@ -15,6 +18,15 @@ class TrustHostsTest extends TestCase
     {
         parent::setUp();
         $this->middleware = new TrustHosts($this->app);
+        SwitchTenant::$landlordValues = null;
+        TenantDomainCache::forget();
+    }
+
+    protected function tearDown(): void
+    {
+        SwitchTenant::$landlordValues = null;
+        TenantDomainCache::forget();
+        parent::tearDown();
     }
 
     public function test_valid_trusted_host()
@@ -108,11 +120,47 @@ class TrustHostsTest extends TestCase
     public function test_missing_forwarded_host()
     {
         $request = Request::create('https://example.processmaker.net');
-        
+
         $response = $this->middleware->handle($request, function ($req) {
             return response()->json(['status' => 'success']);
         });
 
         $this->assertEquals(200, $response->status());
     }
-} 
+
+    public function test_multitenancy_trusts_cached_tenant_domains_after_app_url_switch()
+    {
+        Config::set('app.multitenancy', true);
+        Config::set('app.url', 'https://landlord.example.test');
+        SwitchTenant::$landlordValues = [
+            'app' => ['url' => 'https://landlord.example.test'],
+        ];
+
+        Cache::store(TenantDomainCache::STORE)->put(
+            TenantDomainCache::CACHE_KEY,
+            [
+                'acme.example.test' => 1,
+                'widgets.example.test' => 2,
+            ],
+            TenantDomainCache::TTL_SECONDS
+        );
+
+        // Simulate Octane after SwitchTenant narrowed config app.url to one tenant.
+        Config::set('app.url', 'https://acme.example.test');
+
+        $hosts = $this->middleware->hosts();
+
+        $this->assertContains('^(.+\.)?' . preg_quote('landlord.example.test') . '$', $hosts);
+        $this->assertContains('^(.+\.)?' . preg_quote('acme.example.test') . '$', $hosts);
+        $this->assertContains('^(.+\.)?' . preg_quote('widgets.example.test') . '$', $hosts);
+
+        $request = Request::create('https://widgets.example.test');
+        $request->headers->set('X-Forwarded-Host', 'widgets.example.test');
+
+        $response = $this->middleware->handle($request, function ($req) {
+            return response()->json(['status' => 'success']);
+        });
+
+        $this->assertEquals(200, $response->status());
+    }
+}

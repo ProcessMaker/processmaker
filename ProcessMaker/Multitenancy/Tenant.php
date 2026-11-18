@@ -20,6 +20,12 @@ class Tenant extends SpatieTenant
         'password' => 'encrypted',
     ];
 
+    protected static function booted(): void
+    {
+        static::saved(fn () => TenantDomainCache::forget());
+        static::deleted(fn () => TenantDomainCache::forget());
+    }
+
     public static function setBootstrappedTenant(Application $app, ?array $tenantData)
     {
         $app->instance(self::BOOTSTRAPPED_TENANT, $tenantData);
