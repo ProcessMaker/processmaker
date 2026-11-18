@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
+use ProcessMaker\Exception\UnableToResolveAbeProcessModelException;
 use ProcessMaker\Helpers\AbeRecipientSignature;
 use ProcessMaker\Jobs\CaseUpdate;
 use ProcessMaker\Mail\TaskActionByEmail;
@@ -421,7 +422,7 @@ class TokenRepository implements TokenRepositoryInterface
             return $fromTokenAttribute;
         }
 
-        throw new \RuntimeException('Unable to resolve Process model for ABE recipients');
+        throw new UnableToResolveAbeProcessModelException();
     }
 
     private function abeProcessModelFromTokenInstance(TokenInterface $token): ?Process
