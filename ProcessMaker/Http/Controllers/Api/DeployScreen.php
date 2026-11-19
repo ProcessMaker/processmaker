@@ -52,6 +52,11 @@ class DeployScreen extends Controller
             ], 422);
         }
 
+        return $this->persistDeployedScreen($request, $name);
+    }
+
+    private function persistDeployedScreen(Request $request, string $name): JsonResponse
+    {
         $ymlContent = $request->input('yml_content');
         $parsedData = $this->parseDeployYaml($ymlContent);
         if ($parsedData instanceof JsonResponse) {
