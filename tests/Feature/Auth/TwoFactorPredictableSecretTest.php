@@ -233,6 +233,39 @@ class TwoFactorPredictableSecretTest extends TestCase
         $this->assertEmpty($user->fresh()->two_factor_secret);
     }
 
+    public function testMixedMethodsRedirectToQrAfterDeliveryCode(): void
+    {
+        config([
+            'password-policies.2fa_method' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+        ]);
+
+        $deliverySecret = TOTP::generate()->getSecret();
+        $user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+            'two_factor_secret' => null,
+            'two_factor_delivery_secret' => $deliverySecret,
+        ]);
+
+        $emailOtp = TOTP::createFromSecret($deliverySecret);
+        $emailOtp->setDigest('sha512');
+        $emailOtp->setDigits(8);
+        $emailOtp->setPeriod(300);
+
+        $this->actingAs($user, 'web')
+            ->post(route('2fa.validate'), ['code' => $emailOtp->now()])
+            ->assertRedirect(route('2fa.auth_app_qr'));
+
+        $this->assertTrue(session()->get(TwoFactorAuthController::TFA_VALIDATED));
+        $this->assertTrue(session()->get(TwoFactorAuthentication::DELIVERY_STEP_UP));
+    }
+
     public function testMixedMethodsAllowAuthenticatorEnrollmentAfterDeliveryStepUp(): void
     {
         config([

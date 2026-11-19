@@ -94,6 +94,11 @@ class TwoFactorAuthController extends Controller
             session()->remove(self::TFA_ERROR);
             session()->remove(self::TFA_AUTH_APP);
 
+            $user = $user->fresh() ?? $user;
+            if (strlen($code) !== 6 && $this->twoFactorAuthentication->mayEnrollNewAuthenticator($user)) {
+                return redirect()->route('2fa.auth_app_qr');
+            }
+
             // Success
             $route = 'login';
         } else {
