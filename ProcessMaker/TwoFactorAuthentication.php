@@ -27,6 +27,8 @@ class TwoFactorAuthentication
 
     public const DELIVERY_STEP_UP = '2fa-delivery-step-up';
 
+    public const CHALLENGE_METHODS_SNAPSHOT = '2fa-challenge-methods';
+
     public function sendCode(User $user): void
     {
         // Get methods to send the code
@@ -77,6 +79,26 @@ class TwoFactorAuthentication
         return !empty($pending) ? $pending : null;
     }
 
+    public function rememberChallengeMethodsSnapshot(User $user): void
+    {
+        if (session()->has(self::CHALLENGE_METHODS_SNAPSHOT)) {
+            return;
+        }
+
+        session()->put(
+            self::CHALLENGE_METHODS_SNAPSHOT,
+            $user->getValid2FAPreferences()
+        );
+    }
+
+    public function challengeRequiresDeliveryStepUp(): bool
+    {
+        $methods = session()->get(self::CHALLENGE_METHODS_SNAPSHOT, []);
+
+        return in_array(self::EMAIL, $methods, true)
+            || in_array(self::SMS, $methods, true);
+    }
+
     public function mayEnrollNewAuthenticator(User $user): bool
     {
         if (!empty($user->two_factor_secret)) {
@@ -88,10 +110,7 @@ class TwoFactorAuthentication
             return false;
         }
 
-        $hasDeliveryMethod = in_array(self::EMAIL, $methods, true)
-            || in_array(self::SMS, $methods, true);
-
-        if (!$hasDeliveryMethod) {
+        if (!$this->challengeRequiresDeliveryStepUp()) {
             return true;
         }
 

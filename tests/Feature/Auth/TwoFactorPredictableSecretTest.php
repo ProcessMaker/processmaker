@@ -219,6 +219,53 @@ class TwoFactorPredictableSecretTest extends TestCase
             'two_factor_secret' => null,
         ]);
 
+        session()->put(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT, [
+            TwoFactorAuthentication::AUTH_APP,
+            TwoFactorAuthentication::EMAIL,
+        ]);
+
+        $pendingSecret = TOTP::generate()->getSecret();
+        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, $pendingSecret);
+
+        $this->actingAs($user, 'web')
+            ->get(route('2fa.auth_app_qr'))
+            ->assertRedirect(route('2fa'));
+
+        $this->postTwoFactorCode($user, TOTP::createFromSecret($pendingSecret)->now())
+            ->assertRedirect(route('2fa'));
+
+        $this->assertNotTrue(session()->get(TwoFactorAuthController::TFA_VALIDATED));
+        $this->assertEmpty($user->fresh()->two_factor_secret);
+    }
+
+    public function testNarrowedPreferencesCannotSkipDeliveryStepUpWhenPolicyRequiresIt(): void
+    {
+        Notification::fake();
+
+        config([
+            'password-policies.2fa_method' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+        ]);
+
+        $user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+            'two_factor_secret' => null,
+        ]);
+
+        session()->put(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT, [
+            TwoFactorAuthentication::AUTH_APP,
+            TwoFactorAuthentication::EMAIL,
+        ]);
+
+        $user->preferences_2fa = [TwoFactorAuthentication::AUTH_APP];
+        $user->saveQuietly();
+
         $pendingSecret = TOTP::generate()->getSecret();
         session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, $pendingSecret);
 

@@ -42,6 +42,7 @@ class TwoFactorAuthController extends Controller
 
             // Reload DB state without User::refresh() (clears permission caches).
             $user = $user->fresh() ?? $user;
+            $this->twoFactorAuthentication->rememberChallengeMethodsSnapshot($user);
             if ($this->shouldRedirectToAuthenticatorQrEnrollment($user)) {
                 return redirect()->route('2fa.auth_app_qr');
             }
@@ -81,6 +82,8 @@ class TwoFactorAuthController extends Controller
             // Return to 2fa page
             return redirect()->route('2fa');
         }
+
+        $this->twoFactorAuthentication->rememberChallengeMethodsSnapshot($user);
 
         // Validate code
         $validated = $this->twoFactorAuthentication->validateCode($user, $code);
@@ -139,6 +142,7 @@ class TwoFactorAuthController extends Controller
         }
 
         $user = $user->fresh() ?? $user;
+        $this->twoFactorAuthentication->rememberChallengeMethodsSnapshot($user);
         $methods = $user->getValid2FAPreferences();
 
         if (!in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)
@@ -167,8 +171,7 @@ class TwoFactorAuthController extends Controller
         $methods = $user->getValid2FAPreferences();
 
         return in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)
-            && !in_array(TwoFactorAuthentication::EMAIL, $methods, true)
-            && !in_array(TwoFactorAuthentication::SMS, $methods, true);
+            && !$this->twoFactorAuthentication->challengeRequiresDeliveryStepUp();
     }
 
     private function sendTwoFactorCodeForDisplay(User $user): void

@@ -15,6 +15,7 @@ use ProcessMaker\Events\UserRestored;
 use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Filters\SaveSession;
+use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
@@ -523,6 +524,17 @@ class UserController extends Controller
         $request->validate($rules);
         if ($isSelfServiceUpdate) {
             $fields = $this->normalizeSelfServiceMeta($user, $fields);
+        }
+        if (array_key_exists('preferences_2fa', $fields)
+            && $authenticatedUser->id === $user->id
+            && config('password-policies.2fa_enabled', false)
+            && !empty(config('password-policies.2fa_method', []))
+            && !session()->get(TwoFactorAuthController::TFA_VALIDATED, false)
+            && TwoFactorAuthController::check2faByGroups()
+        ) {
+            return response()->json([
+                'message' => __('Two-factor authentication must be completed before updating 2FA preferences.'),
+            ], 422);
         }
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
