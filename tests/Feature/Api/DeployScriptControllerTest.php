@@ -121,7 +121,12 @@ class DeployScriptControllerTest extends TestCase
     public function testDeployScriptPrefersPhpNayraExecutorOnCreate(): void
     {
         ScriptExecutor::factory()->create(['language' => 'php']);
-        $nayra = ScriptExecutor::factory()->create(['language' => 'php-nayra']);
+        // TestSeeder already seeds php-nayra; prefer the lowest-id one (resolver order).
+        $nayra = ScriptExecutor::query()
+            ->where('language', 'php-nayra')
+            ->orderBy('id')
+            ->first()
+            ?? ScriptExecutor::factory()->create(['language' => 'php-nayra']);
 
         $this->apiCall('POST', self::API_ENDPOINT, [
             'code' => '<?php return [];',
