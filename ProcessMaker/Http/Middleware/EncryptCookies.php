@@ -21,6 +21,9 @@ class EncryptCookies extends BaseEncrypter
          */
         'device_id',
         'fromTriggerStartEvent',
-        'language'
+        'language',
+        // Opaque ABE Require-Login ticket (random id → cache). Must survive login
+        // form session-cookie reset without depending on Laravel cookie encryption.
+        'abe_click_ticket',
     ];
 }

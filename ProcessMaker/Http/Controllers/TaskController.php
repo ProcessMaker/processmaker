@@ -6,10 +6,15 @@ use Carbon\Carbon;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Filters\SaveSession;
+use ProcessMaker\Helpers\AbeRecipientSignature;
+use ProcessMaker\Helpers\AbeResponder;
 use ProcessMaker\Helpers\DefaultColumns;
 use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
@@ -263,6 +268,17 @@ class TaskController extends Controller
     }
 
     /**
+     * Short-lived cookie that points at a cache entry with the full ABE click query.
+     * Needed because showLoginForm clears the session cookie, so url.intended alone
+     * is not reliable for preserving signed recipient params across Require Login.
+     */
+    public const ABE_CLICK_TICKET_COOKIE = 'abe_click_ticket';
+
+    private const ABE_CLICK_CACHE_PREFIX = 'abe_click:';
+
+    private const ABE_CLICK_CACHE_TTL_MINUTES = 20;
+
+    /**
      * Update variable.
      *
      * @param HttpRequest $request
@@ -270,81 +286,207 @@ class TaskController extends Controller
      */
     public function updateVariable(HttpRequest $request, $abe_uuid)
     {
-        // Validar los parámetros GET
-        $request->validate([
-            'varName' => 'required|string',
-            'varValue' => 'required|string',
-        ]);
-
         try {
-            // Verificar si la respuesta ya ha sido enviada
-            $abe = ProcessAbeRequestToken::where('uuid', $abe_uuid)->first();
-            // Check if the token is available
-            if (!$abe) {
-                return $this->returnErrorResponse(__('Token not found'), 404);
-            }
-            // Review if the autentication is required
-            if ($abe->require_login && Auth::user()->username === AnonymousUser::ANONYMOUS_USERNAME) {
-                $request->session()->put('url.intended', url()->full());
-                $cookie = cookie(
-                    'processmaker_intended',
-                    url()->full(),
-                    10,
-                    '/',
-                    null,
-                    true,
-                    true,
-                    false,
-                    config('session.same_site') ?: 'lax'
-                );
-
-                return redirect('login')->withCookie($cookie);
-            }
-            if ($abe->is_answered) {
-                return $this->returnErrorResponse(__('This response has already been answered'), 200);
-            } else {
-                // Get the token related
-                $task = ProcessRequestToken::find($abe->process_request_token_id);
-                if (!$task) {
-                    return $this->returnErrorResponse(__('Process request token not found'), 404);
-                } else {
-                    if ($task->status === 'CLOSED') {
-                        return $this->returnErrorResponse(__('Task already closed'), 404);
-                    }
-                    // Update the data
-                    $data[$request->varName] = $request->varValue;
-                    $abe->data = json_encode($data);
-                    // Define the answered_at and is_answered
-                    $abe->is_answered = true;
-                    $abe->answered_at = Carbon::now();
-                    // Review if the user is autenticated
-                    if (Auth::check()) {
-                        $abe->user_id = Auth::id();
-                    }
-                    $abe->save();
-                    // Define the parameter for complete the task
-                    $process = Process::find($task->process_id);
-                    $instance = $task->processRequest;
-                    // Set the flag is_actionbyemail in true
-                    (new ProcessRequestController)->enableIsActionbyemail($task->id);
-                    // Complete the task related
-                    WorkflowManager::completeTask(
-                        $process,
-                        $instance,
-                        $task,
-                        $data
-                    );
-
-                    // Show the abe completed screen
-                    return $this->showScreen($abe->completed_screen_id);
-                }
-            }
+            return $this->handleAbeVariableUpdate($request, $abe_uuid);
+        } catch (ValidationException $e) {
+            // Missing/invalid query after a failed Require Login restore must not become HTTP 500.
+            throw $e;
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error updating variable',
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    private function handleAbeVariableUpdate(HttpRequest $request, string $abeUuid)
+    {
+        $abe = ProcessAbeRequestToken::where('uuid', $abeUuid)->first();
+        if (!$abe) {
+            return $this->returnErrorResponse(__('Token not found'), 404);
+        }
+
+        $this->restoreAbeClickQuery($request, $abe);
+
+        $request->validate([
+            'varName' => 'required|string',
+            'varValue' => 'required|string',
+        ]);
+
+        if ($abe->require_login && Auth::user()->username === AnonymousUser::ANONYMOUS_USERNAME) {
+            return $this->redirectAbeClickToLogin($request, $abe);
+        }
+
+        if ($abe->is_answered) {
+            return $this->returnErrorResponse(__('This response has already been answered'), 200);
+        }
+
+        $task = ProcessRequestToken::find($abe->process_request_token_id);
+        $taskError = $this->abeVariableUpdateTaskError($task);
+        if ($taskError !== null) {
+            return $taskError;
+        }
+
+        return $this->completeAbeVariableUpdate($request, $abe, $task);
+    }
+
+    private function abeVariableUpdateTaskError(?ProcessRequestToken $task)
+    {
+        if (!$task) {
+            return $this->returnErrorResponse(__('Process request token not found'), 404);
+        }
+
+        if ($task->status === 'CLOSED') {
+            return $this->returnErrorResponse(__('Task already closed'), 404);
+        }
+
+        return null;
+    }
+
+    /**
+     * @return \Illuminate\Http\Response|\Illuminate\View\View
+     */
+    private function completeAbeVariableUpdate(
+        HttpRequest $request,
+        ProcessAbeRequestToken $abe,
+        ProcessRequestToken $task
+    ) {
+        $data = [
+            $request->varName => $request->varValue,
+        ];
+        if ($this->abeTrackResponderEnabled($task)) {
+            $data['abe_responder'] = AbeResponder::fromRequest($request, $abe->uuid);
+        }
+
+        $abe->data = json_encode($data);
+        $abe->is_answered = true;
+        $abe->answered_at = Carbon::now();
+        if (Auth::check()) {
+            $abe->user_id = Auth::id();
+        }
+        $abe->save();
+
+        $process = Process::find($task->process_id);
+        $instance = $task->processRequest;
+        (new ProcessRequestController)->enableIsActionbyemail($task->id);
+        WorkflowManager::completeTask(
+            $process,
+            $instance,
+            $task,
+            $data
+        );
+
+        return $this->showScreen($abe->completed_screen_id);
+    }
+
+    /**
+     * Whether the task's Actions by Email config opted into responder tracking.
+     */
+    private function abeTrackResponderEnabled(ProcessRequestToken $task): bool
+    {
+        $definition = $task->getDefinition();
+        if (!is_array($definition)) {
+            return false;
+        }
+
+        $configEmail = $definition['configEmail'] ?? null;
+        if (is_string($configEmail)) {
+            $configEmail = json_decode($configEmail, true);
+        }
+
+        return is_array($configEmail) && !empty($configEmail['trackResponder']);
+    }
+
+    /**
+     * Park the full ABE click query in cache and send the user to login.
+     * Login clears the session cookie, so a short ticket cookie is the durable key.
+     */
+    private function redirectAbeClickToLogin(HttpRequest $request, ProcessAbeRequestToken $abe)
+    {
+        $ticket = Str::random(40);
+        Cache::put(
+            self::ABE_CLICK_CACHE_PREFIX . $ticket,
+            [
+                'abe_uuid' => $abe->uuid,
+                'query' => $request->query(),
+            ],
+            now()->addMinutes(self::ABE_CLICK_CACHE_TTL_MINUTES)
+        );
+
+        // Keep a short intended URL; query is restored from cache after login.
+        $intended = route('tasks.abe.update', ['token_abe' => $abe->uuid]);
+        $request->session()->put('url.intended', $intended);
+
+        $sameSite = config('session.same_site') ?: 'lax';
+        $intendedCookie = cookie(
+            'processmaker_intended',
+            $intended,
+            self::ABE_CLICK_CACHE_TTL_MINUTES,
+            '/',
+            null,
+            true,
+            true,
+            false,
+            $sameSite
+        );
+        $ticketCookie = cookie(
+            self::ABE_CLICK_TICKET_COOKIE,
+            $ticket,
+            self::ABE_CLICK_CACHE_TTL_MINUTES,
+            '/',
+            null,
+            true,
+            true,
+            false,
+            $sameSite
+        );
+
+        return redirect('login')->withCookie($intendedCookie)->withCookie($ticketCookie);
+    }
+
+    /**
+     * Merge a parked ABE click query back onto the request when the signature is missing.
+     */
+    private function restoreAbeClickQuery(HttpRequest $request, ProcessAbeRequestToken $abe): void
+    {
+        if ((string) $request->query(AbeRecipientSignature::SIG, '') !== '') {
+            return;
+        }
+
+        $query = $this->pullPendingAbeClickQuery($request, $abe);
+        if ($query === null) {
+            return;
+        }
+
+        $request->query->replace(array_merge($request->query->all(), $query));
+        // Keep input() / validate() in sync for GET requests.
+        $request->request->replace(array_merge($request->request->all(), $query));
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function pullPendingAbeClickQuery(HttpRequest $request, ProcessAbeRequestToken $abe): ?array
+    {
+        $ticket = (string) $request->cookie(self::ABE_CLICK_TICKET_COOKIE, '');
+        if ($ticket === '') {
+            return null;
+        }
+
+        $pending = Cache::pull(self::ABE_CLICK_CACHE_PREFIX . $ticket);
+        if (!is_array($pending) || ($pending['abe_uuid'] ?? null) !== $abe->uuid) {
+            return null;
+        }
+
+        $query = $pending['query'] ?? null;
+        if (!is_array($query) || $query === []) {
+            return null;
+        }
+
+        return $query;
     }
 
     /**
