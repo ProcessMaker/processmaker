@@ -39,15 +39,12 @@ final class DeployVersionName
 
     public function applyAfterSave(Model $asset, ?string $versionName, int $userId, ?string $description = null): void
     {
-        if ($versionName === null || trim($versionName) === '') {
-            return;
-        }
-
-        if (!$this->canRecordHistory()) {
-            return;
-        }
-
-        if (!method_exists($asset, 'versions')) {
+        $subject = $versionName !== null ? trim($versionName) : '';
+        if (
+            $subject === ''
+            || !$this->canRecordHistory()
+            || !method_exists($asset, 'versions')
+        ) {
             return;
         }
 
@@ -60,7 +57,7 @@ final class DeployVersionName
         $history->user_id = $userId;
         $history->versionable_id = (int) $version->getKey();
         $history->versionable_type = $version::class;
-        $history->subject = trim($versionName);
+        $history->subject = $subject;
         $history->description = $description !== null && trim($description) !== ''
             ? trim($description)
             : null;
