@@ -29,9 +29,17 @@ use ProcessMaker\Plugins\Collections\Models\Collection;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
+/**
+ * CollectionObserver DDL + record inserts conflict with RefreshDatabase transactions (MySQL 1412).
+ */
 class DataConnectorsServerTest extends TestCase
 {
     use RequestHelper;
+
+    /**
+     * @var list<string>
+     */
+    protected $connectionsToTransact = [];
 
     protected function setUp(): void
     {

@@ -581,6 +581,7 @@ class ScriptsTest extends TestCase
     {
         $editor = User::factory()->create(['is_administrator' => false]);
         $editor->giveDirectPermission('edit-scripts');
+        $editor->giveDirectPermission('create-scripts');
         $script = $this->getScript('php');
         $script->update([
             'allow_in_process' => true,

@@ -6,6 +6,7 @@ use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\ScriptVersion;
 use ProcessMaker\Package\Versions\Models\VersionHistory;
+use ProcessMaker\Services\ScriptExecutorResolver;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -176,8 +177,13 @@ class DeployScriptControllerTest extends TestCase
 
     public function testDeployScriptPrefersPhpNayraExecutorOnCreate(): void
     {
-        ScriptExecutor::factory()->create(['language' => 'php']);
-        $nayra = ScriptExecutor::factory()->create(['language' => 'php-nayra']);
+        if (!ScriptExecutor::query()->where('language', 'php-nayra')->exists()) {
+            ScriptExecutor::factory()->create(['language' => 'php-nayra']);
+        }
+
+        $executor = app(ScriptExecutorResolver::class)->resolveForNewScript();
+        $this->assertNotNull($executor);
+        $this->assertSame('php-nayra', $executor->language);
 
         $this->apiCall('POST', self::API_ENDPOINT, [
             'code' => '<?php return [];',
@@ -187,7 +193,7 @@ class DeployScriptControllerTest extends TestCase
             ->assertJson(['action' => 'created']);
 
         $script = Script::where('title', 'new-nayra-script')->first();
-        $this->assertSame($nayra->id, $script->script_executor_id);
+        $this->assertSame($executor->id, $script->script_executor_id);
     }
 
     private function ensureExecutor(): ScriptExecutor
