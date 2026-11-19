@@ -281,10 +281,7 @@ class LoginController extends Controller
             && !empty(config('password-policies.2fa_method', []))
             && TwoFactorAuthController::check2faByGroups()
         ) {
-            session()->put(
-                TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT,
-                $user->getValid2FAPreferences()
-            );
+            (new TwoFactorAuthentication())->rememberChallengeMethodsSnapshot($user);
         }
     }
 
@@ -307,6 +304,8 @@ class LoginController extends Controller
             session()->remove(TwoFactorAuthController::TFA_MESSAGE);
             session()->remove(TwoFactorAuthController::TFA_ERROR);
             session()->remove(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT);
+            session()->remove(TwoFactorAuthentication::CHALLENGE_DELIVERY_EMAIL);
+            session()->remove(TwoFactorAuthentication::CHALLENGE_DELIVERY_CELL);
             session()->remove(TwoFactorAuthentication::DELIVERY_STEP_UP);
             session()->remove(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET);
 

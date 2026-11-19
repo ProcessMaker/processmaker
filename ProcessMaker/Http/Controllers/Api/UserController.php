@@ -611,7 +611,12 @@ class UserController extends Controller
         array $original,
         bool $isLdapUser
     ) {
-        $response = $this->preferences2faUpdateBlockedResponse($authenticatedUser, $user, $fields);
+        $response = $this->selfServiceTwoFactorSensitiveUpdateBlocked(
+            $authenticatedUser,
+            $user,
+            $fields,
+            $original
+        );
         if ($response === null && array_key_exists('cell', $fields)) {
             $response = $this->validateCellPhoneNumber($user, $fields['cell']) ?: null;
         }
@@ -622,30 +627,54 @@ class UserController extends Controller
         return $response;
     }
 
-    private function preferences2faUpdateBlockedResponse(User $authenticatedUser, User $user, array $fields)
-    {
-        if (!array_key_exists('preferences_2fa', $fields) || $authenticatedUser->id !== $user->id) {
+    private function selfServiceTwoFactorSensitiveUpdateBlocked(
+        User $authenticatedUser,
+        User $user,
+        array $fields,
+        array $original
+    ) {
+        if ($authenticatedUser->id !== $user->id || !$this->touchesTwoFactorDestinations($fields, $original)) {
             return null;
         }
 
+        if (!$this->selfServiceTwoFactorCompletionPending($authenticatedUser)) {
+            return null;
+        }
+
+        return response()->json([
+            'message' => __('Two-factor authentication must be completed before updating 2FA preferences.'),
+        ], 422);
+    }
+
+    private function touchesTwoFactorDestinations(array $fields, array $original): bool
+    {
+        if (array_key_exists('preferences_2fa', $fields)) {
+            return true;
+        }
+
+        if (array_key_exists('cell', $fields) && ($fields['cell'] ?? null) !== ($original['cell'] ?? null)) {
+            return true;
+        }
+
+        return array_key_exists('email', $fields)
+            && ($fields['email'] ?? null) !== ($original['email'] ?? null);
+    }
+
+    private function selfServiceTwoFactorCompletionPending(User $authenticatedUser): bool
+    {
         if (session('sso_driver') !== null
             || !config('password-policies.2fa_enabled', false)
             || empty(config('password-policies.2fa_method', []))
             || !TwoFactorAuthController::check2faByGroups()
         ) {
-            return null;
+            return false;
         }
 
         $webUserId = Auth::guard('web')->id();
-        $twoFactorCompleteForPrincipal = $webUserId !== null
-            && (int) $webUserId === (int) $authenticatedUser->id
-            && session()->get(TwoFactorAuthController::TFA_VALIDATED, false);
 
-        return $twoFactorCompleteForPrincipal
-            ? null
-            : response()->json([
-                'message' => __('Two-factor authentication must be completed before updating 2FA preferences.'),
-            ], 422);
+        return $webUserId === null
+            || (int) $webUserId !== (int) $authenticatedUser->id
+            || !session()->get(TwoFactorAuthController::TFA_VALIDATED, false);
     }
 
     private function validateEmailChangeForUpdate(User $user, array $fields, bool $isLdapUser)

@@ -29,10 +29,15 @@ class TwoFactorAuthentication
 
     public const CHALLENGE_METHODS_SNAPSHOT = '2fa-challenge-methods';
 
+    public const CHALLENGE_DELIVERY_EMAIL = '2fa-challenge-delivery-email';
+
+    public const CHALLENGE_DELIVERY_CELL = '2fa-challenge-delivery-cell';
+
     public function sendCode(User $user): void
     {
         // Get methods to send the code
         $methods = $user->getValid2FAPreferences();
+        $deliveryUser = $this->userForDeliveryChallenge($user);
 
         if (in_array(self::EMAIL, $methods) || in_array(self::SMS, $methods)) {
             // Get code
@@ -40,10 +45,10 @@ class TwoFactorAuthentication
 
             // Send OTP
             if (in_array(self::EMAIL, $methods)) {
-                Notification::send($user, new TwoFactorAuthNotification($user, $code));
+                Notification::send($deliveryUser, new TwoFactorAuthNotification($deliveryUser, $code));
             }
             if (in_array(self::SMS, $methods)) {
-                $this->sendSms($user, $code);
+                $this->sendSms($deliveryUser, $code);
             }
         } elseif (in_array(self::AUTH_APP, $methods)) {
             session()->put('2fa-auth-app', true);
@@ -89,6 +94,29 @@ class TwoFactorAuthentication
             self::CHALLENGE_METHODS_SNAPSHOT,
             $user->getValid2FAPreferences()
         );
+        session()->put(self::CHALLENGE_DELIVERY_EMAIL, $user->email);
+        session()->put(self::CHALLENGE_DELIVERY_CELL, $user->cell);
+    }
+
+    private function userForDeliveryChallenge(User $user): User
+    {
+        $email = session()->get(self::CHALLENGE_DELIVERY_EMAIL);
+        $cell = session()->get(self::CHALLENGE_DELIVERY_CELL);
+        if ($email === null && $cell === null) {
+            return $user;
+        }
+
+        $deliveryUser = $user->replicate();
+        $deliveryUser->exists = true;
+        $deliveryUser->id = $user->id;
+        if ($email !== null) {
+            $deliveryUser->email = $email;
+        }
+        if ($cell !== null) {
+            $deliveryUser->cell = $cell;
+        }
+
+        return $deliveryUser;
     }
 
     public function challengeRequiresDeliveryStepUp(): bool

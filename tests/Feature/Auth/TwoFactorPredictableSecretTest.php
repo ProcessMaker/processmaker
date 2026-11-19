@@ -245,6 +245,45 @@ class TwoFactorPredictableSecretTest extends TestCase
         $this->assertContains(TwoFactorAuthentication::AUTH_APP, $freshPreferences);
     }
 
+    public function testStatelessApiCannotChangeEmailBeforeWebTwoFactorValidated(): void
+    {
+        config([
+            'password-policies.2fa_method' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+        ]);
+
+        $user = User::factory()->create([
+            'is_administrator' => true,
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+            'two_factor_secret' => null,
+        ]);
+
+        $payload = [
+            'username' => $user->username,
+            'firstname' => $user->firstname,
+            'lastname' => $user->lastname,
+            'email' => 'attacker-' . $user->email,
+            'status' => $user->status,
+            'valpassword' => 'password',
+        ];
+
+        $this->actingAs($user, 'api')
+            ->putJson('/api/1.0/users/' . $user->id, $payload)
+            ->assertStatus(422)
+            ->assertJsonPath(
+                'message',
+                __('Two-factor authentication must be completed before updating 2FA preferences.')
+            );
+
+        $this->assertSame($user->email, $user->fresh()->email);
+    }
+
     public function testCannotBypassDeliveryWithPendingAuthenticatorEnrollment(): void
     {
         config([
