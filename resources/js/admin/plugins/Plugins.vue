@@ -637,6 +637,7 @@ const progressSessionKey = ref(0);
 const progressIsRunning = ref(false);
 const progressIsDone = ref(false);
 const progressWaiting = ref(false);
+const progressJobSucceeded = ref(false);
 const progressModalButtons = ref([]);
 
 const save = () => {
@@ -845,6 +846,7 @@ const openPluginProgressModal = ({
   progressIsRunning.value = false;
   progressIsDone.value = false;
   progressWaiting.value = true;
+  progressJobSucceeded.value = false;
   initProgressModalButtons();
   pluginProgressModal.value?.show();
 };
@@ -865,6 +867,7 @@ const onProgressJobDone = () => {
   progressWaiting.value = false;
   progressIsRunning.value = false;
   progressIsDone.value = true;
+  progressJobSucceeded.value = true;
   enableProgressModalClose();
 };
 
@@ -872,6 +875,7 @@ const onProgressJobError = () => {
   progressWaiting.value = false;
   progressIsRunning.value = false;
   progressIsDone.value = true;
+  progressJobSucceeded.value = false;
   enableProgressModalClose();
 };
 
@@ -880,6 +884,10 @@ const hideProgressModal = () => {
     return;
   }
   pluginProgressModal.value?.hide();
+  if (progressJobSucceeded.value) {
+    reloadAfterPluginChange($t("The plugin was ") + pendingVerb.value + ".");
+    return;
+  }
   fetch();
 };
 
@@ -891,6 +899,7 @@ const resetProgressModal = () => {
   progressIsRunning.value = false;
   progressIsDone.value = false;
   progressWaiting.value = false;
+  progressJobSucceeded.value = false;
   initProgressModalButtons();
 };
 
