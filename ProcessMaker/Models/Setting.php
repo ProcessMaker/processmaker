@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Log;
 use ProcessMaker\Cache\Settings\SettingCacheFactory;
+use ProcessMaker\Cache\Settings\SettingCacheManager;
 use ProcessMaker\Contracts\PrometheusMetricInterface;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
@@ -166,15 +167,22 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
         $settingKey = $settingCache->createKey([
             'key' => $key,
         ]);
-        $exists = $settingCache->has($settingKey);
 
-        // if the setting is not in the cache, get it from the database and store it in the cache
-        if ($exists) {
-            $setting = $settingCache->get($settingKey);
-        } else {
-            $setting = (new self)->where('key', $key)->first();
-            $settingCache->set($settingKey, $setting);
+        // L1 (worker memory) then a single Redis GET, then DB on miss.
+        if ($settingCache instanceof SettingCacheManager) {
+            return $settingCache->resolve($settingKey, function () use ($key) {
+                return (new self)->where('key', $key)->first();
+            });
         }
+
+        // Fallback for mocks/decorators that do not expose resolve().
+        $exists = $settingCache->has($settingKey);
+        if ($exists) {
+            return $settingCache->get($settingKey);
+        }
+
+        $setting = (new self)->where('key', $key)->first();
+        $settingCache->set($settingKey, $setting);
 
         return $setting;
     }

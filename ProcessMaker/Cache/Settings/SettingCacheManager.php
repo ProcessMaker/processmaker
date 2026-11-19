@@ -88,7 +88,53 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        return $this->cacheManager->get($key, $default);
+        SettingMemoryCache::syncEpoch($this->cacheManager);
+
+        if (SettingMemoryCache::exists($key)) {
+            return SettingMemoryCache::get($key);
+        }
+
+        $sentinel = SettingMemoryCache::sentinel();
+        $value = $this->cacheManager->get($key, $sentinel);
+
+        if ($value === $sentinel) {
+            return $default;
+        }
+
+        SettingMemoryCache::put($key, $value);
+
+        return $value;
+    }
+
+    /**
+     * Resolve a setting from L1, then Redis, then the loader (typically DB).
+     *
+     * Collapses the previous has()+get() Redis round-trips into a single get.
+     *
+     * @param string $key
+     * @param callable $loader
+     *
+     * @return mixed
+     */
+    public function resolve(string $key, callable $loader): mixed
+    {
+        SettingMemoryCache::syncEpoch($this->cacheManager);
+
+        if (SettingMemoryCache::exists($key)) {
+            return SettingMemoryCache::get($key);
+        }
+
+        $sentinel = SettingMemoryCache::sentinel();
+        $value = $this->cacheManager->get($key, $sentinel);
+
+        if ($value === $sentinel) {
+            $value = $loader();
+            $this->cacheManager->put($key, $value);
+        }
+
+        SettingMemoryCache::put($key, $value);
+
+        return $value;
     }
 
     /**
@@ -135,7 +181,14 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
     {
-        return $this->cacheManager->put($key, $value, $ttl);
+        $result = $this->cacheManager->put($key, $value, $ttl);
+
+        if ($result) {
+            SettingMemoryCache::syncEpoch($this->cacheManager);
+            SettingMemoryCache::put($key, $value);
+        }
+
+        return $result;
     }
 
     /**
@@ -147,7 +200,10 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function delete(string $key): bool
     {
-        return $this->cacheManager->forget($key);
+        $result = $this->cacheManager->forget($key);
+        SettingMemoryCache::bumpEpoch($this->cacheManager);
+
+        return $result;
     }
 
     /**
@@ -157,7 +213,10 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function clear(): bool
     {
-        return $this->cacheManager->clear();
+        $result = $this->cacheManager->clear();
+        SettingMemoryCache::bumpEpochAfterStoreCleared($this->cacheManager);
+
+        return $result;
     }
 
     /**
@@ -181,6 +240,8 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
             if (!empty($matchedKeys)) {
                 Redis::connection($defaultDriver)->del($matchedKeys);
             }
+
+            SettingMemoryCache::bumpEpoch($this->cacheManager);
         } catch (\Exception $e) {
             Log::error('SettingCacheException' . $e->getMessage());
 
@@ -197,6 +258,12 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function has(string $key): bool
     {
+        SettingMemoryCache::syncEpoch($this->cacheManager);
+
+        if (SettingMemoryCache::exists($key)) {
+            return true;
+        }
+
         return $this->keyExists($key);
     }
 
@@ -225,10 +292,19 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
             //extract the params from the array
             $key = $params['key'];
             $this->cacheManager->forget($key);
+            SettingMemoryCache::bumpEpoch($this->cacheManager);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
 
             throw new SettingCacheException('Failed to invalidate cache KEY:' . $key);
         }
+    }
+
+    /**
+     * Expose the underlying cache store (used for epoch coordination / tests).
+     */
+    public function store(): Repository
+    {
+        return $this->cacheManager;
     }
 }
