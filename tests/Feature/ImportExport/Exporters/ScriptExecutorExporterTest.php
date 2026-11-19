@@ -2,14 +2,29 @@
 
 namespace Tests\Feature\ImportExport\Exporters;
 
+use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\ImportExport\Exporters\ScriptExecutorExporter;
+use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Manifest;
+use ProcessMaker\ImportExport\Options;
+use ProcessMaker\Jobs\BuildScriptExecutor;
+use ProcessMaker\Jobs\MoveScriptExecutorToMicroservice;
 use ProcessMaker\Models\ScriptExecutor;
+use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
 class ScriptExecutorExporterTest extends TestCase
 {
+    use HelperTrait;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->createAdminUser();
+        config(['script-runner-microservice.enabled' => true]);
+    }
+
     public function testUpdateModeDoesNotOverwriteType(): void
     {
         $executor = ScriptExecutor::factory()->create([
@@ -76,5 +91,122 @@ class ScriptExecutorExporterTest extends TestCase
         $this->assertEquals('new', $mode);
         $this->assertEquals(ScriptExecutorType::Custom, $model->type);
         $this->assertEquals('Custom Package Executor', $model->title);
+    }
+
+    public function testImportUpdateDoesNotPromoteBaseExecutorViaTransition(): void
+    {
+        Bus::fake([
+            BuildScriptExecutor::class,
+            MoveScriptExecutorToMicroservice::class,
+        ]);
+
+        $executor = ScriptExecutor::factory()->create([
+            'title' => 'PHP Executor',
+            'description' => 'Default PHP Executor',
+            'config' => '',
+            'language' => 'php',
+            'type' => null,
+        ]);
+
+        $payload = $this->scriptExecutorImportPayload($executor, [
+            'description' => 'QA FOUR-34379 import regression marker',
+            'config' => 'RUN composer require aws/aws-sdk-php:3.226.0',
+            'type' => ScriptExecutorType::Custom->value,
+        ]);
+
+        (new Importer($payload, new Options([])))->doImport();
+
+        $executor->refresh();
+        $this->assertNull($executor->type);
+        $this->assertEquals('QA FOUR-34379 import regression marker', $executor->description);
+        $this->assertEquals(
+            'RUN composer require aws/aws-sdk-php:3.226.0',
+            $executor->config
+        );
+        Bus::assertNotDispatched(MoveScriptExecutorToMicroservice::class);
+    }
+
+    public function testImportUpdateStillTransitionsCustomExecutor(): void
+    {
+        Bus::fake([
+            BuildScriptExecutor::class,
+            MoveScriptExecutorToMicroservice::class,
+        ]);
+
+        $executor = ScriptExecutor::factory()->create([
+            'title' => 'My Custom Executor',
+            'description' => 'custom before',
+            'config' => 'RUN echo before',
+            'language' => 'php',
+            'type' => ScriptExecutorType::Custom,
+        ]);
+
+        $payload = $this->scriptExecutorImportPayload($executor, [
+            'description' => 'custom after',
+            'config' => 'RUN echo after',
+            'type' => ScriptExecutorType::Custom->value,
+        ]);
+
+        (new Importer($payload, new Options([])))->doImport();
+
+        $executor->refresh();
+        $this->assertEquals(ScriptExecutorType::Custom, $executor->type);
+        $this->assertEquals('custom after', $executor->description);
+        Bus::assertDispatched(MoveScriptExecutorToMicroservice::class, function ($job) use ($executor) {
+            return $this->jobUuid($job) === $executor->uuid;
+        });
+    }
+
+    private function scriptExecutorImportPayload(ScriptExecutor $executor, array $attributeOverrides): array
+    {
+        $attributes = array_merge([
+            'uuid' => $executor->uuid,
+            'title' => $executor->title,
+            'description' => $executor->description,
+            'language' => $executor->language,
+            'config' => $executor->config,
+            'is_system' => 0,
+            'type' => $executor->type?->value,
+        ], $attributeOverrides);
+
+        return [
+            'type' => 'process_package',
+            'root' => $executor->uuid,
+            'export' => [
+                $executor->uuid => [
+                    'exporter' => ScriptExecutorExporter::class,
+                    'type' => 'ScriptExecutor',
+                    'type_human' => 'Script Executor',
+                    'type_plural' => 'ScriptExecutors',
+                    'type_human_plural' => 'Script Executors',
+                    'last_modified_by' => '',
+                    'last_modified_by_id' => null,
+                    'model' => ScriptExecutor::class,
+                    'force_password_protect' => false,
+                    'hidden' => false,
+                    'mode' => 'update',
+                    'saveAssetsMode' => 'saveAllAssets',
+                    'explicit_discard' => false,
+                    'dependents' => [],
+                    'name' => $attributes['title'],
+                    'description' => $attributes['description'],
+                    'process_manager' => [],
+                    'process_manager_id' => [],
+                    'attributes' => $attributes,
+                    'extraAttributes' => [
+                        'translatedLanguages' => [],
+                    ],
+                    'references' => [],
+                ],
+            ],
+        ];
+    }
+
+    private function jobUuid(MoveScriptExecutorToMicroservice $job): string
+    {
+        $property = (new \ReflectionClass($job))->getProperty('uuid');
+        $property->setAccessible(true);
+
+        return $property->getValue($job);
     }
 }

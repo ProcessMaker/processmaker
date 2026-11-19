@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Events\ScriptExecutorUpdated;
 use ProcessMaker\Jobs\BuildScriptExecutor;
 use ProcessMaker\Jobs\MoveScriptExecutorToMicroservice;
@@ -40,18 +41,17 @@ class ScriptExecutorExporter extends ExporterBase
                 }
                 break;
             case 'update':
+                // getChanges() survives refresh() after save, so description/config
+                // updates still reach this branch during process import.
                 if (!empty($this->model->getChanges())) {
                     $original = $this->model->getAttributes();
                     ScriptExecutorUpdated::dispatch($this->model->id, $original, $this->model->getChanges());
-                    if (!app()->runningInConsole()) {
-                        $user = Auth::user();
-                    } else {
-                        $user = User::where('is_administrator', 1)->first();
-                    }
                     // afterCommit is needed because we are in a db transaction
                     if (!config('script-runner-microservice.enabled')) {
                         BuildScriptExecutor::dispatch($this->model->id, $userId)->afterCommit();
-                    } else {
+                    } elseif ($this->model->type === ScriptExecutorType::Custom) {
+                        // Base/system executors must stay on the shared language runner.
+                        // Transitioning them here would set type=Custom and break runs.
                         MoveScriptExecutorToMicroservice::dispatch($this->model->uuid)->afterCommit();
                     }
                 }
