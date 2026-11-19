@@ -165,6 +165,17 @@ return [
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
                 'maxJobs' => (int) env('PM4_HORIZON_SUPERVISOR_1_MAX_JOBS', 100),
             ],
+            'supervisor-savedsearch-sync' => [
+                'connection' => 'redis',
+                'queue' => ['synchronization'],
+                'balance' => 'simple',
+                'tries' => 1,
+                'timeout' => 3600,
+                'minProcesses' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_SYNC_MIN_PROCESSES', 1),
+                'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_SYNC_MAX_PROCESSES', 3),
+                'memory' => 512,
+                'maxJobs' => 100,
+            ],
         ],
 
         'local' => [
@@ -191,6 +202,17 @@ return [
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
                 'maxJobs' => (int) env('PM4_HORIZON_SUPERVISOR_1_MAX_JOBS', 100),
             ],
+            'supervisor-savedsearch-sync' => [
+                'connection' => 'redis',
+                'queue' => ['synchronization'],
+                'balance' => 'simple',
+                'tries' => 1,
+                'timeout' => 3600,
+                'minProcesses' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_SYNC_MIN_PROCESSES', 1),
+                'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_SYNC_MAX_PROCESSES', 3),
+                'memory' => 512,
+                'maxJobs' => 100,
+            ],
         ],
 
         'staging' => [
@@ -216,6 +238,17 @@ return [
                 'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_1_MAX_PROCESSES', 1),
                 'memory' => env('PM4_HORIZON_WORKER_MEMORY_LIMIT', 512),
                 'maxJobs' => (int) env('PM4_HORIZON_SUPERVISOR_1_MAX_JOBS', 100),
+            ],
+            'supervisor-savedsearch-sync' => [
+                'connection' => 'redis',
+                'queue' => ['synchronization'],
+                'balance' => 'simple',
+                'tries' => 1,
+                'timeout' => 3600,
+                'minProcesses' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_SYNC_MIN_PROCESSES', 1),
+                'maxProcesses' => env('PM4_HORIZON_SUPERVISOR_SAVEDSEARCH_SYNC_MAX_PROCESSES', 3),
+                'memory' => 512,
+                'maxJobs' => 100,
             ],
         ],
     ],
