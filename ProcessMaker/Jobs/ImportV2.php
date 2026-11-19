@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Exception\ImportPasswordException;
+use ProcessMaker\Exception\UnsupportedImportAssetException;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Options;
@@ -84,7 +85,13 @@ class ImportV2 implements ShouldQueue
         }
 
         $options = new Options($options);
-        $importer = new Importer($payload, $options, $logger);
+        try {
+            $importer = new Importer($payload, $options, $logger);
+        } catch (UnsupportedImportAssetException $e) {
+            $logger->error($e->getMessage());
+
+            return;
+        }
         if ($this->isPreview) {
             $manifest = $importer->previewImport();
             Storage::put(self::MANIFEST_PATH, json_encode($manifest));

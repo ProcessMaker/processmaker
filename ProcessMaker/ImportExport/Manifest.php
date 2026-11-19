@@ -83,6 +83,7 @@ class Manifest
 
     public static function fromArray(array $array, Options $options, $logger, $root)
     {
+        (new UnsupportedAssetValidator())->validate($array);
         self::$logger = $logger;
 
         self::buildParentModeMap($array, $options);
