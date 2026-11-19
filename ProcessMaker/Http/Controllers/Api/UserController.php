@@ -525,15 +525,20 @@ class UserController extends Controller
         if ($isSelfServiceUpdate) {
             $fields = $this->normalizeSelfServiceMeta($user, $fields);
         }
-        if (array_key_exists('preferences_2fa', $fields)
-            && $authenticatedUser->id === $user->id
-            && session()->has(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT)
-            && !session()->get(TwoFactorAuthController::TFA_VALIDATED, false)
-            && session('sso_driver') === null
-        ) {
-            return response()->json([
-                'message' => __('Two-factor authentication must be completed before updating 2FA preferences.'),
-            ], 422);
+        if (array_key_exists('preferences_2fa', $fields) && $authenticatedUser->id === $user->id) {
+            $webUserId = Auth::guard('web')->id();
+            $twoFactorCompleteForPrincipal = $webUserId !== null
+                && (int) $webUserId === (int) $authenticatedUser->id
+                && session()->get(TwoFactorAuthController::TFA_VALIDATED, false);
+
+            if (session()->has(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT)
+                && session('sso_driver') === null
+                && !$twoFactorCompleteForPrincipal
+            ) {
+                return response()->json([
+                    'message' => __('Two-factor authentication must be completed before updating 2FA preferences.'),
+                ], 422);
+            }
         }
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
