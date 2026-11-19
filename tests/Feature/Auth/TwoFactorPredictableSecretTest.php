@@ -233,6 +233,41 @@ class TwoFactorPredictableSecretTest extends TestCase
         $this->assertEmpty($user->fresh()->two_factor_secret);
     }
 
+    public function testMixedMethodsAllowAuthenticatorEnrollmentAfterDeliveryStepUp(): void
+    {
+        config([
+            'password-policies.2fa_method' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+        ]);
+
+        $deliverySecret = TOTP::generate()->getSecret();
+        $user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+            'two_factor_secret' => null,
+            'two_factor_delivery_secret' => $deliverySecret,
+        ]);
+
+        session()->put(TwoFactorAuthentication::DELIVERY_STEP_UP, true);
+        $pendingSecret = TOTP::generate()->getSecret();
+        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, $pendingSecret);
+
+        $this->actingAs($user, 'web')
+            ->get(route('2fa.auth_app_qr'))
+            ->assertOk();
+
+        $this->postTwoFactorCode($user, TOTP::createFromSecret($pendingSecret)->now())
+            ->assertRedirect(route('login'));
+
+        $this->assertTrue(session()->get(TwoFactorAuthController::TFA_VALIDATED));
+        $this->assertSame($pendingSecret, $user->fresh()->two_factor_secret);
+    }
+
     public function testVictimSessionAcceptsCodeFromStoredSecret(): void
     {
         $secret = TOTP::generate()->getSecret();

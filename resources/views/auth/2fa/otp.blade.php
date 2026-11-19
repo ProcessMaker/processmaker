@@ -57,13 +57,7 @@
             </a>
         </div>
         <div class="form-group text-right">
-            @php
-                $twoFactorMethods = auth()->user()->getValid2FAPreferences();
-            @endphp
-            @if (in_array(\ProcessMaker\TwoFactorAuthentication::AUTH_APP, $twoFactorMethods, true)
-                && empty(auth()->user()->two_factor_secret)
-                && !in_array(\ProcessMaker\TwoFactorAuthentication::EMAIL, $twoFactorMethods, true)
-                && !in_array(\ProcessMaker\TwoFactorAuthentication::SMS, $twoFactorMethods, true))
+            @if (app(\ProcessMaker\TwoFactorAuthentication::class)->mayEnrollNewAuthenticator(auth()->user()))
             <a href="{{ route('2fa.auth_app_qr') }}">
                 {{ __('Authenticator app') }}
             </a>

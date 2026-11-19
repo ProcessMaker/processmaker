@@ -25,6 +25,8 @@ class TwoFactorAuthentication
 
     public const PENDING_AUTHENTICATOR_SECRET = '2fa-pending-authenticator-secret';
 
+    public const DELIVERY_STEP_UP = '2fa-delivery-step-up';
+
     public function sendCode(User $user): void
     {
         // Get methods to send the code
@@ -75,6 +77,27 @@ class TwoFactorAuthentication
         return !empty($pending) ? $pending : null;
     }
 
+    public function mayEnrollNewAuthenticator(User $user): bool
+    {
+        if (!empty($user->two_factor_secret)) {
+            return false;
+        }
+
+        $methods = $user->getValid2FAPreferences();
+        if (!in_array(self::AUTH_APP, $methods, true)) {
+            return false;
+        }
+
+        $hasDeliveryMethod = in_array(self::EMAIL, $methods, true)
+            || in_array(self::SMS, $methods, true);
+
+        if (!$hasDeliveryMethod) {
+            return true;
+        }
+
+        return session()->get(self::DELIVERY_STEP_UP, false);
+    }
+
     private function configureOtp(TOTP $otp, User $user, bool $forGoogleAuthApp): TOTP
     {
         $otp->setIssuer('ProcessMaker');
@@ -116,10 +139,8 @@ class TwoFactorAuthentication
         // The code is for Google Authenticator app?
         if (strlen($code) === 6) {
             $authSecret = $this->resolveAuthenticatorSecret($user);
-            $hasDeliveryMethod = in_array(self::EMAIL, $methods, true)
-                || in_array(self::SMS, $methods, true);
             if (in_array(self::AUTH_APP, $methods, true) && $authSecret !== null) {
-                if (empty($user->two_factor_secret) && $hasDeliveryMethod) {
+                if (empty($user->two_factor_secret) && !$this->mayEnrollNewAuthenticator($user)) {
                     return false;
                 }
                 // Create OTP instance
@@ -142,6 +163,9 @@ class TwoFactorAuthentication
 
             // Validate code
             $valid = $otp->verify($code);
+            if ($valid) {
+                session()->put(self::DELIVERY_STEP_UP, true);
+            }
         }
 
         return $valid;
