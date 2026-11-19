@@ -55,6 +55,7 @@
                 <div class="tab-pane show active" id="inbox" role="tabpanel" aria-labelledby="inbox-tab">
 
                     <div class="card card-body requests-list-body">
+                        @unless(config('app.hide_requests_search_bar'))
                         <div id="search-bar" class="search advanced-search mb-2">
                             <div class="d-flex">
                                 <div class="flex-grow-1">
@@ -105,6 +106,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endunless
                         <requests-listing
                             ref="requestList"
                             :filter="filter"
