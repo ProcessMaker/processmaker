@@ -201,6 +201,50 @@ class TwoFactorPredictableSecretTest extends TestCase
             ->assertRedirect(route('2fa'));
     }
 
+    /**
+     * Stateless auth:api must not narrow preferences_2fa before the same principal
+     * completes web 2FA (blocks Bearer PUT bypass of delivery step-up).
+     */
+    public function testStatelessApiCannotUpdatePreferences2faBeforeWebTwoFactorValidated(): void
+    {
+        config([
+            'password-policies.2fa_method' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+        ]);
+
+        $user = User::factory()->create([
+            'is_administrator' => true,
+            'preferences_2fa' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+            'two_factor_secret' => null,
+        ]);
+
+        $payload = [
+            'username' => $user->username,
+            'firstname' => $user->firstname,
+            'lastname' => $user->lastname,
+            'email' => $user->email,
+            'status' => $user->status,
+            'preferences_2fa' => [TwoFactorAuthentication::AUTH_APP],
+        ];
+
+        $this->actingAs($user, 'api')
+            ->putJson('/api/1.0/users/' . $user->id, $payload)
+            ->assertStatus(422)
+            ->assertJsonPath(
+                'message',
+                __('Two-factor authentication must be completed before updating 2FA preferences.')
+            );
+
+        $freshPreferences = $user->fresh()->preferences_2fa;
+        $this->assertContains(TwoFactorAuthentication::EMAIL, $freshPreferences);
+        $this->assertContains(TwoFactorAuthentication::AUTH_APP, $freshPreferences);
+    }
+
     public function testCannotBypassDeliveryWithPendingAuthenticatorEnrollment(): void
     {
         config([
@@ -238,6 +282,10 @@ class TwoFactorPredictableSecretTest extends TestCase
         $this->assertEmpty($user->fresh()->two_factor_secret);
     }
 
+    /**
+     * Enrollment still requires delivery when the login snapshot includes it, even if
+     * stored preferences were narrowed outside the API (historical bypass shape).
+     */
     public function testNarrowedPreferencesCannotSkipDeliveryStepUpWhenPolicyRequiresIt(): void
     {
         Notification::fake();
@@ -263,6 +311,7 @@ class TwoFactorPredictableSecretTest extends TestCase
             TwoFactorAuthentication::EMAIL,
         ]);
 
+        // Simulates narrowed prefs without going through UserController (not the API guard).
         $user->preferences_2fa = [TwoFactorAuthentication::AUTH_APP];
         $user->saveQuietly();
 

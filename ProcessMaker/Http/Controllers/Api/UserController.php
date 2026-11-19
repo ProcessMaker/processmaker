@@ -628,21 +628,24 @@ class UserController extends Controller
             return null;
         }
 
+        if (session('sso_driver') !== null
+            || !config('password-policies.2fa_enabled', false)
+            || empty(config('password-policies.2fa_method', []))
+            || !TwoFactorAuthController::check2faByGroups()
+        ) {
+            return null;
+        }
+
         $webUserId = Auth::guard('web')->id();
         $twoFactorCompleteForPrincipal = $webUserId !== null
             && (int) $webUserId === (int) $authenticatedUser->id
             && session()->get(TwoFactorAuthController::TFA_VALIDATED, false);
 
-        if (session()->has(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT)
-            && session('sso_driver') === null
-            && !$twoFactorCompleteForPrincipal
-        ) {
-            return response()->json([
+        return $twoFactorCompleteForPrincipal
+            ? null
+            : response()->json([
                 'message' => __('Two-factor authentication must be completed before updating 2FA preferences.'),
             ], 422);
-        }
-
-        return null;
     }
 
     private function validateEmailChangeForUpdate(User $user, array $fields, bool $isLdapUser)
