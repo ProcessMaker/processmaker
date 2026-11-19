@@ -219,7 +219,11 @@ class DeployScreen extends Controller
     private function encodePresetData(mixed $data): string
     {
         if (is_array($data)) {
-            $encoded = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            // YAML empty mappings parse as []; json_encode would persist them as [].
+            $encoded = json_encode(
+                $this->emptyMapsToObjects($data),
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            );
 
             return $encoded === false ? self::EMPTY_PRESET_DATA : $encoded;
         }
@@ -229,6 +233,25 @@ class DeployScreen extends Controller
         }
 
         return self::EMPTY_PRESET_DATA;
+    }
+
+    /**
+     * Recursively turn empty arrays into objects so preview data keeps {}.
+     * shortcut: empty YAML sequences under a key also become {}, revisit if presets need [] leaves
+     */
+    private function emptyMapsToObjects(array $data): array|\stdClass
+    {
+        if ($data === []) {
+            return new \stdClass();
+        }
+
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->emptyMapsToObjects($value);
+            }
+        }
+
+        return $data;
     }
 
     private function isJsonString(string $data): bool

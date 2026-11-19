@@ -113,4 +113,32 @@ YAML;
         $this->assertStringContainsString('Updated', $pull->getContent());
         $this->assertStringContainsString('N45XB', $pull->getContent());
     }
+
+    public function testDeployScreenEncodesEmptyYamlMappingsAsObjects(): void
+    {
+        $yaml = <<<'YAML'
+config: []
+preview_presets:
+  - title: Empty mapping
+    data: {}
+  - title: Nested empty mapping
+    data:
+      callsign: AVA123
+      meta: {}
+YAML;
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'yml_content' => $yaml,
+            'name' => 'preset-empty-maps',
+        ])->assertOk();
+
+        $screen = Screen::where('title', 'preset-empty-maps')->first();
+        $this->assertSame(
+            [
+                ['title' => 'Empty mapping', 'data' => '{}'],
+                ['title' => 'Nested empty mapping', 'data' => '{"callsign":"AVA123","meta":{}}'],
+            ],
+            $screen->preview_presets
+        );
+    }
 }
