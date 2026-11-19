@@ -63,6 +63,11 @@ class DeployScript extends Controller
             ], 422);
         }
 
+        return $this->persistDeployedScript($request, $name);
+    }
+
+    private function persistDeployedScript(Request $request, string $name): JsonResponse
+    {
         $code = $request->input('code');
         $script = Script::where('title', $name)->first();
         $created = $script === null;
