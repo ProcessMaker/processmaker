@@ -590,7 +590,13 @@ class ScriptsTest extends TestCase
 
         $response = $this->actingAs($editor, 'api')->putJson(
             route('api.scripts.duplicate', $script),
-            ['title' => 'Duplicate without modules']
+            [
+                'title' => 'Duplicate without modules',
+                'language' => 'php',
+                'description' => $script->description,
+                'run_as_user_id' => $script->run_as_user_id,
+                'script_category_id' => $script->script_category_id,
+            ]
         );
 
         $response->assertCreated();
