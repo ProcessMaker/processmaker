@@ -266,6 +266,43 @@ class ScriptMicroserviceErrorContractTest extends TestCase
             ErrorHandling::redactScriptErrorDetails($details));
     }
 
+    public static function credentialNames(): array
+    {
+        $names = ['Authorization', 'PASSWORD'];
+        foreach (['apiToken', 'apiKey', 'accessToken', 'refreshToken', 'callbackToken', 'clientSecret'] as $name) {
+            $names[] = $name;
+            $names[] = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $name));
+            $names[] = strtoupper(preg_replace('/([a-z])([A-Z])/', '$1-$2', $name));
+        }
+
+        return array_combine($names, array_map(fn ($name) => [$name], $names));
+    }
+
+    #[DataProvider('credentialNames')]
+    public function testCredentialFamiliesRemainRedacted(string $name): void
+    {
+        $json = json_encode([$name => 'private-secret', 'detail' => 'Useful diagnostic'], JSON_THROW_ON_ERROR);
+        $this->assertSame([$name => '[REDACTED]', 'detail' => 'Useful diagnostic'],
+            json_decode(ErrorHandling::redactScriptErrorDetails($json), true, 512, JSON_THROW_ON_ERROR));
+        $this->assertSame($name . '=[REDACTED]', ErrorHandling::redactScriptErrorDetails($name . '=private-secret'));
+    }
+
+    public function testDiagnosticScalarsAndDepthLimitRemainUnchanged(): void
+    {
+        $response = $this->fixture('1.2.1');
+        $response['error']['detail'] = ['detail' => [
+            'code' => 0, 'line' => 1.5, 'message' => false, 'exception' => null,
+            'file' => new \stdClass(), 'function' => 'validateConfig',
+            'error' => ['detail' => 'Beyond the depth limit'],
+        ]];
+        $this->exceptionFor($response);
+
+        $this->assertSame(['detail' => [
+            'code' => 0, 'line' => 1.5, 'message' => false, 'exception' => null,
+            'file' => null, 'function' => 'validateConfig', 'error' => null,
+        ]], $this->logger->records[0]['context']['diagnostics']['error']['detail']);
+    }
+
     public static function fallbackResponses(): array
     {
         return [

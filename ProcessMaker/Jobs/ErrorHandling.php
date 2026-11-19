@@ -286,11 +286,8 @@ class ErrorHandling
         if (is_string($value)) {
             return mb_strcut(self::redactScriptErrorDetails($value), 0, 8000, 'UTF-8');
         }
-        if (is_int($value) || is_float($value) || is_bool($value) || $value === null) {
-            return $value;
-        }
         if (!is_array($value) || $depth >= 4) {
-            return null;
+            return is_int($value) || is_float($value) || is_bool($value) ? $value : null;
         }
 
         $allowed = ['error_message', 'message', 'detail', 'error', 'exception', 'code', 'file', 'line',
@@ -398,7 +395,10 @@ class ErrorHandling
     public static function redactScriptErrorDetails(string $details): string
     {
         $redacted = preg_replace(
-            '/("(?:authorization|api[_-]?(?:token|key)|(?:access|refresh|callback)[_-]?token|client[_-]?secret|password)"\s*:\s*)"(?:\\\\.|[^"\\\\\r\n]++)*+"/i',
+            [
+                '/("(?:authorization|api[_-]?(?:token|key)|password)"\s*:\s*)"(?:\\\\.|[^"\\\\\r\n]++)*+"/i',
+                '/("(?:(?:access|refresh|callback)[_-]?token|client[_-]?secret)"\s*:\s*)"(?:\\\\.|[^"\\\\\r\n]++)*+"/i',
+            ],
             '$1"[REDACTED]"',
             $details
         ) ?? '[REDACTED]';
@@ -409,7 +409,10 @@ class ErrorHandling
         ) ?? $redacted;
         $redacted = preg_replace('/\bBearer\s+\S+/i', 'Bearer [REDACTED]', $redacted) ?? $redacted;
         $redacted = preg_replace(
-            '/\b(api[_-]?(?:token|key)|(?:access|refresh|callback)[_-]?token|client[_-]?secret|password)\b\s*[:=]\s*[^\s,;]+/i',
+            [
+                '/\b(api[_-]?(?:token|key)|password)\b\s*[:=]\s*[^\s,;]+/i',
+                '/\b((?:access|refresh|callback)[_-]?token|client[_-]?secret)\b\s*[:=]\s*[^\s,;]+/i',
+            ],
             '$1=[REDACTED]',
             $redacted
         ) ?? $redacted;
