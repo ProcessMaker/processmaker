@@ -537,7 +537,6 @@ class UserController extends Controller
             && $user->meta->authenticationType === 'ldap';
         $user->fill($fields);
 
-        $response = null;
         if (array_key_exists('preferences_2fa', $fields) && $authenticatedUser->id === $user->id) {
             $webUserId = Auth::guard('web')->id();
             $twoFactorCompleteForPrincipal = $webUserId !== null
@@ -548,25 +547,25 @@ class UserController extends Controller
                 && session('sso_driver') === null
                 && !$twoFactorCompleteForPrincipal
             ) {
-                $response = response()->json([
+                return response()->json([
                     'message' => __('Two-factor authentication must be completed before updating 2FA preferences.'),
                 ], 422);
             }
         }
-        if ($response === null && array_key_exists('cell', $fields)) {
-            $cellValidation = $this->validateCellPhoneNumber($user, $fields['cell']);
-            if ($cellValidation) {
-                $response = $cellValidation;
+        if (array_key_exists('cell', $fields)) {
+            $response = $this->validateCellPhoneNumber($user, $fields['cell']);
+            if ($response) {
+                return $response;
             }
         }
-        if ($response === null && $fields['email'] !== $original['email']) {
+        if ($fields['email'] !== $original['email']) {
             $ssoUser = $isLdapUser;
             if (class_exists(SsoUser::class)) {
                 // Check if the user is an SSO user (including SAML)
                 $ssoUser = $ssoUser || SsoUser::where('user_id', $user->id)->exists();
             }
             if ($ssoUser) {
-                $response = response([
+                return response([
                     'message' => __(
                         "The email can't be edited. This action is only available for SSO-synced users."
                     ),
@@ -578,8 +577,9 @@ class UserController extends Controller
                         ],
                     ],
                 ], 422);
-            } elseif (!isset($fields['valpassword'])) {
-                $response = response([
+            }
+            if (!isset($fields['valpassword'])) {
+                return response([
                     'message' => __(
                         'A valid authentication is required for for update the email.'
                     ),
@@ -592,64 +592,57 @@ class UserController extends Controller
                     ],
                 ], 422);
             } else {
-                $emailAuthResponse = $this->validateBeforeChange(Auth::user(), $fields['valpassword']);
-                if ($emailAuthResponse) {
-                    $response = $emailAuthResponse;
+                $response = $this->validateBeforeChange(Auth::user(), $fields['valpassword']);
+                if ($response) {
+                    return $response;
                 }
             }
         }
-        if ($response === null) {
-            if (Auth::user()->is_administrator && $request->has('is_administrator')) {
-                // user must be an admin to make another user an admin
-                $user->is_administrator = $request->get('is_administrator');
-            }
-
-            if (empty($fields['meta'])) {
-                $user->meta = null;
-            }
-
-            try {
-                $user->saveOrFail();
-            } catch (\Exception $e) {
-                $slackExceptionClass = 'ProcessMaker\Packages\Connectors\Slack\Exceptions\SlackConfigurationException';
-
-                if (class_exists($slackExceptionClass) && $e instanceof $slackExceptionClass) {
-                    $response = response([
-                        'message' => $e->getMessage(),
-                    ], 422);
-                } else {
-                    throw $e;
-                }
-            }
-
-            if ($response === null) {
-                $changes = $user->getChanges();
-
-                //Call new Event to store User Changes into LOG
-                UserUpdated::dispatch($user, $changes, $original);
-                try {
-                    if ($request->has('avatar')) {
-                        $this->uploadAvatar($user, $request);
-                    }
-                } catch (\Exception $e) {
-                    $response = response([
-                        'message' => 'Error uploading avatar',
-                        'errors' => [
-                            'avatar' => [
-                                $e->getMessage(),
-                            ],
-                        ],
-                    ], 422);
-                }
-            }
-
-            if ($response === null) {
-                RecommendationEngine::handleUserSettingChanges($user, $original);
-                $response = response([], 204);
-            }
+        if (Auth::user()->is_administrator && $request->has('is_administrator')) {
+            // user must be an admin to make another user an admin
+            $user->is_administrator = $request->get('is_administrator');
         }
 
-        return $response;
+        if (empty($fields['meta'])) {
+            $user->meta = null;
+        }
+
+        try {
+            $user->saveOrFail();
+        } catch (\Exception $e) {
+            $slackExceptionClass = 'ProcessMaker\Packages\Connectors\Slack\Exceptions\SlackConfigurationException';
+
+            if (class_exists($slackExceptionClass) && $e instanceof $slackExceptionClass) {
+                return response([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            throw $e;
+        }
+
+        $changes = $user->getChanges();
+
+        //Call new Event to store User Changes into LOG
+        UserUpdated::dispatch($user, $changes, $original);
+        try {
+            if ($request->has('avatar')) {
+                $this->uploadAvatar($user, $request);
+            }
+        } catch (\Exception $e) {
+            return response([
+                'message' => 'Error uploading avatar',
+                'errors' => [
+                    'avatar' => [
+                        $e->getMessage(),
+                    ],
+                ],
+            ], 422);
+        }
+
+        RecommendationEngine::handleUserSettingChanges($user, $original);
+
+        return response([], 204);
     }
 
     /**
