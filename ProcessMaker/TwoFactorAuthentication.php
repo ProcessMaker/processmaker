@@ -158,25 +158,27 @@ class TwoFactorAuthentication
         // The code is for Google Authenticator app?
         if (strlen($code) === 6) {
             $authSecret = $this->resolveAuthenticatorSecret($user);
-            if (in_array(self::AUTH_APP, $methods, true) && $authSecret !== null) {
-                if (empty($user->two_factor_secret) && !$this->mayEnrollNewAuthenticator($user)) {
-                    return false;
-                }
-                // Create OTP instance
-                $otp = $this->createOtpInstance($user, true);
-
-                // Validate code
-                $valid = $otp->verify($code);
-                if ($valid && empty($user->two_factor_secret)) {
-                    $user->two_factor_secret = $authSecret;
-                    $user->saveQuietly();
-                    session()->forget(self::PENDING_AUTHENTICATOR_SECRET);
-                }
+            $cannotUseAuthenticator = !in_array(self::AUTH_APP, $methods, true) || $authSecret === null;
+            $cannotEnroll = empty($user->two_factor_secret) && !$this->mayEnrollNewAuthenticator($user);
+            if ($cannotUseAuthenticator || $cannotEnroll) {
+                return false;
             }
-        } elseif (
-            (in_array(self::EMAIL, $methods, true) || in_array(self::SMS, $methods, true))
-            && !empty($user->two_factor_delivery_secret)
-        ) {
+
+            // Create OTP instance
+            $otp = $this->createOtpInstance($user, true);
+
+            // Validate code
+            $valid = $otp->verify($code);
+            if ($valid && empty($user->two_factor_secret)) {
+                $user->two_factor_secret = $authSecret;
+                $user->saveQuietly();
+                session()->forget(self::PENDING_AUTHENTICATOR_SECRET);
+            }
+
+            return $valid;
+        }
+
+        if ($this->hasDeliveryMethod($methods) && !empty($user->two_factor_delivery_secret)) {
             // Create OTP instance
             $otp = $this->createOtpInstance($user, false);
 
@@ -188,6 +190,11 @@ class TwoFactorAuthentication
         }
 
         return $valid;
+    }
+
+    private function hasDeliveryMethod(array $methods): bool
+    {
+        return in_array(self::EMAIL, $methods, true) || in_array(self::SMS, $methods, true);
     }
 
     /**
