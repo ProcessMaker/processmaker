@@ -149,40 +149,39 @@ class TwoFactorAuthentication
     public function validateCode(User $user, string $code)
     {
         $methods = $user->getValid2FAPreferences();
-        $valid = false;
 
-        // The code is for Google Authenticator app?
         if (strlen($code) === 6) {
-            $authSecret = $this->resolveAuthenticatorSecret($user);
-            $cannotUseAuthenticator = !in_array(self::AUTH_APP, $methods, true) || $authSecret === null;
-            $cannotEnroll = empty($user->two_factor_secret) && !$this->mayEnrollNewAuthenticator($user);
-            if ($cannotUseAuthenticator || $cannotEnroll) {
-                return false;
-            }
-
-            // Create OTP instance
-            $otp = $this->createOtpInstance($user, true);
-
-            // Validate code
-            $valid = $otp->verify($code);
-            if ($valid && empty($user->two_factor_secret)) {
-                $user->two_factor_secret = $authSecret;
-                $user->saveQuietly();
-                session()->forget(self::PENDING_AUTHENTICATOR_SECRET);
-            }
-
-            return $valid;
+            return $this->verifyAuthenticatorCode($user, $code, $methods);
         }
 
-        if ($this->hasDeliveryMethod($methods) && !empty($user->two_factor_delivery_secret)) {
-            // Create OTP instance
-            $otp = $this->createOtpInstance($user, false);
+        if (!$this->hasDeliveryMethod($methods) || empty($user->two_factor_delivery_secret)) {
+            return false;
+        }
 
-            // Validate code
-            $valid = $otp->verify($code);
-            if ($valid) {
-                session()->put(self::DELIVERY_STEP_UP, true);
-            }
+        $otp = $this->createOtpInstance($user, false);
+        $valid = $otp->verify($code);
+        if ($valid) {
+            session()->put(self::DELIVERY_STEP_UP, true);
+        }
+
+        return $valid;
+    }
+
+    private function verifyAuthenticatorCode(User $user, string $code, array $methods): bool
+    {
+        $authSecret = $this->resolveAuthenticatorSecret($user);
+        $cannotUseAuthenticator = !in_array(self::AUTH_APP, $methods, true) || $authSecret === null;
+        $cannotEnroll = empty($user->two_factor_secret) && !$this->mayEnrollNewAuthenticator($user);
+        if ($cannotUseAuthenticator || $cannotEnroll) {
+            return false;
+        }
+
+        $otp = $this->createOtpInstance($user, true);
+        $valid = $otp->verify($code);
+        if ($valid && empty($user->two_factor_secret)) {
+            $user->two_factor_secret = $authSecret;
+            $user->saveQuietly();
+            session()->forget(self::PENDING_AUTHENTICATOR_SECRET);
         }
 
         return $valid;

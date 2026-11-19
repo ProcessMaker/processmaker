@@ -537,112 +537,18 @@ class UserController extends Controller
             && $user->meta->authenticationType === 'ldap';
         $user->fill($fields);
 
-        if (array_key_exists('preferences_2fa', $fields) && $authenticatedUser->id === $user->id) {
-            $webUserId = Auth::guard('web')->id();
-            $twoFactorCompleteForPrincipal = $webUserId !== null
-                && (int) $webUserId === (int) $authenticatedUser->id
-                && session()->get(TwoFactorAuthController::TFA_VALIDATED, false);
-
-            if (session()->has(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT)
-                && session('sso_driver') === null
-                && !$twoFactorCompleteForPrincipal
-            ) {
-                return response()->json([
-                    'message' => __('Two-factor authentication must be completed before updating 2FA preferences.'),
-                ], 422);
-            }
-        }
-        if (array_key_exists('cell', $fields)) {
-            $response = $this->validateCellPhoneNumber($user, $fields['cell']);
-            if ($response) {
-                return $response;
-            }
-        }
-        if ($fields['email'] !== $original['email']) {
-            $ssoUser = $isLdapUser;
-            if (class_exists(SsoUser::class)) {
-                // Check if the user is an SSO user (including SAML)
-                $ssoUser = $ssoUser || SsoUser::where('user_id', $user->id)->exists();
-            }
-            if ($ssoUser) {
-                return response([
-                    'message' => __(
-                        "The email can't be edited. This action is only available for SSO-synced users."
-                    ),
-                    'errors' => [
-                        'email' => [
-                            __(
-                                "The email can't be edited. This action is only available for SSO-synced users."
-                            ),
-                        ],
-                    ],
-                ], 422);
-            }
-            if (!isset($fields['valpassword'])) {
-                return response([
-                    'message' => __(
-                        'A valid authentication is required for for update the email.'
-                    ),
-                    'errors' => [
-                        'email' => [
-                            __(
-                                'The password is required.'
-                            ),
-                        ],
-                    ],
-                ], 422);
-            } else {
-                $response = $this->validateBeforeChange(Auth::user(), $fields['valpassword']);
-                if ($response) {
-                    return $response;
-                }
-            }
-        }
-        if (Auth::user()->is_administrator && $request->has('is_administrator')) {
-            // user must be an admin to make another user an admin
-            $user->is_administrator = $request->get('is_administrator');
+        $validationResponse = $this->resolveUserUpdateValidationResponse(
+            $authenticatedUser,
+            $user,
+            $fields,
+            $original,
+            $isLdapUser
+        );
+        if ($validationResponse !== null) {
+            return $validationResponse;
         }
 
-        if (empty($fields['meta'])) {
-            $user->meta = null;
-        }
-
-        try {
-            $user->saveOrFail();
-        } catch (\Exception $e) {
-            $slackExceptionClass = 'ProcessMaker\Packages\Connectors\Slack\Exceptions\SlackConfigurationException';
-
-            if (class_exists($slackExceptionClass) && $e instanceof $slackExceptionClass) {
-                return response([
-                    'message' => $e->getMessage(),
-                ], 422);
-            }
-
-            throw $e;
-        }
-
-        $changes = $user->getChanges();
-
-        //Call new Event to store User Changes into LOG
-        UserUpdated::dispatch($user, $changes, $original);
-        try {
-            if ($request->has('avatar')) {
-                $this->uploadAvatar($user, $request);
-            }
-        } catch (\Exception $e) {
-            return response([
-                'message' => 'Error uploading avatar',
-                'errors' => [
-                    'avatar' => [
-                        $e->getMessage(),
-                    ],
-                ],
-            ], 422);
-        }
-
-        RecommendationEngine::handleUserSettingChanges($user, $original);
-
-        return response([], 204);
+        return $this->completeUserUpdate($user, $request, $fields, $original);
     }
 
     /**
@@ -696,6 +602,140 @@ class UserController extends Controller
         $fields['meta'] = $meta ?: null;
 
         return $fields;
+    }
+
+    private function resolveUserUpdateValidationResponse(
+        User $authenticatedUser,
+        User $user,
+        array $fields,
+        array $original,
+        bool $isLdapUser
+    ) {
+        $response = $this->preferences2faUpdateBlockedResponse($authenticatedUser, $user, $fields);
+        if ($response === null && array_key_exists('cell', $fields)) {
+            $response = $this->validateCellPhoneNumber($user, $fields['cell']) ?: null;
+        }
+        if ($response === null && $fields['email'] !== $original['email']) {
+            $response = $this->validateEmailChangeForUpdate($user, $fields, $isLdapUser);
+        }
+
+        return $response;
+    }
+
+    private function preferences2faUpdateBlockedResponse(User $authenticatedUser, User $user, array $fields)
+    {
+        if (!array_key_exists('preferences_2fa', $fields) || $authenticatedUser->id !== $user->id) {
+            return null;
+        }
+
+        $webUserId = Auth::guard('web')->id();
+        $twoFactorCompleteForPrincipal = $webUserId !== null
+            && (int) $webUserId === (int) $authenticatedUser->id
+            && session()->get(TwoFactorAuthController::TFA_VALIDATED, false);
+
+        if (session()->has(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT)
+            && session('sso_driver') === null
+            && !$twoFactorCompleteForPrincipal
+        ) {
+            return response()->json([
+                'message' => __('Two-factor authentication must be completed before updating 2FA preferences.'),
+            ], 422);
+        }
+
+        return null;
+    }
+
+    private function validateEmailChangeForUpdate(User $user, array $fields, bool $isLdapUser)
+    {
+        $response = null;
+        $ssoUser = $isLdapUser;
+        if (class_exists(SsoUser::class)) {
+            // Check if the user is an SSO user (including SAML)
+            $ssoUser = $ssoUser || SsoUser::where('user_id', $user->id)->exists();
+        }
+        if ($ssoUser) {
+            $response = response([
+                'message' => __(
+                    "The email can't be edited. This action is only available for SSO-synced users."
+                ),
+                'errors' => [
+                    'email' => [
+                        __(
+                            "The email can't be edited. This action is only available for SSO-synced users."
+                        ),
+                    ],
+                ],
+            ], 422);
+        } elseif (!isset($fields['valpassword'])) {
+            $response = response([
+                'message' => __(
+                    'A valid authentication is required for for update the email.'
+                ),
+                'errors' => [
+                    'email' => [
+                        __(
+                            'The password is required.'
+                        ),
+                    ],
+                ],
+            ], 422);
+        } else {
+            $emailAuthResponse = $this->validateBeforeChange(Auth::user(), $fields['valpassword']);
+            if ($emailAuthResponse) {
+                $response = $emailAuthResponse;
+            }
+        }
+
+        return $response;
+    }
+
+    private function completeUserUpdate(User $user, Request $request, array $fields, array $original)
+    {
+        if (Auth::user()->is_administrator && $request->has('is_administrator')) {
+            // user must be an admin to make another user an admin
+            $user->is_administrator = $request->get('is_administrator');
+        }
+
+        if (empty($fields['meta'])) {
+            $user->meta = null;
+        }
+
+        try {
+            $user->saveOrFail();
+        } catch (\Exception $e) {
+            $slackExceptionClass = 'ProcessMaker\Packages\Connectors\Slack\Exceptions\SlackConfigurationException';
+
+            if (class_exists($slackExceptionClass) && $e instanceof $slackExceptionClass) {
+                return response([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            throw $e;
+        }
+
+        $changes = $user->getChanges();
+
+        //Call new Event to store User Changes into LOG
+        UserUpdated::dispatch($user, $changes, $original);
+        try {
+            if ($request->has('avatar')) {
+                $this->uploadAvatar($user, $request);
+            }
+        } catch (\Exception $e) {
+            return response([
+                'message' => 'Error uploading avatar',
+                'errors' => [
+                    'avatar' => [
+                        $e->getMessage(),
+                    ],
+                ],
+            ], 422);
+        }
+
+        RecommendationEngine::handleUserSettingChanges($user, $original);
+
+        return response([], 204);
     }
 
     /**
