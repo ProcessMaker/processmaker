@@ -101,12 +101,8 @@ class TwoFactorAuthentication
 
     public function mayEnrollNewAuthenticator(User $user): bool
     {
-        if (!empty($user->two_factor_secret)) {
-            return false;
-        }
-
         $methods = $user->getValid2FAPreferences();
-        if (!in_array(self::AUTH_APP, $methods, true)) {
+        if (!empty($user->two_factor_secret) || !in_array(self::AUTH_APP, $methods, true)) {
             return false;
         }
 
