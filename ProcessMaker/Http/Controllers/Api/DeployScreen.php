@@ -74,8 +74,9 @@ class DeployScreen extends Controller
         }
 
         $this->applyYamlFields($screen, $parsedData, $created);
+        $publishedVersionIdBefore = $this->latestPublishedVersionId($screen);
         $screen->save();
-        $this->applyDeployVersionName($screen, $request);
+        $this->applyDeployVersionName($screen, $request, !$created, $publishedVersionIdBefore);
         $screen->refresh();
 
         return response()->json([

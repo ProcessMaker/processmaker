@@ -37,8 +37,17 @@ trait AppliesDeployVersionName
         return null;
     }
 
-    protected function applyDeployVersionName(Model $asset, Request $request): void
+    protected function latestPublishedVersionId(Model $asset): int
     {
+        return $this->deployVersionName()->latestPublishedVersionId($asset);
+    }
+
+    protected function applyDeployVersionName(
+        Model $asset,
+        Request $request,
+        bool $isUpdate,
+        int $publishedVersionIdBefore,
+    ): void {
         $versionName = $request->input('version_name');
         $description = $request->input('version_description');
 
@@ -46,6 +55,8 @@ trait AppliesDeployVersionName
             $asset,
             is_string($versionName) ? $versionName : null,
             (int) $request->user()->id,
+            $isUpdate,
+            $publishedVersionIdBefore,
             is_string($description) ? $description : null,
         );
     }

@@ -93,8 +93,9 @@ class DeployScript extends Controller
         }
 
         $script->code = $code;
+        $publishedVersionIdBefore = $this->latestPublishedVersionId($script);
         $script->save();
-        $this->applyDeployVersionName($script, $request);
+        $this->applyDeployVersionName($script, $request, !$created, $publishedVersionIdBefore);
         $script->refresh();
 
         return response()->json([

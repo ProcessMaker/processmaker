@@ -6,6 +6,7 @@ namespace ProcessMaker\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\ValidationException;
 use ProcessMaker\Package\Versions\Models\VersionHistory;
 
 final class DeployVersionName
@@ -37,8 +38,25 @@ final class DeployVersionName
             && Schema::hasTable('version_history');
     }
 
-    public function applyAfterSave(Model $asset, ?string $versionName, int $userId, ?string $description = null): void
+    public function latestPublishedVersionId(Model $asset): int
     {
+        if (!method_exists($asset, 'versions')) {
+            return 0;
+        }
+
+        $maxId = $asset->versions()->published()->max('id');
+
+        return $maxId !== null ? (int) $maxId : 0;
+    }
+
+    public function applyAfterSave(
+        Model $asset,
+        ?string $versionName,
+        int $userId,
+        bool $isUpdate,
+        int $publishedVersionIdBefore,
+        ?string $description = null,
+    ): void {
         $subject = $versionName !== null ? trim($versionName) : '';
         if (
             $subject === ''
@@ -48,8 +66,14 @@ final class DeployVersionName
             return;
         }
 
-        $version = $asset->versions()->orderByDesc('id')->first();
+        $version = $this->resolvePublishedVersionAfterSave($asset, $publishedVersionIdBefore);
         if ($version === null) {
+            if ($isUpdate) {
+                throw ValidationException::withMessages([
+                    'version_name' => 'Deploy did not publish a new asset version.',
+                ]);
+            }
+
             return;
         }
 
@@ -63,5 +87,19 @@ final class DeployVersionName
             : null;
         $history->status = 'ACTIVE';
         $history->saveOrFail();
+    }
+
+    private function resolvePublishedVersionAfterSave(Model $asset, int $publishedVersionIdBefore): ?Model
+    {
+        $version = $asset->versions()->published()->orderByDesc('id')->first();
+        if ($version === null) {
+            return null;
+        }
+
+        if ((int) $version->getKey() <= $publishedVersionIdBefore) {
+            return null;
+        }
+
+        return $version;
     }
 }

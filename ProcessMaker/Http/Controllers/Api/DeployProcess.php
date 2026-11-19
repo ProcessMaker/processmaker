@@ -109,9 +109,10 @@ class DeployProcess extends Controller
             }
 
             $process->bpmn = $bpmn;
+            $publishedVersionIdBefore = $this->latestPublishedVersionId($process);
             $process->saveOrFail();
 
-            $this->applyDeployVersionName($process, $request);
+            $this->applyDeployVersionName($process, $request, !$created, $publishedVersionIdBefore);
 
             return [$process->refresh(), $created];
         });
