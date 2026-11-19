@@ -62,7 +62,7 @@
                 variant="link"
                 @click="openUpdatePlugin(props.rowData)"
                 v-b-tooltip.hover
-                :title="$t('Update')"
+                :title="$t('Edit')"
                 :class="
                   props.rowData.source !== 'git' ||
                   props.rowData.enabled !== 'Enabled'
@@ -74,7 +74,7 @@
                   props.rowData.enabled !== 'Enabled'
                 "
               >
-                <i class="fas fa-sync fa-lg fa-fw"></i>
+                <i class="fas fa-edit fa-lg fa-fw"></i>
               </b-btn>
               <b-btn
                 variant="link"
@@ -808,7 +808,7 @@ const openUpdatePlugin = (item) => {
     return;
   }
   pendingReinstallItem.value = item;
-  updateModalTitle.value = $t("Update Plugin") + `: ${item.name}`;
+  updateModalTitle.value = $t("Edit Plugin") + `: ${item.name}`;
   resetUpdateModalForm();
   updateRepositoryUrl.value = item.url || "";
   updateBranch.value = item.branch || "";

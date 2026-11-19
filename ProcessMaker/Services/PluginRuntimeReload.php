@@ -73,15 +73,39 @@ class PluginRuntimeReload
     {
         $delay = max(0, (int) config('plugin_manager.supervisor_restart_delay', 5));
         $launcher = 'sleep ' . $delay . '; ' . implode(' ', array_map('escapeshellarg', $this->supervisorCommand()));
-        $script = 'setsid nohup bash -c ' . escapeshellarg($launcher) . ' >/dev/null 2>&1 </dev/null &';
+        $shell = $this->supervisorRestartShell();
+        $script = 'nohup ' . $shell . ' -c ' . escapeshellarg($launcher) . ' >/dev/null 2>&1 </dev/null &';
+
+        foreach (['/usr/bin/setsid', '/bin/setsid'] as $setsid) {
+            if (is_executable($setsid)) {
+                $script = $setsid . ' ' . $script;
+                break;
+            }
+        }
 
         try {
-            $process = Process::timeout(15)->run(['bash', '-c', $script]);
+            $process = Process::timeout(15)->run([$shell, '-c', $script]);
         } catch (ProcessTimedOutException) {
             return false;
         }
 
         return $process->successful();
+    }
+
+    private function supervisorRestartShell(): string
+    {
+        $configured = config('plugin_manager.supervisor_restart_shell');
+        if (is_string($configured) && $configured !== '' && is_executable($configured)) {
+            return $configured;
+        }
+
+        foreach (['/bin/bash', '/usr/bin/bash', '/bin/sh', '/usr/bin/sh'] as $candidate) {
+            if (is_executable($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return '/bin/sh';
     }
 
     /**

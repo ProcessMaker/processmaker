@@ -20,6 +20,12 @@ return [
     'supervisor_restart_target' => env('PLUGIN_SUPERVISOR_RESTART_TARGET', 'all'),
 
     /*
+    | Shell for scheduling supervisorctl in the background. Empty uses bash when
+    | present, otherwise sh (e.g. Alpine images without bash).
+    */
+    'supervisor_restart_shell' => env('PLUGIN_SUPERVISOR_RESTART_SHELL'),
+
+    /*
     | Allow install() to treat repo argument as a local directory (CLI operator use).
     | Keep false in production; API install always requires https URLs regardless.
     */

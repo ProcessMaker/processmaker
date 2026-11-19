@@ -76,7 +76,7 @@ class PluginReloadListenCommandTest extends TestCase
         Process::assertRan(function ($process) {
             $command = is_array($process->command) ? implode(' ', $process->command) : (string) $process->command;
 
-            return str_contains($command, 'setsid')
+            return str_contains($command, 'nohup')
                 && str_contains($command, 'supervisorctl')
                 && str_contains($command, 'restart')
                 && str_contains($command, 'all');

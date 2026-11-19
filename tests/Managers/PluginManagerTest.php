@@ -685,7 +685,7 @@ class PluginManagerTest extends TestCase
 
             $command = implode(' ', $process->command);
 
-            if (!str_contains($command, 'setsid') || !str_contains($command, 'nohup')) {
+            if (!str_contains($command, 'nohup')) {
                 return false;
             }
 
