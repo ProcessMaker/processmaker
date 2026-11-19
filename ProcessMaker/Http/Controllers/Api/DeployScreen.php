@@ -16,6 +16,8 @@ class DeployScreen extends Controller
 {
     use TaskScreenResourceTrait;
 
+    private const EMPTY_PRESET_DATA = '{}';
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -102,6 +104,7 @@ class DeployScreen extends Controller
             'computed' => $screenVersion->computed,
             'watchers' => $screenVersion->watchers,
             'custom_css' => $screenVersion->custom_css,
+            'preview_presets' => $screenVersion->preview_presets ?? [],
         ];
         $yaml = Yaml::dump($data, 100, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK);
 
@@ -166,11 +169,16 @@ class DeployScreen extends Controller
 
     private function applyYamlFields(Screen $screen, array $parsedData, bool $created): void
     {
+        if (array_key_exists('preview_presets', $parsedData)) {
+            $parsedData['preview_presets'] = $this->normalizePreviewPresets($parsedData['preview_presets']);
+        }
+
         $defaults = [
             'config' => [],
             'computed' => [],
             'watchers' => [],
             'custom_css' => '',
+            'preview_presets' => [],
         ];
 
         foreach ($defaults as $field => $default) {
@@ -180,5 +188,57 @@ class DeployScreen extends Controller
                 $screen->{$field} = $default;
             }
         }
+    }
+
+    /**
+     * Designer stores each preset data value as a JSON string so `{}` survives decode.
+     *
+     * @return list<array{title: string, data: string}>
+     */
+    private function normalizePreviewPresets(mixed $presets): array
+    {
+        if (!is_array($presets)) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach ($presets as $preset) {
+            if (!is_array($preset)) {
+                continue;
+            }
+            $title = $preset['title'] ?? '';
+            $normalized[] = [
+                'title' => is_string($title) ? $title : '',
+                'data' => $this->encodePresetData($preset['data'] ?? self::EMPTY_PRESET_DATA),
+            ];
+        }
+
+        return $normalized;
+    }
+
+    private function encodePresetData(mixed $data): string
+    {
+        if (is_array($data)) {
+            $encoded = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+            return $encoded === false ? self::EMPTY_PRESET_DATA : $encoded;
+        }
+
+        if (is_string($data) && $this->isJsonString($data)) {
+            return $data;
+        }
+
+        return self::EMPTY_PRESET_DATA;
+    }
+
+    private function isJsonString(string $data): bool
+    {
+        try {
+            json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return false;
+        }
+
+        return true;
     }
 }
