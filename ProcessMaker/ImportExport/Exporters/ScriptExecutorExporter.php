@@ -17,6 +17,10 @@ class ScriptExecutorExporter extends ExporterBase
     // not exist. Otherwise associate existing on import.
     public static $forceUpdate = true;
 
+    // Type is managed by the target instance (Base vs Custom). Importing a
+    // process package must not flip a Base executor to Custom.
+    public static $doNotUpdateAttributes = ['type'];
+
     public function export() : void
     {
     }
