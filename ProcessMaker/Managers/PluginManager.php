@@ -19,6 +19,14 @@ use Throwable;
 class PluginManager
 {
     /**
+     * Shown when the cloned repository has no plugin code yet, which is the normal state of a
+     * brand-new repository that the coding agent has not pushed the skeleton to.
+     */
+    public const EMPTY_REPOSITORY_MESSAGE = 'The repository has no plugin code yet (there is no composer.json). '
+        . 'Push the plugin skeleton to it first (use "Copy prompt" in the Create Plugin dialog and let your '
+        . 'coding agent do it), then install again.';
+
+    /**
      * Plugin directory created by the current install attempt.
      * Removed if that attempt fails before setup finishes.
      */
@@ -127,6 +135,12 @@ class PluginManager
                 $this->logRunning('Cloning repository...', $repoName, $userId);
                 $this->markNewInstallForRollback($pluginPath);
                 $this->cloneRepository($authenticatedRepoUrl, $pluginPath, $repoName, $userId, $repoUrl);
+
+                // An empty remote clones fine but `git checkout <branch>` would then fail with an obscure message.
+                if ($this->isEmptyGitRepository($pluginPath)) {
+                    $this->logError(self::EMPTY_REPOSITORY_MESSAGE, $repoName, $userId);
+                    throw new RuntimeException(self::EMPTY_REPOSITORY_MESSAGE);
+                }
 
                 if ($branch) {
                     $this->logRunning("Checking out branch: {$branch}", $repoName, $userId);
@@ -852,6 +866,47 @@ class PluginManager
     }
 
     /**
+     * True when the plugin directory is a git clone without any commit (an empty remote).
+     */
+    protected function isEmptyGitRepository(string $pluginPath): bool
+    {
+        if (!is_dir($pluginPath . '/.git')) {
+            return false;
+        }
+
+        return !Process::path($pluginPath)->timeout(30)->run(['git', 'rev-parse', '--verify', 'HEAD'])->successful();
+    }
+
+    /**
+     * True when the git clone only holds what hosting sites add to a new repository
+     * ("Initialize with README / license / .gitignore"), so there is no plugin code yet.
+     */
+    protected function hasOnlyPlaceholderFiles(string $pluginPath): bool
+    {
+        if (!is_dir($pluginPath . '/.git')) {
+            return false;
+        }
+
+        $result = Process::path($pluginPath)->timeout(30)->run(['git', 'ls-files']);
+        if (!$result->successful()) {
+            return false;
+        }
+
+        $files = array_filter(array_map('trim', explode("\n", $result->output())));
+        if ($files === []) {
+            return false;
+        }
+
+        foreach ($files as $file) {
+            if (!preg_match('/^(README|LICENSE|LICENCE|COPYING|\.gitignore|\.gitattributes)(\.[A-Za-z]+)?$/i', $file)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Validate that the plugin has a valid composer.json structure.
      *
      * @param string $pluginPath
@@ -863,6 +918,11 @@ class PluginManager
         $composerJsonPath = $pluginPath . '/composer.json';
 
         if (!file_exists($composerJsonPath)) {
+            if ($this->isEmptyGitRepository($pluginPath) || $this->hasOnlyPlaceholderFiles($pluginPath)) {
+                $this->logError(self::EMPTY_REPOSITORY_MESSAGE, $repoName, $userId);
+                throw new RuntimeException(self::EMPTY_REPOSITORY_MESSAGE);
+            }
+
             $this->logError('composer.json not found in plugin: ' . $pluginPath, $repoName, $userId);
             throw new RuntimeException("composer.json not found in plugin: {$pluginPath}");
         }
