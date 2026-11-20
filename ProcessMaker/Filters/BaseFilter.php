@@ -6,8 +6,10 @@ use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Support\JsonDataPath;
 use ProcessMaker\Traits\InteractsWithRawFilter;
 
 abstract class BaseFilter
@@ -211,16 +213,14 @@ abstract class BaseFilter
 
         array_shift($parts);
 
-        foreach ($parts as $part) {
-            // Allow any Unicode letter (\p{L}) or number (\p{N}) plus underscore, hyphen and
-            // space, so field names in any language are accepted. The /u flag enables UTF-8
-            // matching. SQL/JSON-path metacharacters such as ' " ( ) are intentionally rejected.
-            if (!preg_match('/^[\p{L}\p{N}_\- ]+$/u', $part)) {
-                abort(422, 'Invalid filter field.');
-            }
+        try {
+            // Allows any Unicode letter or number plus underscore, hyphen and space, so field
+            // names in any language are accepted. SQL/JSON-path metacharacters such as ' " ( )
+            // are intentionally rejected.
+            return JsonDataPath::fromSegments($parts, JsonDataPath::FILTER_SEGMENT);
+        } catch (InvalidArgumentException) {
+            abort(422, 'Invalid filter field.');
         }
-
-        return '$."' . implode('"."', $parts) . '"';
     }
 
     private function operator()
