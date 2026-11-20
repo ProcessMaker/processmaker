@@ -66,7 +66,8 @@ final class DeployVersionName
             return;
         }
 
-        $version = $this->resolvePublishedVersionAfterSave($asset, $publishedVersionIdBefore);
+        $version = $this->resolvePublishedVersionAfterSave($asset, $publishedVersionIdBefore)
+            ?? $this->resolveCurrentPublishedForRedeploy($asset, $isUpdate, $publishedVersionIdBefore);
         if ($version === null) {
             if ($isUpdate) {
                 throw ValidationException::withMessages([
@@ -101,5 +102,26 @@ final class DeployVersionName
         }
 
         return $version;
+    }
+
+    /**
+     * Scripts can skip publishing when a draft exists and versionable content is unchanged.
+     * Still record deploy version history on the current published row (idempotent upsert).
+     */
+    private function resolveCurrentPublishedForRedeploy(
+        Model $asset,
+        bool $isUpdate,
+        int $publishedVersionIdBefore,
+    ): ?Model {
+        if (!$isUpdate || $publishedVersionIdBefore < 1) {
+            return null;
+        }
+
+        $version = $asset->versions()->published()->orderByDesc('id')->first();
+        if ($version === null) {
+            return null;
+        }
+
+        return (int) $version->getKey() === $publishedVersionIdBefore ? $version : null;
     }
 }

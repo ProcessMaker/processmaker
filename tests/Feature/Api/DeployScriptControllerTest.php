@@ -122,6 +122,49 @@ class DeployScriptControllerTest extends TestCase
             ->assertJsonValidationErrors(['version_name']);
     }
 
+    public function testDeployScriptUpdateStoresVersionNameWhenCodeUnchangedAndDraftExists(): void
+    {
+        if (!class_exists(VersionHistory::class)) {
+            $this->markTestSkipped('package-versions is not installed.');
+        }
+
+        $this->ensureExecutor();
+        $name = 'unchanged-deploy-with-draft';
+        $code = '<?php return ["v" => 1];';
+        $summary = 'Redeploy unchanged payload';
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => $code,
+            'name' => $name,
+        ])->assertOk();
+
+        $script = Script::where('title', $name)->firstOrFail();
+        $publishedVersionId = (int) $script->versions()->published()->max('id');
+        $script->saveDraft();
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => $code,
+            'name' => $name,
+            'version_name' => $summary,
+        ])
+            ->assertOk()
+            ->assertJson(['action' => 'updated']);
+
+        $this->assertSame(
+            $publishedVersionId,
+            (int) $script->versions()->published()->max('id')
+        );
+
+        $history = VersionHistory::query()
+            ->where('versionable_id', $publishedVersionId)
+            ->where('versionable_type', ScriptVersion::class)
+            ->orderByDesc('id')
+            ->first();
+
+        $this->assertNotNull($history);
+        $this->assertSame($summary, $history->subject);
+    }
+
     public function testDeployScriptUpdateStoresVersionName(): void
     {
         if (!class_exists(VersionHistory::class)) {
