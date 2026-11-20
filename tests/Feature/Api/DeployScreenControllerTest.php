@@ -61,4 +61,84 @@ YAML;
         $response->assertOk();
         $this->assertStringContainsString('yaml', (string) $response->headers->get('Content-Type'));
     }
+
+    public function testDeployScreenPersistsPreviewPresets(): void
+    {
+        $yaml = <<<'YAML'
+config: []
+computed: []
+watchers: []
+custom_css: ''
+preview_presets:
+  - title: Empty / start
+    data: '{}'
+  - title: Happy path
+    data:
+      callsign: AVA123
+YAML;
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'yml_content' => $yaml,
+            'name' => 'preset-screen',
+        ])->assertOk();
+
+        $screen = Screen::where('title', 'preset-screen')->first();
+        $expected = [
+            ['title' => 'Empty / start', 'data' => '{}'],
+            ['title' => 'Happy path', 'data' => '{"callsign":"AVA123"}'],
+        ];
+        $this->assertSame($expected, $screen->preview_presets);
+        $this->assertSame($expected, $screen->versions()->published()->first()->preview_presets);
+
+        $updated = <<<'YAML'
+config: []
+preview_presets:
+  - title: Updated
+    data: '{"callsign":"N45XB"}'
+YAML;
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'yml_content' => $updated,
+            'name' => 'preset-screen',
+        ])->assertOk()->assertJson(['action' => 'updated']);
+
+        $screen->refresh();
+        $this->assertSame(
+            [['title' => 'Updated', 'data' => '{"callsign":"N45XB"}']],
+            $screen->preview_presets
+        );
+
+        $pull = $this->actingAs($this->user, 'api')
+            ->get('/api/1.0' . self::GET_ENDPOINT . '?name=preset-screen');
+        $pull->assertOk();
+        $this->assertStringContainsString('Updated', $pull->getContent());
+        $this->assertStringContainsString('N45XB', $pull->getContent());
+    }
+
+    public function testDeployScreenEncodesEmptyYamlMappingsAsObjects(): void
+    {
+        $yaml = <<<'YAML'
+config: []
+preview_presets:
+  - title: Empty mapping
+    data: {}
+  - title: Nested empty mapping
+    data:
+      callsign: AVA123
+      meta: {}
+YAML;
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'yml_content' => $yaml,
+            'name' => 'preset-empty-maps',
+        ])->assertOk();
+
+        $screen = Screen::where('title', 'preset-empty-maps')->first();
+        $this->assertSame(
+            [
+                ['title' => 'Empty mapping', 'data' => '{}'],
+                ['title' => 'Nested empty mapping', 'data' => '{"callsign":"AVA123","meta":{}}'],
+            ],
+            $screen->preview_presets
+        );
+    }
 }
