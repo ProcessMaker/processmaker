@@ -580,8 +580,8 @@ class ScriptsTest extends TestCase
     public function testNonPrivilegedUserDuplicatesModulesScriptAsBare(): void
     {
         $editor = User::factory()->create(['is_administrator' => false]);
-        $editor->giveDirectPermission('create-scripts');
         $editor->giveDirectPermission('edit-scripts');
+        $editor->giveDirectPermission('create-scripts');
         $script = $this->getScript('php');
         $script->update([
             'allow_in_process' => true,

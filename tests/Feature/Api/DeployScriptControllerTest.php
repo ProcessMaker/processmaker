@@ -4,6 +4,9 @@ namespace Tests\Feature\Api;
 
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Models\ScriptVersion;
+use ProcessMaker\Package\Versions\Models\VersionHistory;
+use ProcessMaker\Services\ScriptExecutorResolver;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -88,6 +91,7 @@ class DeployScriptControllerTest extends TestCase
         $this->apiCall('POST', self::API_ENDPOINT, [
             'code' => $newCode,
             'name' => 'sample-update-script',
+            'version_name' => 'Refresh script payload',
         ])
             ->assertStatus(200)
             ->assertJson([
@@ -98,6 +102,102 @@ class DeployScriptControllerTest extends TestCase
 
         $existing->refresh();
         $this->assertSame(rtrim($newCode), rtrim((string) $existing->code));
+    }
+
+    public function testDeployScriptUpdateRequiresVersionName(): void
+    {
+        $this->ensureExecutor();
+        $name = 'version-name-script';
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return ["v" => 1];',
+            'name' => $name,
+        ])->assertOk();
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return ["v" => 2];',
+            'name' => $name,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['version_name']);
+    }
+
+    public function testDeployScriptUpdateStoresVersionNameWhenCodeUnchangedAndDraftExists(): void
+    {
+        if (!class_exists(VersionHistory::class)) {
+            $this->markTestSkipped('package-versions is not installed.');
+        }
+
+        $this->ensureExecutor();
+        $name = 'unchanged-deploy-with-draft';
+        $code = '<?php return ["v" => 1];';
+        $summary = 'Redeploy unchanged payload';
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => $code,
+            'name' => $name,
+        ])->assertOk();
+
+        $script = Script::where('title', $name)->firstOrFail();
+        $publishedVersionId = (int) $script->versions()->published()->max('id');
+        $script->saveDraft();
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => $code,
+            'name' => $name,
+            'version_name' => $summary,
+        ])
+            ->assertOk()
+            ->assertJson(['action' => 'updated']);
+
+        $this->assertSame(
+            $publishedVersionId,
+            (int) $script->versions()->published()->max('id')
+        );
+
+        $history = VersionHistory::query()
+            ->where('versionable_id', $publishedVersionId)
+            ->where('versionable_type', ScriptVersion::class)
+            ->orderByDesc('id')
+            ->first();
+
+        $this->assertNotNull($history);
+        $this->assertSame($summary, $history->subject);
+    }
+
+    public function testDeployScriptUpdateStoresVersionName(): void
+    {
+        if (!class_exists(VersionHistory::class)) {
+            $this->markTestSkipped('package-versions is not installed.');
+        }
+
+        $this->ensureExecutor();
+        $name = 'version-name-script-stored';
+        $summary = 'Bump return payload';
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return 1;',
+            'name' => $name,
+        ])->assertOk();
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return 2;',
+            'name' => $name,
+            'version_name' => $summary,
+        ])->assertOk();
+
+        $script = Script::where('title', $name)->firstOrFail();
+        $version = $script->versions()->orderByDesc('id')->first();
+        $this->assertInstanceOf(ScriptVersion::class, $version);
+
+        $history = VersionHistory::query()
+            ->where('versionable_id', $version->id)
+            ->where('versionable_type', ScriptVersion::class)
+            ->orderByDesc('id')
+            ->first();
+
+        $this->assertNotNull($history);
+        $this->assertSame($summary, $history->subject);
     }
 
     public function testGetScriptPhpByNameReturnsPhpCode(): void
@@ -120,13 +220,13 @@ class DeployScriptControllerTest extends TestCase
 
     public function testDeployScriptPrefersPhpNayraExecutorOnCreate(): void
     {
-        ScriptExecutor::factory()->create(['language' => 'php']);
-        // TestSeeder already seeds php-nayra; prefer the lowest-id one (resolver order).
-        $nayra = ScriptExecutor::query()
-            ->where('language', 'php-nayra')
-            ->orderBy('id')
-            ->first()
-            ?? ScriptExecutor::factory()->create(['language' => 'php-nayra']);
+        if (!ScriptExecutor::query()->where('language', 'php-nayra')->exists()) {
+            ScriptExecutor::factory()->create(['language' => 'php-nayra']);
+        }
+
+        $executor = app(ScriptExecutorResolver::class)->resolveForNewScript();
+        $this->assertNotNull($executor);
+        $this->assertSame('php-nayra', $executor->language);
 
         $this->apiCall('POST', self::API_ENDPOINT, [
             'code' => '<?php return [];',
@@ -136,7 +236,7 @@ class DeployScriptControllerTest extends TestCase
             ->assertJson(['action' => 'created']);
 
         $script = Script::where('title', 'new-nayra-script')->first();
-        $this->assertSame($nayra->id, $script->script_executor_id);
+        $this->assertSame($executor->id, $script->script_executor_id);
     }
 
     private function ensureExecutor(): ScriptExecutor
