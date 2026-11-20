@@ -323,6 +323,24 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * Scope: tokens that are still open for self-service claiming.
+     *
+     * A self-service flag alone is not enough: the flag is only reset when a task is
+     * claimed or reassigned, so tokens closed by e.g. an interrupting boundary event
+     * keep is_self_service = 1. Only ACTIVE, unassigned tokens can still be claimed.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder $query
+     */
+    public function scopeWhereOpenSelfService($query)
+    {
+        return $query->where([
+            'process_request_tokens.is_self_service' => 1,
+            'process_request_tokens.status' => 'ACTIVE',
+            'process_request_tokens.user_id' => null,
+        ]);
+    }
+
+    /**
      * Scope to filter by case_number through the processRequest relationship
      */
     public function scopeFilterByCaseNumber($query, $request)
@@ -813,13 +831,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 if ($isProcessManager) {
                     // When processesIManage is active, include self-service tasks from managed processes
                     $query->whereIn('process_request_tokens.process_id', $finalProcessManagerIds)
-                        ->where('process_request_tokens.is_self_service', 1)
-                        ->whereNull('process_request_tokens.user_id')
-                        ->where('process_request_tokens.status', 'ACTIVE');
+                        ->whereOpenSelfService();
                 } elseif ($user) {
                     $query->whereIn('process_request_tokens.id', $user->availableSelfServiceTasksQuery());
                 } else {
-                    $query->where('process_request_tokens.is_self_service', 1);
+                    $query->whereOpenSelfService();
                 }
             } elseif (array_key_exists($value, $statusMap)) {
                 $query->where('process_request_tokens.is_self_service', 0);
@@ -831,6 +847,38 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             } else {
                 $query->where('process_request_tokens.status', $expression->operator, $value)
                     ->where('process_request_tokens.is_self_service', 0);
+            }
+        };
+    }
+
+    /**
+     * PMQL value alias for the raw is_self_service field.
+     *
+     * `is_self_service = 1` means "open self-service": flagged, ACTIVE and unassigned.
+     * The raw column is not reliable on its own because tokens closed without being
+     * claimed (e.g. by an interrupting boundary timer) keep the flag.
+     * `is_self_service = 0` (or `!= 1`) is the exact complement, so stale rows stay reachable.
+     *
+     * @param mixed $value
+     * @param \ProcessMaker\Query\Expression $expression
+     * @param mixed $callback
+     * @return callable
+     */
+    public function valueAliasIs_self_service($value, $expression, $callback = null, ?User $user = null)
+    {
+        $operator = $expression->operator;
+        $isTruthy = in_array(mb_strtolower((string) $value), ['1', 'true'], true);
+        $isFalsy = in_array(mb_strtolower((string) $value), ['0', 'false', ''], true);
+
+        return function ($query) use ($operator, $value, $isTruthy, $isFalsy) {
+            if (($operator === '=' && $isTruthy) || (in_array($operator, ['!=', '<>'], true) && $isFalsy)) {
+                $query->whereOpenSelfService();
+            } elseif (($operator === '=' && $isFalsy) || (in_array($operator, ['!=', '<>'], true) && $isTruthy)) {
+                $query->whereNot(function ($query) {
+                    $query->whereOpenSelfService();
+                });
+            } else {
+                $query->where('process_request_tokens.is_self_service', $operator, $value);
             }
         };
     }
@@ -1726,24 +1774,13 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $userColumn = 'user_id';
         $query->where(function ($query) use ($userColumn, $userId) {
             $query->where($userColumn, $userId);
-            $query->orWhere(function ($query) use ($userColumn, $userId) {
-                $query->whereNull($userColumn);
-                $query->where('process_request_tokens.is_self_service', 1);
-                $user = User::find($userId);
-                $query->where(function ($query) use ($user) {
-                    foreach ($user->groups as $group) {
-                        $query->orWhereJsonContains(
-                            'process_request_tokens.self_service_groups', strval($group->getKey())
-                        ); // backwards compatibility
-                        $query->orWhereJsonContains(
-                            'process_request_tokens.self_service_groups->groups', strval($group->getKey())
-                        );
-                    }
-                    $query->orWhereJsonContains(
-                        'process_request_tokens.self_service_groups->users', strval($user->getKey())
-                    );
-                });
-            });
+            $user = User::find($userId);
+            if ($user) {
+                $query->orWhereIn(
+                    'process_request_tokens.id',
+                    $user->availableSelfServiceTasksQuery()
+                );
+            }
         });
 
         return $query;

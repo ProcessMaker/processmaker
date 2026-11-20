@@ -155,7 +155,7 @@ trait ExtendedPMQL
                         $originalOperator = $expression->operator;
 
                         // Always use equal operator in alias methods because
-                        // we can negate results with whereNotExists for "not in"
+                        // "not in" is negated below (NOT (alias = a) AND NOT (alias = b))
                         $expression->setOperator('=');
 
                         foreach ($value as $v) {
@@ -164,7 +164,9 @@ trait ExtendedPMQL
                                     $model->{$method}($v, $expression, $builder, $user)
                                 );
                             } else {
-                                $query->whereNotExists(
+                                // Negate the alias condition on the model query. whereNotExists would run
+                                // the alias closure on a FROM-less subquery, breaking scope/relation aliases.
+                                $query->whereNot(
                                     $model->{$method}($v, $expression, $builder, $user)
                                 );
                             }

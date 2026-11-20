@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler" exporterVersion="1.0">
+  <bpmn:process id="ProcessId" name="ProcessName" isExecutable="true">
+    <bpmn:startEvent id="node_1" name="Start Event">
+      <bpmn:outgoing>node_4</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="node_2" name="Self Service Task" pm:assignment="user_group" pm:assignedUsers="{selfServiceUserId}" pm:assignedGroups="" pm:config="{&#34;selfService&#34;:true}">
+      <bpmn:incoming>node_4</bpmn:incoming>
+      <bpmn:outgoing>node_5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="node_3" name="End Event">
+      <bpmn:incoming>node_5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:boundaryEvent id="node_6" name="Boundary Timer Event" attachedToRef="node_2" cancelActivity="true">
+      <bpmn:outgoing>node_8</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="node_6_timer_event_definition">
+        <bpmn:timeCycle>R4/2018-05-01T00:00:00Z/PT1M</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="node_7" name="Timer End Event">
+      <bpmn:incoming>node_8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_4" sourceRef="node_1" targetRef="node_2" />
+    <bpmn:sequenceFlow id="node_5" sourceRef="node_2" targetRef="node_3" />
+    <bpmn:sequenceFlow id="node_8" sourceRef="node_6" targetRef="node_7" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagramId">
+    <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessId">
+      <bpmndi:BPMNShape id="node_1_di" bpmnElement="node_1">
+        <dc:Bounds x="360" y="248.5" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
+        <dc:Bounds x="460" y="228.5" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_3_di" bpmnElement="node_3">
+        <dc:Bounds x="640" y="248.5" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_6_di" bpmnElement="node_6">
+        <dc:Bounds x="500" y="286.5" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_7_di" bpmnElement="node_7">
+        <dc:Bounds x="500" y="387" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_4_di" bpmnElement="node_4">
+        <di:waypoint x="396" y="266.5" />
+        <di:waypoint x="460" y="266.5" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_5_di" bpmnElement="node_5">
+        <di:waypoint x="576" y="266.5" />
+        <di:waypoint x="640" y="266.5" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_8_di" bpmnElement="node_8">
+        <di:waypoint x="518" y="322.5" />
+        <di:waypoint x="518" y="387" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
