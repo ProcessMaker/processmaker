@@ -350,7 +350,10 @@ class ProcessExecutionRawRepository
             return null;
         }
 
-        $row = DB::selectOne('SELECT * FROM users WHERE id = ? LIMIT 1', [$userId]);
+        $row = DB::selectOne(
+            'SELECT * FROM users WHERE id = ? AND deleted_at IS NULL LIMIT 1',
+            [$userId]
+        );
         if (!$row) {
             return null;
         }
@@ -566,8 +569,15 @@ class ProcessExecutionRawRepository
 
             $oooPlaceholders = implode(',', array_fill(0, count($uniqueUsers), '?'));
             $oooRows = DB::select(
-                "SELECT delegation_user_id FROM users WHERE id IN ($oooPlaceholders) AND status = ? AND delegation_user_id IS NOT NULL",
-                array_merge($uniqueUsers, ['OUT_OF_OFFICE'])
+                "SELECT delegate.id AS delegation_user_id
+                FROM users
+                INNER JOIN users AS delegate ON delegate.id = users.delegation_user_id
+                WHERE users.id IN ($oooPlaceholders)
+                    AND users.status = ?
+                    AND users.delegation_user_id IS NOT NULL
+                    AND delegate.status = ?
+                    AND delegate.deleted_at IS NULL",
+                array_merge($uniqueUsers, ['OUT_OF_OFFICE', 'ACTIVE'])
             );
             foreach ($oooRows as $row) {
                 $users[(int) $row->delegation_user_id] = (int) $row->delegation_user_id;
