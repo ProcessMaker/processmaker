@@ -8,7 +8,6 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Support\Facades\Notification;
 use OTPHP\TOTP;
-use ParagonIE\ConstantTime\Base32;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\TwoFactorAuthNotification;
 use Twilio\Exceptions\TwilioException;
@@ -24,10 +23,21 @@ class TwoFactorAuthentication
 
     const ERROR_INVALID_TO_NUMBER = 21211;
 
+    public const PENDING_AUTHENTICATOR_SECRET = '2fa-pending-authenticator-secret';
+
+    public const DELIVERY_STEP_UP = '2fa-delivery-step-up';
+
+    public const CHALLENGE_METHODS_SNAPSHOT = '2fa-challenge-methods';
+
+    public const CHALLENGE_DELIVERY_EMAIL = '2fa-challenge-delivery-email';
+
+    public const CHALLENGE_DELIVERY_CELL = '2fa-challenge-delivery-cell';
+
     public function sendCode(User $user): void
     {
         // Get methods to send the code
         $methods = $user->getValid2FAPreferences();
+        $deliveryUser = $this->userForDeliveryChallenge($user);
 
         if (in_array(self::EMAIL, $methods) || in_array(self::SMS, $methods)) {
             // Get code
@@ -35,30 +45,104 @@ class TwoFactorAuthentication
 
             // Send OTP
             if (in_array(self::EMAIL, $methods)) {
-                Notification::send($user, new TwoFactorAuthNotification($user, $code));
+                Notification::send($deliveryUser, new TwoFactorAuthNotification($deliveryUser, $code));
             }
             if (in_array(self::SMS, $methods)) {
-                $this->sendSms($user, $code);
+                $this->sendSms($deliveryUser, $code);
             }
         } elseif (in_array(self::AUTH_APP, $methods)) {
             session()->put('2fa-auth-app', true);
         }
     }
 
-    private function generateSecret(User $user): string
+    private function getUserDeliveryTotpSecret(User $user): string
     {
-        $base = $user->uuid . '_' . $user->username;
+        if (!empty($user->two_factor_delivery_secret)) {
+            return $user->two_factor_delivery_secret;
+        }
 
-        return trim(Base32::encodeUpper($base), '=');
+        $secret = TOTP::generate()->getSecret();
+
+        if ($user->exists) {
+            $user->two_factor_delivery_secret = $secret;
+            $user->saveQuietly();
+        } else {
+            $user->setAttribute('two_factor_delivery_secret', $secret);
+        }
+
+        return $secret;
     }
 
-    private function createOtpInstance(User $user, bool $forGoogleAuthApp = false)
+    private function resolveAuthenticatorSecret(User $user): ?string
     {
-        // Get secret
-        $secret = $this->generateSecret($user);
+        if (!empty($user->two_factor_secret)) {
+            return $user->two_factor_secret;
+        }
 
-        // Config OTP
-        $otp = TOTP::createFromSecret($secret);
+        $pending = session()->get(self::PENDING_AUTHENTICATOR_SECRET);
+
+        return !empty($pending) ? $pending : null;
+    }
+
+    public function rememberChallengeMethodsSnapshot(User $user): void
+    {
+        if (session()->has(self::CHALLENGE_METHODS_SNAPSHOT)) {
+            return;
+        }
+
+        session()->put(
+            self::CHALLENGE_METHODS_SNAPSHOT,
+            $user->getValid2FAPreferences()
+        );
+        session()->put(self::CHALLENGE_DELIVERY_EMAIL, $user->email);
+        session()->put(self::CHALLENGE_DELIVERY_CELL, $user->cell);
+    }
+
+    private function userForDeliveryChallenge(User $user): User
+    {
+        $email = session()->get(self::CHALLENGE_DELIVERY_EMAIL);
+        $cell = session()->get(self::CHALLENGE_DELIVERY_CELL);
+        if ($email === null && $cell === null) {
+            return $user;
+        }
+
+        $deliveryUser = $user->replicate();
+        $deliveryUser->exists = true;
+        $deliveryUser->id = $user->id;
+        if ($email !== null) {
+            $deliveryUser->email = $email;
+        }
+        if ($cell !== null) {
+            $deliveryUser->cell = $cell;
+        }
+
+        return $deliveryUser;
+    }
+
+    public function challengeRequiresDeliveryStepUp(): bool
+    {
+        $methods = session()->get(self::CHALLENGE_METHODS_SNAPSHOT, []);
+
+        return in_array(self::EMAIL, $methods, true)
+            || in_array(self::SMS, $methods, true);
+    }
+
+    public function mayEnrollNewAuthenticator(User $user): bool
+    {
+        $methods = $user->getValid2FAPreferences();
+        if (!empty($user->two_factor_secret) || !in_array(self::AUTH_APP, $methods, true)) {
+            return false;
+        }
+
+        if (!$this->challengeRequiresDeliveryStepUp()) {
+            return true;
+        }
+
+        return session()->get(self::DELIVERY_STEP_UP, false);
+    }
+
+    private function configureOtp(TOTP $otp, User $user, bool $forGoogleAuthApp): TOTP
+    {
         $otp->setIssuer('ProcessMaker');
         $otp->setLabel($user->username);
 
@@ -69,6 +153,16 @@ class TwoFactorAuthentication
         }
 
         return $otp;
+    }
+
+    private function createOtpInstance(User $user, bool $forGoogleAuthApp = false)
+    {
+        $secret = $forGoogleAuthApp
+            ? $this->resolveAuthenticatorSecret($user)
+            : $this->getUserDeliveryTotpSecret($user);
+
+        // Config OTP
+        return $this->configureOtp(TOTP::createFromSecret($secret), $user, $forGoogleAuthApp);
     }
 
     private function getCodeForEmailSms(User $user): string
@@ -82,14 +176,48 @@ class TwoFactorAuthentication
 
     public function validateCode(User $user, string $code)
     {
-        // The code is for Google Authenticator app?
-        $forGoogleAuthApp = strlen($code) === 6;
+        $methods = $user->getValid2FAPreferences();
 
-        // Create OTP instance
-        $otp = $this->createOtpInstance($user, $forGoogleAuthApp);
+        if (strlen($code) === 6) {
+            return $this->verifyAuthenticatorCode($user, $code, $methods);
+        }
 
-        // Validate code
-        return $otp->verify($code);
+        if (!$this->hasDeliveryMethod($methods) || empty($user->two_factor_delivery_secret)) {
+            return false;
+        }
+
+        $otp = $this->createOtpInstance($user, false);
+        $valid = $otp->verify($code);
+        if ($valid) {
+            session()->put(self::DELIVERY_STEP_UP, true);
+        }
+
+        return $valid;
+    }
+
+    private function verifyAuthenticatorCode(User $user, string $code, array $methods): bool
+    {
+        $authSecret = $this->resolveAuthenticatorSecret($user);
+        $cannotUseAuthenticator = !in_array(self::AUTH_APP, $methods, true) || $authSecret === null;
+        $cannotEnroll = empty($user->two_factor_secret) && !$this->mayEnrollNewAuthenticator($user);
+        if ($cannotUseAuthenticator || $cannotEnroll) {
+            return false;
+        }
+
+        $otp = $this->createOtpInstance($user, true);
+        $valid = $otp->verify($code);
+        if ($valid && empty($user->two_factor_secret)) {
+            $user->two_factor_secret = $authSecret;
+            $user->saveQuietly();
+            session()->forget(self::PENDING_AUTHENTICATOR_SECRET);
+        }
+
+        return $valid;
+    }
+
+    private function hasDeliveryMethod(array $methods): bool
+    {
+        return in_array(self::EMAIL, $methods, true) || in_array(self::SMS, $methods, true);
     }
 
     /**
@@ -154,7 +282,13 @@ class TwoFactorAuthentication
 
     public function generateQr(User $user)
     {
-        $otp = $this->createOtpInstance($user, true);
+        $secret = session()->get(self::PENDING_AUTHENTICATOR_SECRET);
+        if (empty($secret)) {
+            $secret = TOTP::generate()->getSecret();
+            session()->put(self::PENDING_AUTHENTICATOR_SECRET, $secret);
+        }
+
+        $otp = $this->configureOtp(TOTP::createFromSecret($secret), $user, true);
 
         $g2faUrl = $otp->getProvisioningUri();
 

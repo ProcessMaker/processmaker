@@ -15,6 +15,7 @@ use ProcessMaker\Events\UserRestored;
 use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Filters\SaveSession;
+use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
@@ -535,97 +536,19 @@ class UserController extends Controller
         $isLdapUser = isset($user->meta?->authenticationType)
             && $user->meta->authenticationType === 'ldap';
         $user->fill($fields);
-        if (array_key_exists('cell', $fields)) {
-            $response = $this->validateCellPhoneNumber($user, $fields['cell']);
-            if ($response) {
-                return $response;
-            }
-        }
-        if ($fields['email'] !== $original['email']) {
-            $ssoUser = $isLdapUser;
-            if (class_exists(SsoUser::class)) {
-                // Check if the user is an SSO user (including SAML)
-                $ssoUser = $ssoUser || SsoUser::where('user_id', $user->id)->exists();
-            }
-            if ($ssoUser) {
-                return response([
-                    'message' => __(
-                        "The email can't be edited. This action is only available for SSO-synced users."
-                    ),
-                    'errors' => [
-                        'email' => [
-                            __(
-                                "The email can't be edited. This action is only available for SSO-synced users."
-                            ),
-                        ],
-                    ],
-                ], 422);
-            }
-            if (!isset($fields['valpassword'])) {
-                return response([
-                    'message' => __(
-                        'A valid authentication is required for for update the email.'
-                    ),
-                    'errors' => [
-                        'email' => [
-                            __(
-                                'The password is required.'
-                            ),
-                        ],
-                    ],
-                ], 422);
-            } else {
-                $response = $this->validateBeforeChange(Auth::user(), $fields['valpassword']);
-                if ($response) {
-                    return $response;
-                }
-            }
-        }
-        if (Auth::user()->is_administrator && $request->has('is_administrator')) {
-            // user must be an admin to make another user an admin
-            $user->is_administrator = $request->get('is_administrator');
+
+        $validationResponse = $this->resolveUserUpdateValidationResponse(
+            $authenticatedUser,
+            $user,
+            $fields,
+            $original,
+            $isLdapUser
+        );
+        if ($validationResponse !== null) {
+            return $validationResponse;
         }
 
-        if (empty($fields['meta'])) {
-            $user->meta = null;
-        }
-
-        try {
-            $user->saveOrFail();
-        } catch (\Exception $e) {
-            $slackExceptionClass = 'ProcessMaker\Packages\Connectors\Slack\Exceptions\SlackConfigurationException';
-
-            if (class_exists($slackExceptionClass) && $e instanceof $slackExceptionClass) {
-                return response([
-                    'message' => $e->getMessage(),
-                ], 422);
-            }
-
-            throw $e;
-        }
-
-        $changes = $user->getChanges();
-
-        //Call new Event to store User Changes into LOG
-        UserUpdated::dispatch($user, $changes, $original);
-        try {
-            if ($request->has('avatar')) {
-                $this->uploadAvatar($user, $request);
-            }
-        } catch (\Exception $e) {
-            return response([
-                'message' => 'Error uploading avatar',
-                'errors' => [
-                    'avatar' => [
-                        $e->getMessage(),
-                    ],
-                ],
-            ], 422);
-        }
-
-        RecommendationEngine::handleUserSettingChanges($user, $original);
-
-        return response([], 204);
+        return $this->completeUserUpdate($user, $request, $fields, $original);
     }
 
     /**
@@ -679,6 +602,172 @@ class UserController extends Controller
         $fields['meta'] = $meta ?: null;
 
         return $fields;
+    }
+
+    private function resolveUserUpdateValidationResponse(
+        User $authenticatedUser,
+        User $user,
+        array $fields,
+        array $original,
+        bool $isLdapUser
+    ) {
+        $response = $this->selfServiceTwoFactorSensitiveUpdateBlocked(
+            $authenticatedUser,
+            $user,
+            $fields,
+            $original
+        );
+        if ($response === null && array_key_exists('cell', $fields)) {
+            $response = $this->validateCellPhoneNumber($user, $fields['cell']) ?: null;
+        }
+        if ($response === null && $fields['email'] !== $original['email']) {
+            $response = $this->validateEmailChangeForUpdate($user, $fields, $isLdapUser);
+        }
+
+        return $response;
+    }
+
+    private function selfServiceTwoFactorSensitiveUpdateBlocked(
+        User $authenticatedUser,
+        User $user,
+        array $fields,
+        array $original
+    ) {
+        if ($authenticatedUser->id !== $user->id || !$this->touchesTwoFactorDestinations($fields, $original)) {
+            return null;
+        }
+
+        if (!$this->selfServiceTwoFactorCompletionPending($authenticatedUser)) {
+            return null;
+        }
+
+        return response()->json([
+            'message' => __('Two-factor authentication must be completed before updating 2FA preferences.'),
+        ], 422);
+    }
+
+    private function touchesTwoFactorDestinations(array $fields, array $original): bool
+    {
+        if (array_key_exists('preferences_2fa', $fields)) {
+            return true;
+        }
+
+        if (array_key_exists('cell', $fields) && ($fields['cell'] ?? null) !== ($original['cell'] ?? null)) {
+            return true;
+        }
+
+        return array_key_exists('email', $fields)
+            && ($fields['email'] ?? null) !== ($original['email'] ?? null);
+    }
+
+    private function selfServiceTwoFactorCompletionPending(User $authenticatedUser): bool
+    {
+        if (session('sso_driver') !== null
+            || !config('password-policies.2fa_enabled', false)
+            || empty(config('password-policies.2fa_method', []))
+            || !TwoFactorAuthController::check2faByGroups()
+        ) {
+            return false;
+        }
+
+        $webUserId = Auth::guard('web')->id();
+
+        return $webUserId === null
+            || (int) $webUserId !== (int) $authenticatedUser->id
+            || !session()->get(TwoFactorAuthController::TFA_VALIDATED, false);
+    }
+
+    private function validateEmailChangeForUpdate(User $user, array $fields, bool $isLdapUser)
+    {
+        $response = null;
+        $ssoUser = $isLdapUser;
+        if (class_exists(SsoUser::class)) {
+            // Check if the user is an SSO user (including SAML)
+            $ssoUser = $ssoUser || SsoUser::where('user_id', $user->id)->exists();
+        }
+        if ($ssoUser) {
+            $response = response([
+                'message' => __(
+                    "The email can't be edited. This action is only available for SSO-synced users."
+                ),
+                'errors' => [
+                    'email' => [
+                        __(
+                            "The email can't be edited. This action is only available for SSO-synced users."
+                        ),
+                    ],
+                ],
+            ], 422);
+        } elseif (!isset($fields['valpassword'])) {
+            $response = response([
+                'message' => __(
+                    'A valid authentication is required for for update the email.'
+                ),
+                'errors' => [
+                    'email' => [
+                        __(
+                            'The password is required.'
+                        ),
+                    ],
+                ],
+            ], 422);
+        } else {
+            $emailAuthResponse = $this->validateBeforeChange(Auth::user(), $fields['valpassword']);
+            if ($emailAuthResponse) {
+                $response = $emailAuthResponse;
+            }
+        }
+
+        return $response;
+    }
+
+    private function completeUserUpdate(User $user, Request $request, array $fields, array $original)
+    {
+        if (Auth::user()->is_administrator && $request->has('is_administrator')) {
+            // user must be an admin to make another user an admin
+            $user->is_administrator = $request->get('is_administrator');
+        }
+
+        if (empty($fields['meta'])) {
+            $user->meta = null;
+        }
+
+        try {
+            $user->saveOrFail();
+        } catch (\Exception $e) {
+            $slackExceptionClass = 'ProcessMaker\Packages\Connectors\Slack\Exceptions\SlackConfigurationException';
+
+            if (class_exists($slackExceptionClass) && $e instanceof $slackExceptionClass) {
+                return response([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            throw $e;
+        }
+
+        $changes = $user->getChanges();
+
+        //Call new Event to store User Changes into LOG
+        UserUpdated::dispatch($user, $changes, $original);
+        try {
+            if ($request->has('avatar')) {
+                $this->uploadAvatar($user, $request);
+            }
+        } catch (\Exception $e) {
+            return response([
+                'message' => 'Error uploading avatar',
+                'errors' => [
+                    'avatar' => [
+                        $e->getMessage(),
+                    ],
+                ],
+            ], 422);
+        }
+
+        RecommendationEngine::handleUserSettingChanges($user, $original);
+
+        return response([], 204);
     }
 
     /**
