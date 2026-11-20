@@ -1,0 +1,18 @@
+{
+    "status": "error",
+    "metadata": {
+        "script_id": 42,
+        "executor_uuid": "00000000-0000-4000-8000-000000000001",
+        "executor_version": "v2026.12.2",
+        "instance_uuid": "00000000-0000-4000-8000-000000000002"
+    },
+    "output": {},
+    "error_message": "Script execution failed with exit code: 1",
+    "error": {
+        "error": "variableName is required",
+        "code": 0,
+        "file": "/opt/executor/script.php",
+        "line": 88,
+        "trace": "#0 /opt/executor/bootstrap.php: validateConfig()"
+    }
+}
