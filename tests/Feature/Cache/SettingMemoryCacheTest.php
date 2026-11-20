@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Cache;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Cache\Settings\SettingCacheFactory;
@@ -184,6 +185,47 @@ class SettingMemoryCacheTest extends TestCase
         SettingMemoryCache::syncEpoch($cache->store());
         $this->assertTrue(SettingMemoryCache::exists('setting_hot'));
         $this->assertSame('hot-value', SettingMemoryCache::get('setting_hot'));
+    }
+
+    public function testNewHttpRequestResyncsEpochWithoutResetRequestState(): void
+    {
+        $setting = Setting::factory()->create([
+            'key' => 'l1.fpm.stale',
+            'config' => 'old-color',
+            'format' => 'text',
+        ]);
+
+        /** @var SettingCacheManager $cache */
+        $cache = SettingCacheFactory::getSettingsCache();
+        $cacheKey = $cache->createKey(['key' => $setting->key]);
+
+        // Worker A, request 1: warm L1.
+        $requestOne = Request::create('/login', 'GET');
+        app()->instance('request', $requestOne);
+        Setting::byKey($setting->key);
+        $this->assertTrue(SettingMemoryCache::exists($cacheKey));
+        $this->assertSame('old-color', SettingMemoryCache::get($cacheKey)->config);
+
+        // Another server updates the setting and bumps the shared epoch.
+        // Simulate without calling beginRequest (FPM does not run ResetRequestState).
+        $setting->config = 'new-color';
+        $setting->saveQuietly();
+        Cache::store('cache_settings')->forever($cacheKey, $setting->fresh());
+        Cache::store('cache_settings')->forever(
+            SettingMemoryCache::EPOCH_KEY,
+            ((int) Cache::store('cache_settings')->get(SettingMemoryCache::EPOCH_KEY, 0)) + 1
+        );
+
+        // Worker A, request 2: new Request object must force epoch re-check.
+        $requestTwo = Request::create('/login', 'GET');
+        $this->assertNotSame(spl_object_id($requestOne), spl_object_id($requestTwo));
+        app()->instance('request', $requestTwo);
+
+        $resolved = Setting::byKey($setting->key);
+
+        $this->assertNotNull($resolved);
+        $this->assertSame('new-color', $resolved->config);
+        $this->assertSame('new-color', SettingMemoryCache::get($cacheKey)->config);
     }
 
     public function testCachedNullDoesNotHitDatabase(): void

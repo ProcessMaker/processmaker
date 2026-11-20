@@ -40,14 +40,25 @@ class SettingMemoryCache
      */
     private static array $syncedThisRequest = [];
 
+    /**
+     * Identifies the HTTP/console request that last opened an L1 sync scope.
+     * Used so FPM/Octane workers re-check the Redis epoch on every new request
+     * without depending solely on Octane RequestTerminated listeners.
+     */
+    private static int|string|null $activeRequestToken = null;
+
     private static ?object $sentinel = null;
 
     /**
      * Mark the start of a request so the epoch is checked once (lazy) per tenant.
+     *
+     * Prefer relying on {@see syncEpoch()} request-token detection; this remains
+     * for Octane ResetRequestState and explicit test resets.
      */
     public static function beginRequest(): void
     {
         self::$syncedThisRequest = [];
+        self::$activeRequestToken = self::currentRequestToken();
     }
 
     /**
@@ -76,6 +87,8 @@ class SettingMemoryCache
      */
     public static function syncEpoch(Repository $store): void
     {
+        self::ensureRequestScope();
+
         $tenantKey = self::currentTenantKey();
 
         if (!empty(self::$syncedThisRequest[$tenantKey])) {
@@ -91,6 +104,35 @@ class SettingMemoryCache
         }
 
         self::$syncedThisRequest[$tenantKey] = true;
+    }
+
+    /**
+     * Open a new sync scope when the underlying HTTP request object changes
+     * (Octane sandbox / FPM worker). Keeps one Redis epoch GET per request.
+     */
+    private static function ensureRequestScope(): void
+    {
+        $token = self::currentRequestToken();
+
+        if ($token === self::$activeRequestToken) {
+            return;
+        }
+
+        self::$syncedThisRequest = [];
+        self::$activeRequestToken = $token;
+    }
+
+    private static function currentRequestToken(): int|string
+    {
+        if (app()->bound('request')) {
+            $request = app('request');
+            if (is_object($request)) {
+                return spl_object_id($request);
+            }
+        }
+
+        // Console / queue: one scope for the process lifetime of the command/job.
+        return 'console';
     }
 
     public static function exists(string $key): bool
@@ -136,6 +178,7 @@ class SettingMemoryCache
         self::$items = [];
         self::$localEpochs = [];
         self::$syncedThisRequest = [];
+        self::$activeRequestToken = null;
     }
 
     /**
@@ -143,6 +186,8 @@ class SettingMemoryCache
      */
     public static function bumpEpoch(Repository $store): void
     {
+        self::ensureRequestScope();
+
         $tenantKey = self::currentTenantKey();
         $newEpoch = self::incrementRemoteEpoch($store);
 
@@ -156,6 +201,8 @@ class SettingMemoryCache
      */
     public static function bumpEpochAfterStoreCleared(Repository $store): void
     {
+        self::ensureRequestScope();
+
         $tenantKey = self::currentTenantKey();
         $newEpoch = (self::$localEpochs[$tenantKey] ?? 0) + 1;
 
