@@ -16,19 +16,25 @@ class AdminController extends Controller
 {
     public function index()
     {
-        switch (\Auth::user()->canAnyFirst('view-users|view-groups|view-auth_clients|manage-public-files|view-settings')) {
-            case 'view-users':
-                return redirect()->route('users.index');
-            case 'view-groups':
-                return redirect()->route('groups.index');
-            case 'view-auth_clients':
-                return redirect()->route('auth-clients.index');
-            case 'manage-public-files':
-                return redirect()->route('file-manager.index');
-            case 'view-settings':
-                return redirect()->route('settings.index');
-            default:
-                throw new AuthorizationException();
+        $permission = \Auth::user()->canAnyFirst(
+            'view-users|view-groups|view-auth_clients|manage-public-files|view-settings|view-plugins',
+        );
+
+        $routesByPermission = [
+            'view-users' => 'users.index',
+            'view-groups' => 'groups.index',
+            'view-auth_clients' => 'auth-clients.index',
+            'manage-public-files' => 'file-manager.index',
+            'view-settings' => 'settings.index',
+            'view-plugins' => 'plugins.index',
+        ];
+
+        $route = $routesByPermission[$permission] ?? null;
+
+        if ($route === null) {
+            throw new AuthorizationException();
         }
+
+        return redirect()->route($route);
     }
 }
