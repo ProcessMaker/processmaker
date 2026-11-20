@@ -3,8 +3,11 @@
 namespace ProcessMaker\Services;
 
 use Illuminate\Process\Exceptions\ProcessTimedOutException;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Redis;
+use ProcessMaker\Multitenancy\Services\OctaneRuntimeRenderer;
+use Throwable;
 
 /**
  * Tells every pod to recycle its local supervisor programs after a plugin change.
@@ -64,6 +67,32 @@ class PluginRuntimeReload
     }
 
     /**
+     * Restart this pod's Octane program and recycle Horizon workers.
+     */
+    public function recycleLocalRuntime(): bool
+    {
+        $program = $this->octaneSupervisorProgram();
+        if ($program === null) {
+            return false;
+        }
+
+        if (!$this->runSupervisorRestart($program)) {
+            return false;
+        }
+
+        return $this->terminateHorizon();
+    }
+
+    public function terminateHorizon(): bool
+    {
+        try {
+            return Artisan::call('horizon:terminate', ['--no-interaction' => true]) === 0;
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
+    /**
      * Run supervisorctl restart in a detached process.
      *
      * The listener must not wait for supervisorctl. `restart all` stops every
@@ -113,6 +142,55 @@ class PluginRuntimeReload
      */
     public function supervisorCommand(): array
     {
+        return [
+            ...$this->pluginSupervisorctlBase(),
+            'restart',
+            config('plugin_manager.supervisor_restart_target', 'all'),
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function octaneSupervisorRestartCommand(string $program): array
+    {
+        return [
+            ...$this->octaneSupervisorctlBase(),
+            'restart',
+            $program,
+        ];
+    }
+
+    private function runSupervisorRestart(string $program): bool
+    {
+        try {
+            $process = Process::timeout(120)->run($this->octaneSupervisorRestartCommand($program));
+        } catch (ProcessTimedOutException) {
+            return false;
+        }
+
+        return $process->successful();
+    }
+
+    private function octaneSupervisorProgram(): ?string
+    {
+        if (!config('app.multitenancy')) {
+            return OctaneRuntimeRenderer::SINGLE_PROGRAM;
+        }
+
+        $tenantId = $this->tenantId();
+        if ($tenantId === null) {
+            return null;
+        }
+
+        return (new OctaneRuntimeRenderer())->tenantProgramName((int) $tenantId);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function pluginSupervisorctlBase(): array
+    {
         $command = [
             config('plugin_manager.supervisorctl_bin', 'supervisorctl'),
         ];
@@ -123,8 +201,29 @@ class PluginRuntimeReload
             $command[] = $configFile;
         }
 
-        $command[] = 'restart';
-        $command[] = config('plugin_manager.supervisor_restart_target', 'all');
+        return $command;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function octaneSupervisorctlBase(): array
+    {
+        $command = [
+            config(
+                'octane_tenants.supervisorctl_bin',
+                config('plugin_manager.supervisorctl_bin', 'supervisorctl')
+            ),
+        ];
+
+        $configFile = config(
+            'octane_tenants.supervisorctl_config',
+            config('plugin_manager.supervisorctl_config')
+        );
+        if ($configFile) {
+            $command[] = '-c';
+            $command[] = $configFile;
+        }
 
         return $command;
     }

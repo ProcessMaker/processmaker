@@ -325,6 +325,36 @@ class PluginManager
     private function refreshRuntimeAfterPluginChange(string $pluginName, ?int $userId = null): void
     {
         $this->rebuildRouteCache($pluginName, $userId);
+        $this->recycleLocalRuntimeAfterPluginChange($pluginName, $userId);
+    }
+
+    private function recycleLocalRuntimeAfterPluginChange(string $pluginName, ?int $userId = null): void
+    {
+        $this->logRunning('Recycling local Octane and Horizon on this pod...', $pluginName, $userId);
+
+        try {
+            if (app(PluginRuntimeReload::class)->recycleLocalRuntime()) {
+                $this->logRunning(
+                    'Local Octane and Horizon recycle completed on this pod.',
+                    $pluginName,
+                    $userId
+                );
+
+                return;
+            }
+        } catch (Throwable $exception) {
+            $this->logError(
+                'Could not recycle local Octane and Horizon: ' . $exception->getMessage(),
+                $pluginName,
+                $userId
+            );
+        }
+
+        $this->logRunning(
+            'Falling back to plugin runtime reload broadcast for other pods.',
+            $pluginName,
+            $userId
+        );
         $this->publishRuntimeReload($pluginName, $userId);
     }
 
