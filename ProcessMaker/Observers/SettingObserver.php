@@ -76,6 +76,30 @@ class SettingObserver
     }
 
     /**
+     * After the row is committed, publish a new L1 epoch so other workers refresh.
+     *
+     * Epoch is intentionally not bumped in saving() — that races with concurrent
+     * byKey() loaders that can refill Redis/L1 with the pre-commit value.
+     *
+     * @param  Setting  $setting
+     * @return void
+     */
+    public function saved(Setting $setting): void
+    {
+        $settingCache = SettingCacheFactory::getSettingsCache();
+        $key = $settingCache->createKey(['key' => $setting->key]);
+        // Drop any concurrent resolve() fill that raced before commit, then
+        // publish epoch so other workers discard L1 and reload committed data.
+        $settingCache->invalidate([
+            'key' => $key,
+            'bump_epoch' => false,
+        ]);
+        if (method_exists($settingCache, 'publishEpoch')) {
+            $settingCache->publishEpoch();
+        }
+    }
+
+    /**
      * Handle the setting "deleted" event.
      *
      * @param  Setting  $setting
@@ -83,15 +107,18 @@ class SettingObserver
      */
     public function deleted(Setting $setting): void
     {
-        $this->invalidateSettingCache($setting);
+        $this->invalidateSettingCache($setting, true);
     }
 
-    private function invalidateSettingCache(Setting $setting)
+    private function invalidateSettingCache(Setting $setting, bool $bumpEpoch = false)
     {
         $settingCache = SettingCacheFactory::getSettingsCache();
-        // Invalidate the setting cache
+        // Drop Redis/L1 for this key. Epoch publish waits for saved()/set()/delete.
         $key = $settingCache->createKey(['key' => $setting->key]);
-        $settingCache->invalidate(['key' => $key]);
+        $settingCache->invalidate([
+            'key' => $key,
+            'bump_epoch' => $bumpEpoch,
+        ]);
 
         // Check to see if we already added the refresh to the app's terminating queue.
         // This is important for install commands when multiple settings are being created/updated.

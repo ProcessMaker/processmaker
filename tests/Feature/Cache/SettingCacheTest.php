@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use ProcessMaker\Cache\Settings\SettingCacheException;
 use ProcessMaker\Cache\Settings\SettingCacheFactory;
+use ProcessMaker\Cache\Settings\SettingMemoryCache;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -19,6 +20,9 @@ class SettingCacheTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        SettingMemoryCache::clearAllLocal();
+        SettingMemoryCache::beginRequest();
 
         $this->user = User::factory()->create([
             'is_administrator' => true,
