@@ -153,6 +153,7 @@ YAML;
         $this->apiCall('POST', self::API_ENDPOINT, [
             'yml_content' => $updated,
             'name' => 'preset-screen',
+            'version_name' => 'Update preview presets',
         ])->assertOk()->assertJson(['action' => 'updated']);
 
         $screen->refresh();
