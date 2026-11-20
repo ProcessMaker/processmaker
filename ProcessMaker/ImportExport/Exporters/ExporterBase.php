@@ -57,6 +57,13 @@ abstract class ExporterBase implements ExporterInterface
 
     public static $forceUpdate = false;
 
+    /**
+     * Attribute names that must not be overwritten when importing in update mode.
+     *
+     * @var array<int, string>
+     */
+    public static $doNotUpdateAttributes = [];
+
     // public $ignoreExplicitDiscard = false;
 
     public static $fallbackMatchColumn = null;
