@@ -16,12 +16,36 @@ class CaseTitleTest extends TestCase
         $this->assertEquals('Hello, World!', $title);
     }
 
+    public function testEvaluateCaseTitleWithoutFormattingPreservesAmpersand()
+    {
+        $processRequest = new ProcessRequest();
+        $title = $processRequest->evaluateCaseTitle(
+            'Research {{department}}',
+            ['department' => 'Research & Development'],
+            false
+        );
+
+        $this->assertSame('Research Research & Development', $title);
+    }
+
     public function testEvaluateCaseTitleWithFormatting()
     {
         $processRequest = new ProcessRequest();
         $title = $processRequest->evaluateCaseTitle('Hello, {{name}}!', ['name' => 'World'], true);
 
         $this->assertEquals('Hello, <b>World</b>!', $title);
+    }
+
+    public function testEvaluateCaseTitleWithFormattingEscapesAmpersandForHtml()
+    {
+        $processRequest = new ProcessRequest();
+        $title = $processRequest->evaluateCaseTitle(
+            'Research {{department}}',
+            ['department' => 'Research & Development'],
+            true
+        );
+
+        $this->assertSame('Research <b>Research &amp; Development</b>', $title);
     }
 
     public function testEvaluateCaseTitleWithCharacterLimit()
