@@ -7,6 +7,7 @@ namespace ProcessMaker\Mcp\DataConnectors;
 use DateTimeInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -285,8 +286,15 @@ class CollectionCatalog
     {
         $count = 0;
         $table = 'collection_' . $collection->id;
-        if (DB::getSchemaBuilder()->hasTable($table)) {
-            $count = (int) DB::table($table)->count();
+        try {
+            if (DB::getSchemaBuilder()->hasTable($table)) {
+                $count = (int) DB::table($table)->count();
+            }
+        } catch (QueryException $e) {
+            // MySQL 1412: DDL that created collection_* inside an open txn invalidates the table cache.
+            if (!str_contains($e->getMessage(), '1412')) {
+                throw $e;
+            }
         }
 
         return [
