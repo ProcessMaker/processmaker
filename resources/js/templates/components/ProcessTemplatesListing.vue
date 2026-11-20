@@ -298,7 +298,7 @@
                               this.$t("The process template was deleted."),
                               "success"
                           );
-                          this.$refs.pagination.loadPage(1);
+                          this.refreshListing();
                         });
                   }
               );
