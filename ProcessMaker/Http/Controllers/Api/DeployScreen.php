@@ -7,6 +7,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use ProcessMaker\Http\Controllers\Api\Concerns\AppliesDeployVersionName;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Traits\TaskScreenResourceTrait;
@@ -14,6 +15,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class DeployScreen extends Controller
 {
+    use AppliesDeployVersionName;
     use TaskScreenResourceTrait;
 
     private const EMPTY_PRESET_DATA = '{}';
@@ -30,10 +32,20 @@ class DeployScreen extends Controller
 
     public function deployScreen(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'yml_content' => 'required|string',
-            'name' => 'required|string',
-        ]);
+        $name = (string) $request->input('name');
+        $isUpdate = Screen::where('title', $name)->exists();
+
+        if ($unavailable = $this->ensureDeployVersionHistoryAvailable($isUpdate)) {
+            return $unavailable;
+        }
+
+        $validator = Validator::make(
+            $request->all(),
+            $this->deployRulesForUpdate([
+                'yml_content' => 'required|string',
+                'name' => 'required|string',
+            ], $isUpdate),
+        );
 
         if ($validator->fails()) {
             return response()->json([
@@ -42,9 +54,12 @@ class DeployScreen extends Controller
             ], 422);
         }
 
-        $ymlContent = $request->input('yml_content');
-        $name = $request->input('name');
+        return $this->persistDeployedScreen($request, $name);
+    }
 
+    private function persistDeployedScreen(Request $request, string $name): JsonResponse
+    {
+        $ymlContent = $request->input('yml_content');
         $parsedData = $this->parseDeployYaml($ymlContent);
         if ($parsedData instanceof JsonResponse) {
             return $parsedData;
@@ -61,7 +76,9 @@ class DeployScreen extends Controller
         }
 
         $this->applyYamlFields($screen, $parsedData, $created);
+        $publishedVersionIdBefore = $this->latestPublishedVersionId($screen);
         $screen->save();
+        $this->applyDeployVersionName($screen, $request, !$created, $publishedVersionIdBefore);
         $screen->refresh();
 
         return response()->json([
