@@ -15,6 +15,11 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
 
     const DEFAULT_CACHE_PREFIX = 'settings:';
 
+    /**
+     * Envelope marker so cached null is distinguishable from a Laravel cache miss.
+     */
+    private const ENVELOPE_FLAG = '__pm_setting';
+
     protected CacheManager $manager;
 
     protected Repository $cacheManager;
@@ -27,8 +32,6 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
 
     /**
      * Determine and set the cache driver to use.
-     *
-     * @param CacheManager $cacheManager
      *
      * @return void
      */
@@ -44,14 +47,10 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     }
 
     /**
-     * Create a cache key for a screen
+     * Create a cache key for a setting.
      *
-     * @param int $processId Process ID
-     * @param int $processVersionId Process Version ID
-     * @param string $language Language code
-     * @param int $screenId Screen ID
-     * @param int $screenVersionId Screen Version ID
-     * @return string The generated cache key
+     * @param array $params
+     * @return string
      */
     public function createKey(array $params): string
     {
@@ -88,28 +87,28 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        SettingMemoryCache::syncEpoch($this->cacheManager);
+        SettingMemoryCache::syncEpoch();
+
+        if (SettingMemoryCache::isEpochUnreliable()) {
+            return $default;
+        }
 
         if (SettingMemoryCache::exists($key)) {
             return SettingMemoryCache::get($key);
         }
 
-        $sentinel = SettingMemoryCache::sentinel();
-        $value = $this->cacheManager->get($key, $sentinel);
-
-        if ($value === $sentinel) {
+        $entry = $this->readStoreEntry($key);
+        if (!$entry['hit']) {
             return $default;
         }
 
-        SettingMemoryCache::put($key, $value);
+        SettingMemoryCache::put($key, $entry['value']);
 
-        return $value;
+        return $entry['value'];
     }
 
     /**
      * Resolve a setting from L1, then Redis, then the loader (typically DB).
-     *
-     * Collapses the previous has()+get() Redis round-trips into a single get.
      *
      * @param string $key
      * @param callable $loader
@@ -118,18 +117,45 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function resolve(string $key, callable $loader): mixed
     {
-        SettingMemoryCache::syncEpoch($this->cacheManager);
+        SettingMemoryCache::syncEpoch();
+
+        // Freshness oracle unavailable: fail closed to DB, do not trust L1/L2.
+        if (SettingMemoryCache::isEpochUnreliable()) {
+            return $loader();
+        }
 
         if (SettingMemoryCache::exists($key)) {
             return SettingMemoryCache::get($key);
         }
 
-        $sentinel = SettingMemoryCache::sentinel();
-        $value = $this->cacheManager->get($key, $sentinel);
+        $epochAtStart = SettingMemoryCache::localEpoch();
+        $entry = $this->readStoreEntry($key);
 
-        if ($value === $sentinel) {
-            $value = $loader();
-            $this->cacheManager->put($key, $value);
+        if ($entry['hit']) {
+            SettingMemoryCache::put($key, $entry['value']);
+
+            return $entry['value'];
+        }
+
+        $value = $loader();
+
+        // If another worker published a committed value while we loaded, do not
+        // overwrite Redis with a possibly pre-commit row.
+        SettingMemoryCache::forceResyncEpoch();
+        if (SettingMemoryCache::isEpochUnreliable()) {
+            return $value;
+        }
+
+        if (SettingMemoryCache::localEpoch() !== $epochAtStart) {
+            $entry = $this->readStoreEntry($key);
+            if ($entry['hit']) {
+                $value = $entry['value'];
+            } else {
+                $value = $loader();
+                $this->writeStoreEntry($key, $value);
+            }
+        } else {
+            $this->writeStoreEntry($key, $value);
         }
 
         SettingMemoryCache::put($key, $value);
@@ -171,7 +197,7 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     }
 
     /**
-     * Store a value in the settings cache.
+     * Store a committed setting value, then publish a new epoch so other workers refresh L1.
      *
      * @param string $key
      * @param mixed $value
@@ -181,10 +207,10 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
     {
-        $result = $this->cacheManager->put($key, $value, $ttl);
+        $result = $this->writeStoreEntry($key, $value, $ttl);
 
         if ($result) {
-            SettingMemoryCache::syncEpoch($this->cacheManager);
+            SettingMemoryCache::bumpEpoch();
             SettingMemoryCache::put($key, $value);
         }
 
@@ -201,7 +227,8 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     public function delete(string $key): bool
     {
         $result = $this->cacheManager->forget($key);
-        SettingMemoryCache::bumpEpoch($this->cacheManager);
+        SettingMemoryCache::forget($key);
+        SettingMemoryCache::bumpEpoch();
 
         return $result;
     }
@@ -214,7 +241,7 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     public function clear(): bool
     {
         $result = $this->cacheManager->clear();
-        SettingMemoryCache::bumpEpochAfterStoreCleared($this->cacheManager);
+        SettingMemoryCache::bumpEpochAfterStoreCleared();
 
         return $result;
     }
@@ -241,7 +268,7 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
                 Redis::connection($defaultDriver)->del($matchedKeys);
             }
 
-            SettingMemoryCache::bumpEpoch($this->cacheManager);
+            SettingMemoryCache::bumpEpoch();
         } catch (\Exception $e) {
             Log::error('SettingCacheException' . $e->getMessage());
 
@@ -258,7 +285,11 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function has(string $key): bool
     {
-        SettingMemoryCache::syncEpoch($this->cacheManager);
+        SettingMemoryCache::syncEpoch();
+
+        if (SettingMemoryCache::isEpochUnreliable()) {
+            return false;
+        }
 
         if (SettingMemoryCache::exists($key)) {
             return true;
@@ -280,19 +311,28 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     }
 
     /**
-     * Invalidate a value in the settings cache.
+     * Drop a settings cache key from Redis/L1.
      *
-     * @param string $key
+     * By default does NOT bump the shared epoch — that must happen after the
+     * committed value is published via set()/saved()/delete. Pass
+     * bump_epoch=true for hard invalidations (e.g. deleted settings).
+     *
+     * @param array $params
      *
      * @return void
      */
     public function invalidate($params): void
     {
         try {
-            //extract the params from the array
             $key = $params['key'];
+            $bumpEpoch = (bool) ($params['bump_epoch'] ?? false);
+
             $this->cacheManager->forget($key);
-            SettingMemoryCache::bumpEpoch($this->cacheManager);
+            SettingMemoryCache::forget($key);
+
+            if ($bumpEpoch) {
+                SettingMemoryCache::bumpEpoch();
+            }
         } catch (\Exception $e) {
             Log::error($e->getMessage());
 
@@ -301,10 +341,48 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     }
 
     /**
-     * Expose the underlying cache store (used for epoch coordination / tests).
+     * Publish a new shared epoch without changing Redis setting payloads.
+     */
+    public function publishEpoch(): void
+    {
+        SettingMemoryCache::bumpEpoch();
+    }
+
+    /**
+     * Expose the underlying cache store (used for tests).
      */
     public function store(): Repository
     {
         return $this->cacheManager;
+    }
+
+    /**
+     * @return array{hit: bool, value: mixed}
+     */
+    private function readStoreEntry(string $key): array
+    {
+        $sentinel = SettingMemoryCache::sentinel();
+        $stored = $this->cacheManager->get($key, $sentinel);
+
+        if ($stored === $sentinel) {
+            return ['hit' => false, 'value' => null];
+        }
+
+        if (is_array($stored) && ($stored[self::ENVELOPE_FLAG] ?? false) === true) {
+            return ['hit' => true, 'value' => $stored['v']];
+        }
+
+        // Legacy unwrapped values written before envelopes.
+        return ['hit' => true, 'value' => $stored];
+    }
+
+    private function writeStoreEntry(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
+    {
+        $envelope = [
+            self::ENVELOPE_FLAG => true,
+            'v' => $value,
+        ];
+
+        return $this->cacheManager->put($key, $envelope, $ttl);
     }
 }

@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace ProcessMaker\Cache\Settings;
 
-use Illuminate\Cache\Repository;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use Throwable;
 
 /**
  * Process-local (Octane worker / FPM worker) L1 cache for settings.
  *
- * Coordinated across workers via a Redis epoch key: when settings are
- * invalidated, the epoch is incremented and the next request on each worker
- * drops its in-memory map.
+ * Coordinated across workers via a Redis epoch key stored as a raw integer
+ * (not PHP-serialized) so INCR stays atomic. When settings are published
+ * (post-commit set / saved / delete), the epoch is incremented and the next
+ * request/job on each worker drops its in-memory map.
  */
 class SettingMemoryCache
 {
@@ -41,23 +42,26 @@ class SettingMemoryCache
     private static array $syncedThisRequest = [];
 
     /**
-     * Identifies the HTTP/console request that last opened an L1 sync scope.
-     * Used so FPM/Octane workers re-check the Redis epoch on every new request
-     * without depending solely on Octane RequestTerminated listeners.
+     * When true, Redis epoch could not be read — skip L1/L2 and use DB.
+     *
+     * @var array<string, bool>
+     */
+    private static array $epochUnreliable = [];
+
+    /**
+     * Identifies the HTTP/console/job scope that last opened an L1 sync scope.
      */
     private static int|string|null $activeRequestToken = null;
 
     private static ?object $sentinel = null;
 
     /**
-     * Mark the start of a request so the epoch is checked once (lazy) per tenant.
-     *
-     * Prefer relying on {@see syncEpoch()} request-token detection; this remains
-     * for Octane ResetRequestState and explicit test resets.
+     * Mark the start of a request/job so the epoch is checked once (lazy) per tenant.
      */
     public static function beginRequest(): void
     {
         self::$syncedThisRequest = [];
+        self::$epochUnreliable = [];
         self::$activeRequestToken = self::currentRequestToken();
     }
 
@@ -85,7 +89,7 @@ class SettingMemoryCache
     /**
      * Sync local epoch with Redis once per request/tenant; clear L1 on mismatch.
      */
-    public static function syncEpoch(Repository $store): void
+    public static function syncEpoch(): void
     {
         self::ensureRequestScope();
 
@@ -95,7 +99,18 @@ class SettingMemoryCache
             return;
         }
 
-        $remoteEpoch = self::fetchRemoteEpoch($store);
+        $remote = self::fetchRemoteEpoch();
+
+        if ($remote['unreliable']) {
+            self::$items[$tenantKey] = [];
+            self::$epochUnreliable[$tenantKey] = true;
+            self::$syncedThisRequest[$tenantKey] = true;
+
+            return;
+        }
+
+        self::$epochUnreliable[$tenantKey] = false;
+        $remoteEpoch = $remote['epoch'];
         $localEpoch = self::$localEpochs[$tenantKey] ?? null;
 
         if ($localEpoch !== $remoteEpoch) {
@@ -107,8 +122,24 @@ class SettingMemoryCache
     }
 
     /**
-     * Open a new sync scope when the underlying HTTP request object changes
-     * (Octane sandbox / FPM worker). Keeps one Redis epoch GET per request.
+     * Force a fresh Redis epoch read (used to avoid publishing stale resolve fills).
+     */
+    public static function forceResyncEpoch(): void
+    {
+        $tenantKey = self::currentTenantKey();
+        unset(self::$syncedThisRequest[$tenantKey]);
+        self::syncEpoch();
+    }
+
+    public static function isEpochUnreliable(): bool
+    {
+        self::ensureRequestScope();
+
+        return !empty(self::$epochUnreliable[self::currentTenantKey()]);
+    }
+
+    /**
+     * Open a new sync scope when the HTTP request or job token changes.
      */
     private static function ensureRequestScope(): void
     {
@@ -119,6 +150,7 @@ class SettingMemoryCache
         }
 
         self::$syncedThisRequest = [];
+        self::$epochUnreliable = [];
         self::$activeRequestToken = $token;
     }
 
@@ -131,7 +163,6 @@ class SettingMemoryCache
             }
         }
 
-        // Console / queue: one scope for the process lifetime of the command/job.
         return 'console';
     }
 
@@ -161,59 +192,58 @@ class SettingMemoryCache
         unset(self::$items[$tenantKey][$key]);
     }
 
-    /**
-     * Clear L1 for the current tenant scope only.
-     */
     public static function clearLocal(): void
     {
         $tenantKey = self::currentTenantKey();
         self::$items[$tenantKey] = [];
     }
 
-    /**
-     * Clear all tenant scopes (tests / full reset).
-     */
     public static function clearAllLocal(): void
     {
         self::$items = [];
         self::$localEpochs = [];
         self::$syncedThisRequest = [];
+        self::$epochUnreliable = [];
         self::$activeRequestToken = null;
     }
 
     /**
      * Increment the shared epoch and reset local L1 for the current tenant.
      */
-    public static function bumpEpoch(Repository $store): void
+    public static function bumpEpoch(): void
     {
         self::ensureRequestScope();
 
         $tenantKey = self::currentTenantKey();
-        $newEpoch = self::incrementRemoteEpoch($store);
+        $newEpoch = self::incrementRemoteEpoch();
 
         self::$items[$tenantKey] = [];
         self::$localEpochs[$tenantKey] = $newEpoch;
+        self::$epochUnreliable[$tenantKey] = false;
         self::$syncedThisRequest[$tenantKey] = true;
     }
 
     /**
-     * After the Redis settings store was fully cleared, re-seed the epoch.
+     * After the Redis settings store was fully cleared, re-seed a raw epoch
+     * strictly ahead of any plausible worker-local value.
      */
-    public static function bumpEpochAfterStoreCleared(Repository $store): void
+    public static function bumpEpochAfterStoreCleared(): void
     {
         self::ensureRequestScope();
 
         $tenantKey = self::currentTenantKey();
-        $newEpoch = (self::$localEpochs[$tenantKey] ?? 0) + 1;
+        $local = self::$localEpochs[$tenantKey] ?? 0;
+        $newEpoch = max($local + 1, (int) (microtime(true) * 1000));
 
         try {
-            $store->forever(self::EPOCH_KEY, $newEpoch);
+            self::redis()->set(self::epochRedisKey(), (string) $newEpoch);
         } catch (Throwable $e) {
             Log::info('SettingMemoryCache: failed to seed epoch after clear: ' . $e->getMessage());
         }
 
         self::$items[$tenantKey] = [];
         self::$localEpochs[$tenantKey] = $newEpoch;
+        self::$epochUnreliable[$tenantKey] = false;
         self::$syncedThisRequest[$tenantKey] = true;
     }
 
@@ -224,38 +254,57 @@ class SettingMemoryCache
         return self::$localEpochs[$tenantKey] ?? null;
     }
 
-    private static function fetchRemoteEpoch(Repository $store): int
+    /**
+     * @return array{unreliable: bool, epoch: int}
+     */
+    private static function fetchRemoteEpoch(): array
     {
         try {
-            return (int) $store->get(self::EPOCH_KEY, 0);
+            $value = self::redis()->get(self::epochRedisKey());
+
+            return [
+                'unreliable' => false,
+                'epoch' => $value === null || $value === false ? 0 : (int) $value,
+            ];
         } catch (Throwable $e) {
             Log::info('SettingMemoryCache: failed to read epoch: ' . $e->getMessage());
 
-            return self::$localEpochs[self::currentTenantKey()] ?? 0;
+            return [
+                'unreliable' => true,
+                'epoch' => 0,
+            ];
         }
     }
 
-    private static function incrementRemoteEpoch(Repository $store): int
+    private static function incrementRemoteEpoch(): int
     {
         try {
-            $value = $store->increment(self::EPOCH_KEY);
-            if ($value === false) {
-                $value = (self::$localEpochs[self::currentTenantKey()] ?? 0) + 1;
-                $store->forever(self::EPOCH_KEY, $value);
-            }
-
-            return (int) $value;
+            return (int) self::redis()->incr(self::epochRedisKey());
         } catch (Throwable $e) {
             Log::info('SettingMemoryCache: failed to increment epoch: ' . $e->getMessage());
             $value = (self::$localEpochs[self::currentTenantKey()] ?? 0) + 1;
 
             try {
-                $store->forever(self::EPOCH_KEY, $value);
+                self::redis()->set(self::epochRedisKey(), (string) $value);
             } catch (Throwable $inner) {
                 Log::info('SettingMemoryCache: failed to write epoch: ' . $inner->getMessage());
             }
 
             return $value;
         }
+    }
+
+    private static function epochRedisKey(): string
+    {
+        $prefix = config('cache.stores.cache_settings.prefix', 'settings:');
+
+        return $prefix . self::EPOCH_KEY;
+    }
+
+    private static function redis()
+    {
+        $connection = config('cache.stores.cache_settings.connection', 'cache_settings');
+
+        return Redis::connection($connection);
     }
 }
