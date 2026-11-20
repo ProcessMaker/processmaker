@@ -143,7 +143,8 @@ class TaskControllerTest extends TestCase
             'GET',
             'tasks/update_variable/' . $token . '?varName=res&varValue=yes'
         );
-        $response->assertSee('Token not found');
+        $response->assertViewIs('tasks.abe-response');
+        $response->assertSee('This link could not be found.');
         $response->assertStatus(404);
     }
 }
