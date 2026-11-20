@@ -11,6 +11,11 @@
     </div>
     <div class="error-content">
       <h1>{{__('No permissions to access this content')}}</h1>
+      @isset($message)
+        @if ($message !== '')
+          <p>{{ $message }}</p>
+        @endif
+      @endisset
       <p>{{__(
         'If you believe this is an error, please contact the system administrator or support team for assistance.'
       )}}</p>
