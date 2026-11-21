@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Http\Controllers\Api\Concerns\AppliesDeployVersionName;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Services\DeployCategoryResolver;
 use ProcessMaker\Services\ScriptExecutorResolver;
 
 class DeployScript extends Controller
@@ -32,8 +33,10 @@ class DeployScript extends Controller
 
     private const DEFAULT_RETRY_WAIT_TIME = 5;
 
-    public function __construct(private readonly ScriptExecutorResolver $executors)
-    {
+    public function __construct(
+        private readonly ScriptExecutorResolver $executors,
+        private readonly DeployCategoryResolver $categories,
+    ) {
     }
 
     /**
@@ -53,6 +56,8 @@ class DeployScript extends Controller
             $this->deployRulesForUpdate([
                 'code' => 'required|string',
                 'name' => 'required|string',
+                'description' => 'nullable|string|max:65535',
+                'script_category_name' => 'nullable|string|max:255',
             ], $isUpdate),
         );
 
@@ -83,13 +88,26 @@ class DeployScript extends Controller
 
             $script = new Script();
             $script->title = $name;
-            $script->description = '';
+            $script->description = $this->deployScriptDescription($request, $name);
             $script->language = $executor->language;
             $script->script_executor_id = $executor->id;
             $script->run_as_user_id = $request->user()->id;
             $script->timeout = self::DEFAULT_TIMEOUT;
             $script->retry_attempts = self::DEFAULT_RETRY_ATTEMPTS;
             $script->retry_wait_time = self::DEFAULT_RETRY_WAIT_TIME;
+        }
+
+        if (!$created && $request->has('description')) {
+            $script->description = $this->deployScriptDescription($request, $name);
+        }
+
+        if ($created || $request->has('script_category_name')) {
+            $categoryId = $this->categories->resolveScriptCategoryId(
+                $request->input('script_category_name')
+            );
+            if ($categoryId !== null) {
+                $script->script_category_id = (string) $categoryId;
+            }
         }
 
         $script->code = $code;
@@ -149,5 +167,15 @@ class DeployScript extends Controller
             ->header('Content-Type', 'text/plain; charset=UTF-8')
             ->header('X-Script-Id', (string) $script->id)
             ->header('X-Script-Name', $script->title);
+    }
+
+    private function deployScriptDescription(Request $request, string $title): string
+    {
+        $description = $request->input('description');
+        if (is_string($description) && trim($description) !== '') {
+            return trim($description);
+        }
+
+        return 'Script: ' . trim($title);
     }
 }

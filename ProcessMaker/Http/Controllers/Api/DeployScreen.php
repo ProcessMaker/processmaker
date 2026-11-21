@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Http\Controllers\Api\Concerns\AppliesDeployVersionName;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Services\DeployCategoryResolver;
 use ProcessMaker\Traits\TaskScreenResourceTrait;
 use Symfony\Component\Yaml\Yaml;
 
@@ -19,6 +20,10 @@ class DeployScreen extends Controller
     use TaskScreenResourceTrait;
 
     private const EMPTY_PRESET_DATA = '{}';
+
+    public function __construct(private readonly DeployCategoryResolver $categories)
+    {
+    }
 
     /**
      * A whitelist of attributes that should not be
@@ -71,8 +76,20 @@ class DeployScreen extends Controller
         if ($created) {
             $screen = new Screen();
             $screen->title = $name;
-            $screen->description = $parsedData['description'] ?? '';
+            $screen->description = $this->screenDescription($parsedData, $name);
             $screen->type = $parsedData['type'] ?? 'FORM';
+        } elseif (array_key_exists('description', $parsedData)) {
+            $screen->description = $this->screenDescription($parsedData, $name);
+        }
+
+        $categoryName = $parsedData['category'] ?? $parsedData['screen_category_name'] ?? null;
+        if ($created || $categoryName !== null) {
+            $categoryId = $this->categories->resolveScreenCategoryId(
+                is_string($categoryName) ? $categoryName : null
+            );
+            if ($categoryId !== null) {
+                $screen->screen_category_id = (string) $categoryId;
+            }
         }
 
         $this->applyYamlFields($screen, $parsedData, $created);
@@ -280,5 +297,18 @@ class DeployScreen extends Controller
         }
 
         return true;
+    }
+
+    /**
+     * @param array<string, mixed> $parsedData
+     */
+    private function screenDescription(array $parsedData, string $title): string
+    {
+        $description = $parsedData['description'] ?? '';
+        if (is_string($description) && trim($description) !== '') {
+            return trim($description);
+        }
+
+        return 'Screen: ' . trim($title);
     }
 }

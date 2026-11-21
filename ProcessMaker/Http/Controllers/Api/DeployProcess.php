@@ -13,6 +13,7 @@ use ProcessMaker\Exception\MissingBpmnReferenceException;
 use ProcessMaker\Http\Controllers\Api\Concerns\AppliesDeployVersionName;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Services\DeployCategoryResolver;
 use ProcessMaker\Services\ProcessBpmnReferenceService;
 use Throwable;
 
@@ -31,7 +32,8 @@ class DeployProcess extends Controller
     ];
 
     public function __construct(
-        private readonly ProcessBpmnReferenceService $references
+        private readonly ProcessBpmnReferenceService $references,
+        private readonly DeployCategoryResolver $categories,
     ) {
     }
 
@@ -50,6 +52,7 @@ class DeployProcess extends Controller
                 'bpmn' => 'required|string',
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string|max:65535',
+                'process_category_name' => 'nullable|string|max:255',
             ], $isUpdate),
         );
 
@@ -101,11 +104,32 @@ class DeployProcess extends Controller
             if ($created) {
                 $process = new Process();
                 $process->name = $request->input('name');
-                $process->description = (string) $request->input('description', '');
+                $process->description = $this->nonEmptyDescription(
+                    $request->input('description'),
+                    (string) $request->input('name'),
+                );
                 $process->status = 'ACTIVE';
                 $process->user_id = $request->user()->id;
+                $categoryId = $this->categories->resolveProcessCategoryId(
+                    $request->input('process_category_name')
+                );
+                if ($categoryId !== null) {
+                    $process->process_category_id = $categoryId;
+                }
             } elseif ($request->has('description')) {
-                $process->description = (string) $request->input('description');
+                $process->description = $this->nonEmptyDescription(
+                    $request->input('description'),
+                    (string) $process->name,
+                );
+            }
+
+            if (!$created && $request->has('process_category_name')) {
+                $categoryId = $this->categories->resolveProcessCategoryId(
+                    $request->input('process_category_name')
+                );
+                if ($categoryId !== null) {
+                    $process->process_category_id = $categoryId;
+                }
             }
 
             $process->bpmn = $bpmn;
@@ -185,5 +209,14 @@ class DeployProcess extends Controller
         libxml_use_internal_errors($previous);
 
         return $valid ? [] : $errors;
+    }
+
+    private function nonEmptyDescription(mixed $description, string $fallbackName): string
+    {
+        if (is_string($description) && trim($description) !== '') {
+            return trim($description);
+        }
+
+        return 'Process: ' . trim($fallbackName);
     }
 }
