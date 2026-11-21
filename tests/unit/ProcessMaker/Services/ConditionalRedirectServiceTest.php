@@ -3,9 +3,9 @@
 namespace Tests\Unit\ProcessMaker\Services;
 
 use InvalidArgumentException;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 use ProcessMaker\Services\ConditionalRedirectService;
 use Tests\TestCase;
@@ -29,13 +29,13 @@ class ConditionalRedirectServiceTest extends TestCase
             [
                 'condition' => 'amount > 1000',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/approval'
+                'value' => 'https://example.com/approval',
             ],
             [
                 'condition' => 'amount <= 1000',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         $data = ['amount' => 1500, 'status' => 'pending'];
@@ -57,13 +57,13 @@ class ConditionalRedirectServiceTest extends TestCase
             [
                 'condition' => 'amount > 1000',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/approval'
+                'value' => 'https://example.com/approval',
             ],
             [
                 'condition' => 'amount <= 1000',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         $data = ['amount' => 500, 'status' => 'pending'];
@@ -85,13 +85,13 @@ class ConditionalRedirectServiceTest extends TestCase
             [
                 'condition' => 'amount > 1000',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/approval'
+                'value' => 'https://example.com/approval',
             ],
             [
                 'condition' => 'status == "urgent"',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         $data = ['amount' => 500, 'status' => 'pending'];
@@ -110,13 +110,13 @@ class ConditionalRedirectServiceTest extends TestCase
             [
                 'condition' => 'status == "urgent"',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/urgent'
+                'value' => 'https://example.com/urgent',
             ],
             [
                 'condition' => 'status == "normal"',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         $data = ['status' => 'urgent', 'priority' => 'high'];
@@ -137,13 +137,13 @@ class ConditionalRedirectServiceTest extends TestCase
             [
                 'condition' => 'isApproved == true',
                 'type' => 'homepageDashboard',
-                'value' => null
+                'value' => null,
             ],
             [
                 'condition' => 'isApproved == false',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         $data = ['isApproved' => true, 'user' => 'john'];
@@ -164,13 +164,13 @@ class ConditionalRedirectServiceTest extends TestCase
             [
                 'condition' => 'amount > 1000 and status == "pending"',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/approval'
+                'value' => 'https://example.com/approval',
             ],
             [
                 'condition' => 'amount <= 1000 or status == "urgent"',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         $data = ['amount' => 1500, 'status' => 'pending'];
@@ -206,8 +206,8 @@ class ConditionalRedirectServiceTest extends TestCase
         $conditionalRedirect = [
             [
                 'type' => 'externalURL',
-                'value' => 'https://example.com/approval'
-            ]
+                'value' => 'https://example.com/approval',
+            ],
         ];
 
         $data = ['amount' => 1500];
@@ -227,8 +227,8 @@ class ConditionalRedirectServiceTest extends TestCase
             [
                 'condition' => null,
                 'type' => 'externalURL',
-                'value' => 'https://example.com/approval'
-            ]
+                'value' => 'https://example.com/approval',
+            ],
         ];
 
         $data = ['amount' => 1500];
@@ -245,8 +245,8 @@ class ConditionalRedirectServiceTest extends TestCase
             [
                 'condition' => '',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/approval'
-            ]
+                'value' => 'https://example.com/approval',
+            ],
         ];
 
         $data = ['amount' => 1500];
@@ -266,21 +266,21 @@ class ConditionalRedirectServiceTest extends TestCase
             [
                 'condition' => 'user.role == "admin"',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/admin'
+                'value' => 'https://example.com/admin',
             ],
             [
                 'condition' => 'user.role == "user"',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         $data = [
             'user' => [
                 'role' => 'admin',
-                'name' => 'John Doe'
+                'name' => 'John Doe',
             ],
-            'status' => 'active'
+            'status' => 'active',
         ];
 
         $result = $this->service->resolve($conditionalRedirect, $data);
@@ -300,7 +300,7 @@ class ConditionalRedirectServiceTest extends TestCase
 
         // Create a process
         $process = Process::factory()->create([
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         // Create a process request with test data
@@ -310,8 +310,8 @@ class ConditionalRedirectServiceTest extends TestCase
             'data' => [
                 'amount' => 1500,
                 'status' => 'pending',
-                'priority' => 'high'
-            ]
+                'priority' => 'high',
+            ],
         ]);
 
         // Create a process request token
@@ -321,20 +321,20 @@ class ConditionalRedirectServiceTest extends TestCase
             'element_id' => 'task_1',
             'element_type' => 'task',
             'element_name' => 'Review Task',
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ]);
 
         $conditionalRedirect = [
             [
                 'condition' => 'amount > 1000',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/approval'
+                'value' => 'https://example.com/approval',
             ],
             [
                 'condition' => 'amount <= 1000',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         // Get the data from the process request and test with resolve() method
@@ -356,7 +356,7 @@ class ConditionalRedirectServiceTest extends TestCase
 
         // Create a process
         $process = Process::factory()->create([
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         // Create a process request with data that won't match any conditions
@@ -365,8 +365,8 @@ class ConditionalRedirectServiceTest extends TestCase
             'user_id' => $user->id,
             'data' => [
                 'amount' => 500,
-                'status' => 'pending'
-            ]
+                'status' => 'pending',
+            ],
         ]);
 
         // Create a process request token
@@ -376,20 +376,20 @@ class ConditionalRedirectServiceTest extends TestCase
             'element_id' => 'task_1',
             'element_type' => 'task',
             'element_name' => 'Review Task',
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ]);
 
         $conditionalRedirect = [
             [
                 'condition' => 'amount > 1000',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/approval'
+                'value' => 'https://example.com/approval',
             ],
             [
                 'condition' => 'status == "urgent"',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         // Get the data from the process request and test with resolve() method
@@ -409,7 +409,7 @@ class ConditionalRedirectServiceTest extends TestCase
 
         // Create a process
         $process = Process::factory()->create([
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         // Create a process request with multi-instance data
@@ -418,8 +418,8 @@ class ConditionalRedirectServiceTest extends TestCase
             'user_id' => $user->id,
             'data' => [
                 'items' => ['item1', 'item2', 'item3'],
-                'status' => 'processing'
-            ]
+                'status' => 'processing',
+            ],
         ]);
 
         // Create a process request token with multi-instance properties
@@ -433,22 +433,22 @@ class ConditionalRedirectServiceTest extends TestCase
             'token_properties' => [
                 'data' => [
                     'currentItem' => 'item1',
-                    'loopCounter' => 0
-                ]
-            ]
+                    'loopCounter' => 0,
+                ],
+            ],
         ]);
 
         $conditionalRedirect = [
             [
                 'condition' => 'loopCounter == 0',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/first-item'
+                'value' => 'https://example.com/first-item',
             ],
             [
                 'condition' => 'loopCounter > 0',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         // For multi-instance, we need to combine the process request data with token properties
@@ -469,13 +469,13 @@ class ConditionalRedirectServiceTest extends TestCase
             [
                 'condition' => 'count >= 5',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/bulk'
+                'value' => 'https://example.com/bulk',
             ],
             [
                 'condition' => 'count < 5',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         $data = ['count' => 7, 'type' => 'batch'];
@@ -496,13 +496,13 @@ class ConditionalRedirectServiceTest extends TestCase
             [
                 'condition' => 'dueDate < date("2024-01-01")',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/overdue'
+                'value' => 'https://example.com/overdue',
             ],
             [
                 'condition' => 'dueDate >= date("2024-01-01")',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         $data = ['dueDate' => '2023-12-15', 'status' => 'pending'];
@@ -523,13 +523,13 @@ class ConditionalRedirectServiceTest extends TestCase
             [
                 'condition' => 'amount > 1000 and status == "pending" and priority == "high"',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/urgent-approval'
+                'value' => 'https://example.com/urgent-approval',
             ],
             [
                 'condition' => 'amount <= 1000 or status = "completed"',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         $data = ['amount' => 1500, 'status' => 'pending', 'priority' => 'high'];
@@ -550,13 +550,13 @@ class ConditionalRedirectServiceTest extends TestCase
             [
                 'condition' => 'value == null',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/null-value'
+                'value' => 'https://example.com/null-value',
             ],
             [
                 'condition' => 'value != null',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         $data = ['value' => null, 'status' => 'pending'];
@@ -577,13 +577,13 @@ class ConditionalRedirectServiceTest extends TestCase
             [
                 'condition' => '"urgent" in items',
                 'type' => 'externalURL',
-                'value' => 'https://example.com/urgent-items'
+                'value' => 'https://example.com/urgent-items',
             ],
             [
                 'condition' => '"normal" in items',
                 'type' => 'taskList',
-                'value' => null
-            ]
+                'value' => null,
+            ],
         ];
 
         $data = ['items' => ['urgent', 'normal', 'low'], 'status' => 'processing'];

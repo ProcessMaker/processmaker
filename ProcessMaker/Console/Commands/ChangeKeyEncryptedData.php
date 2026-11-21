@@ -4,8 +4,8 @@ namespace ProcessMaker\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
-use ProcessMaker\Facades\EncryptedData;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Facades\EncryptedData;
 
 class ChangeKeyEncryptedData extends Command
 {

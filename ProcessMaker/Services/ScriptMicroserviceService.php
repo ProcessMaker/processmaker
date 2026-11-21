@@ -195,6 +195,7 @@ class ScriptMicroserviceService
 
         if (Cache::has($cacheKey)) {
             Log::debug('Cache hit for script runner', ['cacheKey' => $cacheKey]);
+
             return Cache::get($cacheKey);
         }
 
@@ -211,7 +212,9 @@ class ScriptMicroserviceService
                 return isset($item['language'], $item['id']) && $item['language'] === $language && $item['id'] === $executorUuid;
             })->first();
 
-        if (!empty($result)) Cache::put($cacheKey, $result, now()->addHour());
+        if (!empty($result)) {
+            Cache::put($cacheKey, $result, now()->addHour());
+        }
 
         return $result;
     }

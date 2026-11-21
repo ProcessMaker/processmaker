@@ -64,7 +64,7 @@ class UpgradeStatusCommand extends BaseCommand
      *
      * @param  array  $ran
      * @param  array  $batches
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     protected function getStatusFor(array $ran, array $batches)
     {

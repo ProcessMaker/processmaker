@@ -1,0 +1,480 @@
+<?php
+
+namespace Tests\Feature\Mcp;
+
+use Illuminate\Support\Facades\Event;
+use Illuminate\Testing\Fluent\AssertableJson;
+use Laravel\Mcp\Server\Transport\FakeTransporter;
+use ProcessMaker\Events\ProcessCreated;
+use ProcessMaker\Mcp\McpGuidance;
+use ProcessMaker\Mcp\Resources\McpSkillResource;
+use ProcessMaker\Mcp\Servers\ProcessServer;
+use ProcessMaker\Mcp\Tools\GetMcpGuidanceTool;
+use ProcessMaker\Mcp\Tools\GetMcpSkillTool;
+use ProcessMaker\Mcp\Tools\Processes\CreateProcessTool;
+use ProcessMaker\Mcp\Tools\Processes\EnableProcessAlternativeBTool;
+use ProcessMaker\Mcp\Tools\Processes\GetProcessTool;
+use ProcessMaker\Mcp\Tools\Processes\ListGroupsTool;
+use ProcessMaker\Mcp\Tools\Processes\ListProcessesTool;
+use ProcessMaker\Mcp\Tools\Processes\ListUsersTool;
+use ProcessMaker\Mcp\Tools\Processes\PlanProcessTool;
+use ProcessMaker\Mcp\Tools\Processes\UpdateProcessTool;
+use ProcessMaker\Mcp\Tools\Processes\ValidateProcessTool;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
+
+class ProcessServerTest extends TestCase
+{
+    use RequestHelper;
+
+    public function testAdminCanCreateListUpdateAndGetAProcess(): void
+    {
+        Event::fake([ProcessCreated::class]);
+
+        $category = ProcessCategory::factory()->create();
+        $bpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
+
+        $created = ProcessServer::actingAs($this->user)->tool(CreateProcessTool::class, [
+            'name' => 'MCP Intake Flow',
+            'description' => 'Created via MCP',
+            'process_category_id' => (string) $category->id,
+            'bpmn' => $bpmn,
+        ]);
+
+        $created->assertOk()
+            ->assertHasNoErrors()
+            ->assertSee('MCP Intake Flow')
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('name', 'MCP Intake Flow')
+                ->where('description', 'Created via MCP')
+                ->whereType('bpmn', 'string')
+                ->etc());
+
+        $process = Process::where('name', 'MCP Intake Flow')->firstOrFail();
+        Event::assertDispatched(ProcessCreated::class);
+
+        ProcessServer::actingAs($this->user)->tool(ListProcessesTool::class, [
+            'filter' => 'MCP Intake',
+        ])->assertOk()->assertSee('MCP Intake Flow');
+
+        ProcessServer::actingAs($this->user)->tool(GetProcessTool::class, [
+            'id' => $process->id,
+        ])->assertOk()->assertSee('Created via MCP');
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'description' => 'Updated via MCP',
+        ])->assertOk()->assertSee('Updated via MCP');
+
+        $this->assertSame('Updated via MCP', $process->refresh()->description);
+    }
+
+    public function testProcessToolsRequireAnAuthenticatedUserWithPermission(): void
+    {
+        ProcessServer::tool(ListProcessesTool::class)
+            ->assertHasErrors(['Authenticate with a ProcessMaker API token']);
+
+        $member = User::factory()->create([
+            'is_administrator' => false,
+        ]);
+
+        ProcessServer::actingAs($member)->tool(ListProcessesTool::class)
+            ->assertHasErrors(['view-processes']);
+    }
+
+    public function testPlanProcessReturnsOpenQuestionsThenBlueprint(): void
+    {
+        ProcessServer::actingAs($this->user)->tool(PlanProcessTool::class, [
+            'goal' => 'Employee leave request with manager approval',
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('ready', false)
+                ->whereType('open_questions', 'array')
+                ->where('open_questions.0.id', 'name')
+                ->etc());
+
+        ProcessServer::actingAs($this->user)->tool(PlanProcessTool::class, [
+            'goal' => 'Employee leave request with manager approval',
+            'name' => 'Leave Request',
+            'purpose' => 'Employees request PTO; managers approve or reject.',
+            'tasks' => '1) Submit request (form) 2) Manager review (form)',
+            'decisions' => 'After review: Approved vs Rejected on approval_status',
+            'assignments' => 'Submit=requester; Review=process_manager',
+            'process_manager' => 'admin',
+            'screens' => 'Create FORM submit + FORM approval + DISPLAY summary',
+            'start' => 'Requester from Requests UI with interstitial',
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('ready', true)
+                ->where('blueprint.name', 'Leave Request')
+                ->whereType('blueprint.next_steps', 'array')
+                ->etc());
+    }
+
+    public function testListUsersAndGroupsForAssignment(): void
+    {
+        $peer = User::factory()->create([
+            'username' => 'pto.manager',
+            'firstname' => 'Pto',
+            'lastname' => 'Manager',
+            'status' => 'ACTIVE',
+            'is_administrator' => false,
+        ]);
+        $group = Group::factory()->create([
+            'name' => 'PTO Approvers',
+            'status' => 'ACTIVE',
+        ]);
+
+        ProcessServer::actingAs($this->user)->tool(ListUsersTool::class, [
+            'filter' => 'pto.manager',
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('data.0.id', $peer->id)
+                ->where('data.0.username', 'pto.manager')
+                ->etc());
+
+        ProcessServer::actingAs($this->user)->tool(ListGroupsTool::class, [
+            'filter' => 'PTO Approvers',
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('data.0.id', $group->id)
+                ->where('data.0.name', 'PTO Approvers')
+                ->etc());
+    }
+
+    public function testValidateProcessReportsMissingScreenRef(): void
+    {
+        $bpmn = <<<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd"
+    targetNamespace="http://bpmn.io/schema/bpmn"
+    exporter="ProcessMaker Modeler" exporterVersion="1.0">
+  <bpmn:process id="ProcessId" name="Bad Task" isExecutable="true">
+    <bpmn:startEvent id="node_1" name="Start">
+      <bpmn:outgoing>node_4</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="node_2" name="Form Task" pm:assignment="requester">
+      <bpmn:incoming>node_4</bpmn:incoming>
+      <bpmn:outgoing>node_5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="node_3" name="End">
+      <bpmn:incoming>node_5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_4" sourceRef="node_1" targetRef="node_2" />
+    <bpmn:sequenceFlow id="node_5" sourceRef="node_2" targetRef="node_3" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagramId">
+    <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessId" />
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
+XML;
+
+        ProcessServer::actingAs($this->user)->tool(ValidateProcessTool::class, [
+            'bpmn' => $bpmn,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('ok', false)
+                ->where('errors.0.code', 'missing_screen_ref')
+                ->etc());
+    }
+
+    public function testHttpServerRequiresABearerToken(): void
+    {
+        $this->postJson('/mcp/processes', [
+            'jsonrpc' => '2.0',
+            'id' => 1,
+            'method' => 'initialize',
+            'params' => [],
+        ])->assertUnauthorized();
+    }
+
+    public function testGetMcpGuidanceReturnsProcessScopedCatalog(): void
+    {
+        $this->seedMcpGuidance();
+
+        ProcessServer::actingAs($this->user)
+            ->tool(GetMcpGuidanceTool::class)
+            ->assertOk()
+            ->assertHasNoErrors()
+            ->assertSee([
+                'Prefer clear process names',
+                'Process naming',
+            ])
+            ->assertDontSee('screen-styles')
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('system_prompt', 'Prefer clear process names')
+                ->where('skills.0.slug', 'process-naming')
+                ->missing('skills.0.content')
+                ->etc());
+    }
+
+    public function testGetMcpSkillReturnsFullSkillBodyBySlug(): void
+    {
+        $this->seedMcpGuidance();
+
+        ProcessServer::actingAs($this->user)
+            ->tool(GetMcpSkillTool::class, ['slug' => 'process-naming'])
+            ->assertOk()
+            ->assertHasNoErrors()
+            ->assertSee('Name processes by outcome')
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('slug', 'process-naming')
+                ->where('content', 'Name processes by outcome')
+                ->where('uri', 'pm://mcp/skills/process-naming')
+                ->etc());
+    }
+
+    public function testServerInstructionsIncludeProcessCatalogWithoutSkillBodies(): void
+    {
+        $this->seedMcpGuidance();
+
+        $server = app(ProcessServer::class, ['transport' => new FakeTransporter()]);
+        $instructions = $server->createContext()->instructions;
+
+        $this->assertStringContainsString('get-mcp-guidance', $instructions);
+        $this->assertStringContainsString('validate-process', $instructions);
+        $this->assertStringContainsString('Prefer clear process names', $instructions);
+        $this->assertStringContainsString('process-naming', $instructions);
+        $this->assertStringNotContainsString('Name processes by outcome', $instructions);
+        $this->assertStringNotContainsString('screen-styles', $instructions);
+    }
+
+    public function testSkillResourcesAreProcessScoped(): void
+    {
+        $this->seedMcpGuidance();
+
+        $server = app(ProcessServer::class, ['transport' => new FakeTransporter()]);
+        $resources = $server->createContext()->resources();
+
+        $this->assertCount(1, $resources);
+        $this->assertInstanceOf(McpSkillResource::class, $resources->first());
+        $this->assertSame('pm://mcp/skills/process-naming', $resources->first()->uri());
+    }
+
+    public function testMetadataUpdateDoesNotPublishDraftBpmn(): void
+    {
+        $publishedBpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
+        $process = Process::factory()->create([
+            'name' => 'Published Definition',
+            'description' => 'Live',
+            'bpmn' => $publishedBpmn,
+        ]);
+
+        $draftBpmn = str_replace('name="ProcessName"', 'name="UnpublishedDraft"', $publishedBpmn);
+        $process->bpmn = $draftBpmn;
+        $process->saveDraft('A');
+        $process->refresh();
+
+        $this->assertSame($publishedBpmn, $process->bpmn);
+        $this->assertNotNull($process->getDraftVersion('A'));
+        $this->assertStringContainsString('UnpublishedDraft', (string) $process->getDraftVersion('A')->bpmn);
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'name' => 'Renamed Without Publish',
+            'description' => 'Metadata only',
+        ])->assertOk()->assertSee('Renamed Without Publish');
+
+        $process->refresh();
+        $this->assertSame('Renamed Without Publish', $process->name);
+        $this->assertSame('Metadata only', $process->description);
+        $this->assertSame($this->user->id, (int) $process->updated_by);
+        // Must keep the published definition; must not hydrate draft BPMN onto live.
+        $this->assertSame($publishedBpmn, $process->bpmn);
+        $this->assertStringNotContainsString('UnpublishedDraft', (string) $process->bpmn);
+        // Metadata-only save must not delete unpublished drafts via HasVersioning.
+        $draft = $process->getDraftVersion('A');
+        $this->assertNotNull($draft);
+        $this->assertStringContainsString('UnpublishedDraft', (string) $draft->bpmn);
+    }
+
+    public function testCombinedBpmnAndMetadataUpdatePersistsLiveMetadata(): void
+    {
+        $publishedBpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
+        $oldCategory = ProcessCategory::factory()->create();
+        $newCategory = ProcessCategory::factory()->create();
+        $process = Process::factory()->create([
+            'name' => 'Before Combined Update',
+            'description' => 'Old description',
+            'status' => 'ACTIVE',
+            'process_category_id' => (string) $oldCategory->id,
+            'bpmn' => $publishedBpmn,
+        ]);
+
+        $draftBpmn = str_replace('name="ProcessName"', 'name="CombinedDraft"', $publishedBpmn);
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'name' => 'After Combined Update',
+            'description' => 'New description',
+            'status' => 'INACTIVE',
+            'process_category_id' => (string) $newCategory->id,
+            'bpmn' => $draftBpmn,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('name', 'After Combined Update')
+                ->where('description', 'New description')
+                ->where('status', 'INACTIVE')
+                ->etc());
+
+        $process->refresh();
+        $this->assertSame('After Combined Update', $process->name);
+        $this->assertSame('New description', $process->description);
+        $this->assertSame('INACTIVE', $process->status);
+        $this->assertSame((string) $newCategory->id, (string) $process->process_category_id);
+        $this->assertTrue($process->categories()->where('category_id', $newCategory->id)->exists());
+        // Draft BPMN is saved; published process row keeps the prior definition.
+        $this->assertSame($publishedBpmn, $process->bpmn);
+        $draft = $process->getDraftVersion('A');
+        $this->assertNotNull($draft);
+        $this->assertStringContainsString('CombinedDraft', (string) $draft->bpmn);
+    }
+
+    public function testGetProcessHidesDraftBpmnWithoutEditPermission(): void
+    {
+        $publishedBpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
+        $process = Process::factory()->create([
+            'name' => 'Secret Draft Process',
+            'bpmn' => $publishedBpmn,
+        ]);
+
+        $draftBpmn = str_replace('name="ProcessName"', 'name="UnpublishedSecret"', $publishedBpmn);
+        $process->bpmn = $draftBpmn;
+        $process->saveDraft('A');
+        $process->refresh();
+
+        $this->initializePermissions();
+        $viewer = User::factory()->create(['is_administrator' => false]);
+        $viewer->permissions()->attach(Permission::byName('view-processes'));
+
+        ProcessServer::actingAs($viewer)->tool(GetProcessTool::class, [
+            'id' => $process->id,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('name', 'Secret Draft Process')
+                ->where('alternative', 'A')
+                ->where('bpmn', $publishedBpmn)
+                ->etc());
+
+        // Requesting B must not return live A XML labeled as B.
+        ProcessServer::actingAs($viewer)->tool(GetProcessTool::class, [
+            'id' => $process->id,
+            'alternative' => 'B',
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('alternative', 'A')
+                ->where('bpmn', $publishedBpmn)
+                ->etc());
+
+        // Invalid draft: view-only validates published; editor validates draft.
+        $process->bpmn = '<not-valid-bpmn/>';
+        $process->saveDraft('A');
+
+        ProcessServer::actingAs($viewer)->tool(ValidateProcessTool::class, [
+            'id' => $process->id,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('ok', true)
+                ->etc());
+
+        ProcessServer::actingAs($this->user)->tool(ValidateProcessTool::class, [
+            'id' => $process->id,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('ok', false)
+                ->etc());
+
+        ProcessServer::actingAs($this->user)->tool(GetProcessTool::class, [
+            'id' => $process->id,
+        ])->assertOk()->assertSee('not-valid-bpmn');
+    }
+
+    public function testEnableProcessAlternativeBAndUpdateDraftOnB(): void
+    {
+        if (!class_exists(\ProcessMaker\Package\PackageABTesting\Models\Alternative::class)) {
+            $this->markTestSkipped('package-ab-testing is not installed.');
+        }
+
+        $bpmnA = Process::getProcessTemplate('OnlyStartElement.bpmn');
+        $process = Process::factory()->create(['bpmn' => $bpmnA]);
+
+        ProcessServer::actingAs($this->user)->tool(EnableProcessAlternativeBTool::class, [
+            'id' => $process->id,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('b_enabled', true)
+                ->where('package_installed', true)
+                ->etc());
+
+        $bpmnB = str_replace('name="ProcessName"', 'name="ProcessNameB"', $bpmnA);
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'alternative' => 'B',
+            'bpmn' => $bpmnB,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('alternative', 'B')
+                ->etc());
+
+        $draftB = $process->refresh()->getDraftVersion('B');
+        $this->assertNotNull($draftB);
+        $this->assertStringContainsString('ProcessNameB', (string) $draftB->bpmn);
+
+        $draftA = $process->getDraftVersion('A');
+        $bpmnDraftA = $draftA ? $draftA->bpmn : $process->getLatestVersion('A')->bpmn;
+        $this->assertStringNotContainsString('ProcessNameB', (string) $bpmnDraftA);
+
+        ProcessServer::actingAs($this->user)->tool(GetProcessTool::class, [
+            'id' => $process->id,
+            'alternative' => 'B',
+        ])->assertOk()->assertSee('ProcessNameB');
+    }
+
+    private function seedMcpGuidance(): void
+    {
+        Setting::factory()->create([
+            'key' => McpGuidance::SYSTEM_PROMPT_KEY,
+            'format' => 'textarea',
+            'config' => 'Prefer clear process names',
+            'name' => 'System Prompt',
+            'group' => 'MCP',
+        ]);
+
+        Setting::factory()->create([
+            'key' => McpGuidance::SKILLS_KEY,
+            'format' => 'component',
+            'config' => [
+                [
+                    'id' => 'custom-screen-styles',
+                    'name' => 'Screen styles',
+                    'slug' => 'screen-styles',
+                    'when' => 'Before create-screen when styling matters',
+                    'content' => 'Use calm colors',
+                    'scope' => McpGuidance::SCOPE_SCREENS,
+                ],
+                [
+                    'id' => 'custom-process-naming',
+                    'name' => 'Process naming',
+                    'slug' => 'process-naming',
+                    'when' => 'Before create-process',
+                    'content' => 'Name processes by outcome',
+                    'scope' => McpGuidance::SCOPE_PROCESSES,
+                ],
+            ],
+            'name' => 'Skills',
+            'group' => 'MCP',
+            'ui' => ['component' => 'McpSkills'],
+        ]);
+    }
+}

@@ -27,6 +27,8 @@ class AdminController extends Controller
                 return redirect()->route('file-manager.index');
             case 'view-settings':
                 return redirect()->route('settings.index');
+            case 'view-plugins':
+                return redirect()->route('plugins.index');
             default:
                 throw new AuthorizationException();
         }

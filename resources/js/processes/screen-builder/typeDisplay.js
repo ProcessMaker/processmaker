@@ -15,6 +15,7 @@ ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
   const FormAnalyticsChart = FormBuilderControls.find((control) => control.rendererBinding === "FormAnalyticsChart");
   const FormCollectionViewControl = FormBuilderControls.find((control) => control.rendererBinding === "FormCollectionViewControl");
   const CaseProgressBar = FormBuilderControls.find((control) => control.rendererBinding === "CaseProgressBar");
+  const VueRenderControl = FormBuilderControls.find((control) => control.rendererBinding === "VueRenderPreview");
   // Remove editable inspector props
   FormRecordList.control.inspector = FormRecordList.control.inspector.filter((prop) => prop.field !== "editable" && prop.field !== "form");
 
@@ -34,7 +35,8 @@ ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
     FormAnalyticsChart,
     FormCollectionViewControl,
     CaseProgressBar,
-  ];
+    VueRenderControl,
+  ].filter(Boolean);
 
   controlsDisplay.forEach((item) => {
     item.control.inspector.push(...globalProperties[0].inspector);

@@ -16,6 +16,6 @@ class MatchingTasks extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return MatchingTasks::class;
+        return self::class;
     }
 }

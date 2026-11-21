@@ -23,6 +23,7 @@ class JsonColumnIndex
 
         if (!config('database.enable_index_json_columns')) {
             Log::warning('Indexing JSON columns is disabled. The following index was not created: ' . $sql);
+
             return false;
         }
 

@@ -83,7 +83,7 @@ class ImportV2 implements ShouldQueue
             return;
         }
 
-        $options = new Options($options);
+        $options = new Options($options, $this->userId);
         $importer = new Importer($payload, $options, $logger);
         if ($this->isPreview) {
             $manifest = $importer->previewImport();

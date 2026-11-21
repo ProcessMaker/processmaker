@@ -122,6 +122,133 @@
                   id="showDataInput"
                   v-model="showDataInput"
                 >
+                  <div class="preview-presets px-2 pt-2">
+                    <div class="row">
+                      <div class="col-10">
+                        <label class="mb-1">
+                          <b>{{ $t("Presets") }}</b>
+                        </label>
+                      </div>
+                      <div class="col-2 text-right">
+                        <a
+                          class="fas fa-plus-square"
+                          href="#"
+                          :title="$t('Save current data as preset')"
+                          data-cy="preview-presets-add"
+                          @click.prevent="addPreviewPreset"
+                        />
+                      </div>
+                    </div>
+
+                    <div
+                      v-if="showPreviewPresetCard"
+                      class="card mb-2"
+                    >
+                      <div class="card-header">
+                        {{
+                          previewPresetCardType === "insert"
+                            ? $t("Add Preset")
+                            : $t("Edit Preset")
+                        }}
+                      </div>
+                      <div class="card-body p-2">
+                        <label for="preview-preset-title">{{ $t("Title") }}</label>
+                        <b-form-input
+                          id="preview-preset-title"
+                          v-model="previewPresetTitle"
+                          data-cy="preview-preset-title"
+                        />
+                      </div>
+                      <div class="card-footer text-right p-2">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-secondary mr-2"
+                          @click="cancelPreviewPresetCard"
+                        >
+                          {{ $t("Cancel") }}
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-secondary"
+                          data-cy="preview-preset-save"
+                          @click="savePreviewPresetCard"
+                        >
+                          {{
+                            previewPresetCardType === "insert"
+                              ? $t("Save")
+                              : $t("Update")
+                          }}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div
+                      v-if="previewPresets.length === 0 && !showPreviewPresetCard"
+                      class="text-muted small mb-2"
+                    >
+                      {{ $t("No presets yet") }}
+                    </div>
+
+                    <draggable
+                      v-model="previewPresets"
+                      group="preview-presets"
+                      @update="onPreviewPresetsReorder"
+                    >
+                      <div
+                        v-for="(preset, index) in previewPresets"
+                        :key="`preview-preset-${index}`"
+                      >
+                        <div
+                          class="row border-top align-items-center py-1"
+                          :class="previewPresetRowCss(index)"
+                        >
+                          <div
+                            class="col-1"
+                            style="cursor: grab"
+                          >
+                            <span class="fas fa-arrows-alt-v" />
+                          </div>
+                          <div class="col-1 d-flex align-items-center">
+                            <input
+                              v-model="activePreviewPresetIndex"
+                              type="radio"
+                              class="form-check"
+                              name="previewPresetGroup"
+                              :value="index"
+                              @change="applyPreviewPreset(index)"
+                            >
+                          </div>
+                          <div
+                            class="col-5 text-truncate"
+                            style="cursor: pointer"
+                            :title="preset.title"
+                            @click="applyPreviewPreset(index)"
+                          >
+                            {{ preset.title }}
+                          </div>
+                          <div class="col-1">
+                            <a
+                              class="fas fa-cog"
+                              href="#"
+                              style="cursor: pointer"
+                              data-cy="preview-presets-edit"
+                              @click.prevent="showEditPreviewPreset(index)"
+                            />
+                          </div>
+                          <div class="col-1">
+                            <a
+                              class="fas fa-trash-alt"
+                              href="#"
+                              style="cursor: pointer"
+                              data-cy="preview-presets-remove"
+                              @click.prevent="removePreviewPreset(index)"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </draggable>
+                  </div>
+
                   <monaco-editor
                     v-model="previewInput"
                     :options="monacoOptions"
@@ -129,6 +256,29 @@
                     language="json"
                     @change="updateDataInput"
                   />
+
+                  <div
+                    v-if="previewPresetDirty"
+                    class="d-flex align-items-center px-2 py-1"
+                  >
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-secondary mr-2"
+                      data-cy="preview-preset-update"
+                      :disabled="!previewInputValid"
+                      @click="updateActivePreviewPreset"
+                    >
+                      {{ $t("Update") }}
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
+                      data-cy="preview-preset-discard"
+                      @click="discardPreviewPresetChanges"
+                    >
+                      {{ $t("Discard") }}
+                    </button>
+                  </div>
 
                   <div
                     v-if="!previewInputValid"
@@ -348,6 +498,7 @@ import MonacoEditor from "vue-monaco";
 import _, { cloneDeep, debounce } from "lodash";
 import { mapMutations } from "vuex";
 import Validator from "@chantouchsek/validatorjs";
+import draggable from "vuedraggable";
 import TopMenu from "../../components/Menu.vue";
 import mockMagicVariables from "./mockMagicVariables";
 import formTypes from "./formTypes";
@@ -367,6 +518,7 @@ export default {
     TopMenu,
     DataLoadingBasic,
     CreateTemplateModal,
+    draggable,
   },
   mixins: [...autosaveMixins, AssetRedirectMixin],
   props: {
@@ -568,6 +720,12 @@ export default {
       previewData: {},
       previewDataSaved: {},
       previewInput: "{}",
+      previewPresets: [],
+      activePreviewPresetIndex: null,
+      showPreviewPresetCard: false,
+      previewPresetCardType: "insert",
+      previewPresetTitle: "",
+      previewPresetEditIndex: null,
       customCSS: "",
       cssErrors: "",
       showValidationErrors: false,
@@ -623,6 +781,36 @@ export default {
       } catch (err) {
         return false;
       }
+    },
+    normalizedActivePreviewPresetIndex() {
+      if (
+        this.activePreviewPresetIndex === null
+        || this.activePreviewPresetIndex === ""
+      ) {
+        return null;
+      }
+      const index = Number(this.activePreviewPresetIndex);
+      if (!Number.isInteger(index) || index < 0 || index >= this.previewPresets.length) {
+        return null;
+      }
+      return index;
+    },
+    previewPresetDirty() {
+      const index = this.normalizedActivePreviewPresetIndex;
+      if (index === null || !this.previewInputValid) {
+        return false;
+      }
+      return !_.isEqual(
+        JSON.parse(this.previewInput),
+        this.getPresetDataObject(this.previewPresets[index]),
+      );
+    },
+    previewPresetsForApi() {
+      return this.previewPresets.map((preset) => ({
+        title: preset.title,
+        // string: PHP json_decode turns {} into [] if data is an object
+        data: this.serializePresetData(preset.data),
+      }));
     },
     displayBuilder() {
       return this.mode === "editor";
@@ -687,6 +875,7 @@ export default {
             computed: this.computed,
             custom_css: this.customCSS,
             watchers: this.watchers,
+            preview_presets: this.previewPresetsForApi,
           })
           .then(() => {
             // Set draft status.
@@ -759,6 +948,138 @@ export default {
         this.updateDataPreview();
       }
     }, 1000),
+    previewPresetRowCss(index) {
+      return index % 2 === 0 ? "striped" : "bg-default";
+    },
+    normalizePreviewPresets(presets) {
+      if (!Array.isArray(presets)) {
+        return [];
+      }
+      return presets.map((preset) => ({
+        title: preset.title || "",
+        data: this.serializePresetData(preset.data),
+      }));
+    },
+    serializePresetData(data) {
+      if (typeof data === "string") {
+        try {
+          return JSON.stringify(JSON.parse(data));
+        } catch (err) {
+          return "{}";
+        }
+      }
+      return JSON.stringify(data ?? {});
+    },
+    getPresetDataObject(preset) {
+      if (!preset) {
+        return {};
+      }
+      if (typeof preset.data === "string") {
+        try {
+          return JSON.parse(preset.data);
+        } catch (err) {
+          return {};
+        }
+      }
+      return preset.data ?? {};
+    },
+    persistPreviewPresets() {
+      this.screen.preview_presets = this.previewPresetsForApi;
+      this.handleAutosave(true);
+    },
+    applyPreviewPreset(index) {
+      const presetIndex = Number(index);
+      const preset = this.previewPresets[presetIndex];
+      if (!preset || typeof preset.data === "undefined") {
+        return;
+      }
+      this.activePreviewPresetIndex = presetIndex;
+      this.previewInput = JSON.stringify(this.getPresetDataObject(preset), null, 2);
+      this.previewData = JSON.parse(this.previewInput);
+      this.previewDataStringify = this.previewInput;
+      this.rendererKey += 1;
+      if (this.mode === "preview") {
+        this.$dataProvider.flushScreenCache();
+      }
+    },
+    updateActivePreviewPreset() {
+      const index = this.normalizedActivePreviewPresetIndex;
+      if (index === null || !this.previewInputValid) {
+        return;
+      }
+      this.$set(
+        this.previewPresets[index],
+        "data",
+        this.serializePresetData(JSON.parse(this.previewInput)),
+      );
+      this.persistPreviewPresets();
+    },
+    discardPreviewPresetChanges() {
+      const index = this.normalizedActivePreviewPresetIndex;
+      if (index === null) {
+        return;
+      }
+      this.applyPreviewPreset(index);
+    },
+    addPreviewPreset() {
+      if (!this.previewInputValid) {
+        ProcessMaker.alert(this.$t("Invalid JSON Data Object"), "danger");
+        return;
+      }
+      this.previewPresetCardType = "insert";
+      this.previewPresetTitle = "";
+      this.previewPresetEditIndex = null;
+      this.showPreviewPresetCard = true;
+    },
+    showEditPreviewPreset(index) {
+      this.previewPresetCardType = "edit";
+      this.previewPresetEditIndex = Number(index);
+      this.previewPresetTitle = this.previewPresets[this.previewPresetEditIndex].title;
+      this.showPreviewPresetCard = true;
+    },
+    cancelPreviewPresetCard() {
+      this.showPreviewPresetCard = false;
+      this.previewPresetEditIndex = null;
+      this.previewPresetTitle = "";
+    },
+    savePreviewPresetCard() {
+      const title = (this.previewPresetTitle || "").trim();
+      if (!title) {
+        return;
+      }
+      if (this.previewPresetCardType === "insert") {
+        if (!this.previewInputValid) {
+          return;
+        }
+        this.previewPresets.push({
+          title,
+          data: this.serializePresetData(JSON.parse(this.previewInput)),
+        });
+        this.activePreviewPresetIndex = this.previewPresets.length - 1;
+      } else {
+        const preset = this.previewPresets[this.previewPresetEditIndex];
+        if (!preset) {
+          return;
+        }
+        this.$set(preset, "title", title);
+      }
+      this.cancelPreviewPresetCard();
+      this.persistPreviewPresets();
+    },
+    removePreviewPreset(index) {
+      const removeIndex = Number(index);
+      const active = this.normalizedActivePreviewPresetIndex;
+      this.previewPresets.splice(removeIndex, 1);
+      if (active === removeIndex) {
+        this.activePreviewPresetIndex = null;
+      } else if (active !== null && active > removeIndex) {
+        this.activePreviewPresetIndex = active - 1;
+      }
+      this.persistPreviewPresets();
+    },
+    onPreviewPresetsReorder() {
+      this.persistPreviewPresets();
+    },
     // eslint-disable-next-line func-names
     updateDataPreview: debounce(function () {
       this.previewDataStringify = JSON.stringify(this.previewData, null, 2);
@@ -880,6 +1201,9 @@ export default {
         that.computed = that.screen.computed ? that.screen.computed : [];
         that.customCSS = that.screen.custom_css ? that.screen.custom_css : "";
         that.watchers = that.screen.watchers ? that.screen.watchers : [];
+        that.previewPresets = that.normalizePreviewPresets(
+          that.screen.preview_presets,
+        );
         that.previewInput = "{}";
         that.preview.custom_css = that.customCSS;
         ProcessMaker.EventBus.$emit("screen-builder-start", that);
@@ -976,7 +1300,7 @@ export default {
         const data = item.config || {};
         const rules = {};
 
-        item.inspector.forEach((property) => {
+        (item.inspector || []).forEach((property) => {
           if (property.config.validation) {
             if (
               property.config.validation.includes(
@@ -1167,6 +1491,7 @@ export default {
             computed: this.computed,
             custom_css: this.customCSS,
             watchers: this.watchers,
+            preview_presets: this.previewPresetsForApi,
           })
           .then((response) => {
             if (exportScreen) {
@@ -1287,6 +1612,20 @@ body {
 
 .preview-inspector {
   max-width: 265px;
+}
+
+.preview-presets {
+  max-height: 220px;
+  overflow-y: auto;
+  font-size: 0.875rem;
+
+  .striped {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .fa-plus-square {
+    cursor: pointer;
+  }
 }
 
 .data-collapse {

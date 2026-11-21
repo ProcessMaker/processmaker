@@ -56,6 +56,7 @@ class TrustHosts extends Middleware
             if (!$trusted) {
                 \Log::warning('Rejected request with untrusted X-Forwarded-Host', [
                     'forwarded_host' => $forwardedHost,
+                    'trusted_pattern' => $this->hosts(),
                 ]);
                 abort(400, 'Invalid Host Header');
             }

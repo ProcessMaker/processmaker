@@ -32,6 +32,7 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface, Promet
         'config' => 'array',
         'computed' => 'array',
         'watchers' => 'array',
+        'preview_presets' => 'array',
         'translations' => 'array',
     ];
 
