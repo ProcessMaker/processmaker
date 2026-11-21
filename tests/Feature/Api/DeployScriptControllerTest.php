@@ -218,25 +218,27 @@ class DeployScriptControllerTest extends TestCase
         $this->assertSame($code, $response->getContent());
     }
 
-    public function testDeployScriptPrefersPhpNayraExecutorOnCreate(): void
+    public function testDeployScriptPrefersPhpExecutorOnCreate(): void
     {
-        if (!ScriptExecutor::query()->where('language', 'php-nayra')->exists()) {
-            ScriptExecutor::factory()->create(['language' => 'php-nayra']);
+        if (!ScriptExecutor::query()->where('language', 'php')->exists()) {
+            ScriptExecutor::factory()->create(['language' => 'php', 'title' => 'PHP Executor']);
         }
 
         $executor = app(ScriptExecutorResolver::class)->resolveForNewScript();
         $this->assertNotNull($executor);
-        $this->assertSame('php-nayra', $executor->language);
+        $this->assertSame('php', $executor->language);
 
         $this->apiCall('POST', self::API_ENDPOINT, [
             'code' => '<?php return [];',
-            'name' => 'new-nayra-script',
+            'name' => 'new-php-script',
+            'description' => 'Merged migration script.',
         ])
             ->assertStatus(200)
             ->assertJson(['action' => 'created']);
 
-        $script = Script::where('title', 'new-nayra-script')->first();
+        $script = Script::where('title', 'new-php-script')->first();
         $this->assertSame($executor->id, $script->script_executor_id);
+        $this->assertSame('Merged migration script.', $script->description);
     }
 
     private function ensureExecutor(): ScriptExecutor

@@ -198,8 +198,13 @@ class ProcessBpmnReferenceService
             return $bpmn;
         }
 
-        $idsByName = $loadIds($names);
-        $missing = array_values(array_diff($names, array_keys($idsByName)));
+        $resolvedNames = array_map(
+            static fn (string $name): string => html_entity_decode($name, ENT_QUOTES | ENT_XML1, 'UTF-8'),
+            $names
+        );
+
+        $idsByName = $loadIds($resolvedNames);
+        $missing = array_values(array_diff($resolvedNames, array_keys($idsByName)));
         if ($missing !== []) {
             throw new MissingBpmnReferenceException(
                 'Missing ' . $type . ' reference(s): ' . implode(', ', $missing)
@@ -208,8 +213,11 @@ class ProcessBpmnReferenceService
 
         return preg_replace_callback(
             $pattern,
-            static fn (array $match): string => $match[1] . $match[2]
-                . $idsByName[$match[3]] . $match[2],
+            static function (array $match) use ($idsByName): string {
+                $name = html_entity_decode($match[3], ENT_QUOTES | ENT_XML1, 'UTF-8');
+
+                return $match[1] . $match[2] . $idsByName[$name] . $match[2];
+            },
             $bpmn
         );
     }

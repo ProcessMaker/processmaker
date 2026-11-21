@@ -10,14 +10,6 @@ class ScriptExecutorResolver
 {
     public function resolveForNewScript(): ?ScriptExecutor
     {
-        $nayra = ScriptExecutor::query()
-            ->where('language', 'php-nayra')
-            ->orderBy('id')
-            ->first();
-        if ($nayra !== null) {
-            return $nayra;
-        }
-
         $php = ScriptExecutor::query()
             ->where('language', 'php')
             ->orderBy('id')
@@ -26,6 +18,10 @@ class ScriptExecutorResolver
             return $php;
         }
 
-        return ScriptExecutor::query()->orderBy('id')->first();
+        return ScriptExecutor::query()
+            ->where('language', '!=', 'php-nayra')
+            ->orderBy('id')
+            ->first()
+            ?? ScriptExecutor::query()->orderBy('id')->first();
     }
 }
