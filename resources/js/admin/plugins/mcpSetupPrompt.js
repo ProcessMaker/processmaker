@@ -4,7 +4,8 @@
  * Pure functions, no Vue or DOM access, so the logic can be checked on its own.
  *
  * The prompt must never contain secrets: the Git token typed in the dialog is only used by
- * ProcessMaker to clone private repositories and is deliberately not an input here.
+ * ProcessMaker to clone private repositories and is deliberately not an input here, and any
+ * credentials embedded in the repository URL are stripped before it is used.
  */
 
 export const MCP_ENDPOINT_PATHS = [
@@ -19,6 +20,17 @@ export const MCP_PROFILE_VALUES = ["pm4", "migration"];
 // Values are typed by the user and end up inside a prompt, so drop all whitespace
 // (URLs, branches and usernames never contain any) to keep each value on one line.
 const clean = (value) => String(value ?? "").replace(/\s+/g, "");
+
+/**
+ * Drops HTTP userinfo (https://user:secret@host/..., https://token@host/...) from a URL.
+ * Same two passes as PluginManager::redactHttpUserInfoFromString() in core: a pasted clone URL
+ * with credentials must never reach the prompt, the clipboard or the agent transcript.
+ */
+export function stripUrlUserInfo(value) {
+  return clean(value)
+    .replace(/:\/\/[^/\s:@]+:[^/\s@]+@/g, "://")
+    .replace(/:\/\/[^/\s@]+@/g, "://");
+}
 
 /**
  * Same rule as PluginManager::extractRepoName() in core: core installs the plugin as
@@ -58,7 +70,7 @@ export function buildMcpSetupPrompt({
   profile = "pm4",
 }) {
   const base = clean(origin).replace(/\/+$/, "");
-  const url = clean(repoUrl);
+  const url = stripUrlUserInfo(repoUrl);
   const repoName = isUsableRepoUrl(url) ? extractRepoName(url) : "";
 
   const values = [
