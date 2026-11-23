@@ -287,6 +287,111 @@ class PluginManagerTest extends TestCase
         $manager->install($repoUrl);
     }
 
+    public function testInstallRepositoryWithoutCommitsShowsFriendlyMessage(): void
+    {
+        $this->setUpTestPluginManager();
+
+        $this->tempPluginDir = $this->pluginsDir . '/empty-remote-plugin';
+        mkdir($this->tempPluginDir . '/.git', 0755, true);
+
+        $this->fakeGit(['git rev-parse --verify HEAD' => Process::result('', 'fatal: Needed a single revision', 128)]);
+        Event::fake([PluginLog::class]);
+
+        try {
+            (new PluginManager())->install('https://github.com/acme/empty-remote-plugin.git', null, null, 1);
+            $this->fail('Install of an empty repository was expected to fail.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame(PluginManager::EMPTY_REPOSITORY_MESSAGE, $exception->getMessage());
+        }
+
+        Event::assertDispatched(PluginLog::class, function (PluginLog $event) {
+            return str_contains($event->message, 'has no plugin code yet');
+        });
+    }
+
+    public function testInstallRepositoryWithOnlyReadmeAndLicenseShowsFriendlyMessage(): void
+    {
+        $this->setUpTestPluginManager();
+
+        $this->tempPluginDir = $this->pluginsDir . '/readme-only-plugin';
+        mkdir($this->tempPluginDir . '/.git', 0755, true);
+
+        $this->fakeGit(['git ls-files' => Process::result("README.md\nLICENSE\n.gitignore\n", '', 0)]);
+        Event::fake([PluginLog::class]);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('has no plugin code yet');
+
+        (new PluginManager())->install('https://github.com/acme/readme-only-plugin.git', null, null, 1);
+    }
+
+    public function testInstallRepositoryWithCodeButNoComposerJsonKeepsOriginalMessage(): void
+    {
+        $this->setUpTestPluginManager();
+
+        $this->tempPluginDir = $this->pluginsDir . '/no-composer-plugin';
+        mkdir($this->tempPluginDir . '/.git', 0755, true);
+
+        $this->fakeGit(['git ls-files' => Process::result("README.md\nsrc/Plugin.php\n", '', 0)]);
+        Event::fake([PluginLog::class]);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('composer.json not found in plugin');
+
+        (new PluginManager())->install('https://github.com/acme/no-composer-plugin.git', null, null, 1);
+    }
+
+    public function testCloneOfEmptyRepositoryFailsBeforeBranchCheckoutAndIsRolledBack(): void
+    {
+        $this->setUpTestPluginManager();
+
+        $pluginPath = $this->pluginsDir . '/fresh-empty-plugin';
+        $this->tempPluginDir = $pluginPath;
+        $this->assertDirectoryDoesNotExist($pluginPath);
+
+        // Simulate `git clone` of an empty remote: it succeeds and leaves a .git directory without commits.
+        Process::fake(function ($process) {
+            if (is_array($process->command) && ($process->command[1] ?? null) === 'clone') {
+                mkdir($process->command[3] . '/.git', 0755, true);
+            }
+            if (is_array($process->command) && implode(' ', $process->command) === 'git rev-parse --verify HEAD') {
+                return Process::result('', 'fatal: Needed a single revision', 128);
+            }
+
+            return Process::result('', exitCode: 0);
+        });
+        Event::fake([PluginLog::class]);
+
+        try {
+            (new PluginManager())->install('https://github.com/acme/fresh-empty-plugin.git', 'develop', null, 1);
+            $this->fail('Install of an empty repository was expected to fail.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame(PluginManager::EMPTY_REPOSITORY_MESSAGE, $exception->getMessage());
+        }
+
+        Process::assertNotRan(fn ($process) => $this->processRunsGitCommand($process, ['git', 'checkout', 'develop']));
+        $this->assertDirectoryDoesNotExist($pluginPath);
+    }
+
+    /**
+     * Fake every process as successful, except the given commands (keyed by the space-joined command).
+     *
+     * @param array<string, \Illuminate\Contracts\Process\ProcessResult> $overrides
+     */
+    private function fakeGit(array $overrides = []): void
+    {
+        Process::fake(function ($process) use ($overrides) {
+            if (is_array($process->command)) {
+                $command = implode(' ', $process->command);
+                if (isset($overrides[$command])) {
+                    return $overrides[$command];
+                }
+            }
+
+            return Process::result('', exitCode: 0);
+        });
+    }
+
     public function testInstallFailureRemovesPluginDirectoryCreatedByTheAttempt(): void
     {
         $this->setUpTestPluginManager();

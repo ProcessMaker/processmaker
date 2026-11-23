@@ -242,6 +242,13 @@
                 </div>
               </div>
             </div>
+            <small class="tw-block tw-text-gray-500 tw-mt-2">
+              {{
+                $t(
+                  "The token is only used by ProcessMaker to clone private repositories. It is never included in the copied prompt."
+                )
+              }}
+            </small>
           </b-collapse>
 
           <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-3 tw-mb-3">
@@ -307,6 +314,15 @@
             </div>
           </div>
 
+          <p class="tw-text-xs tw-text-gray-500 tw-mb-3 tw-leading-relaxed">
+            <i class="fas fa-info-circle tw-mr-1" aria-hidden="true" />
+            {{
+              $t(
+                "New plugin? Use an empty repository (no README), copy the prompt and let your agent push the skeleton first, then save."
+              )
+            }}
+          </p>
+
           <plugin-output
             :user-id="userId"
             :waiting="isRunning"
@@ -332,7 +348,7 @@
             <p class="tw-text-sm tw-text-gray-600 tw-mb-4 tw-leading-relaxed">
               {{
                 $t(
-                  "Copy a ready-to-paste setup prompt for Claude, Cursor, or any coding agent. It connects this instance over MCP, loads ProcessMaker skills, and points the agent at the right endpoints."
+                  "Copy a ready-to-paste setup prompt for Claude, Cursor, or any coding agent. It installs the prerequisites, creates your plugin from the skeleton, pushes it to the repository above, and connects this instance over MCP."
                 )
               }}
             </p>
@@ -456,7 +472,28 @@
               </div>
             </div>
 
-            <div class="tw-flex tw-flex-col sm:tw-flex-row tw-gap-2 tw-mt-5">
+            <fieldset class="tw-mt-4 tw-mb-0 tw-border-0 tw-p-0">
+              <legend class="tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1 tw-w-auto">
+                {{ $t("Project type") }}
+              </legend>
+              <div class="tw-flex tw-flex-col sm:tw-flex-row tw-gap-x-4 tw-gap-y-1">
+                <label
+                  v-for="option in MCP_PROFILES"
+                  :key="option.value"
+                  class="tw-flex tw-items-center tw-gap-2 tw-text-sm tw-text-gray-700 tw-mb-0 tw-cursor-pointer"
+                >
+                  <input
+                    v-model="mcpProfile"
+                    type="radio"
+                    name="mcp-profile"
+                    :value="option.value"
+                  />
+                  {{ $t(option.label) }}
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="tw-flex tw-flex-col sm:tw-flex-row tw-gap-2 tw-mt-4">
               <button
                 type="button"
                 class="create-plugin-copy-prompt-btn tw-flex-1"
@@ -588,6 +625,7 @@ import Pagination from "../../components/common/Pagination";
 import DataLoading from "../../components/common/DataLoading.vue";
 import debounce from "lodash/debounce";
 import PluginOutput from "./components/PluginOutput.vue";
+import { buildMcpSetupPrompt } from "./mcpSetupPrompt";
 
 const props = defineProps({
   permission: {
@@ -614,6 +652,11 @@ const plugin = reactive({
 
 const showGitCredentials = ref(false);
 const showMcpPrompt = ref(false);
+const MCP_PROFILES = [
+  { value: "pm4", label: "PM4 only" },
+  { value: "migration", label: "PM3 → PM4 migration" },
+];
+const mcpProfile = ref("pm4");
 const promptCopied = ref(false);
 const mcpFlowAnimating = ref(false);
 const mcpStage = ref("idle");
@@ -1003,25 +1046,15 @@ const validatePluginForm = () => {
   return Object.keys(nextErrors).length === 0;
 };
 
+// The Git token (plugin.gitToken) is deliberately not passed: it must never reach the prompt.
 const mcpPrompt = computed(() => {
-  const origin = window.location.origin;
-  return [
-    "Configure my environment to use ProcessMaker MCP with this instance.",
-    "",
-    `Base URL: ${origin}`,
-    "MCP endpoints:",
-    `- ${origin}/mcp/screens`,
-    `- ${origin}/mcp/processes`,
-    `- ${origin}/mcp/data-connectors`,
-    `- ${origin}/mcp/flow-genies`,
-    "",
-    "1. Add ProcessMaker skills: npx skills add processmaker/skills",
-    "2. Connect the ProcessMaker MCP server(s) in my AI client (Cursor, Claude, VS Code, etc.) using OAuth against this instance.",
-    "3. Call get-mcp-guidance before other ProcessMaker MCP tools, then load only matching skills.",
-    "4. Help me install, develop, and use ProcessMaker plugins with these MCP tools.",
-    "",
-    "Do not invent MCP tool names; discover them from the connected servers.",
-  ].join("\n");
+  return buildMcpSetupPrompt({
+    origin: window.location.origin,
+    repoUrl: plugin.url,
+    branch: plugin.branch,
+    username: plugin.gitUsername,
+    profile: mcpProfile.value,
+  });
 });
 
 const copyMcpPrompt = () => {
@@ -1319,6 +1352,7 @@ const resetValues = () => {
   isDone.value = false;
   promptCopied.value = false;
   showMcpPrompt.value = false;
+  mcpProfile.value = "pm4";
   initCustomModalButtons();
 };
 
