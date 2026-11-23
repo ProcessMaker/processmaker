@@ -77,7 +77,7 @@ export function buildMcpSetupPrompt({
     "Values (PLUGIN_NAME must equal the repository name):",
     ...values.map(([name, value]) => `  ${name.padEnd(width)} = ${value}`),
     "",
-    "Before anything else, check `git --version` and `node -v` (Node >= 20).",
+    "Before anything else, check `git --version` and `node -v` (Node >= 22; 24 is recommended).",
     "If one is missing, show me the install command for my OS and wait for my confirmation before running it.",
     "",
     "Then install the setup skill and follow it with the values above:",
