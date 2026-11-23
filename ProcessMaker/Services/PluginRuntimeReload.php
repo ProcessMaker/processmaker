@@ -150,6 +150,9 @@ class PluginRuntimeReload
     }
 
     /**
+     * Supervisor names managed Octane programs with process_name=%(program_name)s_%(process_num)02d.
+     * Restart the group process (e.g. octane-tenant-2:octane-tenant-2_00), not the bare [program] name.
+     *
      * @return list<string>
      */
     public function octaneSupervisorRestartCommand(string $program): array
@@ -157,8 +160,13 @@ class PluginRuntimeReload
         return [
             ...$this->octaneSupervisorctlBase(),
             'restart',
-            $program,
+            $this->octaneSupervisorRestartTarget($program),
         ];
+    }
+
+    public function octaneSupervisorRestartTarget(string $program): string
+    {
+        return $program . ':*';
     }
 
     private function runSupervisorRestart(string $program): bool

@@ -23,7 +23,7 @@ class PluginRuntimeReloadLocalRecycleTest extends TestCase
         $this->assertTrue((new PluginRuntimeReload())->recycleLocalRuntime());
 
         Process::assertRan(fn ($process) => is_array($process->command)
-            && $process->command === ['supervisorctl', 'restart', 'octane']);
+            && $process->command === ['supervisorctl', 'restart', 'octane:*']);
     }
 
     public function testRecycleLocalRuntimeInMultitenantModeUsesTenantProgram(): void
@@ -46,7 +46,7 @@ class PluginRuntimeReloadLocalRecycleTest extends TestCase
         $this->assertTrue((new PluginRuntimeReload())->recycleLocalRuntime());
 
         Process::assertRan(fn ($process) => is_array($process->command)
-            && $process->command === ['supervisorctl', 'restart', 'octane-tenant-5']);
+            && $process->command === ['supervisorctl', 'restart', 'octane-tenant-5:*']);
     }
 
     public function testRecycleLocalRuntimeFailsWithoutTenantInMultitenantMode(): void
