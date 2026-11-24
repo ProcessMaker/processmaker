@@ -17,13 +17,15 @@ class PluginRuntimeReload
     /**
      * Store a new reload version and notify listeners.
      */
-    public function publish(string $pluginName): int
+    public function publish(string $pluginName, ?string $tenantId = null): int
     {
         $version = (int) Redis::incr($this->versionKey());
+        $tenantId ??= $this->tenantId();
 
         Redis::publish($this->channel(), json_encode([
             'version' => $version,
             'plugin' => $pluginName,
+            'tenant_id' => $tenantId,
         ]));
 
         return $version;
@@ -66,6 +68,23 @@ class PluginRuntimeReload
         return (int) ($payload['version'] ?? 0);
     }
 
+    public function tenantIdFromMessage(string $message): ?string
+    {
+        $payload = json_decode($message, true);
+        if (!is_array($payload)) {
+            return null;
+        }
+
+        $tenantId = $payload['tenant_id'] ?? null;
+        if ($tenantId === null || $tenantId === '') {
+            return null;
+        }
+
+        return is_scalar($tenantId) && preg_match('/^\d+$/', (string) $tenantId)
+            ? (string) $tenantId
+            : null;
+    }
+
     /**
      * Restart this pod's Octane program and recycle Horizon workers.
      */
@@ -98,10 +117,13 @@ class PluginRuntimeReload
      * The listener must not wait for supervisorctl. `restart all` stops every
      * program on this pod, including this listener when supervisor manages it.
      */
-    public function scheduleSupervisorRestart(): bool
+    public function scheduleSupervisorRestart(?string $tenantId = null): bool
     {
         $delay = max(0, (int) config('plugin_manager.supervisor_restart_delay', 5));
-        $launcher = 'sleep ' . $delay . '; ' . implode(' ', array_map('escapeshellarg', $this->supervisorCommand()));
+        $launcher = 'sleep ' . $delay . '; ' . implode(' ', array_map(
+            'escapeshellarg',
+            $this->supervisorCommand($tenantId)
+        ));
         $shell = $this->supervisorRestartShell();
         $script = 'nohup ' . $shell . ' -c ' . escapeshellarg($launcher) . ' >/dev/null 2>&1 </dev/null &';
 
@@ -140,13 +162,24 @@ class PluginRuntimeReload
     /**
      * @return list<string>
      */
-    public function supervisorCommand(): array
+    public function supervisorCommand(?string $tenantId = null): array
     {
         return [
             ...$this->pluginSupervisorctlBase(),
             'restart',
-            config('plugin_manager.supervisor_restart_target', 'all'),
+            $this->supervisorRestartTarget($tenantId),
         ];
+    }
+
+    public function supervisorRestartTarget(?string $tenantId = null): string
+    {
+        if ($tenantId !== null && preg_match('/^\d+$/', $tenantId)) {
+            return $this->octaneSupervisorRestartTarget(
+                (new OctaneRuntimeRenderer())->tenantProgramName((int) $tenantId)
+            );
+        }
+
+        return config('plugin_manager.supervisor_restart_target', 'all');
     }
 
     /**
@@ -238,46 +271,31 @@ class PluginRuntimeReload
 
     /**
      * Pub/sub channel names are not prefixed by PhpRedis. Include REDIS_PREFIX
-     * and the tenant prefix so other instances on the shared Redis do not hear it.
+     * so instances using the same Redis prefix receive the same notification.
      */
     public function channel(): string
     {
-        return $this->redisPrefix() . $this->tenantPrefix() . config('plugin_manager.reload_channel', 'plugin-runtime-reload');
+        return $this->redisPrefix() . config('plugin_manager.reload_channel', 'plugin-runtime-reload');
     }
 
     /**
-     * INCR/GET receive REDIS_PREFIX from the PhpRedis client. Add only the tenant
-     * prefix here so two tenants in one instance do not share the version.
+     * INCR/GET receive REDIS_PREFIX from the PhpRedis client. The version is
+     * global because all tenant reloads share one pub/sub channel.
      */
     public function versionKey(): string
     {
-        return $this->tenantPrefix() . config('plugin_manager.reload_version_key', 'plugin-runtime-reload:version');
+        return config('plugin_manager.reload_version_key', 'plugin-runtime-reload:version');
     }
 
     public function stateFile(): string
     {
         $path = (string) config('plugin_manager.reload_state_file', '/tmp/processmaker-plugin-reload-version');
-        $tenantId = $this->tenantId();
-        if ($tenantId === null) {
-            return $path;
-        }
-
-        return $path . '-' . $tenantId;
+        return $path;
     }
 
     private function redisPrefix(): string
     {
         return (string) config('database.redis.options.prefix', '');
-    }
-
-    private function tenantPrefix(): string
-    {
-        $tenantId = $this->tenantId();
-        if ($tenantId === null) {
-            return '';
-        }
-
-        return 'tenant_' . $tenantId . ':';
     }
 
     private function tenantId(): ?string

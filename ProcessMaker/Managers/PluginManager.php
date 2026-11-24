@@ -378,7 +378,7 @@ class PluginManager
         $this->logRunning('Publishing plugin runtime reload...', $pluginName, $userId);
 
         try {
-            $version = app(PluginRuntimeReload::class)->publish($pluginName);
+            $version = app(PluginRuntimeReload::class)->publish($pluginName, $this->currentTenantId());
         } catch (Throwable $exception) {
             $this->logError(
                 'Could not publish the plugin runtime reload: ' . $exception->getMessage(),
@@ -409,6 +409,18 @@ class PluginManager
         }
 
         return $environment;
+    }
+
+    private function currentTenantId(): ?string
+    {
+        $tenant = app()->bound('currentTenant') ? app('currentTenant') : null;
+        if (!$tenant) {
+            return null;
+        }
+
+        $tenantId = method_exists($tenant, 'getKey') ? $tenant->getKey() : ($tenant->id ?? null);
+
+        return ($tenantId === null || $tenantId === '') ? null : (string) $tenantId;
     }
 
     /**

@@ -123,7 +123,8 @@ class PluginReloadListenCommandTest extends TestCase
 
                 return $channel === 'test:plugin-runtime-reload'
                     && $payload['version'] === 7
-                    && $payload['plugin'] === 'package-plg';
+                    && $payload['plugin'] === 'package-plg'
+                    && $payload['tenant_id'] === null;
             })
             ->andReturn(1);
 
@@ -132,7 +133,7 @@ class PluginReloadListenCommandTest extends TestCase
         $this->assertSame(7, $version);
     }
 
-    public function testChannelAndVersionKeyIncludeRedisAndTenantPrefixes(): void
+    public function testChannelAndVersionKeyUseGlobalRedisScope(): void
     {
         config([
             'database.redis.options.prefix' => 'instance:',
@@ -149,9 +150,41 @@ class PluginReloadListenCommandTest extends TestCase
 
         $reload = new PluginRuntimeReload();
 
-        $this->assertSame('instance:tenant_9:plugin-runtime-reload', $reload->channel());
-        $this->assertSame('tenant_9:plugin-runtime-reload:version', $reload->versionKey());
-        $this->assertSame('/tmp/processmaker-plugin-reload-version-9', $reload->stateFile());
+        $this->assertSame('instance:plugin-runtime-reload', $reload->channel());
+        $this->assertSame('plugin-runtime-reload:version', $reload->versionKey());
+        $this->assertSame('/tmp/processmaker-plugin-reload-version', $reload->stateFile());
+    }
+
+    public function testListenerRestartsOnlyTheTenantFromThePayload(): void
+    {
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+        file_put_contents($this->stateFile, '2');
+
+        $this->expectSubscriptionClient();
+        Redis::shouldReceive('get')->once()->andReturn('2');
+        Redis::shouldReceive('subscribe')
+            ->once()
+            ->andReturnUsing(function (array $channels, \Closure $callback): void {
+                $this->assertSame(['test:plugin-runtime-reload'], $channels);
+                $callback(json_encode([
+                    'version' => 3,
+                    'plugin' => 'package-plg',
+                    'tenant_id' => 2,
+                ]), 'plugin-runtime-reload');
+            });
+
+        $this->artisan('plugin:reload-listen')->assertOk();
+
+        $this->assertSame('3', file_get_contents($this->stateFile));
+        Process::assertRan(function ($process) {
+            $command = is_array($process->command) ? implode(' ', $process->command) : (string) $process->command;
+
+            return str_contains($command, 'supervisorctl')
+                && str_contains($command, 'restart')
+                && str_contains($command, 'octane-tenant-2:*');
+        });
     }
 
     public function testListenerReconnectsAfterRedisReadError(): void
