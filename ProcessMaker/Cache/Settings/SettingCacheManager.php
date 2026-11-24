@@ -89,22 +89,21 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     {
         SettingMemoryCache::syncEpoch();
 
-        if (SettingMemoryCache::isEpochUnreliable()) {
-            return $default;
+        $value = $default;
+
+        if (!SettingMemoryCache::isEpochUnreliable()) {
+            if (SettingMemoryCache::exists($key)) {
+                $value = SettingMemoryCache::get($key);
+            } else {
+                $entry = $this->readStoreEntry($key);
+                if ($entry['hit']) {
+                    SettingMemoryCache::put($key, $entry['value']);
+                    $value = $entry['value'];
+                }
+            }
         }
 
-        if (SettingMemoryCache::exists($key)) {
-            return SettingMemoryCache::get($key);
-        }
-
-        $entry = $this->readStoreEntry($key);
-        if (!$entry['hit']) {
-            return $default;
-        }
-
-        SettingMemoryCache::put($key, $entry['value']);
-
-        return $entry['value'];
+        return $value;
     }
 
     /**
@@ -128,6 +127,14 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
             return SettingMemoryCache::get($key);
         }
 
+        return $this->resolveCacheMiss($key, $loader);
+    }
+
+    /**
+     * Resolve after an L1 miss: Redis hit, or load + publish with epoch fencing.
+     */
+    private function resolveCacheMiss(string $key, callable $loader): mixed
+    {
         $epochAtStart = SettingMemoryCache::localEpoch();
         $entry = $this->readStoreEntry($key);
 
@@ -137,6 +144,17 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
             return $entry['value'];
         }
 
+        $value = $this->loadAndPublish($key, $loader, $epochAtStart);
+        SettingMemoryCache::put($key, $value);
+
+        return $value;
+    }
+
+    /**
+     * Load from the callback and write to Redis unless another worker published first.
+     */
+    private function loadAndPublish(string $key, callable $loader, ?int $epochAtStart): mixed
+    {
         $value = $loader();
 
         // If another worker published a committed value while we loaded, do not
@@ -148,17 +166,13 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
 
         if (SettingMemoryCache::localEpoch() !== $epochAtStart) {
             $entry = $this->readStoreEntry($key);
-            if ($entry['hit']) {
-                $value = $entry['value'];
-            } else {
-                $value = $loader();
+            $value = $entry['hit'] ? $entry['value'] : $loader();
+            if (!$entry['hit']) {
                 $this->writeStoreEntry($key, $value);
             }
         } else {
             $this->writeStoreEntry($key, $value);
         }
-
-        SettingMemoryCache::put($key, $value);
 
         return $value;
     }

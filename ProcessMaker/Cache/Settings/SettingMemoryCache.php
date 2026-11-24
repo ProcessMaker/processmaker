@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ProcessMaker\Cache\Settings;
 
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redis;
 use Throwable;
 
 /**
@@ -99,7 +98,7 @@ class SettingMemoryCache
             return;
         }
 
-        $remote = self::fetchRemoteEpoch();
+        $remote = SettingEpochRedis::get();
 
         if ($remote['unreliable']) {
             self::$items[$tenantKey] = [];
@@ -215,7 +214,8 @@ class SettingMemoryCache
         self::ensureRequestScope();
 
         $tenantKey = self::currentTenantKey();
-        $newEpoch = self::incrementRemoteEpoch();
+        $fallback = (self::$localEpochs[$tenantKey] ?? 0) + 1;
+        $newEpoch = SettingEpochRedis::incrementOrFallback($fallback);
 
         self::$items[$tenantKey] = [];
         self::$localEpochs[$tenantKey] = $newEpoch;
@@ -236,7 +236,7 @@ class SettingMemoryCache
         $newEpoch = max($local + 1, (int) (microtime(true) * 1000));
 
         try {
-            self::redis()->set(self::epochRedisKey(), (string) $newEpoch);
+            SettingEpochRedis::set($newEpoch);
         } catch (Throwable $e) {
             Log::info('SettingMemoryCache: failed to seed epoch after clear: ' . $e->getMessage());
         }
@@ -252,59 +252,5 @@ class SettingMemoryCache
         $tenantKey = self::currentTenantKey();
 
         return self::$localEpochs[$tenantKey] ?? null;
-    }
-
-    /**
-     * @return array{unreliable: bool, epoch: int}
-     */
-    private static function fetchRemoteEpoch(): array
-    {
-        try {
-            $value = self::redis()->get(self::epochRedisKey());
-
-            return [
-                'unreliable' => false,
-                'epoch' => $value === null || $value === false ? 0 : (int) $value,
-            ];
-        } catch (Throwable $e) {
-            Log::info('SettingMemoryCache: failed to read epoch: ' . $e->getMessage());
-
-            return [
-                'unreliable' => true,
-                'epoch' => 0,
-            ];
-        }
-    }
-
-    private static function incrementRemoteEpoch(): int
-    {
-        try {
-            return (int) self::redis()->incr(self::epochRedisKey());
-        } catch (Throwable $e) {
-            Log::info('SettingMemoryCache: failed to increment epoch: ' . $e->getMessage());
-            $value = (self::$localEpochs[self::currentTenantKey()] ?? 0) + 1;
-
-            try {
-                self::redis()->set(self::epochRedisKey(), (string) $value);
-            } catch (Throwable $inner) {
-                Log::info('SettingMemoryCache: failed to write epoch: ' . $inner->getMessage());
-            }
-
-            return $value;
-        }
-    }
-
-    private static function epochRedisKey(): string
-    {
-        $prefix = config('cache.stores.cache_settings.prefix', 'settings:');
-
-        return $prefix . self::EPOCH_KEY;
-    }
-
-    private static function redis()
-    {
-        $connection = config('cache.stores.cache_settings.connection', 'cache_settings');
-
-        return Redis::connection($connection);
     }
 }

@@ -176,8 +176,18 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
         }
 
         // Fallback for mocks/decorators that do not expose resolve().
-        $exists = $settingCache->has($settingKey);
-        if ($exists) {
+        return self::resolveFromLegacyCache($settingCache, $settingKey, $key);
+    }
+
+    /**
+     * Resolve a setting via cache backends that do not implement resolve().
+     *
+     * @param mixed $settingCache
+     * @return Setting|null
+     */
+    private static function resolveFromLegacyCache($settingCache, string $settingKey, string $key)
+    {
+        if ($settingCache->has($settingKey)) {
             return $settingCache->get($settingKey);
         }
 
