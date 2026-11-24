@@ -662,8 +662,7 @@ class UserController extends Controller
 
     private function selfServiceTwoFactorCompletionPending(User $authenticatedUser): bool
     {
-        if (session('sso_driver') !== null
-            || !config('password-policies.2fa_enabled', false)
+        if (!config('password-policies.2fa_enabled', false)
             || empty(config('password-policies.2fa_method', []))
             || !TwoFactorAuthController::check2faByGroups()
         ) {
@@ -671,10 +670,15 @@ class UserController extends Controller
         }
 
         $webUserId = Auth::guard('web')->id();
+        if ($webUserId === null || (int) $webUserId !== (int) $authenticatedUser->id) {
+            return true;
+        }
 
-        return $webUserId === null
-            || (int) $webUserId !== (int) $authenticatedUser->id
-            || !session()->get(TwoFactorAuthController::TFA_VALIDATED, false);
+        if (session('sso_driver') !== null) {
+            return false;
+        }
+
+        return !session()->get(TwoFactorAuthController::TFA_VALIDATED, false);
     }
 
     private function validateEmailChangeForUpdate(User $user, array $fields, bool $isLdapUser)

@@ -245,6 +245,50 @@ class TwoFactorPredictableSecretTest extends TestCase
         $this->assertContains(TwoFactorAuthentication::AUTH_APP, $freshPreferences);
     }
 
+    public function testForeignSsoWebSessionCannotBypassTwoFactorGateOnApiSelfUpdate(): void
+    {
+        config([
+            'password-policies.2fa_enabled' => true,
+            'password-policies.2fa_method' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+        ]);
+
+        $victim = User::factory()->create([
+            'is_administrator' => true,
+            'preferences_2fa' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+            'two_factor_secret' => null,
+            'cell' => '15550001111',
+        ]);
+
+        $otherSsoUser = User::factory()->create();
+        $this->actingAs($otherSsoUser, 'web');
+        session()->put('sso_driver', 'saml');
+
+        $payload = [
+            'username' => $victim->username,
+            'firstname' => $victim->firstname,
+            'lastname' => $victim->lastname,
+            'email' => $victim->email,
+            'status' => $victim->status,
+            'cell' => '19998887777',
+        ];
+
+        $this->actingAs($victim, 'api')
+            ->putJson('/api/1.0/users/' . $victim->id, $payload)
+            ->assertStatus(422)
+            ->assertJsonPath(
+                'message',
+                __('Two-factor authentication must be completed before updating 2FA preferences.')
+            );
+
+        $this->assertSame('15550001111', $victim->fresh()->cell);
+    }
+
     public function testStatelessApiCannotChangeEmailBeforeWebTwoFactorValidated(): void
     {
         config([
@@ -399,6 +443,113 @@ class TwoFactorPredictableSecretTest extends TestCase
 
         $this->assertTrue(session()->get(TwoFactorAuthController::TFA_VALIDATED));
         $this->assertTrue(session()->get(TwoFactorAuthentication::DELIVERY_STEP_UP));
+    }
+
+    public function testMixedMethodsDoesNotResendDeliveryOtpDuringAuthenticatorEnrollment(): void
+    {
+        Notification::fake();
+
+        config([
+            'password-policies.2fa_method' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+        ]);
+
+        $deliverySecret = TOTP::generate()->getSecret();
+        $user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+            'two_factor_secret' => null,
+            'two_factor_delivery_secret' => $deliverySecret,
+        ]);
+
+        session()->put(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT, [
+            TwoFactorAuthentication::AUTH_APP,
+            TwoFactorAuthentication::EMAIL,
+        ]);
+        session()->put(TwoFactorAuthentication::DELIVERY_STEP_UP, true);
+        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, TOTP::generate()->getSecret());
+
+        $this->actingAs($user, 'web')
+            ->get(route('2fa'))
+            ->assertOk();
+
+        Notification::assertNothingSent();
+    }
+
+    public function testSendAgainDoesNotResendDeliveryOtpDuringAuthenticatorEnrollment(): void
+    {
+        Notification::fake();
+
+        config([
+            'password-policies.2fa_method' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+        ]);
+
+        $user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+            'two_factor_secret' => null,
+        ]);
+
+        session()->put(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT, [
+            TwoFactorAuthentication::AUTH_APP,
+            TwoFactorAuthentication::EMAIL,
+        ]);
+        session()->put(TwoFactorAuthentication::DELIVERY_STEP_UP, true);
+        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, TOTP::generate()->getSecret());
+
+        $this->actingAs($user, 'web')
+            ->get(route('2fa.send_again'))
+            ->assertRedirect(route('2fa'));
+
+        Notification::assertNothingSent();
+    }
+
+    public function testMixedMethodsSecondDeliveryCodeStaysOnOtpForm(): void
+    {
+        config([
+            'password-policies.2fa_method' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+        ]);
+
+        $deliverySecret = TOTP::generate()->getSecret();
+        $user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+            'two_factor_secret' => null,
+            'two_factor_delivery_secret' => $deliverySecret,
+        ]);
+
+        session()->put(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT, [
+            TwoFactorAuthentication::AUTH_APP,
+            TwoFactorAuthentication::EMAIL,
+        ]);
+        session()->put(TwoFactorAuthentication::DELIVERY_STEP_UP, true);
+        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, TOTP::generate()->getSecret());
+
+        $emailOtp = TOTP::createFromSecret($deliverySecret);
+        $emailOtp->setDigest('sha512');
+        $emailOtp->setDigits(8);
+        $emailOtp->setPeriod(300);
+
+        $this->actingAs($user, 'web')
+            ->post(route('2fa.validate'), ['code' => $emailOtp->now()])
+            ->assertRedirect(route('2fa'));
     }
 
     public function testMixedMethodsAllowAuthenticatorEnrollmentAfterDeliveryStepUp(): void
