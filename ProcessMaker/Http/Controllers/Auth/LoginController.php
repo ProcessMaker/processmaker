@@ -308,6 +308,7 @@ class LoginController extends Controller
             session()->remove(TwoFactorAuthentication::CHALLENGE_DELIVERY_CELL);
             session()->remove(TwoFactorAuthentication::DELIVERY_STEP_UP);
             session()->remove(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET);
+            session()->remove(TwoFactorAuthentication::PENDING_AUTHENTICATOR_USER_ID);
 
             // Notify to listeners (package-auth, security logger)
             $eventResult = event(new Logout(Auth::user()));

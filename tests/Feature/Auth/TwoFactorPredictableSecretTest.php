@@ -57,6 +57,12 @@ class TwoFactorPredictableSecretTest extends TestCase
             ->post(route('2fa.validate'), ['code' => $code]);
     }
 
+    private function putPendingAuthenticatorSecret(User $user, string $secret): void
+    {
+        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, $secret);
+        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_USER_ID, $user->id);
+    }
+
     public function testProtectedRouteRedirectsToTwoFactorUntilValidated(): void
     {
         $victim = $this->victimAtTwoFactorGate();
@@ -352,7 +358,7 @@ class TwoFactorPredictableSecretTest extends TestCase
         ]);
 
         $pendingSecret = TOTP::generate()->getSecret();
-        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, $pendingSecret);
+        $this->putPendingAuthenticatorSecret($user, $pendingSecret);
 
         $this->actingAs($user, 'web')
             ->get(route('2fa.auth_app_qr'))
@@ -399,7 +405,7 @@ class TwoFactorPredictableSecretTest extends TestCase
         $user->saveQuietly();
 
         $pendingSecret = TOTP::generate()->getSecret();
-        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, $pendingSecret);
+        $this->putPendingAuthenticatorSecret($user, $pendingSecret);
 
         $this->actingAs($user, 'web')
             ->get(route('2fa.auth_app_qr'))
@@ -441,8 +447,12 @@ class TwoFactorPredictableSecretTest extends TestCase
             ->post(route('2fa.validate'), ['code' => $emailOtp->now()])
             ->assertRedirect(route('2fa.auth_app_qr'));
 
-        $this->assertTrue(session()->get(TwoFactorAuthController::TFA_VALIDATED));
+        $this->assertNotTrue(session()->get(TwoFactorAuthController::TFA_VALIDATED));
         $this->assertTrue(session()->get(TwoFactorAuthentication::DELIVERY_STEP_UP));
+
+        $this->actingAs($user, 'web')
+            ->get(route('about.index'))
+            ->assertRedirect(route('2fa'));
     }
 
     public function testMixedMethodsDoesNotResendDeliveryOtpDuringAuthenticatorEnrollment(): void
@@ -472,7 +482,7 @@ class TwoFactorPredictableSecretTest extends TestCase
             TwoFactorAuthentication::EMAIL,
         ]);
         session()->put(TwoFactorAuthentication::DELIVERY_STEP_UP, true);
-        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, TOTP::generate()->getSecret());
+        $this->putPendingAuthenticatorSecret($user, TOTP::generate()->getSecret());
 
         $this->actingAs($user, 'web')
             ->get(route('2fa'))
@@ -506,7 +516,7 @@ class TwoFactorPredictableSecretTest extends TestCase
             TwoFactorAuthentication::EMAIL,
         ]);
         session()->put(TwoFactorAuthentication::DELIVERY_STEP_UP, true);
-        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, TOTP::generate()->getSecret());
+        $this->putPendingAuthenticatorSecret($user, TOTP::generate()->getSecret());
 
         $this->actingAs($user, 'web')
             ->get(route('2fa.send_again'))
@@ -540,7 +550,7 @@ class TwoFactorPredictableSecretTest extends TestCase
             TwoFactorAuthentication::EMAIL,
         ]);
         session()->put(TwoFactorAuthentication::DELIVERY_STEP_UP, true);
-        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, TOTP::generate()->getSecret());
+        $this->putPendingAuthenticatorSecret($user, TOTP::generate()->getSecret());
 
         $emailOtp = TOTP::createFromSecret($deliverySecret);
         $emailOtp->setDigest('sha512');
@@ -574,7 +584,7 @@ class TwoFactorPredictableSecretTest extends TestCase
 
         session()->put(TwoFactorAuthentication::DELIVERY_STEP_UP, true);
         $pendingSecret = TOTP::generate()->getSecret();
-        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, $pendingSecret);
+        $this->putPendingAuthenticatorSecret($user, $pendingSecret);
 
         $this->actingAs($user, 'web')
             ->get(route('2fa.auth_app_qr'))
@@ -585,6 +595,99 @@ class TwoFactorPredictableSecretTest extends TestCase
 
         $this->assertTrue(session()->get(TwoFactorAuthController::TFA_VALIDATED));
         $this->assertSame($pendingSecret, $user->fresh()->two_factor_secret);
+    }
+
+    public function testSpoofedSsoDriverCannotBypassApiTwoFactorGateWithoutSsoBinding(): void
+    {
+        config([
+            'password-policies.2fa_enabled' => true,
+            'password-policies.2fa_method' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+        ]);
+
+        $user = User::factory()->create([
+            'is_administrator' => true,
+            'preferences_2fa' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+            'two_factor_secret' => null,
+            'cell' => '15550001111',
+        ]);
+
+        $this->actingAs($user, 'web');
+        session()->put('sso_driver', 'saml');
+
+        $payload = [
+            'username' => $user->username,
+            'firstname' => $user->firstname,
+            'lastname' => $user->lastname,
+            'email' => $user->email,
+            'status' => $user->status,
+            'cell' => '19998887777',
+        ];
+
+        $this->actingAs($user, 'api')
+            ->putJson('/api/1.0/users/' . $user->id, $payload)
+            ->assertStatus(422);
+
+        $this->assertSame('15550001111', $user->fresh()->cell);
+    }
+
+    public function testAdministratorCanUpdateAnotherUsersCellWithoutSelfServiceTwoFactorGate(): void
+    {
+        config([
+            'password-policies.2fa_enabled' => true,
+            'password-policies.2fa_method' => [TwoFactorAuthentication::EMAIL],
+        ]);
+
+        $admin = User::factory()->create(['is_administrator' => true]);
+        $other = User::factory()->create([
+            'cell' => '15550001111',
+            'preferences_2fa' => [TwoFactorAuthentication::EMAIL],
+        ]);
+
+        $payload = [
+            'username' => $other->username,
+            'firstname' => $other->firstname,
+            'lastname' => $other->lastname,
+            'email' => $other->email,
+            'status' => $other->status,
+            'cell' => '19998887777',
+        ];
+
+        $this->actingAs($admin, 'api')
+            ->putJson('/api/1.0/users/' . $other->id, $payload)
+            ->assertStatus(204);
+
+        $this->assertSame('19998887777', $other->fresh()->cell);
+    }
+
+    public function testEmailOnlyUserClearsTwoFactorGateAfterEightDigitDeliveryCode(): void
+    {
+        config([
+            'password-policies.2fa_method' => [TwoFactorAuthentication::EMAIL],
+        ]);
+
+        $deliverySecret = TOTP::generate()->getSecret();
+        $user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [TwoFactorAuthentication::EMAIL],
+            'two_factor_delivery_secret' => $deliverySecret,
+        ]);
+
+        $emailOtp = TOTP::createFromSecret($deliverySecret);
+        $emailOtp->setDigest('sha512');
+        $emailOtp->setDigits(8);
+        $emailOtp->setPeriod(300);
+
+        $this->actingAs($user, 'web')
+            ->post(route('2fa.validate'), ['code' => $emailOtp->now()])
+            ->assertRedirect(route('login'));
+
+        $this->assertTrue(session()->get(TwoFactorAuthController::TFA_VALIDATED));
     }
 
     public function testVictimSessionAcceptsCodeFromStoredSecret(): void

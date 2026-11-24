@@ -92,11 +92,12 @@ class TwoFactorAuthController extends Controller
 
         $hadDeliveryStepUp = session()->get(TwoFactorAuthentication::DELIVERY_STEP_UP, false);
 
-        // Validate code
         $validated = $this->twoFactorAuthentication->validateCode($user, $code);
 
-        // Store validation status
-        session()->put(self::TFA_VALIDATED, $validated);
+        session()->put(
+            self::TFA_VALIDATED,
+            $this->twoFactorAuthentication->clearsWebTwoFactorGate($user, $code, $validated)
+        );
 
         if ($validated) {
             // Remove 2fa values in session
@@ -179,7 +180,7 @@ class TwoFactorAuthController extends Controller
             return false;
         }
 
-        if (session()->has(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET)) {
+        if ($this->twoFactorAuthentication->sessionHasPendingAuthenticatorForUser($user)) {
             return false;
         }
 
@@ -207,7 +208,7 @@ class TwoFactorAuthController extends Controller
             return false;
         }
 
-        if (session()->has(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET)) {
+        if ($this->twoFactorAuthentication->sessionHasPendingAuthenticatorForUser($user)) {
             return true;
         }
 

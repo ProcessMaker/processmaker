@@ -648,7 +648,7 @@ class UserController extends Controller
 
     private function touchesTwoFactorDestinations(array $fields, array $original): bool
     {
-        if (array_key_exists('preferences_2fa', $fields)) {
+        if ($this->preferences2faChanged($fields, $original)) {
             return true;
         }
 
@@ -674,11 +674,42 @@ class UserController extends Controller
             return true;
         }
 
-        if (session('sso_driver') !== null) {
+        if (session('sso_driver') !== null && $this->authenticatedUserHasSsoBinding($authenticatedUser)) {
             return false;
         }
 
         return !session()->get(TwoFactorAuthController::TFA_VALIDATED, false);
+    }
+
+    private function preferences2faChanged(array $fields, array $original): bool
+    {
+        if (!array_key_exists('preferences_2fa', $fields)) {
+            return false;
+        }
+
+        $normalize = static function ($value): array {
+            $items = is_array($value) ? $value : [];
+
+            sort($items);
+
+            return array_values($items);
+        };
+
+        return $normalize($fields['preferences_2fa'] ?? null)
+            !== $normalize($original['preferences_2fa'] ?? null);
+    }
+
+    private function authenticatedUserHasSsoBinding(User $user): bool
+    {
+        if (isset($user->meta?->authenticationType) && $user->meta->authenticationType === 'ldap') {
+            return true;
+        }
+
+        if (class_exists(SsoUser::class)) {
+            return SsoUser::where('user_id', $user->id)->exists();
+        }
+
+        return false;
     }
 
     private function validateEmailChangeForUpdate(User $user, array $fields, bool $isLdapUser)

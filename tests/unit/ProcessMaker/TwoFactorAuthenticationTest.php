@@ -180,6 +180,53 @@ class TwoFactorAuthenticationTest extends TestCase
         $this->assertNull($deliveryUser->cell);
     }
 
+    public function testClearsWebTwoFactorGateAfterEightDigitsWhenAuthenticatorNotRequired(): void
+    {
+        $user = User::factory()->create([
+            'preferences_2fa' => [TwoFactorAuthentication::EMAIL],
+        ]);
+
+        session()->put(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT, [
+            TwoFactorAuthentication::EMAIL,
+        ]);
+
+        $service = new TwoFactorAuthentication();
+        $this->assertTrue($service->clearsWebTwoFactorGate($user, '12345678', true));
+    }
+
+    public function testClearsWebTwoFactorGateBlocksEightDigitsWhenAuthenticatorEnrollmentPending(): void
+    {
+        $user = User::factory()->create([
+            'preferences_2fa' => [
+                TwoFactorAuthentication::AUTH_APP,
+                TwoFactorAuthentication::EMAIL,
+            ],
+            'two_factor_secret' => null,
+        ]);
+
+        session()->put(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT, [
+            TwoFactorAuthentication::AUTH_APP,
+            TwoFactorAuthentication::EMAIL,
+        ]);
+
+        $service = new TwoFactorAuthentication();
+        $this->assertFalse($service->clearsWebTwoFactorGate($user, '12345678', true));
+        $this->assertTrue($service->clearsWebTwoFactorGate($user, '123456', true));
+    }
+
+    public function testPendingAuthenticatorSecretIgnoredForDifferentUser(): void
+    {
+        $owner = User::factory()->create();
+        $other = User::factory()->create();
+
+        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, TOTP::generate()->getSecret());
+        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_USER_ID, $owner->id);
+
+        $service = new TwoFactorAuthentication();
+        $this->assertTrue($service->sessionHasPendingAuthenticatorForUser($owner));
+        $this->assertFalse($service->sessionHasPendingAuthenticatorForUser($other));
+    }
+
     public function testUserForDeliveryChallengeFreezesNonNullCellFromSnapshot(): void
     {
         $snapshotCell = '15551112222';

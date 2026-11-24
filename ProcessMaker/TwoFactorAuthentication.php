@@ -25,6 +25,8 @@ class TwoFactorAuthentication
 
     public const PENDING_AUTHENTICATOR_SECRET = '2fa-pending-authenticator-secret';
 
+    public const PENDING_AUTHENTICATOR_USER_ID = '2fa-pending-authenticator-user-id';
+
     public const DELIVERY_STEP_UP = '2fa-delivery-step-up';
 
     public const CHALLENGE_METHODS_SNAPSHOT = '2fa-challenge-methods';
@@ -79,14 +81,60 @@ class TwoFactorAuthentication
             return $user->two_factor_secret;
         }
 
-        $pending = session()->get(self::PENDING_AUTHENTICATOR_SECRET);
+        if (!$this->sessionHasPendingAuthenticatorForUser($user)) {
+            return null;
+        }
 
-        return !empty($pending) ? $pending : null;
+        return session()->get(self::PENDING_AUTHENTICATOR_SECRET);
+    }
+
+    public function sessionHasPendingAuthenticatorForUser(User $user): bool
+    {
+        if (!session()->exists(self::PENDING_AUTHENTICATOR_SECRET)) {
+            return false;
+        }
+
+        $pendingUserId = session()->get(self::PENDING_AUTHENTICATOR_USER_ID);
+
+        return (int) $pendingUserId === (int) $user->id;
+    }
+
+    public function forgetPendingAuthenticatorEnrollment(): void
+    {
+        session()->forget(self::PENDING_AUTHENTICATOR_SECRET);
+        session()->forget(self::PENDING_AUTHENTICATOR_USER_ID);
+    }
+
+    public function authenticatorEnrollmentRequiredForGate(User $user): bool
+    {
+        if (!empty($user->two_factor_secret)) {
+            return false;
+        }
+
+        $snapshot = session()->get(self::CHALLENGE_METHODS_SNAPSHOT);
+        $methods = is_array($snapshot) && $snapshot !== []
+            ? $snapshot
+            : $user->getValid2FAPreferences();
+
+        return in_array(self::AUTH_APP, $methods, true);
+    }
+
+    public function clearsWebTwoFactorGate(User $user, string $code, bool $codeValid): bool
+    {
+        if (!$codeValid) {
+            return false;
+        }
+
+        if (strlen($code) === 6) {
+            return true;
+        }
+
+        return !$this->authenticatorEnrollmentRequiredForGate($user);
     }
 
     public function rememberChallengeMethodsSnapshot(User $user): void
     {
-        if (session()->has(self::CHALLENGE_METHODS_SNAPSHOT)) {
+        if (session()->exists(self::CHALLENGE_METHODS_SNAPSHOT)) {
             return;
         }
 
@@ -209,7 +257,7 @@ class TwoFactorAuthentication
         if ($valid && empty($user->two_factor_secret)) {
             $user->two_factor_secret = $authSecret;
             $user->saveQuietly();
-            session()->forget(self::PENDING_AUTHENTICATOR_SECRET);
+            $this->forgetPendingAuthenticatorEnrollment();
         }
 
         return $valid;
@@ -283,9 +331,10 @@ class TwoFactorAuthentication
     public function generateQr(User $user)
     {
         $secret = session()->get(self::PENDING_AUTHENTICATOR_SECRET);
-        if (empty($secret)) {
+        if (empty($secret) || !$this->sessionHasPendingAuthenticatorForUser($user)) {
             $secret = TOTP::generate()->getSecret();
             session()->put(self::PENDING_AUTHENTICATOR_SECRET, $secret);
+            session()->put(self::PENDING_AUTHENTICATOR_USER_ID, $user->id);
         }
 
         $otp = $this->configureOtp(TOTP::createFromSecret($secret), $user, true);
