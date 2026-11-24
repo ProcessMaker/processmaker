@@ -94,9 +94,13 @@ class TwoFactorAuthentication
 
     public function sessionHasPendingAuthenticatorForUser(User $user): bool
     {
-        // Check if there's a pending authenticator secret in session
-        // User ID validation is performed when generating the secret
-        return session()->has(self::PENDING_AUTHENTICATOR_SECRET);
+        if (!session()->exists(self::PENDING_AUTHENTICATOR_SECRET)) {
+            return false;
+        }
+
+        $pendingUserId = session()->get(self::PENDING_AUTHENTICATOR_USER_ID);
+
+        return $pendingUserId === null || (int) $pendingUserId === (int) $user->id;
     }
 
     public function forgetPendingAuthenticatorEnrollment(): void
@@ -427,7 +431,7 @@ class TwoFactorAuthentication
             return true;
         }
 
-        if ($this->userHasSsoBinding($apiUser)) {
+        if ($this->userHasSsoBinding($apiUser) && $this->hasSsoDriverSession()) {
             return false;
         }
 
@@ -454,6 +458,11 @@ class TwoFactorAuthentication
         }
 
         return false;
+    }
+
+    private function hasSsoDriverSession(): bool
+    {
+        return session()->has('sso_driver');
     }
 
     public function friendlyMethodsNames(User $user, array $enabledMethods = [])

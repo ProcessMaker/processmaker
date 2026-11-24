@@ -12,6 +12,7 @@ use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\TwoFactorAuthNotification;
 use ProcessMaker\TwoFactorAuthentication;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 /**
@@ -19,6 +20,8 @@ use Tests\TestCase;
  */
 class TwoFactorPredictableSecretTest extends TestCase
 {
+    use RequestHelper;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -709,5 +712,79 @@ class TwoFactorPredictableSecretTest extends TestCase
         $this->actingAs($victim, 'web')
             ->get(route('about.index'))
             ->assertOk();
+    }
+
+    public function testSsoBindingWithoutSsoDriverSessionStillRequiresTwoFactorCompletion(): void
+    {
+        config(['password-policies.2fa_method' => [TwoFactorAuthentication::EMAIL]]);
+
+        $ldapUser = User::factory()->create([
+            'is_administrator' => true,
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [TwoFactorAuthentication::EMAIL],
+        ]);
+        $ldapUser->meta = new \stdClass();
+        $ldapUser->meta->authenticationType = 'ldap';
+        $ldapUser->saveQuietly();
+
+        // Login with password, no sso_driver in session
+        $this->actingAs($ldapUser, 'web');
+        $this->assertFalse(session()->has('sso_driver'));
+
+        // Attempt self-service cell update without TFA_VALIDATED using bearer token
+        $payload = [
+            'username' => $ldapUser->username,
+            'firstname' => $ldapUser->firstname,
+            'lastname' => $ldapUser->lastname,
+            'email' => $ldapUser->email,
+            'status' => $ldapUser->status,
+            'cell' => '+1234567890',
+        ];
+
+        $response = $this->actingAs($ldapUser, 'api')
+            ->putJson("/api/1.0/users/{$ldapUser->id}", $payload);
+
+        $response->assertStatus(422);
+        $response->assertJsonFragment([
+            'message' => 'Two-factor authentication must be completed before updating 2FA preferences.',
+        ]);
+    }
+
+    public function testPendingAuthenticatorSecretBelongsToSpecificUser(): void
+    {
+        config(['password-policies.2fa_method' => [TwoFactorAuthentication::AUTH_APP]]);
+
+        $owner = User::factory()->create([
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [TwoFactorAuthentication::AUTH_APP],
+        ]);
+        $attacker = User::factory()->create([
+            'password' => Hash::make('password'),
+            'preferences_2fa' => [TwoFactorAuthentication::AUTH_APP],
+        ]);
+
+        // Owner generates QR and gets pending secret
+        $this->actingAs($owner, 'web');
+        $this->get(route('2fa.auth_app_qr'));
+        $this->assertTrue(session()->has(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET));
+        $ownerSecret = session()->get(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET);
+
+        // Attacker switches into same session (session fixation scenario)
+        $this->actingAs($attacker, 'web');
+
+        // Attacker visits QR page - should NOT reuse owner's secret
+        $this->get(route('2fa.auth_app_qr'));
+        $attackerSecret = session()->get(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET);
+
+        $this->assertNotEquals($ownerSecret, $attackerSecret);
+
+        // Attacker code from owner's secret should not validate
+        $ownerCode = TOTP::createFromSecret($ownerSecret)->now();
+        $this->postTwoFactorCode($attacker, $ownerCode)
+            ->assertRedirect(route('2fa'));
+
+        // Attacker should not be able to enroll using owner's secret
+        $this->assertEmpty($attacker->fresh()->two_factor_secret);
+        $this->assertNotEquals($ownerSecret, $attacker->fresh()->two_factor_secret);
     }
 }
