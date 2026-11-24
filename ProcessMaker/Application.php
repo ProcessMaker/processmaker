@@ -3,7 +3,6 @@
 namespace ProcessMaker;
 
 use Igaster\LaravelTheme\Facades\Theme;
-use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application as IlluminateApplication;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
