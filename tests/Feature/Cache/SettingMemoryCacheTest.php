@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use ProcessMaker\Cache\Settings\SettingCacheFactory;
 use ProcessMaker\Cache\Settings\SettingCacheManager;
+use ProcessMaker\Cache\Settings\SettingCacheVersion;
 use ProcessMaker\Cache\Settings\SettingMemoryCache;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Octane\ResetRequestState;
@@ -305,5 +306,109 @@ class SettingMemoryCacheTest extends TestCase
         SettingMemoryCache::syncEpoch();
         $this->assertFalse(SettingMemoryCache::exists('setting_job'));
         $this->assertSame(2, SettingMemoryCache::localEpoch());
+    }
+
+    public function testSetStampsEnvelopeWithPerKeyGeneration(): void
+    {
+        /** @var SettingCacheManager $cache */
+        $cache = SettingCacheFactory::getSettingsCache();
+        $this->seedEpoch(3);
+        SettingMemoryCache::beginRequest();
+        SettingMemoryCache::syncEpoch();
+
+        $cache->set('setting_stamp.gen', 'committed');
+
+        $stored = Cache::store('cache_settings')->get('setting_stamp.gen');
+        $this->assertIsArray($stored);
+        $this->assertTrue($stored['__pm_setting'] ?? false);
+        $this->assertSame('committed', $stored['v']);
+        $this->assertSame(1, $stored['g']);
+        $this->assertSame(4, $this->remoteEpoch());
+    }
+
+    public function testStaleLowerGenerationEnvelopeIsIgnoredOnResolve(): void
+    {
+        $setting = Setting::factory()->create([
+            'key' => 'l1.stale.envelope',
+            'config' => 'committed',
+            'format' => 'text',
+        ]);
+
+        /** @var SettingCacheManager $cache */
+        $cache = SettingCacheFactory::getSettingsCache();
+        $cacheKey = $cache->createKey(['key' => $setting->key]);
+
+        $cache->set($cacheKey, $setting->fresh());
+        $committedGeneration = Cache::store('cache_settings')->get($cacheKey)['g'];
+        $this->assertGreaterThan(0, $committedGeneration);
+
+        // Simulate a lost resolve() race: pre-commit row written under the prior
+        // generation after set()/saved() already advanced the per-key version.
+        $stale = $setting->fresh();
+        $stale->config = 'pre-commit';
+        Cache::store('cache_settings')->put($cacheKey, [
+            '__pm_setting' => true,
+            'v' => $stale,
+            'g' => $committedGeneration - 1,
+        ]);
+
+        SettingMemoryCache::clearAllLocal();
+        SettingMemoryCache::beginRequest();
+
+        $resolved = Setting::byKey($setting->key);
+
+        $this->assertNotNull($resolved);
+        $this->assertSame('committed', $resolved->config);
+
+        $stored = Cache::store('cache_settings')->get($cacheKey);
+        $this->assertSame('committed', $stored['v']->config);
+        $this->assertSame($committedGeneration, $stored['g']);
+    }
+
+    public function testLegacyEnvelopeWithoutGenerationIsTreatedAsMiss(): void
+    {
+        $setting = Setting::factory()->create([
+            'key' => 'l1.legacy.envelope',
+            'config' => 'from-db',
+            'format' => 'text',
+        ]);
+
+        /** @var SettingCacheManager $cache */
+        $cache = SettingCacheFactory::getSettingsCache();
+        $cacheKey = $cache->createKey(['key' => $setting->key]);
+        $generation = SettingCacheVersion::get($cacheKey);
+
+        $this->seedEpoch(7);
+        SettingMemoryCache::beginRequest();
+        SettingMemoryCache::syncEpoch();
+
+        $stale = $setting->fresh();
+        $stale->config = 'legacy-cache';
+        Cache::store('cache_settings')->put($cacheKey, [
+            '__pm_setting' => true,
+            'v' => $stale,
+        ]);
+
+        $resolved = Setting::byKey($setting->key);
+
+        $this->assertSame('from-db', $resolved->config);
+        $stored = Cache::store('cache_settings')->get($cacheKey);
+        $this->assertSame($generation, $stored['g']);
+        $this->assertSame('from-db', $stored['v']->config);
+    }
+
+    public function testSetOnOneKeyDoesNotInvalidateOtherKeyEnvelopes(): void
+    {
+        /** @var SettingCacheManager $cache */
+        $cache = SettingCacheFactory::getSettingsCache();
+
+        $cache->set('setting_multi.a', 'alpha');
+        $cache->set('setting_multi.b', 'beta');
+
+        SettingMemoryCache::clearAllLocal();
+        SettingMemoryCache::beginRequest();
+
+        $this->assertSame('alpha', $cache->get('setting_multi.a'));
+        $this->assertSame('beta', $cache->get('setting_multi.b'));
     }
 }

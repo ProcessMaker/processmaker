@@ -152,9 +152,14 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
 
     /**
      * Load from the callback and write to Redis unless another worker published first.
+     *
+     * Envelopes are stamped with a per-key generation. Readers reject envelopes
+     * whose generation no longer matches, so a stale resolve PUT that races past
+     * the epoch check cannot stick after set()/invalidate()/delete advances the key.
      */
     private function loadAndPublish(string $key, callable $loader, ?int $epochAtStart): mixed
     {
+        $versionAtStart = SettingCacheVersion::get($key);
         $value = $loader();
 
         // If another worker published a committed value while we loaded, do not
@@ -164,14 +169,36 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
             return $value;
         }
 
-        if (SettingMemoryCache::localEpoch() !== $epochAtStart) {
+        if (SettingMemoryCache::localEpoch() !== $epochAtStart
+            || SettingCacheVersion::get($key) !== $versionAtStart) {
             $entry = $this->readStoreEntry($key);
-            $value = $entry['hit'] ? $entry['value'] : $loader();
-            if (!$entry['hit']) {
-                $this->writeStoreEntry($key, $value);
+            if ($entry['hit']) {
+                return $entry['value'];
             }
-        } else {
-            $this->writeStoreEntry($key, $value);
+            $value = $loader();
+            $versionAtStart = SettingCacheVersion::get($key);
+        }
+
+        $epochAtWrite = SettingMemoryCache::localEpoch();
+        $this->writeStoreEntry($key, $value, null, $versionAtStart);
+
+        // Close the gap between the pre-write fence and the Redis PUT.
+        SettingMemoryCache::forceResyncEpoch();
+        if (SettingMemoryCache::isEpochUnreliable()) {
+            return $value;
+        }
+
+        if (SettingMemoryCache::localEpoch() !== $epochAtWrite
+            || SettingCacheVersion::get($key) !== $versionAtStart) {
+            $entry = $this->readStoreEntry($key);
+            if ($entry['hit']) {
+                return $entry['value'];
+            }
+
+            $value = $loader();
+            $this->writeStoreEntry($key, $value, null, SettingCacheVersion::get($key));
+
+            return $value;
         }
 
         return $value;
@@ -213,6 +240,10 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     /**
      * Store a committed setting value, then publish a new epoch so other workers refresh L1.
      *
+     * The per-key generation is advanced before the Redis write so the envelope is
+     * stamped with the new version. Concurrent resolve() fills stamped with the
+     * previous generation are ignored by readers.
+     *
      * @param string $key
      * @param mixed $value
      * @param null|int|\DateInterval $ttl
@@ -221,7 +252,8 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
     {
-        $result = $this->writeStoreEntry($key, $value, $ttl);
+        $version = SettingCacheVersion::increment($key);
+        $result = $this->writeStoreEntry($key, $value, $ttl, $version);
 
         if ($result) {
             SettingMemoryCache::bumpEpoch();
@@ -240,6 +272,7 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function delete(string $key): bool
     {
+        SettingCacheVersion::increment($key);
         $result = $this->cacheManager->forget($key);
         SettingMemoryCache::forget($key);
         SettingMemoryCache::bumpEpoch();
@@ -309,7 +342,7 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
             return true;
         }
 
-        return $this->keyExists($key);
+        return $this->readStoreEntry($key)['hit'];
     }
 
     /**
@@ -341,6 +374,9 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
             $key = $params['key'];
             $bumpEpoch = (bool) ($params['bump_epoch'] ?? false);
 
+            // Advance the per-key generation before dropping the payload so any
+            // in-flight resolve() fill stamped with the prior generation is ignored.
+            SettingCacheVersion::increment($key);
             $this->cacheManager->forget($key);
             SettingMemoryCache::forget($key);
 
@@ -383,18 +419,41 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
         }
 
         if (is_array($stored) && ($stored[self::ENVELOPE_FLAG] ?? false) === true) {
+            if (!$this->envelopeVersionIsCurrent($key, $stored)) {
+                return ['hit' => false, 'value' => null];
+            }
+
             return ['hit' => true, 'value' => $stored['v']];
         }
 
-        // Legacy unwrapped values written before envelopes.
-        return ['hit' => true, 'value' => $stored];
+        // Legacy unwrapped values have no generation stamp — treat as miss so
+        // the next resolve() republishes a versioned envelope.
+        return ['hit' => false, 'value' => null];
     }
 
-    private function writeStoreEntry(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
+    /**
+     * Accept envelopes stamped with the current per-key generation only.
+     * Missing version (pre-versioning writes) is treated as stale.
+     */
+    private function envelopeVersionIsCurrent(string $key, array $envelope): bool
     {
+        if (!array_key_exists('g', $envelope) || $envelope['g'] === null) {
+            return false;
+        }
+
+        return (int) $envelope['g'] === SettingCacheVersion::get($key);
+    }
+
+    private function writeStoreEntry(
+        string $key,
+        mixed $value,
+        null|int|\DateInterval $ttl = null,
+        ?int $generation = null
+    ): bool {
         $envelope = [
             self::ENVELOPE_FLAG => true,
             'v' => $value,
+            'g' => $generation ?? SettingCacheVersion::get($key),
         ];
 
         return $this->cacheManager->put($key, $envelope, $ttl);
