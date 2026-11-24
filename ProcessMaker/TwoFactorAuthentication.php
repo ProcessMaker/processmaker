@@ -136,11 +136,8 @@ class TwoFactorAuthentication
 
     public function shouldShowQrForFirstTime(User $user): bool
     {
-        if (!$this->needsAuthenticatorEnrollment($user)) {
-            return false;
-        }
-
-        if ($this->sessionHasPendingAuthenticatorForUser($user)) {
+        if (!$this->needsAuthenticatorEnrollment($user)
+            || $this->sessionHasPendingAuthenticatorForUser($user)) {
             return false;
         }
 
@@ -171,10 +168,9 @@ class TwoFactorAuthentication
         $snapshotUserId = session()->get(self::CHALLENGE_METHODS_USER_ID);
 
         // Use snapshot only if it exists, is valid, and belongs to this user
-        if (is_array($snapshot) && $snapshot !== []) {
-            if ($snapshotUserId === null || (int) $snapshotUserId === (int) $user->id) {
-                return $snapshot;
-            }
+        if (is_array($snapshot) && $snapshot !== []
+            && ($snapshotUserId === null || (int) $snapshotUserId === (int) $user->id)) {
+            return $snapshot;
         }
 
         return $user->getValid2FAPreferences();
@@ -427,15 +423,15 @@ class TwoFactorAuthentication
         }
 
         $webUserId = \Illuminate\Support\Facades\Auth::guard('web')->id();
-        if ($webUserId === null || (int) $webUserId !== (int) $apiUser->id) {
+        $isSameWebSession = $webUserId !== null && (int) $webUserId === (int) $apiUser->id;
+        if (!$isSameWebSession) {
             return true;
         }
 
-        if ($this->userHasSsoBinding($apiUser) && $this->hasSsoDriverSession()) {
-            return false;
-        }
+        $exemptBySso = $this->userHasSsoBinding($apiUser) && $this->hasSsoDriverSession();
+        $validated = session()->get(Http\Controllers\Auth\TwoFactorAuthController::TFA_VALIDATED, false);
 
-        return !session()->get(Http\Controllers\Auth\TwoFactorAuthController::TFA_VALIDATED, false);
+        return !$exemptBySso && !$validated;
     }
 
     private function isTwoFactorEnabled(): bool
