@@ -24,6 +24,7 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -296,6 +297,101 @@ XML;
         $draft = $process->getDraftVersion('A');
         $this->assertNotNull($draft);
         $this->assertStringContainsString('UnpublishedDraft', (string) $draft->bpmn);
+    }
+
+    public function testUpdateProcessSavesCaseTitleManagersAndNotificationsWithoutPublishing(): void
+    {
+        $publishedBpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
+        $process = Process::factory()->create(['name' => 'Settings Process', 'bpmn' => $publishedBpmn]);
+        $manager = User::factory()->create();
+        $versionsBefore = ProcessVersion::where('process_id', $process->id)->count();
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'case_title' => '{{customer}} request',
+            'manager_id' => [$manager->id],
+            'notifications' => ['requester' => ['started' => true, 'error' => true]],
+        ])->assertOk()
+            ->assertHasNoErrors()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('case_title', '{{customer}} request')
+                ->where('manager_id', [$manager->id])
+                ->where('notifications.requester.started', true)
+                ->where('notifications.requester.completed', false)
+                ->etc());
+
+        $process->refresh();
+        $this->assertSame('{{customer}} request', $process->case_title);
+        $this->assertSame([$manager->id], array_map('intval', $process->manager_id));
+        $this->assertTrue($process->notifications->requester['started']);
+        $this->assertTrue($process->notifications->requester['error']);
+        $this->assertFalse($process->notifications->assignee['started']);
+        $this->assertSame($publishedBpmn, $process->bpmn);
+        $this->assertSame($versionsBefore, ProcessVersion::where('process_id', $process->id)->count());
+        $this->assertSame($this->user->id, (int) $process->updated_by);
+    }
+
+    public function testNotificationUpdateOnlyChangesTheSentPairs(): void
+    {
+        $process = Process::factory()->create([
+            'name' => 'Notification Pairs',
+            'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn'),
+        ]);
+        $tool = fn (array $notifications) => ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'notifications' => $notifications,
+        ]);
+
+        $tool(['requester' => ['started' => true], 'assignee' => ['completed' => true]])->assertOk();
+        $tool(['requester' => ['started' => false], 'manager' => ['error' => true]])->assertOk();
+
+        $notifications = $process->refresh()->notifications;
+        $this->assertFalse($notifications->requester['started']);
+        $this->assertTrue($notifications->assignee['completed']);
+        $this->assertTrue($notifications->manager['error']);
+    }
+
+    public function testUpdateProcessRejectsUnknownNotificationKeysAndManagers(): void
+    {
+        $process = Process::factory()->create([
+            'name' => 'Rejected Settings',
+            'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn'),
+        ]);
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'notifications' => ['requestr' => ['started' => true]],
+        ])->assertHasErrors(['Unknown notifiable type "requestr"']);
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'notifications' => ['requester' => ['finished' => true]],
+        ])->assertHasErrors(['Unknown notification type "finished"']);
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'manager_id' => [99999999],
+        ])->assertHasErrors(['The selected Manager_id.0 is invalid.']);
+
+        $this->assertSame(0, $process->refresh()->notification_settings()->count());
+    }
+
+    public function testUpdateProcessClearsManagersWithAnEmptyArray(): void
+    {
+        $manager = User::factory()->create();
+        $process = Process::factory()->create([
+            'name' => 'Clear Managers',
+            'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn'),
+        ]);
+        $process->manager_id = [$manager->id];
+        $process->saveOrFail();
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'manager_id' => [],
+        ])->assertOk()->assertHasNoErrors();
+
+        $this->assertSame([], $process->refresh()->manager_id);
     }
 
     public function testCombinedBpmnAndMetadataUpdatePersistsLiveMetadata(): void

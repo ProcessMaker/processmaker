@@ -15,7 +15,7 @@ use ProcessMaker\Mcp\Processes\ProcessCatalog;
 
 #[Name('update-process')]
 #[Title('Update Process')]
-#[Description('Updates a ProcessMaker process. Send only the fields that should change (name, description, status, process_category_id, bpmn). BPMN edits save a draft on alternative A or B (see alternative, create_alternative_b).')]
+#[Description('Updates a ProcessMaker process. Send only the fields that should change (name, description, status, process_category_id, case_title, manager_id, notifications, bpmn). BPMN edits save a draft on alternative A or B (see alternative, create_alternative_b). Everything except bpmn is process-level: it changes the live process (A and B share it) and never publishes a version.')]
 class UpdateProcessTool extends ProcessTool
 {
     public function handle(Request $request, ProcessCatalog $processes): Response|ResponseFactory
@@ -37,6 +37,9 @@ class UpdateProcessTool extends ProcessTool
             'description' => ProcessFields::description($schema, false),
             'status' => ProcessFields::status($schema),
             'process_category_id' => ProcessFields::category($schema, false),
+            'case_title' => ProcessFields::caseTitle($schema),
+            'manager_id' => ProcessFields::managerIds($schema),
+            'notifications' => ProcessFields::notifications($schema),
             'bpmn' => ProcessFields::bpmn($schema, false),
             'alternative' => ProcessFields::alternative($schema),
             'create_alternative_b' => ProcessFields::createAlternativeB($schema),

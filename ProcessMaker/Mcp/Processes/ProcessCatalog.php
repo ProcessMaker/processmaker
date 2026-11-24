@@ -35,8 +35,10 @@ class ProcessCatalog
      */
     private const ORDER_COLUMNS = ['name', 'status', 'updated_at', 'created_at', 'id'];
 
-    public function __construct(private readonly ProcessBpmnValidator $validator)
-    {
+    public function __construct(
+        private readonly ProcessBpmnValidator $validator,
+        private readonly ProcessNotificationSettings $notificationSettings,
+    ) {
     }
 
     public function actor(?Authenticatable $user): User
@@ -182,10 +184,15 @@ class ProcessCatalog
         }
 
         $attributes = $this->writable($validated);
-        if ($attributes === []) {
+        $notifications = $validated['notifications'] ?? null;
+        if ($attributes === [] && $notifications === null) {
             throw ValidationException::withMessages([
-                'process' => 'Provide at least one field to update: name, description, status, process_category_id, or bpmn.',
+                'process' => 'Provide at least one field to update: name, description, status, process_category_id, '
+                    . 'case_title, manager_id, notifications, or bpmn.',
             ]);
+        }
+        if (is_array($notifications)) {
+            $this->notificationSettings->assertKnown($notifications);
         }
 
         if (isset($attributes['bpmn'])) {
@@ -208,6 +215,11 @@ class ProcessCatalog
             $this->persistLiveMetadata($process, array_diff_key($attributes, ['bpmn' => true]), $user);
         } else {
             $this->persistLiveMetadata($process, $attributes, $user);
+        }
+
+        if (is_array($notifications)) {
+            $this->notificationSettings->apply($process, $notifications);
+            $this->forgetProjectAssetCache($user);
         }
 
         return $this->detail($process->refresh(), $alternative);
@@ -304,6 +316,31 @@ class ProcessCatalog
             $rules['bpmn'] = 'nullable|string';
         }
 
+        return array_merge($rules, $this->settingsRules($input));
+    }
+
+    /**
+     * Process-level settings. They apply to the live process, so Alternative A
+     * and B share them, and saving them does not publish a version.
+     *
+     * @param array<string, mixed> $input
+     * @return array<string, mixed>
+     */
+    private function settingsRules(array $input): array
+    {
+        $rules = [];
+        if (array_key_exists('case_title', $input)) {
+            $rules['case_title'] = 'nullable|string|max:200';
+        }
+        if (array_key_exists('manager_id', $input)) {
+            $rules['manager_id'] = 'array|max:10';
+            $rules['manager_id.*'] = 'integer|min:1|exists:users,id';
+        }
+        if (array_key_exists('notifications', $input)) {
+            $rules['notifications'] = 'array';
+            $rules['notifications.*'] = 'array';
+        }
+
         return $rules;
     }
 
@@ -331,6 +368,8 @@ class ProcessCatalog
             'description',
             'status',
             'process_category_id',
+            'case_title',
+            'manager_id',
             'bpmn',
         ]));
     }
@@ -420,6 +459,9 @@ class ProcessCatalog
 
         return [
             ...$this->summary($process),
+            'case_title' => $process->case_title,
+            'manager_id' => $process->manager_id,
+            'notifications' => (array) $process->notifications,
             'alternative' => $alternative,
             'alternatives' => $this->alternativesMeta($process),
             'bpmn' => $bpmn,
