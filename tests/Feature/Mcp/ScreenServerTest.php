@@ -178,6 +178,51 @@ class ScreenServerTest extends TestCase
         ])->assertHasErrors(['optionsList']);
     }
 
+    public function testNativeFormNoticeDependsOnSizeAndOnEditingANativeScreen(): void
+    {
+        ScreenServer::actingAs($this->user)->tool(ValidateScreenTool::class, [
+            'type' => 'FORM',
+            'config' => $this->nativeConfig(2),
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('ok', true)
+                ->where('warnings', [])
+                ->where('info.0.code', 'native_small_screen')
+                ->etc());
+
+        ScreenServer::actingAs($this->user)->tool(ValidateScreenTool::class, [
+            'type' => 'FORM',
+            'config' => $this->nativeConfig(6),
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('warnings.0.code', 'prefer_vue_component_editor')
+                ->where('info', [])
+                ->etc());
+
+        $stored = Screen::factory()->create(['type' => 'FORM', 'config' => $this->nativeConfig(8)]);
+        ScreenServer::actingAs($this->user)->tool(ValidateScreenTool::class, [
+            'id' => $stored->id,
+            'config' => $this->nativeConfig(9),
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('warnings', [])
+                ->where('info.0.code', 'native_screen_edit')
+                ->etc());
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function nativeConfig(int $inputs): array
+    {
+        $items = [];
+        for ($index = 0; $index < $inputs; $index++) {
+            $items[] = ['component' => 'FormInput', 'inspector' => [], 'config' => ['name' => 'field_' . $index]];
+        }
+
+        return [['name' => 'Page 1', 'items' => $items]];
+    }
+
     public function testValidateScreenReportsSelectAndVueIssues(): void
     {
         ScreenServer::actingAs($this->user)->tool(ValidateScreenTool::class, [
