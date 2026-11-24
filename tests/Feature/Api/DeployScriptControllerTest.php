@@ -241,6 +241,105 @@ class DeployScriptControllerTest extends TestCase
         $this->assertSame('Merged migration script.', $script->description);
     }
 
+    public function testDeployScriptCreatesWithRequestedExecutorId(): void
+    {
+        $first = $this->phpExecutor('First PHP Executor');
+        $second = $this->phpExecutor('Second PHP Executor');
+        $this->assertNotSame($first->id, $second->id);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-by-id-script',
+            'script_executor_id' => $second->id,
+        ])->assertOk()->assertJson(['action' => 'created']);
+
+        $this->assertSame($second->id, Script::where('title', 'executor-by-id-script')->value('script_executor_id'));
+    }
+
+    public function testDeployScriptCreatesWithRequestedExecutorTitle(): void
+    {
+        $this->phpExecutor('First PHP Executor');
+        $target = $this->phpExecutor('Target PHP Executor');
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-by-title-script',
+            'script_executor_title' => 'Target PHP Executor',
+        ])->assertOk();
+
+        $this->assertSame($target->id, Script::where('title', 'executor-by-title-script')->value('script_executor_id'));
+    }
+
+    public function testDeployScriptUpdateCanMoveScriptToRequestedExecutor(): void
+    {
+        $this->phpExecutor('First PHP Executor');
+        $target = $this->phpExecutor('Target PHP Executor');
+        $script = Script::factory()->create(['title' => 'executor-update-script', 'language' => 'php']);
+        $this->assertNotSame($target->id, $script->script_executor_id);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-update-script',
+            'script_executor_id' => $target->id,
+            'version_name' => 'Move to the plugin executor',
+        ])->assertOk()->assertJson(['action' => 'updated']);
+
+        $this->assertSame($target->id, $script->refresh()->script_executor_id);
+    }
+
+    public function testDeployScriptUpdateKeepsExecutorWhenNoneIsRequested(): void
+    {
+        $this->phpExecutor('First PHP Executor');
+        $target = $this->phpExecutor('Target PHP Executor');
+        $script = Script::factory()->create([
+            'title' => 'executor-kept-script',
+            'language' => 'php',
+            'script_executor_id' => $target->id,
+        ]);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [1];',
+            'name' => 'executor-kept-script',
+            'version_name' => 'Change the code only',
+        ])->assertOk();
+
+        $this->assertSame($target->id, $script->refresh()->script_executor_id);
+    }
+
+    public function testDeployScriptRejectsUnknownExecutor(): void
+    {
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-unknown-script',
+            'script_executor_id' => 999999,
+        ])
+            ->assertStatus(422)
+            ->assertJson(['success' => false])
+            ->assertJsonValidationErrors(['script_executor_id']);
+
+        $this->assertNull(Script::where('title', 'executor-unknown-script')->first());
+    }
+
+    public function testDeployScriptRejectsExecutorOfAnotherLanguage(): void
+    {
+        $lua = ScriptExecutor::factory()->create(['language' => 'lua', 'title' => 'Lua Executor']);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-wrong-language-script',
+            'script_executor_title' => $lua->title,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['script_executor_title']);
+
+        $this->assertNull(Script::where('title', 'executor-wrong-language-script')->first());
+    }
+
+    private function phpExecutor(string $title): ScriptExecutor
+    {
+        return ScriptExecutor::factory()->create(['language' => 'php', 'title' => $title]);
+    }
+
     private function ensureExecutor(): ScriptExecutor
     {
         return ScriptExecutor::query()->first() ?? ScriptExecutor::factory()->create();
