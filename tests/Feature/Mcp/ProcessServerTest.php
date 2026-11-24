@@ -11,8 +11,10 @@ use ProcessMaker\Mcp\Resources\McpSkillResource;
 use ProcessMaker\Mcp\Servers\ProcessServer;
 use ProcessMaker\Mcp\Tools\GetMcpGuidanceTool;
 use ProcessMaker\Mcp\Tools\GetMcpSkillTool;
+use ProcessMaker\Mcp\Tools\Processes\CreateGroupTool;
 use ProcessMaker\Mcp\Tools\Processes\CreateProcessTool;
 use ProcessMaker\Mcp\Tools\Processes\EnableProcessAlternativeBTool;
+use ProcessMaker\Mcp\Tools\Processes\GetProcessInventoryTool;
 use ProcessMaker\Mcp\Tools\Processes\GetProcessTool;
 use ProcessMaker\Mcp\Tools\Processes\ListGroupsTool;
 use ProcessMaker\Mcp\Tools\Processes\ListProcessesTool;
@@ -25,6 +27,8 @@ use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessVersion;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -147,6 +151,141 @@ class ProcessServerTest extends TestCase
                 ->where('data.0.id', $group->id)
                 ->where('data.0.name', 'PTO Approvers')
                 ->etc());
+    }
+
+    public function testListGroupsFindsExactNameAndReportsMembersAndDuplicates(): void
+    {
+        $group = Group::factory()->create(['name' => 'Requesters Exact', 'status' => 'ACTIVE']);
+        Group::factory()->create(['name' => 'Requesters Exact Plus', 'status' => 'ACTIVE']);
+        $group->groupMembers()->create([
+            'member_id' => $this->user->id,
+            'member_type' => User::class,
+        ]);
+
+        ProcessServer::actingAs($this->user)->tool(ListGroupsTool::class, [
+            'filter' => 'Requesters Exact',
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->has('data', 2)
+                ->etc());
+
+        ProcessServer::actingAs($this->user)->tool(ListGroupsTool::class, [
+            'name' => 'requesters exact',
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->has('data', 1)
+                ->where('data.0.id', $group->id)
+                ->where('data.0.members_count', 1)
+                ->where('data.0.same_name_count', 1)
+                ->etc());
+    }
+
+    public function testCreateGroupCreatesAnActiveGroupAndRejectsDuplicates(): void
+    {
+        ProcessServer::actingAs($this->user)->tool(CreateGroupTool::class, [
+            'name' => 'Deal Closing Legal',
+            'description' => 'Legal sign-off',
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('name', 'Deal Closing Legal')
+                ->where('status', 'ACTIVE')
+                ->where('members_count', 0)
+                ->etc());
+
+        $this->assertSame(1, Group::where('name', 'Deal Closing Legal')->count());
+
+        ProcessServer::actingAs($this->user)->tool(CreateGroupTool::class, [
+            'name' => 'Deal Closing Legal',
+        ])->assertHasErrors(['has already been taken']);
+
+        ProcessServer::actingAs($this->user)->tool(CreateGroupTool::class, [
+            'name' => 'Bad_Name!',
+        ])->assertHasErrors(['may only contain alphanumeric characters']);
+    }
+
+    public function testCreateGroupRequiresThePermission(): void
+    {
+        $this->initializePermissions();
+        $member = User::factory()->create(['is_administrator' => false]);
+        $member->permissions()->attach(Permission::byName('create-processes'));
+
+        ProcessServer::actingAs($member)->tool(CreateGroupTool::class, [
+            'name' => 'Not Allowed Group',
+        ])->assertHasErrors(['create-groups']);
+
+        $this->assertSame(0, Group::where('name', 'Not Allowed Group')->count());
+    }
+
+    public function testProcessInventoryMapsAssetsFieldsAndGatewayVariables(): void
+    {
+        $screen = Screen::factory()->create([
+            'title' => 'Inventory Form',
+            'type' => 'FORM',
+            'config' => [[
+                'name' => 'Page',
+                'items' => [
+                    ['component' => 'FormInput', 'config' => ['name' => 'DC_FLAG']],
+                    ['component' => 'FormButton', 'config' => ['name' => 'submit']],
+                    ['component' => 'FormMultiColumn', 'config' => [], 'items' => [
+                        [['component' => 'FormTextArea', 'config' => ['name' => 'DC_NOTES']]],
+                        [],
+                    ]],
+                ],
+            ]],
+        ]);
+        $script = Script::factory()->create(['title' => 'Inventory Script', 'language' => 'php']);
+
+        $bpmn = $this->inventoryBpmn($screen->id, $script->id);
+        $process = Process::factory()->create(['name' => 'Inventory Process', 'bpmn' => $bpmn]);
+
+        ProcessServer::actingAs($this->user)->tool(GetProcessInventoryTool::class, [
+            'id' => $process->id,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('process.id', $process->id)
+                ->where('counts.activities', 2)
+                ->where('counts.gateways', 1)
+                ->where('counts.sequence_flows', 3)
+                ->where('screens.0.title', 'Inventory Form')
+                ->where('screens.0.controls', 4)
+                ->where('screens.0.fields', ['DC_FLAG', 'DC_NOTES'])
+                ->where('scripts.0.title', 'Inventory Script')
+                ->where('activities.0.screen_title', 'Inventory Form')
+                ->where('activities.1.script_title', 'Inventory Script')
+                ->where('gateways.0.variables', ['DC_FLAG', 'DC_MISSING'])
+                ->where('variables.DC_FLAG.written_by_screens', [$screen->id])
+                ->where('variables.DC_MISSING.written_by_screens', [])
+                ->where('variables.DC_MISSING.read_by_gateways', ['gate_1'])
+                ->has('warnings', 1)
+                ->etc());
+    }
+
+    private function inventoryBpmn(int $screenId, int $scriptId): string
+    {
+        return <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd"
+    id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="true">
+    <bpmn:startEvent id="start_1"><bpmn:outgoing>flow_1</bpmn:outgoing></bpmn:startEvent>
+    <bpmn:task id="task_1" name="Fill" pm:screenRef="{$screenId}">
+      <bpmn:incoming>flow_1</bpmn:incoming><bpmn:outgoing>flow_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="gate_1" name="Route" default="flow_3">
+      <bpmn:incoming>flow_2</bpmn:incoming><bpmn:outgoing>flow_3</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:scriptTask id="script_1" name="Run" pm:scriptRef="{$scriptId}">
+      <bpmn:incoming>flow_3</bpmn:incoming>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="flow_1" sourceRef="start_1" targetRef="task_1"/>
+    <bpmn:sequenceFlow id="flow_2" sourceRef="task_1" targetRef="gate_1"/>
+    <bpmn:sequenceFlow id="flow_3" sourceRef="gate_1" targetRef="script_1">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">DC_FLAG == 'YES' &amp;&amp; DC_MISSING != ''</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+  </bpmn:process>
+</bpmn:definitions>
+XML;
     }
 
     public function testValidateProcessReportsMissingScreenRef(): void

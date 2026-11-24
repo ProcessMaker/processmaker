@@ -110,6 +110,20 @@ class ProcessCatalog
     }
 
     /**
+     * Map of a process: activities with assets (ids and titles), screens and their fields,
+     * scripts, gateways with the variables they read. Same visibility rules as find().
+     *
+     * @return array<string, mixed>
+     */
+    public function inventory(User $user, int $id, string $alternative = 'A'): array
+    {
+        $detail = $this->find($user, $id, $alternative);
+        $process = Process::query()->findOrFail($id);
+
+        return (new ProcessInventory())->build($process, $detail['alternative'] ?? 'A', $detail['bpmn'] ?? null);
+    }
+
+    /**
      * Enable Alternative B for a process (clone draft A → B).
      *
      * @return array<string, mixed>
