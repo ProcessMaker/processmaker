@@ -306,6 +306,7 @@ class LoginController extends Controller
             session()->remove(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT);
             session()->remove(TwoFactorAuthentication::CHALLENGE_DELIVERY_EMAIL);
             session()->remove(TwoFactorAuthentication::CHALLENGE_DELIVERY_CELL);
+            session()->remove(TwoFactorAuthentication::CHALLENGE_DELIVERY_USER_ID);
             session()->remove(TwoFactorAuthentication::DELIVERY_STEP_UP);
             session()->remove(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET);
             session()->remove(TwoFactorAuthentication::PENDING_AUTHENTICATOR_USER_ID);

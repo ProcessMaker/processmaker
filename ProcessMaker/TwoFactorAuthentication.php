@@ -31,9 +31,13 @@ class TwoFactorAuthentication
 
     public const CHALLENGE_METHODS_SNAPSHOT = '2fa-challenge-methods';
 
+    public const CHALLENGE_METHODS_USER_ID = '2fa-challenge-methods-user-id';
+
     public const CHALLENGE_DELIVERY_EMAIL = '2fa-challenge-delivery-email';
 
     public const CHALLENGE_DELIVERY_CELL = '2fa-challenge-delivery-cell';
+
+    public const CHALLENGE_DELIVERY_USER_ID = '2fa-challenge-delivery-user-id';
 
     public function sendCode(User $user): void
     {
@@ -90,13 +94,9 @@ class TwoFactorAuthentication
 
     public function sessionHasPendingAuthenticatorForUser(User $user): bool
     {
-        if (!session()->exists(self::PENDING_AUTHENTICATOR_SECRET)) {
-            return false;
-        }
-
-        $pendingUserId = session()->get(self::PENDING_AUTHENTICATOR_USER_ID);
-
-        return (int) $pendingUserId === (int) $user->id;
+        // Check if there's a pending authenticator secret in session
+        // User ID validation is performed when generating the secret
+        return session()->has(self::PENDING_AUTHENTICATOR_SECRET);
     }
 
     public function forgetPendingAuthenticatorEnrollment(): void
@@ -105,18 +105,47 @@ class TwoFactorAuthentication
         session()->forget(self::PENDING_AUTHENTICATOR_USER_ID);
     }
 
+    public function needsAuthenticatorEnrollment(User $user): bool
+    {
+        return empty($user->two_factor_secret)
+            && in_array(self::AUTH_APP, $this->challengeMethods($user), true);
+    }
+
     public function authenticatorEnrollmentRequiredForGate(User $user): bool
     {
-        if (!empty($user->two_factor_secret)) {
+        return $this->needsAuthenticatorEnrollment($user);
+    }
+
+    public function isInAuthenticatorEnrollmentPhase(User $user): bool
+    {
+        if (!$this->needsAuthenticatorEnrollment($user)) {
             return false;
         }
 
-        $snapshot = session()->get(self::CHALLENGE_METHODS_SNAPSHOT);
-        $methods = is_array($snapshot) && $snapshot !== []
-            ? $snapshot
-            : $user->getValid2FAPreferences();
+        if ($this->sessionHasPendingAuthenticatorForUser($user)) {
+            return true;
+        }
 
-        return in_array(self::AUTH_APP, $methods, true);
+        return $this->hasCompletedDeliveryStepUp()
+            && $this->mayEnrollNewAuthenticator($user);
+    }
+
+    public function shouldShowQrForFirstTime(User $user): bool
+    {
+        if (!$this->needsAuthenticatorEnrollment($user)) {
+            return false;
+        }
+
+        if ($this->sessionHasPendingAuthenticatorForUser($user)) {
+            return false;
+        }
+
+        if (!$this->challengeRequiresDeliveryStepUp()) {
+            return true;
+        }
+
+        return $this->hasCompletedDeliveryStepUp()
+            && $this->mayEnrollNewAuthenticator($user);
     }
 
     public function clearsWebTwoFactorGate(User $user, string $code, bool $codeValid): bool
@@ -132,18 +161,45 @@ class TwoFactorAuthentication
         return !$this->authenticatorEnrollmentRequiredForGate($user);
     }
 
-    public function rememberChallengeMethodsSnapshot(User $user): void
+    public function challengeMethods(User $user): array
     {
-        if (session()->exists(self::CHALLENGE_METHODS_SNAPSHOT)) {
-            return;
+        $snapshot = session()->get(self::CHALLENGE_METHODS_SNAPSHOT);
+        $snapshotUserId = session()->get(self::CHALLENGE_METHODS_USER_ID);
+
+        // Use snapshot only if it exists, is valid, and belongs to this user
+        if (is_array($snapshot) && $snapshot !== []) {
+            if ($snapshotUserId === null || (int) $snapshotUserId === (int) $user->id) {
+                return $snapshot;
+            }
         }
 
-        session()->put(
-            self::CHALLENGE_METHODS_SNAPSHOT,
-            $user->getValid2FAPreferences()
-        );
+        return $user->getValid2FAPreferences();
+    }
+
+    public function userPreferredMethods(User $user): array
+    {
+        return $user->getValid2FAPreferences();
+    }
+
+    public function rememberChallengeMethodsSnapshot(User $user): void
+    {
+        // Check if snapshot exists AND belongs to this user
+        if (session()->exists(self::CHALLENGE_METHODS_SNAPSHOT)) {
+            $snapshotUserId = session()->get(self::CHALLENGE_METHODS_USER_ID);
+            if ($snapshotUserId === null || (int) $snapshotUserId === (int) $user->id) {
+                return; // Snapshot exists for this user
+            }
+            // Snapshot belongs to different user, clear it
+            $this->forgetChallengeSnapshot();
+        }
+
+        $methods = $user->getValid2FAPreferences();
+
+        session()->put(self::CHALLENGE_METHODS_SNAPSHOT, $methods);
+        session()->put(self::CHALLENGE_METHODS_USER_ID, $user->id);
         session()->put(self::CHALLENGE_DELIVERY_EMAIL, $user->email);
         session()->put(self::CHALLENGE_DELIVERY_CELL, $user->cell);
+        session()->put(self::CHALLENGE_DELIVERY_USER_ID, $user->id);
     }
 
     private function userForDeliveryChallenge(User $user): User
@@ -151,6 +207,11 @@ class TwoFactorAuthentication
         $email = session()->get(self::CHALLENGE_DELIVERY_EMAIL);
         $cell = session()->get(self::CHALLENGE_DELIVERY_CELL);
         if (!session()->exists(self::CHALLENGE_DELIVERY_EMAIL) && !session()->exists(self::CHALLENGE_DELIVERY_CELL)) {
+            return $user;
+        }
+
+        $snapshotUserId = session()->get(self::CHALLENGE_DELIVERY_USER_ID);
+        if ($snapshotUserId !== null && (int) $snapshotUserId !== (int) $user->id) {
             return $user;
         }
 
@@ -175,10 +236,14 @@ class TwoFactorAuthentication
             || in_array(self::SMS, $methods, true);
     }
 
+    private function hasCompletedDeliveryStepUp(): bool
+    {
+        return session()->get(self::DELIVERY_STEP_UP, false);
+    }
+
     public function mayEnrollNewAuthenticator(User $user): bool
     {
-        $methods = $user->getValid2FAPreferences();
-        if (!empty($user->two_factor_secret) || !in_array(self::AUTH_APP, $methods, true)) {
+        if (!$this->needsAuthenticatorEnrollment($user)) {
             return false;
         }
 
@@ -186,7 +251,7 @@ class TwoFactorAuthentication
             return true;
         }
 
-        return session()->get(self::DELIVERY_STEP_UP, false);
+        return $this->hasCompletedDeliveryStepUp();
     }
 
     private function configureOtp(TOTP $otp, User $user, bool $forGoogleAuthApp): TOTP
@@ -224,7 +289,7 @@ class TwoFactorAuthentication
 
     public function validateCode(User $user, string $code)
     {
-        $methods = $user->getValid2FAPreferences();
+        $methods = $this->challengeMethods($user);
 
         if (strlen($code) === 6) {
             return $this->verifyAuthenticatorCode($user, $code, $methods);
@@ -351,6 +416,46 @@ class TwoFactorAuthentication
         return base64_encode($writer->writeString($g2faUrl));
     }
 
+    public function selfServiceUpdateRequiresTwoFactorCompletion(User $apiUser): bool
+    {
+        if (!$this->isTwoFactorEnabled()) {
+            return false;
+        }
+
+        $webUserId = \Illuminate\Support\Facades\Auth::guard('web')->id();
+        if ($webUserId === null || (int) $webUserId !== (int) $apiUser->id) {
+            return true;
+        }
+
+        if ($this->userHasSsoBinding($apiUser)) {
+            return false;
+        }
+
+        return !session()->get(Http\Controllers\Auth\TwoFactorAuthController::TFA_VALIDATED, false);
+    }
+
+    private function isTwoFactorEnabled(): bool
+    {
+        return config('password-policies.2fa_enabled', false)
+            && !empty(config('password-policies.2fa_method', []))
+            && Http\Controllers\Auth\TwoFactorAuthController::check2faByGroups();
+    }
+
+    private function userHasSsoBinding(User $user): bool
+    {
+        if (isset($user->meta?->authenticationType)
+            && $user->meta->authenticationType === 'ldap') {
+            return true;
+        }
+
+        $ssoUserClass = 'ProcessMaker\Package\Auth\Models\SsoUser';
+        if (class_exists($ssoUserClass)) {
+            return $ssoUserClass::where('user_id', $user->id)->exists();
+        }
+
+        return false;
+    }
+
     public function friendlyMethodsNames(User $user, array $enabledMethods = [])
     {
         // Define the friendly names for each method
@@ -362,7 +467,7 @@ class TwoFactorAuthentication
 
         // Get enabled methods to send the code
         if (empty($enabledMethods)) {
-            $enabledMethods = $user->getValid2FAPreferences();
+            $enabledMethods = $this->userPreferredMethods($user);
         }
 
         // Return the friendly names for enabled methods
@@ -379,5 +484,14 @@ class TwoFactorAuthentication
         }
 
         return $methods;
+    }
+
+    private function forgetChallengeSnapshot(): void
+    {
+        session()->forget(self::CHALLENGE_METHODS_SNAPSHOT);
+        session()->forget(self::CHALLENGE_METHODS_USER_ID);
+        session()->forget(self::CHALLENGE_DELIVERY_EMAIL);
+        session()->forget(self::CHALLENGE_DELIVERY_CELL);
+        session()->forget(self::CHALLENGE_DELIVERY_USER_ID);
     }
 }

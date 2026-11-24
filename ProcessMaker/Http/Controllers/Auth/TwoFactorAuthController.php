@@ -29,27 +29,28 @@ class TwoFactorAuthController extends Controller
         $this->twoFactorAuthentication = new TwoFactorAuthentication();
     }
 
+    private function reloadUser(?User $user): ?User
+    {
+        return $user?->fresh() ?? $user;
+    }
+
     public function displayTwoFactorAuthForm(Request $request)
     {
         try {
-            // Get current user
-            $user = $request->user();
+            $user = $this->reloadUser($request->user());
 
-            // If not user not authenticated, redirect to login page
             if (empty($user) || !config('password-policies.2fa_enabled', false)) {
                 return redirect()->route('login');
             }
 
-            // Reload DB state without User::refresh() (clears permission caches).
-            $user = $user->fresh() ?? $user;
             $this->twoFactorAuthentication->rememberChallengeMethodsSnapshot($user);
-            if ($this->shouldRedirectToAuthenticatorQrEnrollment($user)) {
+            if ($this->twoFactorAuthentication->shouldShowQrForFirstTime($user)) {
                 return redirect()->route('2fa.auth_app_qr');
             }
 
             $this->sendTwoFactorCodeForDisplay($user);
 
-            if ($this->isAuthenticatorEnrollmentPhase($user)) {
+            if ($this->twoFactorAuthentication->isInAuthenticatorEnrollmentPhase($user)) {
                 session()->put(
                     self::TFA_MESSAGE,
                     __('Enter the 6-digit code from your authenticator app.')
@@ -64,7 +65,6 @@ class TwoFactorAuthController extends Controller
             session()->put(self::TFA_ERROR, $error->getMessage());
         }
 
-        // Display view
         return view('auth.2fa.otp');
     }
 
@@ -90,8 +90,6 @@ class TwoFactorAuthController extends Controller
 
         $this->twoFactorAuthentication->rememberChallengeMethodsSnapshot($user);
 
-        $hadDeliveryStepUp = session()->get(TwoFactorAuthentication::DELIVERY_STEP_UP, false);
-
         $validated = $this->twoFactorAuthentication->validateCode($user, $code);
 
         session()->put(
@@ -100,22 +98,22 @@ class TwoFactorAuthController extends Controller
         );
 
         if ($validated) {
-            // Remove 2fa values in session
             session()->remove(self::TFA_MESSAGE);
             session()->remove(self::TFA_ERROR);
             session()->remove(self::TFA_AUTH_APP);
 
-            $user = $user->fresh() ?? $user;
+            $user = $this->reloadUser($user);
             $route = 'login';
             if (strlen($code) !== 6 && $this->twoFactorAuthentication->mayEnrollNewAuthenticator($user)) {
-                if ($hadDeliveryStepUp) {
-                    $route = '2fa';
+                $route = $this->twoFactorAuthentication->sessionHasPendingAuthenticatorForUser($user)
+                    ? '2fa'
+                    : '2fa.auth_app_qr';
+
+                if ($route === '2fa') {
                     session()->put(
                         self::TFA_MESSAGE,
                         __('Enter the 6-digit code from your authenticator app.')
                     );
-                } else {
-                    $route = '2fa.auth_app_qr';
                 }
             }
         } else {
@@ -131,10 +129,9 @@ class TwoFactorAuthController extends Controller
 
     public function sendCode(Request $request)
     {
-        $user = $request->user();
-        $user = $user->fresh() ?? $user;
+        $user = $this->reloadUser($request->user());
 
-        if ($this->isAuthenticatorEnrollmentPhase($user)) {
+        if ($this->twoFactorAuthentication->isInAuthenticatorEnrollmentPhase($user)) {
             return redirect()->route('2fa');
         }
 
@@ -149,17 +146,14 @@ class TwoFactorAuthController extends Controller
 
     public function displayAuthAppQr(Request $request)
     {
-        // Get current user
-        $user = $request->user();
+        $user = $this->reloadUser($request->user());
 
-        // If not user not authenticated, redirect to login page
         if (empty($user) || !config('password-policies.2fa_enabled', false)) {
             return redirect()->route('login');
         }
 
-        $user = $user->fresh() ?? $user;
         $this->twoFactorAuthentication->rememberChallengeMethodsSnapshot($user);
-        $methods = $user->getValid2FAPreferences();
+        $methods = $this->twoFactorAuthentication->userPreferredMethods($user);
 
         if (!in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)
             || !$this->twoFactorAuthentication->mayEnrollNewAuthenticator($user)
@@ -167,58 +161,14 @@ class TwoFactorAuthController extends Controller
             return redirect()->route('2fa');
         }
 
-        // Generate QR code
         $qrCode = $this->twoFactorAuthentication->generateQr($user);
 
-        // Display view
         return view('auth.2fa.auth_app_qr', compact('qrCode'));
-    }
-
-    private function shouldRedirectToAuthenticatorQrEnrollment(User $user): bool
-    {
-        if (!empty($user->two_factor_secret)) {
-            return false;
-        }
-
-        if ($this->twoFactorAuthentication->sessionHasPendingAuthenticatorForUser($user)) {
-            return false;
-        }
-
-        $methods = $user->getValid2FAPreferences();
-        if (!in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)) {
-            return false;
-        }
-
-        if ($this->twoFactorAuthentication->challengeRequiresDeliveryStepUp()) {
-            return session()->get(TwoFactorAuthentication::DELIVERY_STEP_UP, false)
-                && $this->twoFactorAuthentication->mayEnrollNewAuthenticator($user);
-        }
-
-        return true;
-    }
-
-    private function isAuthenticatorEnrollmentPhase(User $user): bool
-    {
-        if (!empty($user->two_factor_secret)) {
-            return false;
-        }
-
-        $methods = $user->getValid2FAPreferences();
-        if (!in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)) {
-            return false;
-        }
-
-        if ($this->twoFactorAuthentication->sessionHasPendingAuthenticatorForUser($user)) {
-            return true;
-        }
-
-        return session()->get(TwoFactorAuthentication::DELIVERY_STEP_UP, false)
-            && $this->twoFactorAuthentication->mayEnrollNewAuthenticator($user);
     }
 
     private function sendTwoFactorCodeForDisplay(User $user): void
     {
-        if ($this->isAuthenticatorEnrollmentPhase($user)) {
+        if ($this->twoFactorAuthentication->isInAuthenticatorEnrollmentPhase($user)) {
             return;
         }
 
@@ -228,7 +178,7 @@ class TwoFactorAuthController extends Controller
             return;
         }
 
-        $methods = $user->getValid2FAPreferences();
+        $methods = $this->twoFactorAuthentication->userPreferredMethods($user);
         $needsProvisioning = in_array(TwoFactorAuthentication::EMAIL, $methods, true)
             || in_array(TwoFactorAuthentication::SMS, $methods, true)
             ? empty($user->two_factor_delivery_secret)

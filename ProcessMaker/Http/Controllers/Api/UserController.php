@@ -637,7 +637,8 @@ class UserController extends Controller
             return null;
         }
 
-        if (!$this->selfServiceTwoFactorCompletionPending($authenticatedUser)) {
+        $twoFa = new TwoFactorAuthentication();
+        if (!$twoFa->selfServiceUpdateRequiresTwoFactorCompletion($authenticatedUser)) {
             return null;
         }
 
@@ -660,27 +661,6 @@ class UserController extends Controller
             && ($fields['email'] ?? null) !== ($original['email'] ?? null);
     }
 
-    private function selfServiceTwoFactorCompletionPending(User $authenticatedUser): bool
-    {
-        if (!config('password-policies.2fa_enabled', false)
-            || empty(config('password-policies.2fa_method', []))
-            || !TwoFactorAuthController::check2faByGroups()
-        ) {
-            return false;
-        }
-
-        $webUserId = Auth::guard('web')->id();
-        if ($webUserId === null || (int) $webUserId !== (int) $authenticatedUser->id) {
-            return true;
-        }
-
-        if (session('sso_driver') !== null && $this->authenticatedUserHasSsoBinding($authenticatedUser)) {
-            return false;
-        }
-
-        return !session()->get(TwoFactorAuthController::TFA_VALIDATED, false);
-    }
-
     private function preferences2faChanged(array $fields, array $original): bool
     {
         if (!array_key_exists('preferences_2fa', $fields)) {
@@ -697,19 +677,6 @@ class UserController extends Controller
 
         return $normalize($fields['preferences_2fa'] ?? null)
             !== $normalize($original['preferences_2fa'] ?? null);
-    }
-
-    private function authenticatedUserHasSsoBinding(User $user): bool
-    {
-        if (isset($user->meta?->authenticationType) && $user->meta->authenticationType === 'ldap') {
-            return true;
-        }
-
-        if (class_exists(SsoUser::class)) {
-            return SsoUser::where('user_id', $user->id)->exists();
-        }
-
-        return false;
     }
 
     private function validateEmailChangeForUpdate(User $user, array $fields, bool $isLdapUser)

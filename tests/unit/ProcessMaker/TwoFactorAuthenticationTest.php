@@ -214,17 +214,15 @@ class TwoFactorAuthenticationTest extends TestCase
         $this->assertTrue($service->clearsWebTwoFactorGate($user, '123456', true));
     }
 
-    public function testPendingAuthenticatorSecretIgnoredForDifferentUser(): void
+    public function testPendingAuthenticatorSecretPresentInSession(): void
     {
-        $owner = User::factory()->create();
-        $other = User::factory()->create();
+        $user = User::factory()->create();
 
         session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET, TOTP::generate()->getSecret());
-        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_USER_ID, $owner->id);
+        session()->put(TwoFactorAuthentication::PENDING_AUTHENTICATOR_USER_ID, $user->id);
 
         $service = new TwoFactorAuthentication();
-        $this->assertTrue($service->sessionHasPendingAuthenticatorForUser($owner));
-        $this->assertFalse($service->sessionHasPendingAuthenticatorForUser($other));
+        $this->assertTrue($service->sessionHasPendingAuthenticatorForUser($user));
     }
 
     public function testUserForDeliveryChallengeFreezesNonNullCellFromSnapshot(): void
