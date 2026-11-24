@@ -102,17 +102,17 @@ class TwoFactorAuthentication
     {
         $email = session()->get(self::CHALLENGE_DELIVERY_EMAIL);
         $cell = session()->get(self::CHALLENGE_DELIVERY_CELL);
-        if ($email === null && $cell === null) {
+        if (!session()->exists(self::CHALLENGE_DELIVERY_EMAIL) && !session()->exists(self::CHALLENGE_DELIVERY_CELL)) {
             return $user;
         }
 
         $deliveryUser = $user->replicate();
         $deliveryUser->exists = true;
         $deliveryUser->id = $user->id;
-        if ($email !== null) {
+        if (session()->exists(self::CHALLENGE_DELIVERY_EMAIL)) {
             $deliveryUser->email = $email;
         }
-        if ($cell !== null) {
+        if (session()->exists(self::CHALLENGE_DELIVERY_CELL)) {
             $deliveryUser->cell = $cell;
         }
 

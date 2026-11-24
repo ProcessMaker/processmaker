@@ -154,4 +154,46 @@ class TwoFactorAuthenticationTest extends TestCase
 
         $this->assertFalse((new TwoFactorAuthentication())->validateCode($user, '000000'));
     }
+
+    private function invokeUserForDeliveryChallenge(User $user): User
+    {
+        $class = new ReflectionClass(TwoFactorAuthentication::class);
+        $method = $class->getMethod('userForDeliveryChallenge');
+        $method->setAccessible(true);
+
+        return $method->invoke(new TwoFactorAuthentication(), $user);
+    }
+
+    public function testUserForDeliveryChallengeFreezesNullCellFromSnapshot(): void
+    {
+        $user = User::factory()->create([
+            'cell' => '15551234567',
+        ]);
+
+        session()->put(TwoFactorAuthentication::CHALLENGE_DELIVERY_EMAIL, $user->email);
+        session()->put(TwoFactorAuthentication::CHALLENGE_DELIVERY_CELL, null);
+
+        $user->cell = '19998887777';
+
+        $deliveryUser = $this->invokeUserForDeliveryChallenge($user);
+
+        $this->assertNull($deliveryUser->cell);
+    }
+
+    public function testUserForDeliveryChallengeFreezesNonNullCellFromSnapshot(): void
+    {
+        $snapshotCell = '15551112222';
+        $user = User::factory()->create([
+            'cell' => $snapshotCell,
+        ]);
+
+        session()->put(TwoFactorAuthentication::CHALLENGE_DELIVERY_EMAIL, $user->email);
+        session()->put(TwoFactorAuthentication::CHALLENGE_DELIVERY_CELL, $snapshotCell);
+
+        $user->cell = '19998887777';
+
+        $deliveryUser = $this->invokeUserForDeliveryChallenge($user);
+
+        $this->assertSame($snapshotCell, $deliveryUser->cell);
+    }
 }
