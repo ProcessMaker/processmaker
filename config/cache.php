@@ -108,6 +108,14 @@ return [
             'prefix' => env('CACHE_SETTING_PREFIX', 'settings:'),
         ],
 
+        // Fixed prefix so PrefixCacheTask tenant prefixes cannot hide this store.
+        'landlord' => [
+            'driver' => env('CACHE_DRIVER', 'redis'),
+            'connection' => 'default',
+            'lock_connection' => 'default',
+            'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_cache_') . 'landlord:',
+        ],
+
     ],
 
     /*

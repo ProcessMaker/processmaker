@@ -3,16 +3,23 @@
 namespace ProcessMaker\Http\Middleware;
 
 use Illuminate\Http\Middleware\TrustHosts as Middleware;
-use Closure;
 use Illuminate\Http\Request;
+use ProcessMaker\Multitenancy\SwitchTenant;
+use ProcessMaker\Multitenancy\TenantDomainCache;
 
 class TrustHosts extends Middleware
 {
     public function hosts(): array
     {
         $hosts = array_filter([
-            $this->allSubdomainsOfApplicationUrl(),
+            $this->applicationUrlPattern(),
         ]);
+
+        if (config('app.multitenancy')) {
+            foreach (TenantDomainCache::domains() as $domain) {
+                $hosts[] = $this->hostPattern($domain);
+            }
+        }
 
         $trustedHostsEnv = config('app.trusted_hosts_links', '');
         if ($trustedHostsEnv !== '') {
@@ -20,11 +27,11 @@ class TrustHosts extends Middleware
                 if (str_contains($host, '://')) {
                     $host = parse_url($host, PHP_URL_HOST) ?: $host;
                 }
-                $hosts[] = '^(.+\.)?' . preg_quote($host) . '$';
+                $hosts[] = $this->hostPattern($host);
             }
         }
 
-        return array_values($hosts);
+        return array_values(array_unique($hosts));
     }
 
     public function handle(Request $request, $next)
@@ -46,7 +53,7 @@ class TrustHosts extends Middleware
                 }
             }
 
-            if (! $trusted) {
+            if (!$trusted) {
                 \Log::warning('Rejected request with untrusted X-Forwarded-Host', [
                     'forwarded_host' => $forwardedHost,
                 ]);
@@ -55,6 +62,28 @@ class TrustHosts extends Middleware
         }
 
         return parent::handle($request, $next);
+    }
+
+    /**
+     * Prefer the landlord APP_URL under multitenancy so Octane does not narrow
+     * trusted hosts to whichever tenant last called SwitchTenant.
+     */
+    protected function applicationUrlPattern(): ?string
+    {
+        $url = config('app.url');
+
+        if (config('app.multitenancy') && SwitchTenant::$landlordValues) {
+            $url = SwitchTenant::$landlordValues['app']['url'] ?? $url;
+        }
+
+        $host = parse_url((string) $url, PHP_URL_HOST);
+
+        return $host ? $this->hostPattern($host) : null;
+    }
+
+    protected function hostPattern(string $host): string
+    {
+        return '^(.+\.)?' . preg_quote($host) . '$';
     }
 
     /**
@@ -67,4 +96,4 @@ class TrustHosts extends Middleware
 
         return preg_match('/' . str_replace('/', '\/', $pattern) . '/i', $host) === 1;
     }
-} 
+}
