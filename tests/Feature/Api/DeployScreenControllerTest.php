@@ -116,6 +116,43 @@ YAML;
         $this->assertStringContainsString('yaml', (string) $response->headers->get('Content-Type'));
     }
 
+    public function testGetScreenYamlAddsEmptyInspectorToEveryItem(): void
+    {
+        $yaml = <<<'YAML'
+config:
+  - name: Page 1
+    items:
+      - component: FormInput
+        inspector: []
+        config:
+          name: first
+      - component: FormMultiColumn
+        inspector: []
+        container: true
+        items:
+          - - component: FormInput
+              inspector: []
+              config:
+                name: nested
+          - []
+YAML;
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'yml_content' => $yaml,
+            'name' => 'inspector-pull-screen',
+        ])->assertOk();
+
+        $pull = $this->actingAs($this->user, 'api')
+            ->get('/api/1.0' . self::GET_ENDPOINT . '?name=inspector-pull-screen');
+
+        $pull->assertOk();
+        $parsed = \Symfony\Component\Yaml\Yaml::parse($pull->getContent());
+        $items = $parsed['config'][0]['items'];
+        $this->assertSame([], $items[0]['inspector']);
+        $this->assertSame([], $items[1]['inspector']);
+        $this->assertSame([], $items[1]['items'][0][0]['inspector']);
+        $this->assertSame([], $items[1]['items'][1]);
+    }
+
     public function testDeployScreenPersistsPreviewPresets(): void
     {
         $yaml = <<<'YAML'

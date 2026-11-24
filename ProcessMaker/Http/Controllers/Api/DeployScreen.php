@@ -132,7 +132,7 @@ class DeployScreen extends Controller
         }
 
         [$screen, $screenVersion] = $resolved;
-        $config = $this->removeInspectorMetadata($screenVersion->config ?? []);
+        $config = $this->withEmptyInspector($this->removeInspectorMetadata($screenVersion->config ?? []));
         $data = [
             'config' => $config,
             'computed' => $screenVersion->computed,
@@ -146,6 +146,47 @@ class DeployScreen extends Controller
             ->header('Content-Type', 'text/yaml')
             ->header('X-Screen-Id', (string) $screen->id)
             ->header('X-Screen-Name', $screen->title);
+    }
+
+    /**
+     * The export drops the (large) inspector metadata, but the YAML contract expects every
+     * item to carry `inspector: []`, so a pulled screen can be pushed back unchanged.
+     *
+     * @param array<int, mixed> $config
+     * @return array<int, mixed>
+     */
+    private function withEmptyInspector(array $config): array
+    {
+        foreach ($config as $index => $page) {
+            if (is_array($page) && isset($page['items']) && is_array($page['items'])) {
+                $config[$index]['items'] = $this->addEmptyInspector($page['items']);
+            }
+        }
+
+        return $config;
+    }
+
+    /**
+     * @param array<int|string, mixed> $items
+     * @return array<int|string, mixed>
+     */
+    private function addEmptyInspector(array $items): array
+    {
+        foreach ($items as $index => $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            if (isset($item['component']) && !array_key_exists('inspector', $item)) {
+                $item['inspector'] = [];
+            }
+            if (isset($item['items']) && is_array($item['items'])) {
+                $item['items'] = $this->addEmptyInspector($item['items']);
+            }
+            // A FormMultiColumn holds a list of columns, and each column is a list of items.
+            $items[$index] = array_is_list($item) && $item !== [] ? $this->addEmptyInspector($item) : $item;
+        }
+
+        return $items;
     }
 
     /**
