@@ -484,7 +484,7 @@ export default {
     },
     onCreate(data) {
       this.isLoading = true;
-      ProcessMaker.apiClient.post('customize-ui', data)
+      ProcessMaker.apiClient.post('customize-ui', data, { timeout: 0 })
         .then(response => {
           this.$refs.modalLoading.show();
         })
@@ -502,7 +502,7 @@ export default {
         });
     },
     onUpdate(data) {
-      ProcessMaker.apiClient.put('customize-ui', data)
+      ProcessMaker.apiClient.put('customize-ui', data, { timeout: 0 })
         .then(response => {
           this.$refs.modalLoading.show();
         })

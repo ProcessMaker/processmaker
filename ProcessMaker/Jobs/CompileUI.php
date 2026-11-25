@@ -3,6 +3,7 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -35,10 +36,18 @@ class CompileUI implements ShouldQueue
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping())->releaseAfter(5)];
+        return [
+            (new WithoutOverlapping())
+                ->releaseAfter(10)
+                ->expireAfter(self::COMPILE_UI_LOCK_SECONDS),
+        ];
     }
 
-    private const COMPILE_UI_LOCK_SECONDS = 300;
+    /** Lock auto-expires if a worker dies while compiling (must exceed typical sass run). */
+    private const COMPILE_UI_LOCK_SECONDS = 120;
+
+    /** Max wait to acquire the lock (must stay below Octane max_execution_time). */
+    private const COMPILE_UI_LOCK_ACQUIRE_SECONDS = 30;
 
     private const COMPILE_UI_LOCK_KEY = 'compile-ui-filesystem';
 
@@ -46,9 +55,15 @@ class CompileUI implements ShouldQueue
     {
         $lock = Cache::store('landlord')->lock(self::COMPILE_UI_LOCK_KEY, self::COMPILE_UI_LOCK_SECONDS);
 
-        $lock->block(self::COMPILE_UI_LOCK_SECONDS, function () {
-            $this->runCompileUi();
-        });
+        try {
+            $lock->block(self::COMPILE_UI_LOCK_ACQUIRE_SECONDS, function () {
+                $this->runCompileUi();
+            });
+        } catch (LockTimeoutException) {
+            throw new \RuntimeException(
+                __('UI theme compilation is already in progress. Please try again in a few moments.')
+            );
+        }
     }
 
     private function runCompileUi(): void
