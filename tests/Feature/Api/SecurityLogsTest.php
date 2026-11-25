@@ -272,7 +272,8 @@ class SecurityLogsTest extends TestCase
      */
     public function testRequestDeleted()
     {
-        $request = ProcessRequest::factory()->create();
+        // Only the user who started the request (or an admin) is allowed to delete it
+        $request = ProcessRequest::factory()->create(['user_id' => $this->user->id]);
 
         $response = $this->apiCall('DELETE', route('api.requests.destroy', ['request' => $request->id]));
 
