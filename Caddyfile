@@ -9,6 +9,11 @@
 			php_ini upload_max_filesize {$OCTANE_UPLOAD_MAX_FILESIZE:200M}
 			php_ini max_input_vars {$OCTANE_MAX_INPUT_VARS:9000}
 			php_ini max_input_time {$OCTANE_MAX_INPUT_TIME:90}
+			# Mitigate CVE-2026-129474 (and related session upload-progress paths).
+			# Workers do not load production php.ini, so set these here.
+			php_ini zend.exception_ignore_args 1
+			php_ini fatal_error_backtraces 0
+			php_ini session.upload_progress.enabled 0
 
 		worker {
 			file "{$APP_PUBLIC_PATH}/frankenphp-worker.php"
