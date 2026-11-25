@@ -38,7 +38,20 @@ class CompileUI implements ShouldQueue
         return [(new WithoutOverlapping())->releaseAfter(5)];
     }
 
+    private const COMPILE_UI_LOCK_SECONDS = 300;
+
+    private const COMPILE_UI_LOCK_KEY = 'compile-ui-filesystem';
+
     public function handle()
+    {
+        $lock = Cache::store('landlord')->lock(self::COMPILE_UI_LOCK_KEY, self::COMPILE_UI_LOCK_SECONDS);
+
+        $lock->block(self::COMPILE_UI_LOCK_SECONDS, function () {
+            $this->runCompileUi();
+        });
+    }
+
+    private function runCompileUi(): void
     {
         $setting = Setting::byKey('css-override');
         if ($setting) {
