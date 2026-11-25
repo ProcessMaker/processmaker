@@ -99,7 +99,7 @@ class CssOverrideController extends Controller
         $this->setLoginFooter($request);
         $this->setAltText($request);
 
-        CompileUI::dispatch($request->user('api')->id);
+        CompileUI::dispatchSync($request->user('api')->id);
 
         // Register the Event
         CustomizeUiUpdated::dispatch([], [], $reset);
@@ -168,7 +168,7 @@ class CssOverrideController extends Controller
         $this->setLoginFooter($request);
         $this->setAltText($request);
 
-        CompileUI::dispatch($request->user('api')->id);
+        CompileUI::dispatchSync($request->user('api')->id);
 
         return response([], 204);
     }
