@@ -160,11 +160,15 @@
             <div align="center">
                 {{__('Image types accepted: .gif, .jpg, .jpeg, .png')}}
             </div>
-            <vue-croppie :style="{display: (image) ? 'block' : 'none' }" ref="croppie"
-                         :viewport="{ width: 380, height: 380, type: 'circle' }"
-                         :boundary="{ width: 400, height: 400 }" :enable-orientation="false"
-                         :enable-resize="false">
-            </vue-croppie>
+            <vue-croppie
+                v-show="image"
+                ref="croppie"
+                :viewport="{ width: 380, height: 380, type: 'circle' }"
+                :boundary="{ width: 400, height: 400 }"
+                :enableOrientation="false"
+                :enableResize="false"
+                :showZoomer="true"
+            />
         </div>
         <input id="upload-image" type="file" class="custom-file-input" accept=".gif,.jpg,.jpeg,.png,image/jpeg,image/gif,image/png" ref="customFile" @change="onFileChange" aria-label="{{__('Select a file')}}">
     </pm-modal>
@@ -190,13 +194,21 @@
           };
         },
         methods: {
+          avatarCropOptions() {
+            return {
+              type: 'base64',
+              format: 'png',
+              size: { width: 380, height: 380 },
+              circle: true,
+            };
+          },
           // Called when the croppie instance is completed
           cropResult() {
           },
           saveAndEmit() {
             // We will close our modal, but we will ALSO emit a message stating the image has been updated
             // The parent component will listen for that message and update it's data to reflect the new image
-            this.$refs.croppie.result({}, (selectedImage) => {
+            this.$refs.croppie.result(this.avatarCropOptions(), (selectedImage) => {
               // Update the profile's avatar image with the selected one
               let optionValues = formVueInstance.$data.options[0];
               optionValues.src = selectedImage;
@@ -237,8 +249,10 @@
             reader.onload = e => {
               // Show we now have an image in our modal to use
               this.image = true;
-              this.$refs.croppie.bind({
-                url: e.target.result
+              this.$nextTick(() => {
+                this.$refs.croppie.bind({
+                  url: e.target.result
+                });
               });
             };
             // Now actually read it, calling the onload after it's read

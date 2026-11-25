@@ -101,6 +101,7 @@
 <script>
 import Vue from "vue";
 import VueCroppie from "vue-croppie";
+import 'croppie/croppie.css';
 import AvatarImage from "./AvatarImage.vue";
 
 Vue.component("AvatarImage", AvatarImage);
