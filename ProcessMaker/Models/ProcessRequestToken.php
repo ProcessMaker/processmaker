@@ -1545,7 +1545,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $notification = new TaskReassignmentNotification($this);
         $this->user->notify($notification);
         if ($this->element_type === 'task') {
-            event(new ActivityAssigned($this));
+            event(new ActivityAssigned($this, $reassingAction));
         }
     }
 
