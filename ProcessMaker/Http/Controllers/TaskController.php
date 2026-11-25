@@ -316,6 +316,14 @@ class TaskController extends Controller
             'varValue' => 'required|string',
         ]);
 
+        return $this->resolveAbeVariableUpdateResponse($request, $abe);
+    }
+
+    /**
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    private function resolveAbeVariableUpdateResponse(HttpRequest $request, ProcessAbeRequestToken $abe)
+    {
         if ($abe->require_login && Auth::user()->username === AnonymousUser::ANONYMOUS_USERNAME) {
             return $this->redirectAbeClickToLogin($request, $abe);
         }
@@ -325,12 +333,9 @@ class TaskController extends Controller
         }
 
         $task = ProcessRequestToken::find($abe->process_request_token_id);
-        $taskError = $this->abeVariableUpdateTaskError($task);
-        if ($taskError !== null) {
-            return $taskError;
-        }
 
-        return $this->completeAbeVariableUpdate($request, $abe, $task);
+        return $this->abeVariableUpdateTaskError($task)
+            ?? $this->completeAbeVariableUpdate($request, $abe, $task);
     }
 
     private function abeVariableUpdateTaskError(?ProcessRequestToken $task)
@@ -449,10 +454,19 @@ class TaskController extends Controller
 
     /**
      * Merge a parked ABE click query back onto the request when the signature is missing.
+     *
+     * Only restore onto the short post-login intended URL (no action params). A fresh
+     * Approve/Reject click already carries varName/varValue and must not be overwritten
+     * by an older parked query from a leftover abe_click_ticket cookie.
      */
     private function restoreAbeClickQuery(HttpRequest $request, ProcessAbeRequestToken $abe): void
     {
         if ((string) $request->query(AbeRecipientSignature::SIG, '') !== '') {
+            return;
+        }
+
+        if ((string) $request->query('varName', '') !== ''
+            && (string) $request->query('varValue', '') !== '') {
             return;
         }
 
@@ -476,15 +490,18 @@ class TaskController extends Controller
             return null;
         }
 
-        $pending = Cache::pull(self::ABE_CLICK_CACHE_PREFIX . $ticket);
-        if (!is_array($pending) || ($pending['abe_uuid'] ?? null) !== $abe->uuid) {
-            return null;
-        }
+        // Peek first: leave the parked payload alone unless this ABE token owns it.
+        $cacheKey = self::ABE_CLICK_CACHE_PREFIX . $ticket;
+        $pending = Cache::get($cacheKey);
+        $query = is_array($pending) && ($pending['abe_uuid'] ?? null) === $abe->uuid
+            ? ($pending['query'] ?? null)
+            : null;
 
-        $query = $pending['query'] ?? null;
         if (!is_array($query) || $query === []) {
             return null;
         }
+
+        Cache::forget($cacheKey);
 
         return $query;
     }

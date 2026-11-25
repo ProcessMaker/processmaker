@@ -432,21 +432,15 @@ class TokenRepository implements TokenRepositoryInterface
         }
 
         $instance = $token->getInstance();
-        if (!$instance || !method_exists($instance, 'getProcess')) {
-            return null;
-        }
-
-        $process = $instance->getProcess();
-        if (!$process || !method_exists($process, 'getOwnerDocument')) {
-            return null;
-        }
-
-        $document = $process->getOwnerDocument();
-        if (!$document || !method_exists($document, 'getModel')) {
-            return null;
-        }
-
-        $model = $document->getModel();
+        $process = ($instance && method_exists($instance, 'getProcess'))
+            ? $instance->getProcess()
+            : null;
+        $document = ($process && method_exists($process, 'getOwnerDocument'))
+            ? $process->getOwnerDocument()
+            : null;
+        $model = ($document && method_exists($document, 'getModel'))
+            ? $document->getModel()
+            : null;
 
         return $model instanceof Process ? $model : null;
     }
