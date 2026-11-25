@@ -7,7 +7,6 @@ use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
@@ -27,20 +26,6 @@ class CompileUI implements ShouldQueue
 
     public function __construct(public ?int $user_id = null)
     {
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [
-            (new WithoutOverlapping())
-                ->releaseAfter(10)
-                ->expireAfter(self::COMPILE_UI_LOCK_SECONDS),
-        ];
     }
 
     /** Lock auto-expires if a worker dies while compiling (must exceed typical sass run). */

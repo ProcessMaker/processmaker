@@ -388,16 +388,6 @@ export default {
     }
   },
   mounted() {
-    let userID = document.head.querySelector('meta[name="user-id"]');
-    window.Echo.private(
-      `ProcessMaker.Models.User.${userID.content}`
-    ).notification(response => {
-      if (response.type == "ProcessMaker\\Notifications\\SassCompiledNotification") {
-        ProcessMaker.alert(this.$t('The styles were recompiled.'), 'success');
-        this.onClose();
-      }
-    });
-
     this.loginFooter = _.get(window.loginFooterSetting, 'config.html', '');
     this.altText = window.altTextSetting;
   },
@@ -485,15 +475,16 @@ export default {
     onCreate(data) {
       this.isLoading = true;
       ProcessMaker.apiClient.post('customize-ui', data, { timeout: 0 })
-        .then(response => {
-          this.$refs.modalLoading.show();
+        .then(() => {
+          ProcessMaker.alert(this.$t('The styles were recompiled.'), 'success');
+          this.onClose();
         })
         .catch(error => {
           ProcessMaker.alert(
             _.get(error, 'response.data.message', this.$t('The given data was invalid.')),
             'danger'
           );
-          if (error.response.status && error.response.status === 422) {
+          if (_.get(error, 'response.status') === 422) {
             this.errors = error.response.data.errors;
           }
         })
@@ -503,11 +494,12 @@ export default {
     },
     onUpdate(data) {
       ProcessMaker.apiClient.put('customize-ui', data, { timeout: 0 })
-        .then(response => {
-          this.$refs.modalLoading.show();
+        .then(() => {
+          ProcessMaker.alert(this.$t('The styles were recompiled.'), 'success');
+          this.onClose();
         })
         .catch(error => {
-          if (error.response.status && error.response.status === 422) {
+          if (_.get(error, 'response.status') === 422) {
             this.errors = error.response.data.errors;
           }
         });
