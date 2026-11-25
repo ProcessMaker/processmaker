@@ -207,6 +207,9 @@
           @error="onPluginJobError"
           @running="onPluginJobRunning"
         />
+        <p v-if="serverRestartMessage" class="text-muted mt-2 mb-0">
+          {{ serverRestartMessage }}
+        </p>
       </b-container>
     </pm-modal>
 
@@ -316,6 +319,9 @@
           @error="onProgressJobError"
           @running="onProgressJobRunning"
         />
+        <p v-if="serverRestartMessage" class="text-muted mt-2 mb-0">
+          {{ serverRestartMessage }}
+        </p>
       </b-container>
     </pm-modal>
   </div>
@@ -622,12 +628,6 @@ const showCreateModal = () => {
   createPlugin.value?.show();
 };
 
-const hidePluginModal = () => {
-  resetValues();
-  createPlugin.value?.hide();
-  fetch();
-};
-
 const pendingVerb = ref("installed");
 const progressTitle = ref("");
 const progressOutputTitle = ref("");
@@ -639,6 +639,82 @@ const progressIsDone = ref(false);
 const progressWaiting = ref(false);
 const progressJobSucceeded = ref(false);
 const progressModalButtons = ref([]);
+const serverRestartMessage = ref("");
+const serverRestartReady = ref(false);
+let serverRestartTimer = null;
+let serverRestartAttempts = 0;
+
+const stopServerRestartPolling = () => {
+  if (serverRestartTimer) {
+    clearInterval(serverRestartTimer);
+    serverRestartTimer = null;
+  }
+};
+
+const showInstallCloseButton = (allowFailure = false) => {
+  if (
+    !isDone.value ||
+    (!serverRestartReady.value && !allowFailure) ||
+    customModalButtons.value.length < 3
+  ) {
+    return;
+  }
+  customModalButtons.value[2].hidden = false;
+  customModalButtons.value[2].disabled = false;
+  customModalButtons.value[0].hidden = true;
+  customModalButtons.value[1].hidden = true;
+};
+
+const checkServerRestart = () => {
+  serverRestartAttempts += 1;
+  ProcessMaker.apiClient
+    .get("/health/live?format=json", {
+      baseURL: window.location.origin,
+      timeout: 3000,
+    })
+    .then(() => {
+      stopServerRestartPolling();
+      serverRestartReady.value = true;
+      serverRestartMessage.value = $t(
+        "Server restart completed. You can now close this window."
+      );
+      if (progressModalButtons.value.length) {
+        progressModalButtons.value[0].disabled = false;
+      }
+      showInstallCloseButton();
+    })
+    .catch(() => {
+      if (serverRestartAttempts >= 4) {
+        stopServerRestartPolling();
+        serverRestartMessage.value = $t(
+          "Something went wrong with the server restart."
+        );
+        if (progressModalButtons.value.length) {
+          progressModalButtons.value[0].disabled = false;
+        }
+        showInstallCloseButton(true);
+      }
+    });
+};
+
+const startServerRestartPolling = () => {
+  stopServerRestartPolling();
+  serverRestartAttempts = 0;
+  serverRestartReady.value = false;
+  serverRestartMessage.value = $t("Waiting for server restart...");
+  serverRestartTimer = setInterval(checkServerRestart, 3000);
+};
+
+const hidePluginModal = () => {
+  stopServerRestartPolling();
+  if (isDone.value && serverRestartReady.value) {
+    reloadAfterPluginChange(`${$t("The plugin was ")}${pendingVerb.value}.`);
+    return;
+  }
+  resetValues();
+  createPlugin.value?.hide();
+  fetch();
+};
 
 const save = () => {
   if (disabled.value) {
@@ -647,6 +723,8 @@ const save = () => {
   disabled.value = true;
   isRunning.value = true;
   isDone.value = false;
+  serverRestartMessage.value = "";
+  serverRestartReady.value = false;
   pendingVerb.value = plugin.description ? "toggled" : "installed";
   ProcessMaker.apiClient({
     method: "POST",
@@ -693,7 +771,7 @@ const onPluginJobDone = () => {
   isRunning.value = false;
   isDone.value = true;
   disabled.value = false;
-  reloadAfterPluginChange($t("The plugin was ") + pendingVerb.value + ".");
+  startServerRestartPolling();
 };
 
 const onPluginJobError = () => {
@@ -703,6 +781,7 @@ const onPluginJobError = () => {
   isRunning.value = false;
   isDone.value = true;
   disabled.value = false;
+  stopServerRestartPolling();
 };
 
 const reloadAfterPluginChange = (message) => {
@@ -847,6 +926,8 @@ const openPluginProgressModal = ({
   progressIsDone.value = false;
   progressWaiting.value = true;
   progressJobSucceeded.value = false;
+  serverRestartMessage.value = "";
+  serverRestartReady.value = false;
   initProgressModalButtons();
   pluginProgressModal.value?.show();
 };
@@ -868,7 +949,7 @@ const onProgressJobDone = () => {
   progressIsRunning.value = false;
   progressIsDone.value = true;
   progressJobSucceeded.value = true;
-  enableProgressModalClose();
+  startServerRestartPolling();
 };
 
 const onProgressJobError = () => {
@@ -876,6 +957,7 @@ const onProgressJobError = () => {
   progressIsRunning.value = false;
   progressIsDone.value = true;
   progressJobSucceeded.value = false;
+  stopServerRestartPolling();
   enableProgressModalClose();
 };
 
@@ -884,7 +966,7 @@ const hideProgressModal = () => {
     return;
   }
   pluginProgressModal.value?.hide();
-  if (progressJobSucceeded.value) {
+  if (progressJobSucceeded.value && serverRestartReady.value) {
     reloadAfterPluginChange($t("The plugin was ") + pendingVerb.value + ".");
     return;
   }
@@ -892,6 +974,7 @@ const hideProgressModal = () => {
 };
 
 const resetProgressModal = () => {
+  stopServerRestartPolling();
   progressTitle.value = "";
   progressOutputTitle.value = "";
   progressSuccessMessage.value = "";
@@ -900,6 +983,8 @@ const resetProgressModal = () => {
   progressIsDone.value = false;
   progressWaiting.value = false;
   progressJobSucceeded.value = false;
+  serverRestartMessage.value = "";
+  serverRestartReady.value = false;
   initProgressModalButtons();
 };
 
@@ -934,6 +1019,7 @@ const confirmDeletePlugin = (item, onConfirm) => {
 };
 
 const resetValues = () => {
+  stopServerRestartPolling();
   title.value = $t("Create Plugin");
   Object.assign(plugin, {
     id: null,
@@ -953,6 +1039,8 @@ const resetValues = () => {
   disabled.value = false;
   isRunning.value = false;
   isDone.value = false;
+  serverRestartMessage.value = "";
+  serverRestartReady.value = false;
   initCustomModalButtons();
 };
 
@@ -1025,10 +1113,8 @@ watch(isRunning, (val) => {
 });
 
 watch(isDone, (val) => {
-  if (val && customModalButtons.value.length >= 3) {
-    customModalButtons.value[2].hidden = false;
-    customModalButtons.value[0].hidden = true;
-    customModalButtons.value[1].hidden = true;
+  if (val) {
+    showInstallCloseButton();
   }
 });
 
@@ -1045,6 +1131,10 @@ watch(filter, () => {
 
 onBeforeMount(() => {
   resetValues();
+});
+
+onUnmounted(() => {
+  stopServerRestartPolling();
 });
 
 let onApiDataLoading;
