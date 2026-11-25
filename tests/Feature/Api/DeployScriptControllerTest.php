@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\ScriptVersion;
@@ -333,6 +334,95 @@ class DeployScriptControllerTest extends TestCase
             ->assertJsonValidationErrors(['script_executor_title']);
 
         $this->assertNull(Script::where('title', 'executor-wrong-language-script')->first());
+    }
+
+    public function testNonAdminWithoutEditScriptsCannotChooseExecutor(): void
+    {
+        $default = $this->phpExecutor('Default PHP Executor');
+        $this->actAsNonAdmin([]);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-forbidden-create',
+            'script_executor_id' => $default->id,
+        ])->assertStatus(403)->assertJson(['success' => false]);
+
+        $this->assertNull(Script::where('title', 'executor-forbidden-create')->first());
+    }
+
+    public function testNonAdminCannotMoveScriptToNonDefaultExecutor(): void
+    {
+        $this->phpExecutor('Default PHP Executor');
+        $admin = $this->phpExecutor('Admin PHP Executor');
+        $script = Script::factory()->create(['title' => 'executor-forbidden-update', 'language' => 'php']);
+        $before = $script->script_executor_id;
+        $this->actAsNonAdmin(['edit-scripts']);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-forbidden-update',
+            'script_executor_id' => $admin->id,
+            'version_name' => 'Move to the admin executor',
+        ])->assertStatus(403)->assertJson(['success' => false]);
+
+        $this->assertSame($before, $script->refresh()->script_executor_id);
+    }
+
+    public function testNonAdminCannotUseCustomExecutor(): void
+    {
+        $default = $this->phpExecutor('Default PHP Executor');
+        $default->update(['type' => 'custom']);
+        $this->actAsNonAdmin(['edit-scripts']);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-forbidden-custom',
+            'script_executor_id' => $default->id,
+        ])->assertStatus(403);
+
+        $this->assertNull(Script::where('title', 'executor-forbidden-custom')->first());
+    }
+
+    public function testNonAdminWithEditScriptsCanUseDefaultExecutor(): void
+    {
+        $default = ScriptExecutor::query()->where('language', 'php')->orderBy('id')->first()
+            ?? $this->phpExecutor('Default PHP Executor');
+        $this->actAsNonAdmin(['edit-scripts']);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-allowed-default',
+            'script_executor_id' => $default->id,
+        ])->assertOk()->assertJson(['action' => 'created']);
+
+        $this->assertSame($default->id, Script::where('title', 'executor-allowed-default')->value('script_executor_id'));
+    }
+
+    public function testNonAdminWithoutExecutorKeepsCurrentBehavior(): void
+    {
+        $this->ensureExecutor();
+        $this->actAsNonAdmin([]);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-none-requested',
+        ])->assertOk()->assertJson(['action' => 'created']);
+    }
+
+    /**
+     * Make the authenticated user a regular user holding only the given permissions.
+     */
+    private function actAsNonAdmin(array $permissions): void
+    {
+        $this->user->is_administrator = false;
+        $this->user->save();
+        $this->initializePermissions();
+
+        foreach ($permissions as $permission) {
+            $this->user->permissions()->attach(Permission::byName($permission)->id);
+        }
+        $this->user->refresh();
+        $this->flushSession();
     }
 
     private function phpExecutor(string $title): ScriptExecutor

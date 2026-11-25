@@ -29,9 +29,10 @@ class DeployProcessAlternativeB
     public function deploy(?Process $process, string $bpmn, bool $publish): array
     {
         $process = $this->assertDeployable($process);
-        $this->ensureAlternativeBEnabled($process);
 
         return DB::transaction(function () use ($process, $bpmn, $publish): array {
+            // Inside the transaction: if the version write fails below, Alternative B is not left enabled.
+            $this->ensureAlternativeBEnabled($process);
             $this->hydrateFromLatestB($process);
             $process->bpmn = $bpmn;
             $process->alternative = 'B';

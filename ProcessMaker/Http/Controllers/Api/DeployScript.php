@@ -72,7 +72,51 @@ class DeployScript extends Controller
             ], 422);
         }
 
+        if ($forbidden = $this->denyUnauthorizedExecutorBinding($request, $name)) {
+            return $forbidden;
+        }
+
         return $this->persistDeployedScript($request, $name);
+    }
+
+    /**
+     * Binding a script to an executor needs the same rights as the regular script
+     * routes: edit-scripts, and an administrator for any executor other than the
+     * default one (or any custom executor). Requests that name no executor, and
+     * requests that keep the executor a script already has, are not restricted.
+     */
+    private function denyUnauthorizedExecutorBinding(Request $request, string $name): ?JsonResponse
+    {
+        $requested = $this->requestedExecutor($request);
+        if ($requested === null) {
+            return null;
+        }
+
+        $user = $request->user();
+        if ($user->is_administrator) {
+            return null;
+        }
+
+        $current = Script::where('title', $name)->value('script_executor_id');
+        if ($current !== null && (int) $current === $requested->id) {
+            return null;
+        }
+
+        if (!$user->can('edit-scripts')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not allowed to choose a script executor.',
+            ], 403);
+        }
+
+        if (!$this->executors->isDefaultForNonAdmins($requested)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only administrators can use this script executor.',
+            ], 403);
+        }
+
+        return null;
     }
 
     private function requestedExecutor(Request $request): ?ScriptExecutor

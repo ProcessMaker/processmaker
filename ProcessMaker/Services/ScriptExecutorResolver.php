@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ProcessMaker\Services;
 
+use ProcessMaker\Enums\ScriptExecutorType;
 use ProcessMaker\Models\ScriptExecutor;
 
 class ScriptExecutorResolver
@@ -25,6 +26,19 @@ class ScriptExecutorResolver
         }
 
         return null;
+    }
+
+    /**
+     * Whether a user without administrator rights may bind a script to this executor:
+     * only the default one a new script would get, and never a custom executor.
+     */
+    public function isDefaultForNonAdmins(ScriptExecutor $executor): bool
+    {
+        if ($executor->type === ScriptExecutorType::Custom) {
+            return false;
+        }
+
+        return $this->resolveForNewScript()?->id === $executor->id;
     }
 
     public function resolveForNewScript(): ?ScriptExecutor
