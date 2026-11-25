@@ -29,36 +29,42 @@ class TwoFactorAuthController extends Controller
         $this->twoFactorAuthentication = new TwoFactorAuthentication();
     }
 
+    private function reloadUser(?User $user): ?User
+    {
+        return $user?->fresh() ?? $user;
+    }
+
     public function displayTwoFactorAuthForm(Request $request)
     {
         try {
-            // Get current user
-            $user = $request->user();
+            $user = $this->reloadUser($request->user());
 
-            // If not user not authenticated, redirect to login page
             if (empty($user) || !config('password-policies.2fa_enabled', false)) {
                 return redirect()->route('login');
             }
 
-            // Send code
-            if (!session()->has(self::TFA_ERROR) && !session()->has(self::TFA_MESSAGE)) {
-                $this->twoFactorAuthentication->sendCode($user);
-            } else {
-                if (!session()->has(self::TFA_MESSAGE)) {
-                    $this->twoFactorAuthentication->sendCode($user);
-                }
+            $this->twoFactorAuthentication->rememberChallengeMethodsSnapshot($user);
+            if ($this->twoFactorAuthentication->shouldShowQrForFirstTime($user)) {
+                return redirect()->route('2fa.auth_app_qr');
             }
 
-            // Set informative message
-            $methodsNames = $this->twoFactorAuthentication->friendlyMethodsNames($user);
-            $message = __('Enter the security code from :methods. If incorrect, please retry with the latest code provided.',
-                ['methods' => $methodsNames]);
-            session()->put(self::TFA_MESSAGE, $message);
+            $this->sendTwoFactorCodeForDisplay($user);
+
+            if ($this->twoFactorAuthentication->isInAuthenticatorEnrollmentPhase($user)) {
+                session()->put(
+                    self::TFA_MESSAGE,
+                    __('Enter the 6-digit code from your authenticator app.')
+                );
+            } else {
+                $methodsNames = $this->twoFactorAuthentication->friendlyMethodsNames($user);
+                $message = __('Enter the security code from :methods. If incorrect, please retry with the latest code provided.',
+                    ['methods' => $methodsNames]);
+                session()->put(self::TFA_MESSAGE, $message);
+            }
         } catch (Exception $error) {
             session()->put(self::TFA_ERROR, $error->getMessage());
         }
 
-        // Display view
         return view('auth.2fa.otp');
     }
 
@@ -82,20 +88,34 @@ class TwoFactorAuthController extends Controller
             return redirect()->route('2fa');
         }
 
-        // Validate code
+        $this->twoFactorAuthentication->rememberChallengeMethodsSnapshot($user);
+
         $validated = $this->twoFactorAuthentication->validateCode($user, $code);
 
-        // Store validation status
-        session()->put(self::TFA_VALIDATED, $validated);
+        session()->put(
+            self::TFA_VALIDATED,
+            $this->twoFactorAuthentication->clearsWebTwoFactorGate($user, $code, $validated)
+        );
 
         if ($validated) {
-            // Remove 2fa values in session
             session()->remove(self::TFA_MESSAGE);
             session()->remove(self::TFA_ERROR);
             session()->remove(self::TFA_AUTH_APP);
 
-            // Success
+            $user = $this->reloadUser($user);
             $route = 'login';
+            if (strlen($code) !== 6 && $this->twoFactorAuthentication->mayEnrollNewAuthenticator($user)) {
+                $route = $this->twoFactorAuthentication->sessionHasPendingAuthenticatorForUser($user)
+                    ? '2fa'
+                    : '2fa.auth_app_qr';
+
+                if ($route === '2fa') {
+                    session()->put(
+                        self::TFA_MESSAGE,
+                        __('Enter the 6-digit code from your authenticator app.')
+                    );
+                }
+            }
         } else {
             // Set error message
             session()->put(self::TFA_ERROR, __('Invalid code.'));
@@ -109,35 +129,64 @@ class TwoFactorAuthController extends Controller
 
     public function sendCode(Request $request)
     {
-        // Get current user
-        $user = $request->user();
+        $user = $this->reloadUser($request->user());
 
-        // Send the code
+        if ($this->twoFactorAuthentication->isInAuthenticatorEnrollmentPhase($user)) {
+            return redirect()->route('2fa');
+        }
+
         try {
             $this->twoFactorAuthentication->sendCode($user);
         } catch (Exception $error) {
             session()->put(self::TFA_ERROR, $error->getMessage());
         }
 
-        // Return to 2fa page
         return redirect()->route('2fa');
     }
 
     public function displayAuthAppQr(Request $request)
     {
-        // Get current user
-        $user = $request->user();
+        $user = $this->reloadUser($request->user());
 
-        // If not user not authenticated, redirect to login page
-        if (empty($user)) {
+        if (empty($user) || !config('password-policies.2fa_enabled', false)) {
             return redirect()->route('login');
         }
 
-        // Generate QR code
+        $this->twoFactorAuthentication->rememberChallengeMethodsSnapshot($user);
+        $methods = $this->twoFactorAuthentication->userPreferredMethods($user);
+
+        if (!in_array(TwoFactorAuthentication::AUTH_APP, $methods, true)
+            || !$this->twoFactorAuthentication->mayEnrollNewAuthenticator($user)
+        ) {
+            return redirect()->route('2fa');
+        }
+
         $qrCode = $this->twoFactorAuthentication->generateQr($user);
 
-        // Display view
         return view('auth.2fa.auth_app_qr', compact('qrCode'));
+    }
+
+    private function sendTwoFactorCodeForDisplay(User $user): void
+    {
+        if ($this->twoFactorAuthentication->isInAuthenticatorEnrollmentPhase($user)) {
+            return;
+        }
+
+        if (!session()->has(self::TFA_ERROR) && !session()->has(self::TFA_MESSAGE)) {
+            $this->twoFactorAuthentication->sendCode($user);
+
+            return;
+        }
+
+        $methods = $this->twoFactorAuthentication->userPreferredMethods($user);
+        $needsProvisioning = in_array(TwoFactorAuthentication::EMAIL, $methods, true)
+            || in_array(TwoFactorAuthentication::SMS, $methods, true)
+            ? empty($user->two_factor_delivery_secret)
+            : empty($user->two_factor_secret);
+
+        if (!session()->has(self::TFA_MESSAGE) || $needsProvisioning) {
+            $this->twoFactorAuthentication->sendCode($user);
+        }
     }
 
     public function testSettings(Request $request)

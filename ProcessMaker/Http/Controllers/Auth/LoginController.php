@@ -12,6 +12,7 @@ use Illuminate\Validation\ValidationException;
 use Laravel\Passport\ApiTokenCookieFactory;
 use Laravel\Passport\Passport;
 use ProcessMaker\Events\Logout;
+use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Models\Setting;
@@ -19,6 +20,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder;
 use ProcessMaker\Services\PermissionCacheService;
 use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\TwoFactorAuthentication;
 
 class LoginController extends Controller
 {
@@ -274,6 +276,13 @@ class LoginController extends Controller
         if (env('LOGOUT_OTHER_DEVICES', false)) {
             Auth::logoutOtherDevices($request->input('password'));
         }
+
+        if (config('password-policies.2fa_enabled', false)
+            && !empty(config('password-policies.2fa_method', []))
+            && TwoFactorAuthController::check2faByGroups()
+        ) {
+            (new TwoFactorAuthentication())->rememberChallengeMethodsSnapshot($user);
+        }
     }
 
     public function beforeLogout(Request $request)
@@ -294,6 +303,13 @@ class LoginController extends Controller
             session()->remove(TwoFactorAuthController::TFA_VALIDATED);
             session()->remove(TwoFactorAuthController::TFA_MESSAGE);
             session()->remove(TwoFactorAuthController::TFA_ERROR);
+            session()->remove(TwoFactorAuthentication::CHALLENGE_METHODS_SNAPSHOT);
+            session()->remove(TwoFactorAuthentication::CHALLENGE_DELIVERY_EMAIL);
+            session()->remove(TwoFactorAuthentication::CHALLENGE_DELIVERY_CELL);
+            session()->remove(TwoFactorAuthentication::CHALLENGE_DELIVERY_USER_ID);
+            session()->remove(TwoFactorAuthentication::DELIVERY_STEP_UP);
+            session()->remove(TwoFactorAuthentication::PENDING_AUTHENTICATOR_SECRET);
+            session()->remove(TwoFactorAuthentication::PENDING_AUTHENTICATOR_USER_ID);
 
             // Notify to listeners (package-auth, security logger)
             $eventResult = event(new Logout(Auth::user()));
