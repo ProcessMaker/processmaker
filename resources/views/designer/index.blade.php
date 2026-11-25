@@ -21,7 +21,7 @@
             <div class="col-6">
                 <div class="row">
                     <div class="col-12">
-                        <assets :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'scripts', 'screens', 'data-sources', 'decision_tables') }}" />
+                        <assets :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'scripts', 'screens', 'data-sources', 'decision_tables', 'flow_genies', 'collections') }}" />
                     </div>
                     <div class="col-12">
                         <my-project 
