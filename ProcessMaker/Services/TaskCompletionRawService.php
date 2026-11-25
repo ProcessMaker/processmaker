@@ -42,10 +42,6 @@ class TaskCompletionRawService
             throw new NotFoundHttpException(__('Task not found'));
         }
 
-        if ($taskRow->status === 'CLOSED') {
-            abort(422, __('Task already closed'));
-        }
-
         $processRow = $this->repository->findProcessForComplete((int) $taskRow->process_id);
 
         if ($processRow === null) {
@@ -56,6 +52,10 @@ class TaskCompletionRawService
             'update',
             $this->engineBridge->hydrateTokenForPolicy($taskRow, $processRow)
         );
+
+        if ($taskRow->status === 'CLOSED') {
+            abort(422, __('Task already closed'));
+        }
 
         $requestRow = $this->repository->findProcessRequestForComplete((int) $taskRow->process_request_id);
 

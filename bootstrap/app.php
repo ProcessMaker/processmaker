@@ -34,6 +34,7 @@ $app = Application::configure(basePath: realpath(__DIR__ . '/../'))
             Illuminate\Http\Middleware\TrustHosts::class,
             ProcessMakerMiddleware\TrustHosts::class
         );
+        $middleware->trustHosts(subdomains: true);
         $middleware->replace(
             Illuminate\Http\Middleware\TrustProxies::class,
             ProcessMakerMiddleware\TrustProxies::class

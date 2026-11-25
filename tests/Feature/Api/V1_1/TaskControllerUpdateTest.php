@@ -198,4 +198,28 @@ class TaskControllerUpdateTest extends TestCase
 
         $response->assertStatus(403);
     }
+
+    public function testUpdateDeniesUnauthorizedUserWhenTaskAlreadyClosed(): void
+    {
+        Config::set('app.task_update_v1_1_enabled', true);
+
+        $caller = User::factory()->create(['is_administrator' => false]);
+        $assignee = User::factory()->create(['is_administrator' => false]);
+        $task = ProcessRequestToken::factory()->create([
+            'user_id' => $assignee->id,
+            'status' => 'CLOSED',
+        ]);
+
+        $response = $this->actingAs($caller, 'api')->json(
+            'PUT',
+            '/api/' . preg_replace('/^.*\/api\//i', '', route('api.1.1.tasks.update', $task->id)),
+            [
+                'status' => 'COMPLETED',
+                'data' => ['foo' => 'bar'],
+            ]
+        );
+
+        $response->assertStatus(403);
+        $response->assertJsonMissing(['message' => 'Task already closed']);
+    }
 }

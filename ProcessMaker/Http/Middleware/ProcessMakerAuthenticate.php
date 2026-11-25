@@ -21,7 +21,7 @@ class ProcessMakerAuthenticate extends Authenticate
     {
         $this->authenticate($request, $guards);
 
-        if ($blocked = EnsureAccountAllowsAccess::blockingResponseForRequest($request)) {
+        if ($blocked = EnsureAccountAllowsAccess::blockingResponseForRequest($request, $guards)) {
             return $blocked;
         }
 

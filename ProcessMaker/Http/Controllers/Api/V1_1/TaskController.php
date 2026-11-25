@@ -20,19 +20,14 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\ProcessTranslations\TranslationManager;
-use ProcessMaker\Traits\TaskControllerIndexMethods;
+use ProcessMaker\Repositories\TaskV11ShowFastRepository;
 use ProcessMaker\Services\TaskCompletionRawService;
+use ProcessMaker\Traits\TaskControllerIndexMethods;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
 
 class TaskController extends Controller
 {
     use TaskControllerIndexMethods;
-
-    public function __construct(
-        private readonly TaskCompletionRawService $taskCompletionRawService,
-    ) {
-    }
 
     public $doNotSanitize = [
         'data',
@@ -61,12 +56,16 @@ class TaskController extends Controller
         $query = $this->indexOptimizedBaseQuery($request);
         $this->applyIndexFieldSelection($query, $request);
         $this->applyFilters($query, $request);
-        $this->excludeNonVisibleTasks($query, $request);
+        $resolveManagedProcessVisibility = $this->excludeNonVisibleTasks(
+            $query,
+            $request,
+            $request->input('processesIManage') === 'true'
+        );
         $this->applyColumnOrdering($query, $request);
         $this->applyStatusFilter($query, $request);
 
         if ($request->input('processesIManage') === 'true') {
-            $this->applyProcessManager($query, $user, $request);
+            $this->applyProcessManager($query, $user, $request, $resolveManagedProcessVisibility);
         } else {
             $this->applyForCurrentUser($query, $user);
         }
@@ -163,9 +162,65 @@ class TaskController extends Controller
 
     public function show(ProcessRequestToken $task)
     {
+        if (config('app.optimized_tasks_start_enabled')) {
+            return $this->showFast($task);
+        }
+
         $resource = TaskResource::preprocessInclude(request(), ProcessRequestToken::where('id', $task->id));
 
         return $resource->toArray(request());
+    }
+
+    public function showFast(ProcessRequestToken $task)
+    {
+        $httpRequest = request();
+        $this->removeDataFromIncludeQuery($httpRequest);
+
+        $repository = app(TaskV11ShowFastRepository::class);
+        $token = $repository->findForShow($task->id);
+
+        if ($this->queryIncludesRequestData($httpRequest)) {
+            $repository->hydrateProcessRequestData($token);
+        }
+
+        $resource = TaskResource::fromTokenWithIncludes($token, $httpRequest);
+
+        return $resource->toArray($httpRequest);
+    }
+
+    private function removeDataFromIncludeQuery(Request $request): void
+    {
+        $include = $request->query('include');
+        if (!is_string($include) || $include === '') {
+            return;
+        }
+
+        $parts = array_values(array_filter(
+            array_map('trim', explode(',', $include)),
+            static fn (string $part) => $part !== '' && $part !== 'data'
+        ));
+
+        if ($parts === []) {
+            $request->query->remove('include');
+        } else {
+            $request->query->set('include', implode(',', $parts));
+        }
+    }
+
+    private function queryIncludesRequestData(Request $request): bool
+    {
+        $include = $request->query('include', '');
+        if (!is_string($include) || $include === '') {
+            return false;
+        }
+
+        foreach (array_map('trim', explode(',', $include)) as $part) {
+            if ($part === 'requestData') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function showScreen($taskId)
@@ -252,7 +307,7 @@ class TaskController extends Controller
         }
 
         try {
-            $task = $this->taskCompletionRawService->completeTask(
+            $task = app(TaskCompletionRawService::class)->completeTask(
                 $taskId,
                 json_optimize_decode($request->getContent(), true) ?: [],
                 $request->user(),

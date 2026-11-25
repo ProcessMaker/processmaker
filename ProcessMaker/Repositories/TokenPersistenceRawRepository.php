@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Laravel\Scout\ModelObserver;
+use Laravel\Scout\Searchable;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ScheduledTask;
 
 class TokenPersistenceRawRepository
 {
@@ -64,6 +68,8 @@ class TokenPersistenceRawRepository
             'data',
             'token_properties',
         ]);
+
+        $this->deleteScheduledTasksForToken($token);
     }
 
     /**
@@ -102,6 +108,7 @@ class TokenPersistenceRawRepository
 
         $this->runUpdate('process_requests', (int) $instance->getKey(), $payload);
         $instance->syncChanges();
+        $this->syncSearchIndexAfterRawPersist($instance);
     }
 
     /**
@@ -114,7 +121,7 @@ class TokenPersistenceRawRepository
             if (!array_key_exists($field, $token->getAttributes())) {
                 continue;
             }
-            $payload[$field] = $this->serializeColumnValue($field, $token->getAttributes()[$field]);
+            $payload[$field] = $this->serializeColumnValue($token->getAttributes()[$field]);
         }
 
         $payload['updated_at'] = Carbon::now();
@@ -128,6 +135,7 @@ class TokenPersistenceRawRepository
 
         $this->runUpdate('process_request_tokens', $tokenId, $payload);
         $token->syncChanges();
+        $this->syncSearchIndexAfterRawPersist($token);
     }
 
     /**
@@ -147,16 +155,36 @@ class TokenPersistenceRawRepository
         DB::update("UPDATE `{$table}` SET {$assignments} WHERE `id` = ?", $values);
     }
 
-    private function serializeColumnValue(string $field, mixed $value): mixed
+    private function serializeColumnValue(mixed $value): mixed
     {
-        if (in_array($field, ['self_service_groups', 'token_properties', 'data'], true)) {
-            return $value === null ? null : json_encode($value);
-        }
-
         if ($value instanceof Carbon) {
             return $value->format('Y-m-d H:i:s');
         }
 
         return $value;
+    }
+
+    /**
+     * Raw UPDATE bypasses Eloquent save(); run Scout's saved handler on searchable models.
+     */
+    private function syncSearchIndexAfterRawPersist(Model $model): void
+    {
+        if (!in_array(Searchable::class, class_uses_recursive($model), true)) {
+            return;
+        }
+
+        (new ModelObserver)->saved($model);
+    }
+
+    private function deleteScheduledTasksForToken(ProcessRequestToken $token): void
+    {
+        $tokenId = (int) $token->getKey();
+        if ($tokenId <= 0) {
+            return;
+        }
+
+        ScheduledTask::query()
+            ->where('process_request_token_id', $tokenId)
+            ->delete();
     }
 }

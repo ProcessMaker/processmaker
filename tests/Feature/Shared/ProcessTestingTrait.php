@@ -3,8 +3,6 @@
 namespace Tests\Feature\Shared;
 
 use DOMElement;
-use Illuminate\Console\Scheduling\Event;
-use Illuminate\Console\Scheduling\Schedule;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Models\Process;
@@ -140,22 +138,18 @@ trait ProcessTestingTrait
     }
 
     /**
-     * Run scheduled tasks
+     * Run scheduled tasks in-process.
+     *
+     * Do not shell out to `php artisan bpmn:timer`: under RefreshDatabase the
+     * parent still holds an open transaction, so the child hits InnoDB lock
+     * wait timeout (~50s) on the same rows. scheduleTasks() already did the
+     * work; the subprocess is redundant and only adds that delay.
      */
     private function runScheduledTasks()
     {
-        $schedule = app()->make(Schedule::class);
         $scheduleManager = new TaskSchedulerManager();
         $scheduleManager->scheduleTasks();
-        ///
-        $events = collect($schedule->events());
-        $events->each(function (Event $event) {
-            // Only run bpmn:timer events
-            if (!str_contains($event->command, 'bpmn:timer')) {
-                return;
-            }
-            $event->isDue(app()) && $event->filtersPass(app()) ? $event->run(app()) : null;
-        });
+        $scheduleManager->evaluateConditionals();
     }
 
     /**

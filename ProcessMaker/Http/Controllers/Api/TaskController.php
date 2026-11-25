@@ -160,13 +160,17 @@ class TaskController extends Controller
 
         $this->applyFilters($query, $request);
 
-        $this->excludeNonVisibleTasks($query, $request);
+        $resolveManagedProcessVisibility = $this->excludeNonVisibleTasks(
+            $query,
+            $request,
+            $request->input('processesIManage') === 'true'
+        );
 
         $this->applyStatusFilter($query, $request);
 
         // Apply process manager filter BEFORE PMQL to avoid conflicts with is_self_service filtering
         if ($request->input('processesIManage') === 'true') {
-            $this->applyProcessManager($query, $user, $request);
+            $this->applyProcessManager($query, $user, $request, $resolveManagedProcessVisibility);
         } else {
             $this->applyForCurrentUser($query, $user);
         }
@@ -180,11 +184,15 @@ class TaskController extends Controller
 
         $this->applyColumnOrdering($query, $request);
 
-        // If only the total is being requested (by a Saved Search), send it now
         if ($getTotal === true) {
             return $query->count();
         }
 
+        return $this->paginateTaskIndex($query, $request, $user);
+    }
+
+    private function paginateTaskIndex($query, Request $request, User $user)
+    {
         try {
             $response = $query->paginate($request->input('per_page', 10));
         } catch (QueryException $e) {
