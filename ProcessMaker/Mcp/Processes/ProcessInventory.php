@@ -23,9 +23,10 @@ use ProcessMaker\Models\Script;
  */
 class ProcessInventory
 {
-    private const BPMN_NS = 'http://www.omg.org/spec/BPMN/20100524/MODEL';
+    // XML namespace identifiers, not network URLs: they must match the BPMN document byte for byte, so they cannot use https.
+    private const BPMN_NS = 'http://www.omg.org/spec/BPMN/20100524/MODEL'; // NOSONAR
 
-    private const PM_NS = 'http://processmaker.com/BPMN/2.0/Schema.xsd';
+    private const PM_NS = 'http://processmaker.com/BPMN/2.0/Schema.xsd'; // NOSONAR
 
     private const ACTIVITIES = [
         'task', 'userTask', 'manualTask', 'scriptTask', 'serviceTask', 'businessRuleTask',

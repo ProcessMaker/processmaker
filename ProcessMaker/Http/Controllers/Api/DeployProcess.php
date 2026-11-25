@@ -76,31 +76,36 @@ class DeployProcess extends Controller
     private function saveDeployedProcess(Request $request): JsonResponse
     {
         try {
-            $bpmn = $this->references->resolveNamedReferences($request->input('bpmn'));
-            $xmlErrors = $this->validateXml($bpmn);
-            if ($xmlErrors !== []) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid BPMN XML.',
-                    'errors' => ['bpmn' => $xmlErrors],
-                ], 422);
-            }
-
-            if ($this->targetsAlternativeB($request)) {
-                return $this->saveDeployedAlternativeB($request, $bpmn);
-            }
-
-            [$process, $created] = $this->upsertProcessByName($request, $bpmn);
-
-            return response()->json([
-                'success' => true,
-                'action' => $created ? 'created' : 'updated',
-                'process_id' => $process->id,
-                'name' => $process->name,
-            ]);
+            return $this->deployFromRequest($request);
         } catch (Throwable $exception) {
             return $this->deployProcessFailureResponse($exception);
         }
+    }
+
+    private function deployFromRequest(Request $request): JsonResponse
+    {
+        $bpmn = $this->references->resolveNamedReferences($request->input('bpmn'));
+        $xmlErrors = $this->validateXml($bpmn);
+        if ($xmlErrors !== []) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid BPMN XML.',
+                'errors' => ['bpmn' => $xmlErrors],
+            ], 422);
+        }
+
+        if ($this->targetsAlternativeB($request)) {
+            return $this->saveDeployedAlternativeB($request, $bpmn);
+        }
+
+        [$process, $created] = $this->upsertProcessByName($request, $bpmn);
+
+        return response()->json([
+            'success' => true,
+            'action' => $created ? 'created' : 'updated',
+            'process_id' => $process->id,
+            'name' => $process->name,
+        ]);
     }
 
     private function targetsAlternativeB(Request $request): bool
