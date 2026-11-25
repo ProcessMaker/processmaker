@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Notification;
 use ProcessMaker\Events\RequestAction;
+use ProcessMaker\Events\RequestDeleted;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Facades\WorkflowManager;
@@ -479,14 +480,48 @@ class ProcessRequestController extends Controller
     public function destroy(ProcessRequest $request)
     {
         try {
+            // Capture the data before deleting: the request and its children no longer exist afterwards
+            $eventData = [
+                'requestId' => $request->id,
+                'caseNumber' => $request->case_number !== null ? (string) $request->case_number : null,
+                'name' => $request->case_title ?: ($request->name ?: "Request #{$request->id}"),
+                'processId' => $request->process_id,
+                'parentRequestId' => $request->parent_request_id,
+                'childRequestIds' => $this->getDescendantRequestIds($request->id),
+            ];
+
             $request->delete();
 
+            RequestDeleted::dispatch(...array_values($eventData));
+
             return response([], 204);
-        } catch (\Exception $e) {
-            abort($e->getCode(), $e->getMessage());
         } catch (ReferentialIntegrityException $e) {
-            abort($e->getCode(), $e->getMessage());
+            abort($e->getCode() ?: 500, $e->getMessage());
+        } catch (\Exception $e) {
+            abort($e->getCode() ?: 500, $e->getMessage());
         }
+    }
+
+    /**
+     * Get the ids of all the descendant (subprocess) requests of a request.
+     *
+     * @param int $requestId
+     *
+     * @return array
+     */
+    private function getDescendantRequestIds(int $requestId): array
+    {
+        $descendants = [];
+        $parentIds = [$requestId];
+
+        while ($parentIds !== []) {
+            $parentIds = ProcessRequest::whereIn('parent_request_id', $parentIds)
+                ->pluck('id')
+                ->all();
+            $descendants = array_merge($descendants, $parentIds);
+        }
+
+        return $descendants;
     }
 
     /**

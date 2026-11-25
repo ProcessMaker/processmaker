@@ -17,6 +17,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use Tests\Feature\Shared\RequestHelper;
@@ -715,6 +716,15 @@ class ProcessRequestsTest extends TestCase
         $this->assertEquals(0, ProcessRequestToken::where('process_request_id', $parentProcessRequest->id)->count());
         $this->assertEquals(0, ProcessRequestToken::where('process_request_id', $childProcessRequest1->id)->count());
         $this->assertEquals(0, ProcessRequestToken::where('process_request_id', $childProcessRequest2->id)->count());
+
+        // A single security log is recorded, listing the cascaded child requests
+        $logs = SecurityLog::where('event', 'RequestDeleted')->get();
+        $this->assertCount(1, $logs);
+        $this->assertEquals($parentProcessRequest->id, $logs->first()->data->request_id);
+        $this->assertEqualsCanonicalizing(
+            [$childProcessRequest1->id, $childProcessRequest2->id],
+            $logs->first()->data->child_request_ids
+        );
     }
 
     /**
@@ -774,6 +784,14 @@ class ProcessRequestsTest extends TestCase
         $this->assertEquals(3, ProcessRequestToken::where('process_request_id', $parentProcessRequest->id)->count());
         $this->assertEquals(0, ProcessRequestToken::where('process_request_id', $childProcessRequest1->id)->count());
         $this->assertEquals(0, ProcessRequestToken::where('process_request_id', $childProcessRequest2->id)->count());
+
+        // A single security log is recorded for the deleted subprocess request
+        $logs = SecurityLog::where('event', 'RequestDeleted')->get();
+        $this->assertCount(1, $logs);
+        $data = $logs->first()->data;
+        $this->assertEquals($childProcessRequest1->id, $data->request_id);
+        $this->assertEquals($parentProcessRequest->id, $data->parent_request_id);
+        $this->assertEquals([$childProcessRequest2->id], $data->child_request_ids);
     }
 
     /**
@@ -787,6 +805,9 @@ class ProcessRequestsTest extends TestCase
 
         //Validate the header status code
         $response->assertStatus(405);
+
+        // No security log is recorded
+        $this->assertCount(0, SecurityLog::where('event', 'RequestDeleted')->get());
     }
 
     public function testListCanceledProcessRequests()

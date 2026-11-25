@@ -268,6 +268,27 @@ class SecurityLogsTest extends TestCase
     }
 
     /**
+     * This tests Request Deleted
+     */
+    public function testRequestDeleted()
+    {
+        // Only the user who started the request (or an admin) is allowed to delete it
+        $request = ProcessRequest::factory()->create(['user_id' => $this->user->id]);
+
+        $response = $this->apiCall('DELETE', route('api.requests.destroy', ['request' => $request->id]));
+
+        $response->assertStatus(204);
+
+        $this->checkAssertsSegurityLog('RequestDeleted', 'deleted_at');
+
+        if (config('app.security_log')) {
+            $data = SecurityLog::first()->data;
+            $this->assertEquals($request->id, $data->request_id);
+            $this->assertEquals([], $data->child_request_ids);
+        }
+    }
+
+    /**
      * This test Category Created
      */
     public function testCategoryCreated()

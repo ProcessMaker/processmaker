@@ -253,7 +253,11 @@ abstract class TestCase extends BaseTestCase
         $filename = 'snapshot_' . $id . '.db';
 
         $snapshotFile = base_path($filename);
-        $command = $this->getDumpCommand() . $this->mysqlConnectionString();
+        // The snapshot is taken while the test transaction is already open (and may have uncommitted
+        // writes from the setUp* hooks). A plain dump runs LOCK TABLES ... READ, which waits forever
+        // for that transaction while this process waits for the dump: a deadlock. Use a consistent
+        // InnoDB read view instead so the dump never blocks on locks.
+        $command = $this->getDumpCommand() . '--single-transaction --skip-lock-tables ' . $this->mysqlConnectionString();
         $command .= ' ' . env('DB_DATABASE') . ' > ' . $snapshotFile;
         exec($command, $output, $return);
         if ($return !== 0) {
