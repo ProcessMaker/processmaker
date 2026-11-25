@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\ImportExport;
 
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Exception\UnsupportedImportAssetException;
 
 class UnsupportedAssetValidator
@@ -18,44 +19,79 @@ class UnsupportedAssetValidator
                     fn (string $prefix) => self::normalizeClass($prefix) . '\\',
                     $rule['namespace_prefixes'] ?? []
                 ),
+                'available_when' => $rule['available_when'] ?? null,
             ];
         }, config('import-export.unsupported_assets', []));
     }
 
     public function validate(array $assets): void
     {
+        $availability = [];
         foreach ($assets as $asset) {
-            $this->validateReference($asset);
+            $this->validateReference($asset, $availability);
             foreach ($asset['dependents'] ?? [] as $dependent) {
-                $this->validateReference($dependent);
+                $this->validateReference($dependent, $availability);
             }
         }
     }
 
-    private function validateReference(array $reference): void
+    private function validateReference(array $reference, array &$availability): void
     {
         foreach (['model', 'exporter', 'modelClass', 'exporterClass'] as $key) {
             if (!isset($reference[$key])) {
                 continue;
             }
             $class = self::normalizeClass($reference[$key]);
-            foreach ($this->rules as $rule) {
-                $matches = in_array($class, $rule['classes'], true);
-                foreach ($rule['namespace_prefixes'] as $prefix) {
-                    if (str_starts_with($class, $prefix)) {
-                        $matches = true;
-                        break;
-                    }
+            foreach ($this->rules as $index => $rule) {
+                if (!$this->matchesRule($class, $rule)) {
+                    continue;
                 }
-                if ($matches) {
-                    throw new UnsupportedImportAssetException(
-                        __('This process package contains :resource resources, which are not supported for import. Remove the :resource resources and references from the source process, export it again, and retry the import.', [
-                            'resource' => __($rule['name']),
-                        ])
-                    );
+
+                $requirements = $rule['available_when'];
+                $availability[$index] ??= $requirements !== null && $this->isAvailable($requirements);
+                if ($availability[$index] && class_exists($reference[$key])) {
+                    continue;
                 }
+
+                throw new UnsupportedImportAssetException(
+                    __('This process package contains :resource resources, which are not supported for import. Remove the :resource resources and references from the source process, export it again, and retry the import.', [
+                        'resource' => __($rule['name']),
+                    ])
+                );
             }
         }
+    }
+
+    private function matchesRule(string $class, array $rule): bool
+    {
+        if (in_array($class, $rule['classes'], true)) {
+            return true;
+        }
+
+        foreach ($rule['namespace_prefixes'] as $prefix) {
+            if (str_starts_with($class, $prefix)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isAvailable(array $requirements): bool
+    {
+        foreach ($requirements['classes'] as $class) {
+            if (!class_exists($class)) {
+                return false;
+            }
+        }
+
+        foreach ($requirements['tables'] as $table) {
+            if (!Schema::hasTable($table)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static function normalizeClass(string $class): string
