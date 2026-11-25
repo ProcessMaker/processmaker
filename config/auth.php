@@ -112,6 +112,12 @@ return [
     'log_auth_events' => env('LOG_AUTH_EVENTS', true),
 
     /*
+    | Seconds to cache a failed JWT-shaped Bearer (hash only) so repeat requests skip Passport.
+    | Set AUTH_INVALID_BEARER_CACHE_TTL=0 to disable.
+    */
+    'invalid_bearer_cache_ttl' => (int) env('AUTH_INVALID_BEARER_CACHE_TTL', 60),
+
+    /*
     |--------------------------------------------------------------------------
     | Password Confirmation Timeout
     |--------------------------------------------------------------------------
