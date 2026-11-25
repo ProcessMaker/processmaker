@@ -292,10 +292,16 @@ class TaskController extends Controller
             // Missing/invalid query after a failed Require Login restore must not become HTTP 500.
             throw $e;
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error updating variable',
-                'error' => $e->getMessage(),
-            ], 500);
+            report($e);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Error updating variable',
+                    'error' => $e->getMessage(),
+                ], 500);
+            }
+
+            return $this->returnErrorResponse(__('An error occurred while processing your response.'), 500);
         }
     }
 
@@ -306,7 +312,7 @@ class TaskController extends Controller
     {
         $abe = ProcessAbeRequestToken::where('uuid', $abeUuid)->first();
         if (!$abe) {
-            return $this->returnErrorResponse(__('Token not found'), 404);
+            return $this->returnErrorResponse(__('Token not found'), 404, __('This link could not be found.'));
         }
 
         $this->restoreAbeClickQuery($request, $abe);
@@ -321,7 +327,11 @@ class TaskController extends Controller
         }
 
         if ($abe->is_answered) {
-            return $this->returnErrorResponse(__('This response has already been answered'), 200);
+            return $this->returnErrorResponse(
+                __('This response has already been answered'),
+                200,
+                __('This task has already been answered. No changes were made.')
+            );
         }
 
         $task = ProcessRequestToken::find($abe->process_request_token_id);
@@ -336,11 +346,19 @@ class TaskController extends Controller
     private function abeVariableUpdateTaskError(?ProcessRequestToken $task)
     {
         if (!$task) {
-            return $this->returnErrorResponse(__('Process request token not found'), 404);
+            return $this->returnErrorResponse(
+                __('Process request token not found'),
+                404,
+                __('This task could not be found.')
+            );
         }
 
         if ($task->status === 'CLOSED') {
-            return $this->returnErrorResponse(__('Task already closed'), 404);
+            return $this->returnErrorResponse(
+                __('Task already closed'),
+                404,
+                __('This task is already closed.')
+            );
         }
 
         return null;
@@ -507,12 +525,19 @@ class TaskController extends Controller
     }
 
     /**
-     * Return response
+     * Return an ABE result in the format requested by the client.
      * @param string $message
      * @param int $status
+     * @param string|null $htmlMessage
      */
-    public function returnErrorResponse(string $message, int $status)
+    public function returnErrorResponse(string $message, int $status, ?string $htmlMessage = null)
     {
+        if (!request()->expectsJson()) {
+            return response()->view('tasks.abe-response', [
+                'message' => $htmlMessage ?? $message,
+            ], $status);
+        }
+
         return response()->json([
             'message' => $message,
         ], $status);

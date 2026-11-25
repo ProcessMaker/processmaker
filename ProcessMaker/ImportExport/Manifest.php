@@ -183,7 +183,7 @@ class Manifest
         $class::unguard();
         switch ($mode) {
             case 'update':
-                $model->fill($attrs);
+                $model->fill(Arr::except($attrs, $exporterClass::$doNotUpdateAttributes));
                 break;
             case 'discard':
                 // Keep the model, just don't save it later in doImport

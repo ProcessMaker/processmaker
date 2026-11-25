@@ -146,6 +146,7 @@
 @section('js')
   @vite(['resources/js/requests/loaderRequestsShow.js'])
   @vite(['resources/js/processes/modeler/initialLoad.js'])
+  @vite(['resources/js/requests/show.js'])
   @if (hasPackage('package-files'))
     <script defer src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
   @endif
