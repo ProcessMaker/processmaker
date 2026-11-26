@@ -250,6 +250,39 @@ class TaskAssignmentByVariableTest extends TestCase
         $this->assertEquals($users->first()->id, $task->user_id);
     }
 
+    public function testOutOfOfficeAssignmentUsesOnlyAnActiveReplacement()
+    {
+        $activeReplacement = User::factory()->create(['status' => 'ACTIVE']);
+        $outOfOffice = User::factory()->create([
+            'status' => 'OUT_OF_OFFICE',
+            'delegation_user_id' => $activeReplacement->id,
+        ]);
+        $process = $this->createProcess('process_variable', 'usersVariable', '', '', false);
+
+        $response = $this->startTestProcess($process, ['usersVariable' => $outOfOffice->id]);
+        $task = ProcessRequestToken::where([
+            'process_request_id' => $response['id'],
+            'status' => 'ACTIVE',
+        ])->firstOrFail();
+        $this->assertEquals($activeReplacement->id, $task->user_id);
+
+        $manager = User::factory()->create(['status' => 'ACTIVE']);
+        foreach (['INACTIVE', 'OUT_OF_OFFICE'] as $status) {
+            $unavailableReplacement = User::factory()->create(['status' => $status]);
+            $outOfOffice->delegation_user_id = $unavailableReplacement->id;
+            $outOfOffice->save();
+            $process = $this->createProcess('process_variable', 'usersVariable', '', '', false);
+            $process->manager_id = [$manager->id];
+            $process->save();
+
+            $response = $this->startTestProcess($process, ['usersVariable' => $outOfOffice->id]);
+            $assignedToReplacement = ProcessRequestToken::where('process_request_id', $response['id'])
+                ->where('user_id', $unavailableReplacement->id)
+                ->exists();
+            $this->assertFalse($assignedToReplacement);
+        }
+    }
+
     public function testProcessVariableAssignmentWithLiteralId()
     {
         // Create users of a group and a user without group
