@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Passport\HasApiTokens;
@@ -50,6 +51,8 @@ class User extends Authenticatable implements HasMedia
     public const REQUESTS_SESSION_KEY = 'web-entry-request-ids';
 
     public const SELF_SERVICE_GROUP_IDS_CACHE_PREFIX = 'self_service:user_group_ids:';
+
+    public const SELF_SERVICE_GROUP_IDS_GENERATION_PREFIX = 'self_service:user_group_ids_generation:';
 
     public const SELF_SERVICE_GROUP_IDS_CACHE_TTL_MINUTES = 10;
 
@@ -498,15 +501,27 @@ class User extends Authenticatable implements HasMedia
         }));
     }
 
+    /**
+     * Invalidate the cached self-service group ids of a user.
+     *
+     * Call this after the membership write has completed. Instead of forgetting the live key
+     * (which an in-flight Cache::remember that already read the old memberships could write
+     * back), publish a new per-user generation that is part of the cache key. A fill that
+     * started earlier keeps writing the key of the generation it captured, which new
+     * requests no longer read.
+     */
     public static function flushSelfServiceGroupIdsCache(int $userId): void
     {
-        $version = Group::selfServiceHierarchyVersion();
-        Cache::forget(self::SELF_SERVICE_GROUP_IDS_CACHE_PREFIX . $userId . ':' . $version);
+        Cache::forever(self::SELF_SERVICE_GROUP_IDS_GENERATION_PREFIX . $userId, (string) Str::uuid());
     }
 
     private function selfServiceGroupIdsCacheKey(): string
     {
-        return self::SELF_SERVICE_GROUP_IDS_CACHE_PREFIX . $this->id . ':' . Group::selfServiceHierarchyVersion();
+        $generation = Cache::get(self::SELF_SERVICE_GROUP_IDS_GENERATION_PREFIX . $this->id, '0');
+
+        return self::SELF_SERVICE_GROUP_IDS_CACHE_PREFIX . $this->id
+            . ':' . Group::selfServiceHierarchyVersion()
+            . ':' . $generation;
     }
 
     public function availableSelfServiceTasksQuery()

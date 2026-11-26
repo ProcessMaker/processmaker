@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -176,6 +178,75 @@ class SelfServiceGroupCacheInvalidationTest extends TestCase
         $user->selfServiceGroupIds();
         $membership->delete();
 
+        $user = $user->fresh();
+        Auth::login($user);
+
+        $this->assertSame([], $user->selfServiceGroupIds()->all());
+        $this->assertFalse($user->canSelfServe($task));
+    }
+
+    public function test_in_flight_cache_fill_cannot_repopulate_key_after_detach(): void
+    {
+        $this->assertInFlightFillIsNotReusedAfterRevocation(
+            fn (User $user, Group $group) => $user->groups()->detach($group->id)
+        );
+    }
+
+    public function test_in_flight_cache_fill_cannot_repopulate_key_after_sync(): void
+    {
+        $this->assertInFlightFillIsNotReusedAfterRevocation(
+            fn (User $user, Group $group) => $user->groups()->sync([])
+        );
+    }
+
+    public function test_in_flight_cache_fill_cannot_repopulate_key_after_group_member_delete(): void
+    {
+        $this->assertInFlightFillIsNotReusedAfterRevocation(
+            fn (User $user, Group $group) => GroupMember::where('group_id', $group->id)
+                ->where('member_id', $user->id)
+                ->where('member_type', User::class)
+                ->first()
+                ->delete()
+        );
+    }
+
+    /**
+     * Simulates a request whose Cache::remember already read group_members (pre-revocation)
+     * when the membership is revoked and committed. The late cache write must not be
+     * readable by requests that start after the revocation.
+     */
+    private function assertInFlightFillIsNotReusedAfterRevocation(callable $revoke): void
+    {
+        $group = Group::factory()->create();
+        $user = User::factory()->create();
+        $user->groups()->attach($group);
+
+        $task = ProcessRequestToken::factory()->create([
+            'is_self_service' => true,
+            'status' => 'ACTIVE',
+            'user_id' => null,
+            'self_service_groups' => ['groups' => [$group->id]],
+        ]);
+
+        $armed = true;
+        DB::listen(function (QueryExecuted $query) use (&$armed, $revoke, $user, $group) {
+            // Fires after the membership query has already returned its (pre-revocation) rows.
+            if ($armed && str_contains($query->sql, 'group_members')) {
+                $armed = false;
+                $revoke($user, $group);
+            }
+        });
+
+        try {
+            $inFlight = $user->selfServiceGroupIds()->all();
+        } finally {
+            $armed = false;
+        }
+
+        // The in-flight request itself legitimately observed the pre-revocation state.
+        $this->assertSame([$group->id], $inFlight);
+
+        // Requests that start after the revocation must not see it.
         $user = $user->fresh();
         Auth::login($user);
 
