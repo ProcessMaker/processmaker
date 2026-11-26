@@ -41,6 +41,10 @@ class Importer
 
     public function doImport($existingAssetInDatabase = null, $importingFromTemplate = false)
     {
+        if (Session::has('_alert.serviceTasksNames')) {
+            Session::forget('_alert');
+        }
+
         $this->logger->log('Starting Transaction');
         DB::transaction(function () use ($existingAssetInDatabase, $importingFromTemplate) {
             // First, we save the model so we have IDs set for all assets
