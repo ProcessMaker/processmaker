@@ -157,6 +157,145 @@ class TasksTest extends TestCase
         $this->assertEquals(2, count($response->json()['data']));
     }
 
+    public function testUserFilterIncludesOnlyActiveSelfServiceTasksAndPreservesAssignedHistory()
+    {
+        $eligibleUser = User::factory()->create();
+        $request = ProcessRequest::factory()->create();
+        $selfServiceGroups = ['users' => [(string) $eligibleUser->id], 'groups' => []];
+
+        $activeSelfService = ProcessRequestToken::factory()->create([
+            'process_id' => $request->process_id,
+            'process_request_id' => $request->id,
+            'element_type' => 'task',
+            'status' => 'ACTIVE',
+            'user_id' => null,
+            'is_self_service' => 1,
+            'self_service_groups' => $selfServiceGroups,
+        ]);
+        $closedSelfService = ProcessRequestToken::factory()->create([
+            'process_id' => $request->process_id,
+            'process_request_id' => $request->id,
+            'element_type' => 'task',
+            'status' => 'CLOSED',
+            'user_id' => null,
+            'is_self_service' => 1,
+            'self_service_groups' => $selfServiceGroups,
+        ]);
+        $assignedClosedTask = ProcessRequestToken::factory()->create([
+            'process_id' => $request->process_id,
+            'process_request_id' => $request->id,
+            'element_type' => 'task',
+            'status' => 'CLOSED',
+            'user_id' => $eligibleUser->id,
+            'is_self_service' => 0,
+        ]);
+
+        $scopeQuery = ProcessRequestToken::query();
+        ProcessRequestToken::scopeWhereUserAssigned($scopeQuery, $eligibleUser->id);
+        $scopeIds = $scopeQuery->pluck('id')->all();
+        $this->assertContains($activeSelfService->id, $scopeIds);
+        $this->assertNotContains($closedSelfService->id, $scopeIds);
+        $this->assertContains($assignedClosedTask->id, $scopeIds);
+
+        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', [
+            'user_id' => $eligibleUser->id,
+            'per_page' => 100,
+        ]));
+        $response->assertStatus(200);
+
+        $taskIds = array_column($response->json('data'), 'id');
+        $this->assertContains($activeSelfService->id, $taskIds);
+        $this->assertNotContains($closedSelfService->id, $taskIds);
+        $this->assertContains($assignedClosedTask->id, $taskIds);
+    }
+
+    public function testIsSelfServicePmqlFieldOnlyMatchesOpenSelfServiceTasks()
+    {
+        $request = ProcessRequest::factory()->create();
+        ProcessRequest::where('id', $request->id)->update(['case_title' => 'FOUR-31702']);
+        $make = fn (string $status, int $isSelfService, ?int $userId = null) => ProcessRequestToken::factory()->create([
+            'process_id' => $request->process_id,
+            'process_request_id' => $request->id,
+            'element_type' => 'task',
+            'status' => $status,
+            'user_id' => $userId,
+            'is_self_service' => $isSelfService,
+            'self_service_groups' => ['users' => [(string) $this->user->id], 'groups' => []],
+        ]);
+
+        $active = $make('ACTIVE', 1);
+        $closed = $make('CLOSED', 1);
+        $failing = $make('FAILING', 1);
+        $claimed = $make('CLOSED', 0, $this->user->id);
+
+        $ids = function (string $pmql) {
+            $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', [
+                'pmql' => $pmql,
+                'per_page' => 100,
+            ]));
+            $response->assertStatus(200);
+
+            return array_column($response->json('data'), 'id');
+        };
+
+        $open = $ids('is_self_service = 1');
+        $this->assertContains($active->id, $open);
+        $this->assertNotContains($closed->id, $open);
+        $this->assertNotContains($failing->id, $open);
+        $this->assertNotContains($claimed->id, $open);
+
+        $withCaseTitle = $ids('is_self_service = 1 and case_title = "FOUR-31702"');
+        $this->assertContains($active->id, $withCaseTitle);
+        $this->assertNotContains($closed->id, $withCaseTitle);
+
+        $inList = $ids('is_self_service IN [1]');
+        $this->assertContains($active->id, $inList);
+        $this->assertNotContains($closed->id, $inList);
+
+        $notSelfService = $ids('is_self_service = 0');
+        $this->assertNotContains($active->id, $notSelfService);
+        $this->assertContains($closed->id, $notSelfService);
+        $this->assertContains($claimed->id, $notSelfService);
+
+        // NOT IN must not 500 on alias closures and must be the exact complement of IN
+        $notIn = $ids('is_self_service NOT IN [1]');
+        $this->assertNotContains($active->id, $notIn);
+        $this->assertContains($closed->id, $notIn);
+        $this->assertContains($failing->id, $notIn);
+        $this->assertContains($claimed->id, $notIn);
+
+        $notInZero = $ids('is_self_service NOT IN [0]');
+        $this->assertContains($active->id, $notInZero);
+        $this->assertNotContains($closed->id, $notInZero);
+    }
+
+    public function testNotInPmqlWithScopeBasedAliasesDoesNotFail()
+    {
+        $request = ProcessRequest::factory()->create();
+        $token = ProcessRequestToken::factory()->create([
+            'process_id' => $request->process_id,
+            'process_request_id' => $request->id,
+            'element_type' => 'task',
+            'status' => 'ACTIVE',
+            'user_id' => $this->user->id,
+            'is_self_service' => 0,
+        ]);
+
+        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', [
+            'pmql' => 'case_number NOT IN [' . ($request->case_number + 100000) . ']',
+            'per_page' => 100,
+        ]));
+        $response->assertStatus(200);
+        $this->assertContains($token->id, array_column($response->json('data'), 'id'));
+
+        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', [
+            'pmql' => 'case_number NOT IN [' . $request->case_number . ']',
+            'per_page' => 100,
+        ]));
+        $response->assertStatus(200);
+        $this->assertNotContains($token->id, array_column($response->json('data'), 'id'));
+    }
+
     /**
      * Return all tasks if we are only requesting closed tasks and if
      * the user can view the request.
