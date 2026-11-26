@@ -174,7 +174,9 @@ export default {
         return this.$t("The current value is empty but a value is required. Please provide a valid value.");
       }
       if (this.minimumValue !== null && !this.state) {
-        return this.$t("The value must be at least") + ` ${this.minimumValue}.`;
+        return this.$t("The value must be at least {{minimum}} minutes.", {
+          minimum: this.minimumValue,
+        });
       }
       return "";
     },

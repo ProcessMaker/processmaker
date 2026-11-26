@@ -2001,6 +2001,7 @@
   "Service Task": "Service Task",
   "Service": "Service",
   "Session Inactivity": "Session Inactivity",
+  "The value must be at least {{minimum}} minutes.": "The value must be at least {{minimum}} minutes.",
   "Set as Default Flow": "Set as Default Flow",
   "Set maximum run retry attempts in seconds. Leave empty to use data connector default. Set to 0 for no retry attempts.": "Set maximum run retry attempts in seconds. Leave empty to use data connector default. Set to 0 for no retry attempts.",
   "Set maximum run retry attempts in seconds. Leave empty to use script default. Set to 0 for no retry attempts.": "Set maximum run retry attempts in seconds. Leave empty to use script default. Set to 0 for no retry attempts.",
