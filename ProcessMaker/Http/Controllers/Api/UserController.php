@@ -515,14 +515,17 @@ class UserController extends Controller
 
         $fields = $request->json()->all();
         $isSelfServiceUpdate = $this->authorizeSelfServiceUpdate($authenticatedUser, $user, $fields);
+        $isProfileFormUpdate = $authenticatedUser->id === $user->id
+            && $request->header('X-ProcessMaker-Profile-Update') === '1';
+        $mergeProfileMeta = $isSelfServiceUpdate || $isProfileFormUpdate;
         $rules = User::rules($user);
-        if ($isSelfServiceUpdate) {
-            $rules['meta'] = ['sometimes', 'array'];
+        if ($mergeProfileMeta) {
+            $rules['meta'] = ['sometimes', 'array:disableRecommendations'];
             $rules['meta.disableRecommendations'] = ['sometimes', 'boolean'];
         }
         $request->validate($rules);
-        if ($isSelfServiceUpdate) {
-            $fields = $this->normalizeSelfServiceMeta($user, $fields);
+        if ($mergeProfileMeta) {
+            $fields = $this->mergeProfileMeta($user, $fields);
         }
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
@@ -661,9 +664,9 @@ class UserController extends Controller
     }
 
     /**
-     * Merge self-service metadata into the persisted server-managed values.
+     * Merge profile preferences into the persisted server-managed values.
      */
-    private function normalizeSelfServiceMeta(User $user, array $fields): array
+    private function mergeProfileMeta(User $user, array $fields): array
     {
         $meta = (array) $user->meta;
         if (

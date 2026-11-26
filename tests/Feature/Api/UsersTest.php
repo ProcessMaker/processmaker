@@ -1270,6 +1270,27 @@ class UsersTest extends TestCase
         $this->assertFalse(property_exists($user->meta, 'disableRecommendations'));
     }
 
+    public function testAdministratorSavingOwnProfilePreservesStoredMetadata(): void
+    {
+        $this->user->forceFill([
+            'meta' => ['storedLabel' => '', 'disableRecommendations' => true],
+        ])->saveOrFail();
+
+        $response = $this->withHeader('X-ProcessMaker-Profile-Update', '1')->apiCall(
+            'PUT',
+            self::API_TEST_URL . '/' . $this->user->id,
+            $this->getSelfServiceUpdateData($this->user, [
+                'firstname' => 'Updated Profile',
+                'meta' => ['disableRecommendations' => false],
+            ])
+        );
+
+        $response->assertStatus(204);
+        $user = $this->user->fresh();
+        $this->assertSame('Updated Profile', $user->firstname);
+        $this->assertSame(['storedLabel' => ''], (array) $user->meta);
+    }
+
     public function testAdministratorCanUpdateServerManagedMetadata(): void
     {
         $targetUser = User::factory()->create([

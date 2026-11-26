@@ -312,7 +312,9 @@
                     if (this.image === false) {
                         this.formData.avatar = false;
                     }
-                    ProcessMaker.apiClient.put('users/' + this.formData.id, this.profilePayload())
+                    ProcessMaker.apiClient.put('users/' + this.formData.id, this.profilePayload(), {
+                        headers: { 'X-ProcessMaker-Profile-Update': '1' },
+                    })
                         .then((response) => {
                             // reset the slack configuration error
                             this.slackConfigurationError = false;
