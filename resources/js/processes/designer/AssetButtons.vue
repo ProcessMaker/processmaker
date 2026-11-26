@@ -1,6 +1,6 @@
 <template>
   <b-card-text>
-    <div class="button-container">
+    <div v-if="canCreate" class="button-container">
       <b-button
         size="sm"
         class="custom-button mb-2"
@@ -11,7 +11,7 @@
         <i class="fas fa-arrow-right ml-2 align-middle text-primary" />
       </b-button>
     </div>
-    <div class="button-container">
+    <div v-if="canView" class="button-container">
       <b-button
         size="sm"
         class="custom-button"
@@ -28,6 +28,14 @@
 <script>
 export default {
   props: {
+    canView: {
+      type: Boolean,
+      default: true,
+    },
+    canCreate: {
+      type: Boolean,
+      default: true,
+    },
     asset_name_all: String,
     urlPath: String,
     urlAsset: String,
