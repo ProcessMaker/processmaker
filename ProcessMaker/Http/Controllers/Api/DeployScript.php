@@ -11,6 +11,7 @@ use ProcessMaker\Http\Controllers\Api\Concerns\AppliesDeployVersionName;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Models\User;
 use ProcessMaker\Services\DeployCategoryResolver;
 use ProcessMaker\Services\ScriptExecutorResolver;
 
@@ -88,35 +89,44 @@ class DeployScript extends Controller
     private function denyUnauthorizedExecutorBinding(Request $request, string $name): ?JsonResponse
     {
         $requested = $this->requestedExecutor($request);
-        if ($requested === null) {
+        $message = $requested === null
+            ? null
+            : $this->executorBindingDenialMessage($request->user(), $requested, $name);
+
+        if ($message === null) {
             return null;
         }
 
-        $user = $request->user();
-        if ($user->is_administrator) {
-            return null;
-        }
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+        ], 403);
+    }
 
-        $current = Script::where('title', $name)->value('script_executor_id');
-        if ($current !== null && (int) $current === $requested->id) {
+    /**
+     * Return why the user may not bind the script to the requested executor,
+     * or null when the binding is allowed.
+     */
+    private function executorBindingDenialMessage(User $user, ScriptExecutor $requested, string $name): ?string
+    {
+        if ($user->is_administrator || $this->keepsCurrentExecutor($name, $requested)) {
             return null;
         }
 
         if (!$user->can('edit-scripts')) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You are not allowed to choose a script executor.',
-            ], 403);
+            return 'You are not allowed to choose a script executor.';
         }
 
-        if (!$this->executors->isDefaultForNonAdmins($requested)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Only administrators can use this script executor.',
-            ], 403);
-        }
+        return $this->executors->isDefaultForNonAdmins($requested)
+            ? null
+            : 'Only administrators can use this script executor.';
+    }
 
-        return null;
+    private function keepsCurrentExecutor(string $name, ScriptExecutor $requested): bool
+    {
+        $current = Script::where('title', $name)->value('script_executor_id');
+
+        return $current !== null && (int) $current === $requested->id;
     }
 
     private function requestedExecutor(Request $request): ?ScriptExecutor
