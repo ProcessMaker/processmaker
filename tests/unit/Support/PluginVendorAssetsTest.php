@@ -7,86 +7,49 @@ use Tests\TestCase;
 
 class PluginVendorAssetsTest extends TestCase
 {
-    public function testPluginVendorAssetsPathHelpersAndFlags(): void
+    private const TENANT_ID = 987651;
+
+    public function testPathsUrlsAndAvailabilityOnTenantPublicDisk(): void
     {
-        $pluginDir = sys_get_temp_dir() . '/pm-plugin-vendor-assets-' . uniqid();
-        mkdir($pluginDir, 0755, true);
-        file_put_contents($pluginDir . '/composer.json', json_encode([
-            'name' => 'processmaker/package-plg',
-        ]));
+        $tenantDir = base_path('storage/tenant_' . self::TENANT_ID);
+        $this->deleteTree($tenantDir);
 
         $this->assertSame(
-            'package-plg',
-            PluginVendorAssets::packageNameFromPluginPath($pluginDir, 'package-plg2')
-        );
-
-        $emptyDir = sys_get_temp_dir() . '/pm-plugin-vendor-assets-empty-' . uniqid();
-        mkdir($emptyDir, 0755, true);
-        $this->assertSame(
-            'my-folder',
-            PluginVendorAssets::packageNameFromPluginPath($emptyDir, 'my-folder')
-        );
-
-        $tenantId = 2;
-        $package = 'package-plg';
-        $relative = PluginVendorAssets::tenantVendorRelativePath($tenantId, $package);
-        $this->assertSame('storage/tenant_2/vendor/processmaker/packages/package-plg', $relative);
-        $this->assertSame(public_path($relative), PluginVendorAssets::tenantPublicRoot($tenantId, $package));
-        $this->assertSame('/' . $relative, PluginVendorAssets::webPrefix($tenantId, $package));
-
-        $this->assertSame(
-            '/storage/tenant_2/vendor/processmaker/packages/package-plg/js/screen-builder-form-components.js?id=abc',
-            PluginVendorAssets::webPath($tenantId, $package, '/js/screen-builder-form-components.js?id=abc')
-        );
-
-        $this->assertSame(
-            '/vendor/processmaker/packages/package-plg/js/custom-components-admin.js?id=xyz',
-            PluginVendorAssets::globalWebPath($package, '/js/custom-components-admin.js?id=xyz')
-        );
-
-        $this->assertSame(
-            'package-plg',
-            PluginVendorAssets::parsePackageFromManifestDirectory('vendor/processmaker/packages/package-plg')
+            base_path('storage/tenant_987651/app/public/vendor/processmaker/packages/package-plg'),
+            PluginVendorAssets::tenantPackageRoot(self::TENANT_ID, 'package-plg')
         );
         $this->assertSame(
-            'package-plg',
-            PluginVendorAssets::parsePackageFromManifestDirectory('/vendor/processmaker/packages/package-plg/')
+            '/storage/vendor/processmaker/packages/package-plg/js/a.js?id=1',
+            PluginVendorAssets::webPath('package-plg', '/js/a.js?id=1')
         );
-        $this->assertNull(PluginVendorAssets::parsePackageFromManifestDirectory(''));
+        $this->assertSame('package-plg', PluginVendorAssets::parsePackageFromManifestDirectory('/vendor/processmaker/packages/package-plg/'));
         $this->assertNull(PluginVendorAssets::parsePackageFromManifestDirectory('vendor/other'));
-        $this->assertTrue(PluginVendorAssets::isPluginVendorManifestDirectory('vendor/processmaker/packages/package-plg'));
 
-        config(['app.multitenancy' => false]);
-        config(['plugin_manager.tenant_plugin_assets_enabled' => true]);
-        $this->app->instance('currentTenant', (object) ['id' => 1]);
-        $this->assertFalse(PluginVendorAssets::isEnabled());
+        config(['app.multitenancy' => true, 'plugin_manager.tenant_plugin_assets_enabled' => true]);
+        $this->app->instance('currentTenant', (object) ['id' => self::TENANT_ID]);
 
-        config(['app.multitenancy' => true]);
-        $this->assertTrue(PluginVendorAssets::isEnabled());
+        $this->assertSame(
+            base_path('storage/tenant_987651/app/public/vendor/processmaker/packages/package-plg/js/a.js'),
+            PluginVendorAssets::filesystemPathForStorageUrl('/storage/vendor/processmaker/packages/package-plg/js/a.js?id=1')
+        );
+        $this->assertNull(PluginVendorAssets::filesystemPathForStorageUrl('/storage/other/file.js'));
 
-        $this->app->offsetUnset('currentTenant');
-        $this->assertFalse(PluginVendorAssets::isEnabled());
+        $this->assertFalse(PluginVendorAssets::publishedVendorPackageIsAvailable('vendor/processmaker/packages/avail-' . self::TENANT_ID));
+
+        $root = PluginVendorAssets::tenantPackageRoot(self::TENANT_ID, 'avail-pkg');
+        mkdir($root, 0755, true);
+        file_put_contents($root . '/mix-manifest.json', '{}');
+        $this->assertTrue(PluginVendorAssets::publishedVendorPackageIsAvailable('vendor/processmaker/packages/avail-pkg'));
 
         config(['plugin_manager.tenant_plugin_assets_enabled' => false]);
-        $this->app->instance('currentTenant', (object) ['id' => 3]);
         $this->assertFalse(PluginVendorAssets::isEnabled());
+        $this->assertFalse(PluginVendorAssets::publishedVendorPackageIsAvailable('vendor/processmaker/packages/avail-pkg'));
 
-        config(['plugin_manager.tenant_plugin_assets_enabled' => true]);
-        $this->app->instance('currentTenant', (object) ['id' => 5]);
-        $tenantAvailabilityDir = PluginVendorAssets::tenantPublicRoot(5, 'avail-pkg');
-        mkdir($tenantAvailabilityDir, 0755, true);
-        file_put_contents($tenantAvailabilityDir . '/mix-manifest.json', '{}');
-        $this->assertDirectoryDoesNotExist(public_path('vendor/processmaker/packages/avail-pkg'));
-        $this->assertTrue(
-            PluginVendorAssets::publishedVendorPackageIsAvailable('vendor/processmaker/packages/avail-pkg')
-        );
-        $this->deleteDirectory($tenantAvailabilityDir);
-
-        $this->deleteDirectory($pluginDir);
-        $this->deleteDirectory($emptyDir);
+        $this->app->offsetUnset('currentTenant');
+        $this->deleteTree($tenantDir);
     }
 
-    private function deleteDirectory(string $dir): void
+    private function deleteTree(string $dir): void
     {
         if (!is_dir($dir)) {
             return;
@@ -96,11 +59,7 @@ class PluginVendorAssetsTest extends TestCase
                 continue;
             }
             $path = $dir . DIRECTORY_SEPARATOR . $entry;
-            if (is_dir($path)) {
-                $this->deleteDirectory($path);
-            } else {
-                unlink($path);
-            }
+            is_dir($path) ? $this->deleteTree($path) : unlink($path);
         }
         rmdir($dir);
     }

@@ -20,14 +20,27 @@ return [
     'supervisor_restart_target' => env('PLUGIN_SUPERVISOR_RESTART_TARGET', 'all'),
 
     /*
+    | Shell for scheduling supervisorctl in the background. Empty uses bash when
+    | present, otherwise sh (e.g. Alpine images without bash).
+    */
+    'supervisor_restart_shell' => env('PLUGIN_SUPERVISOR_RESTART_SHELL'),
+
+    /*
     | Allow install() to treat repo argument as a local directory (CLI operator use).
     | Keep false in production; API install always requires https URLs regardless.
     */
     'allow_local_install_path' => env('PLUGIN_INSTALL_ALLOW_LOCAL_PATH', false),
 
     /*
-    | When MULTITENANCY is true, later phases publish plugin public assets under
-    | public/storage/tenant_{id}/vendor/... (Phase 0 only defines path helpers).
+    | Max plugin ZIP upload for API validation (kilobytes; Laravel file `max` rule).
+    | Default 51200 KiB (~50 MiB).
+    */
+    'zip_max_kilobytes' => (int) env('PLUGIN_ZIP_MAX_KILOBYTES', 51200),
+
+    /*
+    | When MULTITENANCY is true, publish plugin public assets onto the tenant
+    | public disk (storage/tenant_{id}/app/public/vendor/...). URLs stay
+    | /storage/vendor/... and are served by the storage/{path} route.
     */
     'tenant_plugin_assets_enabled' => env('PLUGIN_TENANT_ASSETS_ENABLED', true),
 ];

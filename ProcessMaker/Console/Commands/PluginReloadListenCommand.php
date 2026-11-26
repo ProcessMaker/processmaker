@@ -80,7 +80,7 @@ class PluginReloadListenCommand extends Command
                 return;
             }
 
-            $this->applyReload($reload, $version);
+            $this->applyReload($reload, $version, $reload->tenantIdFromMessage($message));
         });
     }
 
@@ -101,7 +101,7 @@ class PluginReloadListenCommand extends Command
         }
     }
 
-    private function applyReload(PluginRuntimeReload $reload, int $version): bool
+    private function applyReload(PluginRuntimeReload $reload, int $version, ?string $tenantId = null): bool
     {
         if ($version > 0 && !$reload->rememberApplied($version)) {
             $this->error('Could not record the applied plugin reload version.');
@@ -109,7 +109,7 @@ class PluginReloadListenCommand extends Command
             return false;
         }
 
-        if (!$reload->scheduleSupervisorRestart()) {
+        if (!$reload->scheduleSupervisorRestart($tenantId)) {
             $this->error('Could not schedule the local supervisor restart.');
 
             return false;

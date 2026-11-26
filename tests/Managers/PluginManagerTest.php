@@ -34,6 +34,7 @@ class PluginManagerTest extends TestCase
         ]);
 
         $this->runtimeReload = Mockery::spy(PluginRuntimeReload::class);
+        $this->runtimeReload->shouldReceive('recycleLocalRuntime')->byDefault()->andReturn(false);
         app()->instance(PluginRuntimeReload::class, $this->runtimeReload);
     }
 
@@ -766,7 +767,29 @@ class PluginManagerTest extends TestCase
 
     private function assertRuntimeReloadPublished(): void
     {
+        $this->runtimeReload->shouldHaveReceived('recycleLocalRuntime')->atLeast()->once();
         $this->runtimeReload->shouldHaveReceived('publish')->atLeast()->once();
+    }
+
+    public function testPluginChangeSkipsRedisWhenLocalRecycleSucceeds(): void
+    {
+        $this->setUpTestPluginManager();
+        $this->runtimeReload->shouldReceive('recycleLocalRuntime')->andReturn(true);
+
+        $pluginName = 'recycle-ok-plugin';
+        $disabledPath = $this->pluginsDir . '/_' . $pluginName;
+        $this->tempPluginDir = $this->pluginsDir . '/' . $pluginName;
+        mkdir($disabledPath, 0755, true);
+
+        Process::fake([
+            '*' => Process::result('', exitCode: 0),
+        ]);
+
+        $manager = new PluginManager();
+        $manager->toggle($pluginName);
+
+        $this->runtimeReload->shouldHaveReceived('recycleLocalRuntime')->once();
+        $this->runtimeReload->shouldNotHaveReceived('publish');
     }
 
     private function assertSupervisorRestartRan(?string $configFile = null): void
@@ -790,7 +813,7 @@ class PluginManagerTest extends TestCase
 
             $command = implode(' ', $process->command);
 
-            if (!str_contains($command, 'setsid') || !str_contains($command, 'nohup')) {
+            if (!str_contains($command, 'nohup')) {
                 return false;
             }
 

@@ -26,9 +26,11 @@ class PluginController extends Controller
 
     public function install(Request $request): JsonResponse
     {
+        $maxZipKilobytes = (int) config('plugin_manager.zip_max_kilobytes', 51200);
+
         $request->validate([
-            'url' => 'required_without:zip|nullable|string|starts_with:https://',
-            'zip' => 'required_without:url|nullable|file|mimes:zip',
+            'url' => 'required_without:zip|nullable|string' . (config('app.env') === 'production' ? '|starts_with:https://' : ''),
+            'zip' => "required_without:url|nullable|file|mimes:zip|max:{$maxZipKilobytes}",
             'branch' => 'prohibits:tag|nullable|string',
             'tag' => 'prohibits:branch|nullable|string',
             'git_username' => 'nullable|string|max:255',
@@ -64,7 +66,21 @@ class PluginController extends Controller
 
     public function reinstall(string $name, Request $request): JsonResponse
     {
-        ReinstallPlugin::dispatch($name, $request->user()->id);
+        $request->validate([
+            'branch' => 'prohibits:tag|nullable|string',
+            'tag' => 'prohibits:branch|nullable|string',
+            'git_username' => 'nullable|string|max:255',
+            'git_token' => 'nullable|string|max:4096',
+        ]);
+
+        ReinstallPlugin::dispatch(
+            $name,
+            $request->user()->id,
+            $request->input('branch'),
+            $request->input('tag'),
+            $request->input('git_username'),
+            $request->input('git_token'),
+        );
 
         return response()->json([
             'queued' => true,

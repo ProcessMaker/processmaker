@@ -7,7 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Events\TenantResolved;
-use RuntimeException;
+use ProcessMaker\Exception\PluginValidationException;
 use Throwable;
 
 /**
@@ -21,7 +21,7 @@ class PluginServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Load plugins when the tenant is resolved
-        Event::listen(TenantResolved::class, function ($event) {
+        Event::listen(TenantResolved::class, function (): void {
             $this->loadPlugins();
         });
     }
@@ -85,9 +85,7 @@ class PluginServiceProvider extends ServiceProvider
         $composerJson = json_decode($content, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException(
-                "Invalid JSON in composer.json at {$composerJsonPath}: " . json_last_error_msg()
-            );
+            throw PluginValidationException::invalidComposerJson($composerJsonPath, json_last_error_msg());
         }
 
         return $composerJson;
@@ -120,9 +118,7 @@ class PluginServiceProvider extends ServiceProvider
             $fullPath = $pluginPath . '/' . $path;
 
             if (!is_dir($fullPath)) {
-                throw new RuntimeException(
-                    "Plugin {$pluginPath} has a PSR-4 path that does not exist: {$path}"
-                );
+                throw PluginValidationException::psr4PathDoesNotExist($pluginPath, $path);
             }
 
             $loader->addPsr4($namespace, $fullPath);

@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Jobs\InstallPlugin;
+use ProcessMaker\Jobs\ReinstallPlugin;
 use ProcessMaker\Jobs\TogglePlugin;
 use ProcessMaker\Jobs\UninstallPlugin;
 use Tests\Feature\Shared\RequestHelper;
@@ -80,6 +81,32 @@ class PluginsTest extends TestCase
 
         $response->assertStatus(422);
         Bus::assertNotDispatched(InstallPlugin::class);
+    }
+
+    public function testReinstallQueuesJobWithBranchAndGitCredentials(): void
+    {
+        Bus::fake([ReinstallPlugin::class]);
+
+        $response = $this->apiCall('POST', '/plugins/package-translations/reinstall', [
+            'branch' => 'develop',
+            'git_username' => 'deploy-user',
+            'git_token' => 'ghp_test_token',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'queued' => true,
+            'message' => 'Plugin reinstall queued',
+        ]);
+
+        Bus::assertDispatched(ReinstallPlugin::class, function (ReinstallPlugin $job) {
+            return $job->pluginName === 'package-translations'
+                && $job->userId === $this->user->id
+                && $job->branch === 'develop'
+                && $job->tag === null
+                && $job->gitUsername === 'deploy-user'
+                && $job->gitToken === 'ghp_test_token';
+        });
     }
 
     public function testInstallRejectsBranchAndTagTogether(): void

@@ -7,6 +7,13 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Process;
 use function Illuminate\Support\php_binary;
 use ProcessMaker\Events\PluginLog;
+use ProcessMaker\Exception\PluginFilesystemException;
+use ProcessMaker\Exception\PluginGitException;
+use ProcessMaker\Exception\PluginInstallException;
+use ProcessMaker\Exception\PluginValidationException;
+use ProcessMaker\Exception\PluginNotFoundException;
+use ProcessMaker\Exception\PluginReinstallException;
+use ProcessMaker\Exception\PluginToggleException;
 use ProcessMaker\Models\Plugin;
 use ProcessMaker\Services\PluginRuntimeReload;
 use ProcessMaker\Support\PluginVendorAssets;
@@ -32,6 +39,8 @@ class PluginManager
      */
     private ?string $incompleteInstallPath = null;
 
+    private const HTTPS_SCHEME_PREFIX = 'https://';
+
     /**
      * Install a plugin from a GitHub repository or local path.
      *
@@ -40,6 +49,7 @@ class PluginManager
      * @param string|null $tag
      * @param int|null $userId
      * @return void
+     * @throws PluginInstallException
      * @throws RuntimeException
      */
     public function install(
@@ -51,7 +61,7 @@ class PluginManager
         ?string $gitToken = null,
     ): void {
         if ($branch && $tag) {
-            throw new RuntimeException('Cannot specify both --branch and --tag');
+            throw PluginInstallException::branchAndTagMutuallyExclusive();
         }
 
         $this->incompleteInstallPath = null;
@@ -71,85 +81,21 @@ class PluginManager
      */
     private function installPluginFiles(string $repoUrl, ?string $branch, ?string $tag, ?int $userId, ?string $gitUsername, ?string $gitToken): void
     {
-        // Check if this is a local path (CLI only when enabled; API must send https URLs)
         $localPath = config('plugin_manager.allow_local_install_path', false)
             ? $this->resolveLocalPath($repoUrl)
             : null;
-        $isLocalPath = $localPath !== null;
 
-        if ($isLocalPath) {
-            // Extract plugin name from path
-            $repoName = basename($localPath);
-            $pluginPath = storage_path('plugins') . '/' . $repoName;
-
-            $this->logRunning("Starting installation of plugin from local path: {$repoName}", $repoName, $userId);
-
-            $resolvedLocalPath = realpath($localPath);
-            $resolvedPluginPath = realpath($pluginPath);
-
-            $alreadyAtTarget = $resolvedLocalPath
-                && $resolvedPluginPath
-                && $resolvedLocalPath === $resolvedPluginPath
-                && !is_link($pluginPath);
-
-            if ($alreadyAtTarget) {
-                $this->logRunning('Plugin is already installed at the target path', $repoName, $userId);
-            } else {
-                if (!is_dir(storage_path('plugins'))) {
-                    mkdir(storage_path('plugins'), 0755, true);
-                }
-
-                $this->markNewInstallForRollback($pluginPath);
-
-                if (is_link($pluginPath)) {
-                    if (!@unlink($pluginPath)) {
-                        throw new RuntimeException("Failed to remove existing plugin symlink: {$pluginPath}");
-                    }
-                } elseif (is_dir($pluginPath)) {
-                    $this->logRunning('Removing existing plugin directory...', $repoName, $userId);
-                    $this->deleteDirectory($pluginPath, $repoName, $userId);
-                }
-
-                $this->logRunning('Copying plugin from local path...', $repoName, $userId);
-                $this->copyDirectory($localPath, $pluginPath, $repoName, $userId);
-            }
+        if ($localPath !== null) {
+            [$pluginPath, $repoName] = $this->installPluginFilesFromLocalPath($localPath, $userId);
         } else {
-            // Extract repository name from URL
-            $repoName = $this->extractRepoName($repoUrl);
-            $pluginPath = storage_path('plugins') . '/' . $repoName;
-            $authenticatedRepoUrl = $this->prepareGitUrl($repoUrl, $gitUsername, $gitToken);
-
-            $this->logRunning("Starting installation of plugin: {$repoName}", $repoName, $userId);
-
-            if (is_dir($pluginPath)) {
-                $this->updateExistingRepository(
-                    $pluginPath,
-                    $repoName,
-                    $branch,
-                    $tag,
-                    $userId,
-                    $repoUrl,
-                    $authenticatedRepoUrl
-                );
-            } else {
-                $this->logRunning('Cloning repository...', $repoName, $userId);
-                $this->markNewInstallForRollback($pluginPath);
-                $this->cloneRepository($authenticatedRepoUrl, $pluginPath, $repoName, $userId, $repoUrl);
-
-                // An empty remote clones fine but `git checkout <branch>` would then fail with an obscure message.
-                if ($this->isEmptyGitRepository($pluginPath)) {
-                    $this->logError(self::EMPTY_REPOSITORY_MESSAGE, $repoName, $userId);
-                    throw new RuntimeException(self::EMPTY_REPOSITORY_MESSAGE);
-                }
-
-                if ($branch) {
-                    $this->logRunning("Checking out branch: {$branch}", $repoName, $userId);
-                    $this->checkoutBranch($pluginPath, $branch, $repoName, $userId);
-                } elseif ($tag) {
-                    $this->logRunning("Checking out tag: {$tag}", $repoName, $userId);
-                    $this->checkoutTag($pluginPath, $tag, $repoName, $userId);
-                }
-            }
+            [$pluginPath, $repoName] = $this->installPluginFilesFromRepository(
+                $repoUrl,
+                $branch,
+                $tag,
+                $userId,
+                $gitUsername,
+                $gitToken,
+            );
         }
 
         $this->finishPluginSetup($pluginPath, $repoName, $userId);
@@ -158,29 +104,166 @@ class PluginManager
     }
 
     /**
+     * @return array{0: string, 1: string}
+     */
+    private function installPluginFilesFromLocalPath(string $localPath, ?int $userId): array
+    {
+        $repoName = basename($localPath);
+        $pluginPath = storage_path('plugins') . '/' . $repoName;
+
+        $this->logRunning("Starting installation of plugin from local path: {$repoName}", $repoName, $userId);
+
+        if ($this->isPluginAlreadyInstalledAtLocalTarget($localPath, $pluginPath)) {
+            $this->logRunning('Plugin is already installed at the target path', $repoName, $userId);
+        } else {
+            $this->copyLocalPluginIntoStorage($localPath, $pluginPath, $repoName, $userId);
+        }
+
+        return [$pluginPath, $repoName];
+    }
+
+    private function isPluginAlreadyInstalledAtLocalTarget(string $localPath, string $pluginPath): bool
+    {
+        $resolvedLocalPath = realpath($localPath);
+        $resolvedPluginPath = realpath($pluginPath);
+
+        return $resolvedLocalPath
+            && $resolvedPluginPath
+            && $resolvedLocalPath === $resolvedPluginPath
+            && !is_link($pluginPath);
+    }
+
+    private function copyLocalPluginIntoStorage(string $localPath, string $pluginPath, string $repoName, ?int $userId): void
+    {
+        if (!is_dir(storage_path('plugins'))) {
+            mkdir(storage_path('plugins'), 0755, true);
+        }
+
+        $this->markNewInstallForRollback($pluginPath);
+
+        if (is_link($pluginPath)) {
+            if (!@unlink($pluginPath)) {
+                throw PluginInstallException::failedToRemoveExistingSymlink($pluginPath);
+            }
+        } elseif (is_dir($pluginPath)) {
+            $this->logRunning('Removing existing plugin directory...', $repoName, $userId);
+            $this->deleteDirectory($pluginPath, $repoName, $userId);
+        }
+
+        $this->logRunning('Copying plugin from local path...', $repoName, $userId);
+        $this->copyDirectory($localPath, $pluginPath, $repoName, $userId);
+    }
+
+    /**
+     * @return array{0: string, 1: string}
+     */
+    private function installPluginFilesFromRepository(
+        string $repoUrl,
+        ?string $branch,
+        ?string $tag,
+        ?int $userId,
+        ?string $gitUsername,
+        ?string $gitToken,
+    ): array {
+        $repoName = $this->extractRepoName($repoUrl);
+        $pluginPath = storage_path('plugins') . '/' . $repoName;
+        $authenticatedRepoUrl = $this->prepareGitUrl($repoUrl, $gitUsername, $gitToken);
+
+        $this->logRunning("Starting installation of plugin: {$repoName}", $repoName, $userId);
+
+        if (is_dir($pluginPath)) {
+            $this->updateExistingRepository(
+                $pluginPath,
+                $repoName,
+                $branch,
+                $tag,
+                $userId,
+                $repoUrl,
+                $authenticatedRepoUrl
+            );
+        } else {
+            $this->cloneRepositoryForInstall(
+                $authenticatedRepoUrl,
+                $pluginPath,
+                $repoName,
+                $userId,
+                $repoUrl,
+                $branch,
+                $tag,
+            );
+        }
+
+        return [$pluginPath, $repoName];
+    }
+
+    private function cloneRepositoryForInstall(
+        string $authenticatedRepoUrl,
+        string $pluginPath,
+        string $repoName,
+        ?int $userId,
+        string $repoUrl,
+        ?string $branch,
+        ?string $tag,
+    ): void {
+        $this->logRunning('Cloning repository...', $repoName, $userId);
+        $this->markNewInstallForRollback($pluginPath);
+        $this->cloneRepository($authenticatedRepoUrl, $pluginPath, $repoName, $userId, $repoUrl);
+
+        if ($branch) {
+            $this->logRunning("Checking out branch: {$branch}", $repoName, $userId);
+            $this->checkoutBranch($pluginPath, $branch, $repoName, $userId);
+        } elseif ($tag) {
+            $this->logRunning("Checking out tag: {$tag}", $repoName, $userId);
+            $this->checkoutTag($pluginPath, $tag, $repoName, $userId);
+        }
+    }
+
+    /**
      * Pull latest changes on the plugin's current git branch and re-run setup.
      *
+     * @throws PluginReinstallException
      * @throws RuntimeException
      */
-    public function reinstall(string $pluginName, ?int $userId = null): void
-    {
+    public function reinstall(
+        string $pluginName,
+        ?int $userId = null,
+        ?string $branch = null,
+        ?string $tag = null,
+        ?string $gitUsername = null,
+        ?string $gitToken = null,
+    ): void {
         $pluginPath = $this->resolveInstalledPluginPath($pluginName);
 
         if (!is_dir($pluginPath . '/.git')) {
-            throw new RuntimeException(
-                "Plugin {$pluginName} is not a git repository and cannot be reinstalled from remote"
-            );
+            throw PluginReinstallException::notGitRepositoryFromRemote($pluginName);
         }
 
-        $branch = $this->resolveCurrentBranch($pluginPath);
-        if ($branch === null) {
-            throw new RuntimeException(
-                'Cannot reinstall: plugin is not on a named branch (detached HEAD or unknown state)'
-            );
+        $branch = $branch !== null && trim($branch) !== '' ? trim($branch) : null;
+        $tag = $tag !== null && trim($tag) !== '' ? trim($tag) : null;
+
+        if ($tag === null && $branch === null) {
+            $branch = $this->resolveCurrentBranch($pluginPath);
+            if ($branch === null) {
+                throw PluginReinstallException::notOnNamedBranch();
+            }
         }
 
-        $this->logRunning("Starting reinstall of plugin: {$pluginName} on branch {$branch}", $pluginName, $userId);
-        $this->updateExistingRepository($pluginPath, $pluginName, $branch, null, $userId);
+        $canonicalUrl = $this->stripEmbeddedCredentialsFromHttpUrl(
+            Plugin::fromPath($pluginPath)->getUrl()
+        );
+        $authenticatedRepoUrl = $this->prepareGitUrl($canonicalUrl, $gitUsername, $gitToken);
+
+        $refLabel = $tag ?? $branch ?? 'current branch';
+        $this->logRunning("Starting reinstall of plugin: {$pluginName} on {$refLabel}", $pluginName, $userId);
+        $this->updateExistingRepository(
+            $pluginPath,
+            $pluginName,
+            $tag !== null ? null : $branch,
+            $tag,
+            $userId,
+            $canonicalUrl,
+            $authenticatedRepoUrl,
+        );
         $this->finishPluginSetup($pluginPath, $pluginName, $userId);
         $this->logDone('Plugin reinstalled successfully', $pluginName, $userId);
     }
@@ -201,7 +284,7 @@ class PluginManager
         if (is_dir($pluginDisabledPath) || is_link($pluginDisabledPath)) {
             $pluginPath = $pluginDisabledPath;
         } elseif (!is_dir($pluginPath) && !is_link($pluginPath)) {
-            throw new RuntimeException("Plugin not found: {$pluginName}");
+            throw PluginNotFoundException::forPlugin($pluginName);
         }
 
         $this->logRunning("Starting uninstallation of plugin: {$pluginName}", $pluginName, $userId);
@@ -224,7 +307,6 @@ class PluginManager
     private function runCommand(string $command, string $pluginName, ?int $userId = null): void
     {
         // Use absolute path: web SAPI (php-fpm) cwd is not the app root, so plain "artisan" fails.
-        //TODO: Change artisan_binary() for base_path('artisan')
         $artisan = base_path('artisan');
         $result = Process::env($this->artisanEnvironment())
             ->timeout(300)
@@ -251,6 +333,36 @@ class PluginManager
     private function refreshRuntimeAfterPluginChange(string $pluginName, ?int $userId = null): void
     {
         $this->rebuildRouteCache($pluginName, $userId);
+        $this->recycleLocalRuntimeAfterPluginChange($pluginName, $userId);
+    }
+
+    private function recycleLocalRuntimeAfterPluginChange(string $pluginName, ?int $userId = null): void
+    {
+        $this->logRunning('Recycling local Octane and Horizon on this pod...', $pluginName, $userId);
+
+        try {
+            if (app(PluginRuntimeReload::class)->recycleLocalRuntime()) {
+                $this->logRunning(
+                    'Local Octane and Horizon recycle completed on this pod.',
+                    $pluginName,
+                    $userId
+                );
+
+                return;
+            }
+        } catch (Throwable $exception) {
+            $this->logError(
+                'Could not recycle local Octane and Horizon: ' . $exception->getMessage(),
+                $pluginName,
+                $userId
+            );
+        }
+
+        $this->logRunning(
+            'Falling back to plugin runtime reload broadcast for other pods.',
+            $pluginName,
+            $userId
+        );
         $this->publishRuntimeReload($pluginName, $userId);
     }
 
@@ -274,7 +386,7 @@ class PluginManager
         $this->logRunning('Publishing plugin runtime reload...', $pluginName, $userId);
 
         try {
-            $version = app(PluginRuntimeReload::class)->publish($pluginName);
+            $version = app(PluginRuntimeReload::class)->publish($pluginName, $this->currentTenantId());
         } catch (Throwable $exception) {
             $this->logError(
                 'Could not publish the plugin runtime reload: ' . $exception->getMessage(),
@@ -307,6 +419,18 @@ class PluginManager
         return $environment;
     }
 
+    private function currentTenantId(): ?string
+    {
+        $tenant = app()->bound('currentTenant') ? app('currentTenant') : null;
+        if (!$tenant) {
+            return null;
+        }
+
+        $tenantId = method_exists($tenant, 'getKey') ? $tenant->getKey() : ($tenant->id ?? null);
+
+        return ($tenantId === null || $tenantId === '') ? null : (string) $tenantId;
+    }
+
     /**
      * Load the freshly written route cache into the current process.
      *
@@ -333,20 +457,20 @@ class PluginManager
     public function installFromZip(string $zipPath, ?int $userId = null): void
     {
         if (!file_exists($zipPath)) {
-            throw new RuntimeException("Zip file not found: {$zipPath}");
+            throw PluginInstallException::zipFileNotFound($zipPath);
         }
 
         $zip = new \ZipArchive();
         $openResult = $zip->open($zipPath);
 
         if ($openResult !== true) {
-            throw new RuntimeException("Failed to open zip file: {$zipPath} (error code: {$openResult})");
+            throw PluginInstallException::failedToOpenZipFile($zipPath, $openResult);
         }
 
         $tmpExtractDir = sys_get_temp_dir() . '/pm-plugin-' . uniqid();
 
         if (!mkdir($tmpExtractDir, 0755, true)) {
-            throw new RuntimeException("Failed to create temp directory: {$tmpExtractDir}");
+            throw PluginInstallException::failedToCreateTempDirectory($tmpExtractDir);
         }
 
         $this->incompleteInstallPath = null;
@@ -426,7 +550,7 @@ class PluginManager
             // Disable it
             if (!rename($enabledPath, $disabledPath)) {
                 $this->logError("Failed to disable plugin: {$pluginName}", $pluginName, $userId);
-                throw new RuntimeException("Failed to disable plugin: {$pluginName}");
+                throw PluginToggleException::failedToDisable($pluginName);
             }
 
             $this->refreshRuntimeAfterPluginChange($pluginName, $userId);
@@ -440,7 +564,7 @@ class PluginManager
             $enabledPath = $pluginsFolder . '/' . $enabledName;
             if (!rename($disabledPath, $enabledPath)) {
                 $this->logError("Failed to enable plugin: {$pluginName}", $pluginName, $userId);
-                throw new RuntimeException("Failed to enable plugin: {$pluginName}");
+                throw PluginToggleException::failedToEnable($pluginName);
             }
 
             $this->refreshRuntimeAfterPluginChange($enabledName, $userId);
@@ -449,7 +573,7 @@ class PluginManager
         }
 
         $this->logError("Plugin not found: {$pluginName}", $pluginName, $userId);
-        throw new RuntimeException("Plugin not found: {$pluginName}");
+        throw PluginNotFoundException::forPlugin($pluginName);
     }
 
     /**
@@ -512,7 +636,7 @@ class PluginManager
             return $matches[1];
         }
 
-        throw new RuntimeException("Could not extract repository name from URL: {$repoUrl}");
+        throw PluginInstallException::cannotExtractRepositoryNameFromUrl($repoUrl);
     }
 
     /**
@@ -533,13 +657,13 @@ class PluginManager
         try {
             $process = Process::timeout(3600)->run(['git', 'clone', $repoUrl, $destination]);
         } catch (ProcessTimedOutException) {
-            throw new RuntimeException("Git clone exceeded the timeout while installing {$repoName}.");
+            throw PluginGitException::gitCloneTimedOut($repoName);
         }
 
         if (!$process->successful()) {
             $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
             $this->logError('Failed to clone repository: ' . $stderr, $repoName, $userId);
-            throw new RuntimeException('Failed to clone repository: ' . $stderr);
+            throw PluginGitException::failedToCloneRepository($stderr);
         }
 
         $cleanOrigin = $this->stripEmbeddedCredentialsFromHttpUrl($canonicalRepoUrl ?? $repoUrl);
@@ -567,56 +691,6 @@ class PluginManager
         $this->refreshRuntimeAfterPluginChange($repoName, $userId);
     }
 
-    protected function publishTenantPluginAssetsIfApplicable(
-        string $pluginPath,
-        string $pluginName,
-        ?int $userId = null,
-    ): void {
-        if (!$this->shouldPublishTenantPluginAssets()) {
-            return;
-        }
-
-        try {
-            $publisher = app(TenantPluginAssetPublisher::class);
-            if ($publisher->publishPlugin($pluginPath)) {
-                $this->logRunning('Tenant plugin public assets published.', $pluginName, $userId);
-            } else {
-                $this->logRunning(
-                    'Tenant plugin public assets skipped (no public/ directory).',
-                    $pluginName,
-                    $userId
-                );
-            }
-        } catch (Throwable $exception) {
-            $this->logError(
-                'Failed to publish tenant plugin assets: ' . $exception->getMessage(),
-                $pluginName,
-                $userId
-            );
-        }
-    }
-
-    protected function removeTenantPluginAssetsIfApplicable(
-        string $pluginPath,
-        string $pluginName,
-        ?int $userId = null,
-    ): void {
-        if (!$this->shouldPublishTenantPluginAssets()) {
-            return;
-        }
-
-        try {
-            app(TenantPluginAssetPublisher::class)->removePublishedPlugin($pluginPath);
-            $this->logRunning('Tenant plugin public assets removed.', $pluginName, $userId);
-        } catch (Throwable $exception) {
-            $this->logError(
-                'Failed to remove tenant plugin public assets: ' . $exception->getMessage(),
-                $pluginName,
-                $userId
-            );
-        }
-    }
-
     private function shouldPublishTenantPluginAssets(): bool
     {
         if (!config('app.multitenancy')) {
@@ -628,6 +702,44 @@ class PluginManager
         }
 
         return PluginVendorAssets::currentTenantId() !== null;
+    }
+
+    /**
+     * Copy the plugin's public/ assets onto the current tenant's public disk.
+     * Failures are logged and do not fail the install.
+     */
+    protected function publishTenantPluginAssetsIfApplicable(string $pluginPath, string $pluginName, ?int $userId = null): void
+    {
+        if (!PluginVendorAssets::isEnabled()) {
+            return;
+        }
+
+        try {
+            $published = app(TenantPluginAssetPublisher::class)->publishPlugin($pluginPath);
+            $this->logRunning(
+                $published ? 'Tenant plugin public assets published.' : 'Tenant plugin assets skipped: no public directory.',
+                $pluginName,
+                $userId
+            );
+        } catch (Throwable $exception) {
+            $this->logError('Could not publish tenant plugin assets: ' . $exception->getMessage(), $pluginName, $userId);
+        }
+    }
+
+    /**
+     * Remove the plugin's copy from the current tenant's public disk before uninstall.
+     */
+    protected function removeTenantPluginAssetsIfApplicable(string $pluginPath, string $pluginName, ?int $userId = null): void
+    {
+        if (!PluginVendorAssets::isEnabled()) {
+            return;
+        }
+
+        try {
+            app(TenantPluginAssetPublisher::class)->removePublishedPlugin($pluginPath);
+        } catch (Throwable $exception) {
+            $this->logError('Could not remove tenant plugin assets: ' . $exception->getMessage(), $pluginName, $userId);
+        }
     }
 
     /**
@@ -686,7 +798,7 @@ class PluginManager
             return $pluginPath;
         }
 
-        throw new RuntimeException("Plugin not found: {$pluginName}");
+        throw PluginNotFoundException::forPlugin($pluginName);
     }
 
     protected function resolveCurrentBranch(string $pluginPath): ?string
@@ -733,7 +845,7 @@ class PluginManager
 
         $temporaryAuth = $authenticatedRepoUrl !== null
             && $restoreOriginUrl !== null
-            && str_starts_with($authenticatedRepoUrl, 'https://');
+            && str_starts_with($authenticatedRepoUrl, self::HTTPS_SCHEME_PREFIX);
 
         if ($temporaryAuth) {
             Process::path($pluginPath)->timeout(60)->run([
@@ -777,7 +889,7 @@ class PluginManager
         if (!$process->successful()) {
             $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
             $this->logError('Failed to fetch repository: ' . $stderr, $repoName, $userId);
-            throw new RuntimeException('Failed to fetch repository: ' . $stderr);
+            throw PluginGitException::failedToFetchRepository($stderr);
         }
     }
 
@@ -809,7 +921,7 @@ class PluginManager
         }
 
         $this->logError('Could not determine default branch for plugin repository', $repoName, $userId);
-        throw new RuntimeException('Could not determine default branch for plugin repository');
+        throw PluginGitException::cannotDetermineDefaultBranch();
     }
 
     protected function pullRepository(string $pluginPath, string $repoName, ?int $userId = null, ?string $branch = null): void
@@ -823,7 +935,7 @@ class PluginManager
         if (!$process->successful()) {
             $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
             $this->logError('Failed to pull repository: ' . $stderr, $repoName, $userId);
-            throw new RuntimeException('Failed to pull repository: ' . $stderr);
+            throw PluginGitException::failedToPullRepository($stderr);
         }
     }
 
@@ -842,7 +954,7 @@ class PluginManager
         if (!$process->successful()) {
             $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
             $this->logError('Failed to checkout branch: ' . $stderr, $repoName, $userId);
-            throw new RuntimeException("Failed to checkout branch {$branch}: " . $stderr);
+            throw PluginGitException::failedToCheckoutBranch($branch, $stderr);
         }
     }
 
@@ -861,7 +973,7 @@ class PluginManager
         if (!$process->successful()) {
             $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
             $this->logError('Failed to checkout tag: ' . $stderr, $repoName, $userId);
-            throw new RuntimeException("Failed to checkout tag {$tag}: " . $stderr);
+            throw PluginGitException::failedToCheckoutTag($tag, $stderr);
         }
     }
 
@@ -924,7 +1036,7 @@ class PluginManager
             }
 
             $this->logError('composer.json not found in plugin: ' . $pluginPath, $repoName, $userId);
-            throw new RuntimeException("composer.json not found in plugin: {$pluginPath}");
+            throw PluginValidationException::composerJsonNotFound($pluginPath);
         }
 
         $content = file_get_contents($composerJsonPath);
@@ -932,9 +1044,7 @@ class PluginManager
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $this->logError('Invalid JSON in composer.json at ' . $composerJsonPath . ': ' . json_last_error_msg(), $repoName, $userId);
-            throw new RuntimeException(
-                "Invalid JSON in composer.json at {$composerJsonPath}: " . json_last_error_msg()
-            );
+            throw PluginValidationException::invalidComposerJson($composerJsonPath, json_last_error_msg());
         }
 
         // Check if require or require-dev is an empty array ([]), if so change for empty object and save to file
@@ -956,7 +1066,7 @@ class PluginManager
 
         if (empty($psr4Namespaces)) {
             $this->logError('Plugin must have PSR-4 autoload configuration in composer.json', $repoName, $userId);
-            throw new RuntimeException('Plugin must have PSR-4 autoload configuration in composer.json');
+            throw PluginValidationException::missingPsr4Autoload();
         }
 
         $valid = false;
@@ -970,27 +1080,11 @@ class PluginManager
             if ($valid) {
                 break;
             }
-            // if (str_starts_with($namespace, 'ProcessMaker\\Plugins\\')) {
-            //     $valid = true;
-            //     break;
-            // }
-            // if (str_starts_with($namespace, 'ProcessMaker\\Package\\')) {
-            //     $valid = true;
-            //     break;
-            // }
-            // //TODO: Check if needs to be package or packages or both
-            // if (str_starts_with($namespace, 'ProcessMaker\\Packages\\')) {
-            //     $valid = true;
-            //     break;
-            // }
         }
 
         if (!$valid) {
             $this->logError('Plugin PSR-4 namespace must start with ' . implode(', ', $prefixes) . '. Found: ' . implode(', ', array_keys($psr4Namespaces)), $repoName, $userId);
-            throw new RuntimeException(
-                "Plugin PSR-4 namespace must start with 'ProcessMaker\\Plugins\\'. Found: " .
-                implode(', ', array_keys($psr4Namespaces))
-            );
+            throw PluginValidationException::invalidPsr4Namespace(implode(', ', array_keys($psr4Namespaces)));
         }
     }
 
@@ -1007,7 +1101,7 @@ class PluginManager
         if (!$process->successful()) {
             $stderr = self::redactHttpUserInfoFromString($process->errorOutput());
             $this->logError('Failed to fetch branches: ' . $stderr, $repoName, $userId);
-            throw new RuntimeException('Failed to fetch branches: ' . $stderr);
+            throw PluginGitException::failedToFetchBranches($stderr);
         }
     }
 
@@ -1030,7 +1124,7 @@ class PluginManager
 
         if (!$process->successful()) {
             $this->logError('Failed to run composer install: ' . $process->errorOutput(), $repoName, $userId);
-            throw new RuntimeException('Failed to run composer install: ' . $process->errorOutput());
+            throw PluginInstallException::failedToRunComposerInstall($process->errorOutput());
         }
     }
 
@@ -1059,7 +1153,7 @@ class PluginManager
             } else {
                 if (!copy($srcPath, $destPath)) {
                     $this->logError('Failed to copy file: ' . $srcPath . ' to ' . $destPath, $repoName, $userId);
-                    throw new RuntimeException("Failed to copy file: {$srcPath} to {$destPath}");
+                    throw PluginInstallException::failedToCopyFile($srcPath, $destPath);
                 }
             }
         }
@@ -1076,7 +1170,7 @@ class PluginManager
             $this->logRunning('Removing plugin symlink (source directory is kept)...', $pluginName, $userId);
             if (!@unlink($pluginPath)) {
                 $this->logError('Failed to remove plugin symlink: ' . $pluginPath, $pluginName, $userId);
-                throw new RuntimeException("Failed to remove plugin symlink: {$pluginPath}");
+                throw PluginFilesystemException::failedToRemovePluginSymlink($pluginPath);
             }
 
             return;
@@ -1094,12 +1188,7 @@ class PluginManager
      */
     protected function deleteDirectory(string $directory, string $repoName, ?int $userId = null): void
     {
-        if (is_link($directory)) {
-            if (!@unlink($directory)) {
-                $this->logError('Failed to remove symlink: ' . $directory, $repoName, $userId);
-                throw new RuntimeException("Failed to remove symlink: {$directory}");
-            }
-
+        if ($this->unlinkSymlinkForDelete($directory, $repoName, $userId)) {
             return;
         }
 
@@ -1107,30 +1196,53 @@ class PluginManager
             return;
         }
 
-        $files = array_diff(scandir($directory), ['.', '..']);
-
-        foreach ($files as $file) {
-            $path = $directory . '/' . $file;
-            if (is_dir($path) && !is_link($path)) {
-                $this->deleteDirectory($path, $repoName, $userId);
-            } else {
-                if (!@unlink($path) && file_exists($path)) {
-                    $this->logError('Failed to delete file: ' . $path, $repoName, $userId);
-                    throw new RuntimeException("Failed to delete file: {$path}");
-                }
-            }
+        foreach (array_diff(scandir($directory), ['.', '..']) as $file) {
+            $this->deleteDirectoryChild($directory . '/' . $file, $repoName, $userId);
         }
 
+        $this->removeEmptyDirectory($directory, $repoName, $userId);
+    }
+
+    private function unlinkSymlinkForDelete(string $directory, string $repoName, ?int $userId): bool
+    {
+        if (!is_link($directory)) {
+            return false;
+        }
+
+        if (!@unlink($directory)) {
+            $this->logError('Failed to remove symlink: ' . $directory, $repoName, $userId);
+            throw PluginFilesystemException::failedToRemoveSymlink($directory);
+        }
+
+        return true;
+    }
+
+    private function deleteDirectoryChild(string $path, string $repoName, ?int $userId): void
+    {
+        if (is_dir($path) && !is_link($path)) {
+            $this->deleteDirectory($path, $repoName, $userId);
+
+            return;
+        }
+
+        if (!@unlink($path) && file_exists($path)) {
+            $this->logError('Failed to delete file: ' . $path, $repoName, $userId);
+            throw PluginFilesystemException::failedToDeleteFile($path);
+        }
+    }
+
+    private function removeEmptyDirectory(string $directory, string $repoName, ?int $userId): void
+    {
         clearstatcache(true, $directory);
 
         if (count(array_diff(scandir($directory), ['.', '..'])) !== 0) {
             $this->logError('Directory not empty after attempting to delete: ' . $directory, $repoName, $userId);
-            throw new RuntimeException("Directory not empty after attempting to delete: {$directory}");
+            throw PluginFilesystemException::directoryNotEmptyAfterDelete($directory);
         }
 
         if (!@rmdir($directory) && is_dir($directory)) {
             $this->logError('Failed to delete directory: ' . $directory, $repoName, $userId);
-            throw new RuntimeException("Failed to delete directory: {$directory}");
+            throw PluginFilesystemException::failedToDeleteDirectory($directory);
         }
     }
 
@@ -1142,25 +1254,29 @@ class PluginManager
      */
     protected function resolveLocalPath(string $path): ?string
     {
-        // Check if it's already an absolute path
+        $resolvedPath = null;
+
+        foreach ([$path, base_path($path)] as $candidate) {
+            $resolvedPath = $this->resolveExistingDirectoryPath($candidate);
+            if ($resolvedPath !== null) {
+                break;
+            }
+        }
+
+        return $resolvedPath;
+    }
+
+    private function resolveExistingDirectoryPath(string $path): ?string
+    {
         if (is_dir($path)) {
-            return realpath($path);
+            $resolved = realpath($path);
+
+            return $resolved !== false ? $resolved : null;
         }
 
-        // Try as relative path from current working directory
         $resolved = realpath($path);
-        if ($resolved && is_dir($resolved)) {
-            return $resolved;
-        }
 
-        // Try as relative path from base path
-        $basePath = base_path($path);
-        $resolved = realpath($basePath);
-        if ($resolved && is_dir($resolved)) {
-            return $resolved;
-        }
-
-        return null;
+        return ($resolved !== false && is_dir($resolved)) ? $resolved : null;
     }
 
     /**
@@ -1171,39 +1287,67 @@ class PluginManager
         ?string $username = null,
         ?string $token = null,
     ): string {
-        if (!str_starts_with($url, 'https://')) {
+        if (!str_starts_with($url, self::HTTPS_SCHEME_PREFIX)) {
             return $url;
         }
 
-        $hasUser = $username !== null && trim($username) !== '';
+        if ($this->hasExplicitGitCredentials($username, $token)) {
+            return $this->embedExplicitGitCredentialsInHttpsUrl($url, $username, $token);
+        }
+
+        return $this->embedGithubEnvTokenInUrl($url);
+    }
+
+    private function hasExplicitGitCredentials(?string $username, ?string $token): bool
+    {
+        return ($username !== null && trim($username) !== '')
+            || ($token !== null && $token !== '');
+    }
+
+    private function embedExplicitGitCredentialsInHttpsUrl(
+        string $url,
+        ?string $username,
+        ?string $token,
+    ): string {
+        $parts = parse_url($url);
+        if ($parts === false || !isset($parts['scheme'], $parts['host'])) {
+            return $url;
+        }
+
         $hasToken = $token !== null && $token !== '';
+        $user = rawurlencode((string) $username);
+        $pass = $hasToken ? rawurlencode((string) $token) : '';
+        $auth = $pass !== '' ? "{$user}:{$pass}@" : "{$user}@";
 
-        if ($hasUser || $hasToken) {
-            $parts = parse_url($url);
-            if ($parts === false || !isset($parts['scheme'], $parts['host'])) {
-                return $url;
-            }
+        return $this->formatHttpsUrlFromParts($parts, $auth);
+    }
 
-            $user = rawurlencode((string) $username);
-            $pass = $hasToken ? rawurlencode((string) $token) : '';
-
-            $auth = $pass !== '' ? "{$user}:{$pass}@" : "{$user}@";
-
-            $path = ($parts['path'] ?? '') . (isset($parts['query']) ? '?' . $parts['query'] : '');
-            $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
-
-            return 'https://' . $auth . $parts['host']
-                . (isset($parts['port']) ? ':' . $parts['port'] : '')
-                . $path
-                . $fragment;
-        }
-
+    private function embedGithubEnvTokenInUrl(string $url): string
+    {
         $token = env('GITHUB_TOKEN');
-        if ($token && str_starts_with($url, 'https://github.com/')) {
-            return str_replace('https://github.com/', "https://{$token}@github.com/", $url);
+        if (!$token || !str_starts_with($url, 'https://github.com/')) {
+            return $url;
         }
 
-        return $url;
+        return str_replace(
+            'https://github.com/',
+            self::HTTPS_SCHEME_PREFIX . "{$token}@github.com/",
+            $url
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $parts
+     */
+    private function formatHttpsUrlFromParts(array $parts, string $userInfoPrefix = ''): string
+    {
+        $path = ($parts['path'] ?? '') . (isset($parts['query']) ? '?' . $parts['query'] : '');
+        $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
+
+        return self::HTTPS_SCHEME_PREFIX . $userInfoPrefix . $parts['host']
+            . (isset($parts['port']) ? ':' . $parts['port'] : '')
+            . $path
+            . $fragment;
     }
 
     /**
@@ -1211,7 +1355,7 @@ class PluginManager
      */
     protected function stripEmbeddedCredentialsFromHttpUrl(string $url): string
     {
-        if (!str_starts_with($url, 'https://')) {
+        if (!str_starts_with($url, self::HTTPS_SCHEME_PREFIX)) {
             return $url;
         }
 
@@ -1220,13 +1364,7 @@ class PluginManager
             return $url;
         }
 
-        $path = ($parts['path'] ?? '') . (isset($parts['query']) ? '?' . $parts['query'] : '');
-        $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
-
-        return 'https://' . $parts['host']
-            . (isset($parts['port']) ? ':' . $parts['port'] : '')
-            . $path
-            . $fragment;
+        return $this->formatHttpsUrlFromParts($parts);
     }
 
     /**

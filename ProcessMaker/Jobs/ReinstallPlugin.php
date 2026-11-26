@@ -25,6 +25,10 @@ class ReinstallPlugin implements ShouldQueue
     public function __construct(
         public string $pluginName,
         public int $userId,
+        public ?string $branch = null,
+        public ?string $tag = null,
+        public ?string $gitUsername = null,
+        public ?string $gitToken = null,
     ) {
     }
 
@@ -46,7 +50,14 @@ class ReinstallPlugin implements ShouldQueue
             $this->userId
         ));
 
-        $manager->reinstall($this->pluginName, $this->userId);
+        $manager->reinstall(
+            $this->pluginName,
+            $this->userId,
+            $this->branch,
+            $this->tag,
+            $this->gitUsername,
+            $this->gitToken,
+        );
     }
 
     public function failed(Throwable $exception): void

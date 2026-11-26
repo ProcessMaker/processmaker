@@ -3,6 +3,8 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Support\Facades\Process;
+use ProcessMaker\Exception\PluginValidationException;
+use ProcessMaker\Exception\PluginNotFoundException;
 use RuntimeException;
 
 /**
@@ -11,6 +13,8 @@ use RuntimeException;
  */
 class Plugin extends ProcessMakerModel
 {
+    private const GIT_DIR_SUFFIX = '/.git';
+
     /**
      * The plugin directory path.
      *
@@ -41,7 +45,7 @@ class Plugin extends ProcessMakerModel
     public static function fromPath(string $path): self
     {
         if (!is_dir($path)) {
-            throw new RuntimeException("Plugin directory does not exist: {$path}");
+            throw PluginNotFoundException::directoryDoesNotExist($path);
         }
 
         $plugin = new self();
@@ -86,16 +90,14 @@ class Plugin extends ProcessMakerModel
         $composerJsonPath = $this->path . '/composer.json';
 
         if (!file_exists($composerJsonPath)) {
-            throw new RuntimeException("composer.json not found in plugin: {$this->path}");
+            throw PluginValidationException::composerJsonNotFound($this->path);
         }
 
         $content = file_get_contents($composerJsonPath);
         $composerJson = json_decode($content, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException(
-                "Invalid JSON in composer.json at {$composerJsonPath}: " . json_last_error_msg()
-            );
+            throw PluginValidationException::invalidComposerJson($composerJsonPath, json_last_error_msg());
         }
 
         $this->composerJson = $composerJson;
@@ -126,7 +128,7 @@ class Plugin extends ProcessMakerModel
      */
     public function getBranch(): ?string
     {
-        if (!is_dir($this->path . '/.git')) {
+        if (!$this->isGitRepository()) {
             return null;
         }
 
@@ -151,7 +153,7 @@ class Plugin extends ProcessMakerModel
      */
     public function getTag(): ?string
     {
-        if (!is_dir($this->path . '/.git')) {
+        if (!$this->isGitRepository()) {
             return null;
         }
 
@@ -221,7 +223,7 @@ class Plugin extends ProcessMakerModel
 
     public function isGitRepository(): bool
     {
-        return is_dir($this->path . '/.git');
+        return is_dir($this->path . self::GIT_DIR_SUFFIX);
     }
 
     /**
