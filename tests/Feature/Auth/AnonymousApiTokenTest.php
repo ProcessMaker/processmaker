@@ -63,6 +63,16 @@ class AnonymousApiTokenTest extends TestCase
         $this->assertNotNull(ProcessRequest::find($request->id));
     }
 
+    public function test_regular_user_still_receives_api_cookie_on_web_pages(): void
+    {
+        $user = User::factory()->create(['status' => 'ACTIVE']);
+
+        $this->actingAs($user, 'web')
+            ->get(route('about.index'))
+            ->assertStatus(200)
+            ->assertCookie(Passport::cookie());
+    }
+
     public function test_regular_user_api_cookie_still_works(): void
     {
         $user = User::factory()->create(['status' => 'ACTIVE']);
