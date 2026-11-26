@@ -3,7 +3,6 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -32,24 +31,23 @@ class CompileUI implements ShouldQueue
     /** Lock auto-expires if a worker dies while compiling (must exceed typical sass run). */
     private const COMPILE_UI_LOCK_SECONDS = 120;
 
-    /** Max wait to acquire the lock (must stay below Octane max_execution_time). */
-    private const COMPILE_UI_LOCK_ACQUIRE_SECONDS = 30;
-
     private const COMPILE_UI_LOCK_KEY = 'compile-ui-filesystem';
 
     public function handle()
     {
         $lock = Cache::store('landlord')->lock(self::COMPILE_UI_LOCK_KEY, self::COMPILE_UI_LOCK_SECONDS);
 
-        try {
-            $lock->block(self::COMPILE_UI_LOCK_ACQUIRE_SECONDS, function () {
-                $this->runCompileUi();
-            });
-        } catch (LockTimeoutException) {
+        if (!$lock->get()) {
             throw new HttpException(
                 503,
                 __('UI theme compilation is already in progress. Please try again in a few moments.')
             );
+        }
+
+        try {
+            $this->runCompileUi();
+        } finally {
+            $lock->release();
         }
     }
 
