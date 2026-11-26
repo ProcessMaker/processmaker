@@ -5,6 +5,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 use DOMXPath;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\ImportExport\AssignmentRulesReconciliation;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Psudomodels\Signal;
 use ProcessMaker\ImportExport\Utils;
@@ -126,6 +127,11 @@ class ProcessExporter extends ExporterBase
         }
 
         $this->importAssetsByMode();
+
+        // Assignment rules are embedded in BPMN (not separate assets), so they
+        // must be reconciled for saveModelOnly template editing as well as
+        // saveAllAssets imports.
+        $this->importAssignmentRules();
 
         $process->save();
 
@@ -311,6 +317,15 @@ class ProcessExporter extends ExporterBase
                     $this->addDependent(DependentType::GROUP_ASSIGNMENT, $group, GroupExporter::class, $meta);
                 }
             }
+        }
+    }
+
+    private function importAssignmentRules(): void
+    {
+        $document = $this->model->getDefinitions(true);
+
+        if (AssignmentRulesReconciliation::reconcileAssignmentRulesInDocument($document)) {
+            $this->model->bpmn = $document->saveXML();
         }
     }
 
