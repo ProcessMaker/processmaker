@@ -68,6 +68,41 @@ class SelfServiceGroupCacheInvalidationTest extends TestCase
         $this->assertFalse($user->canSelfServe($task));
     }
 
+    public function test_cache_filled_during_group_delete_window_is_not_reused(): void
+    {
+        $group = Group::factory()->create();
+        $user = User::factory()->create();
+        $user->groups()->attach($group);
+
+        $task = ProcessRequestToken::factory()->create([
+            'is_self_service' => true,
+            'status' => 'ACTIVE',
+            'user_id' => null,
+            'self_service_groups' => ['groups' => [$group->id]],
+        ]);
+
+        // Simulate a concurrent request that refills the cache while the group delete
+        // is in progress (before the cascade has removed the membership rows).
+        $armed = true;
+        Group::deleting(function () use ($user, &$armed) {
+            if ($armed) {
+                $user->selfServiceGroupIds();
+            }
+        });
+
+        try {
+            $group->delete();
+        } finally {
+            $armed = false;
+        }
+
+        $user = $user->fresh();
+        Auth::login($user);
+
+        $this->assertSame([], $user->selfServiceGroupIds()->all());
+        $this->assertFalse($user->canSelfServe($task));
+    }
+
     public function test_group_delete_drops_cached_self_service_visibility(): void
     {
         $group = Group::factory()->create();
