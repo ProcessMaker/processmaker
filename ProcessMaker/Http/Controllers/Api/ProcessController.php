@@ -45,6 +45,7 @@ use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Package\Translations\Models\Language;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use ProcessMaker\Providers\WorkflowServiceProvider;
+use ProcessMaker\Rules\AggregationVariable;
 use ProcessMaker\Rules\BPMNValidation;
 use ProcessMaker\Services\CaseRetentionTierService;
 use ProcessMaker\Traits\ProjectAssetTrait;
@@ -1995,9 +1996,16 @@ class ProcessController extends Controller
 
         $exclude = ['id', 'uuid', 'created_at', 'updated_at'];
         foreach ($process->getAttributes() as $attribute => $value) {
-            if (!in_array($attribute, $exclude)) {
-                $newProcess->{$attribute} = $process->{$attribute};
+            if (in_array($attribute, $exclude)) {
+                continue;
             }
+
+            if ($attribute === 'aggregation') {
+                $newProcess->aggregation = Process::prepareAggregation($process->aggregation, false);
+                continue;
+            }
+
+            $newProcess->{$attribute} = $process->{$attribute};
         }
         if ($request->has('name')) {
             $newProcess->name = $request->input('name');
@@ -2292,7 +2300,11 @@ class ProcessController extends Controller
      */
     public function saveAggregation(Request $request, Process $process)
     {
-        $process->aggregation = $request->input('aggregation', 'amount');
+        $request->validate([
+            'aggregation' => ['nullable', 'string', 'max:255', new AggregationVariable()],
+        ]);
+
+        $process->aggregation = $request->input('aggregation') ?: Process::DEFAULT_AGGREGATION;
         $process->save();
 
         return new ApiResource([
