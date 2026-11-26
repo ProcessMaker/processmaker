@@ -153,7 +153,10 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
 
     public static function minimumSessionLifetime(): int
     {
-        return (int) ceil((float) config('session.expire_warning') / 60);
+        $warningSeconds = max(0, (float) config('session.expire_warning'));
+        $bufferSeconds = max(0, (float) config('session.expire_warning_buffer'));
+
+        return (int) ceil(($warningSeconds + $bufferSeconds) / 60);
     }
 
     /**

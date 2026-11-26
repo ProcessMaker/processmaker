@@ -110,13 +110,18 @@ class SettingSessionControlTest extends TestCase
 
     public function testSessionLifetimeCannotBeShorterThanWarning()
     {
-        config(['session.expire_warning' => 180]);
+        config([
+            'session.expire_warning' => 180,
+            'session.expire_warning_buffer' => 60,
+        ]);
         $this->upgrade();
 
         $response = $this->apiCall('GET', route('api.settings.index', ['group' => 'Session Control']));
         $sessionLifetime = collect($response['data'])->firstWhere('key', 'session.lifetime');
 
-        $data = array_merge($sessionLifetime, ['config' => 2]);
+        $this->assertEquals(4, $sessionLifetime['ui']['min']);
+
+        $data = array_merge($sessionLifetime, ['config' => 3]);
         $response = $this->apiCall('PUT', route('api.settings.update', ['setting' => $sessionLifetime['id']]), $data);
 
         $response->assertStatus(422);

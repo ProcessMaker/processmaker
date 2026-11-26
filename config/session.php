@@ -37,6 +37,8 @@ return [
 
     'expire_warning' => env('SESSION_EXPIRE_WARNING', 180),
 
+    'expire_warning_buffer' => env('SESSION_EXPIRE_WARNING_BUFFER', 120),
+
     /*
     |--------------------------------------------------------------------------
     | Session Encryption
