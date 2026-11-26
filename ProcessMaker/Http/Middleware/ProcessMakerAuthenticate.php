@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Middleware;
 use Closure;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Str;
+use ProcessMaker\Models\AnonymousUser;
 
 class ProcessMakerAuthenticate extends Authenticate
 {
@@ -18,11 +19,27 @@ class ProcessMakerAuthenticate extends Authenticate
     {
         $this->authenticate($request, $guards);
 
+        if ($this->isAnonymousUserOnApiRoute($request, $guards)) {
+            $this->unauthenticated($request, $guards);
+        }
+
         if ($blocked = EnsureAccountAllowsAccess::blockingResponseForRequest($request, $guards)) {
             return $blocked;
         }
 
         return $next($request);
+    }
+
+    /**
+     * The anonymous system user may only reach API routes that explicitly allow
+     * the `anon` guard (e.g. `auth:api,anon` Web Entry endpoints). Any other
+     * `auth:api` route must reject it, however its token was obtained.
+     */
+    private function isAnonymousUserOnApiRoute($request, array $guards): bool
+    {
+        return in_array('api', $guards, true)
+            && !in_array('anon', $guards, true)
+            && AnonymousUser::isAnonymousIdentity($request->user());
     }
 
     protected function authenticate($request, array $guards)
