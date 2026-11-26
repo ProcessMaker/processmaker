@@ -14,6 +14,7 @@ use Laravel\Passport\Passport;
 use ProcessMaker\Events\Logout;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\LoginManager;
+use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder;
@@ -258,7 +259,7 @@ class LoginController extends Controller
 
         $response = response()->json(['token' => $token]);
 
-        if (Auth::check() && $token !== '') {
+        if (Auth::check() && $token !== '' && !AnonymousUser::isAnonymousIdentity(Auth::user())) {
             // Passport's CreateFreshApiToken middleware only refreshes this
             // cookie on GET requests. keep-alive is POST, so refresh it here.
             $response->withCookie(

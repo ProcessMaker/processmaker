@@ -14,6 +14,22 @@ class AnonymousUser extends User
 
     public $isAnonymous = true;
 
+    /**
+     * Determine if the given user is the anonymous system user.
+     *
+     * Covers both the AnonymousUser instance resolved by the `anon` guard and a
+     * plain User model loaded for the same record (e.g. by Passport's TokenGuard),
+     * which does not carry the $isAnonymous flag.
+     */
+    public static function isAnonymousIdentity($user): bool
+    {
+        if ($user instanceof self) {
+            return true;
+        }
+
+        return $user instanceof User && $user->username === self::ANONYMOUS_USERNAME;
+    }
+
     public function receivesBroadcastNotificationsOn($notification)
     {
         $class = str_replace('\\', '.', get_parent_class());
