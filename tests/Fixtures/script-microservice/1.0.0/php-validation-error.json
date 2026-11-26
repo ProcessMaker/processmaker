@@ -1,0 +1,12 @@
+{
+    "status": "error",
+    "metadata": {},
+    "message": "Script execution failed with exit code: 1",
+    "output": {
+        "error": "variableName is required",
+        "code": 0,
+        "file": "/opt/executor/script.php",
+        "line": 88,
+        "trace": "#0 /opt/executor/bootstrap.php: validateConfig()"
+    }
+}
