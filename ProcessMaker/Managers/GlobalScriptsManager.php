@@ -15,6 +15,11 @@ class GlobalScriptsManager
      */
     public function addScript($script)
     {
+        // The manager is warmed under Octane, so listeners re-register the same script on every request.
+        if (in_array($script, $this->javascriptRegistry, true)) {
+            return;
+        }
+
         $this->javascriptRegistry[] = $script;
     }
 
