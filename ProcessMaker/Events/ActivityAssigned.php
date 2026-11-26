@@ -15,6 +15,12 @@ class ActivityAssigned implements ShouldBroadcastNow
 
     public $payloadUrl;
 
+    /**
+     * True when the task was reassigned (or escalated to manager), false for
+     * initial activation, self-service claim, rollback, etc.
+     */
+    public bool $reassignment;
+
     private $processRequest;
 
     private $processRequestToken;
@@ -24,9 +30,10 @@ class ActivityAssigned implements ShouldBroadcastNow
      *
      * @return void
      */
-    public function __construct(ProcessRequestToken $token)
+    public function __construct(ProcessRequestToken $token, bool $reassignment = false)
     {
         $this->payloadUrl = route('api.tasks.show', ['task' => $token->id]);
+        $this->reassignment = $reassignment;
         $this->processRequest = $token->processRequest;
         $this->processRequestToken = $token;
     }
@@ -79,6 +86,15 @@ class ActivityAssigned implements ShouldBroadcastNow
         return [
             'payloadUrl' => $this->payloadUrl,
             'element_type' => $this->processRequestToken->element_type,
+            'reassignment' => $this->reassignment,
         ];
+    }
+
+    /**
+     * Whether this assignment was a reassignment (or manager escalation).
+     */
+    public function isReassignment(): bool
+    {
+        return $this->reassignment;
     }
 }
