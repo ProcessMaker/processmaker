@@ -76,6 +76,8 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
 
     public const SESSION_CONTROL_GROUP = 'Session Control';
 
+    public const SESSION_LIFETIME_KEY = 'session.lifetime';
+
     private static bool $redisAvailable = false;
 
     private static bool $settingsTableExists = false;
@@ -133,10 +135,25 @@ class Setting extends ProcessMakerModel implements HasMedia, PrometheusMetricInt
     {
         $unique = Rule::unique('settings')->ignore($existing);
 
-        return [
+        $rules = [
             'key' => ['required', $unique],
             'config.*' => ($validateConfig ? ['required', 'valid_variable'] : []),
         ];
+
+        if ($existing instanceof self && $existing->key === self::SESSION_LIFETIME_KEY) {
+            $rules['config'] = [
+                'required',
+                'numeric',
+                'min:' . self::minimumSessionLifetime(),
+            ];
+        }
+
+        return $rules;
+    }
+
+    public static function minimumSessionLifetime(): int
+    {
+        return (int) ceil((float) config('session.expire_warning') / 60);
     }
 
     /**
