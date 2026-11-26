@@ -121,7 +121,7 @@ class TokenPersistenceRawRepository
             if (!array_key_exists($field, $token->getAttributes())) {
                 continue;
             }
-            $payload[$field] = $this->serializeColumnValue($field, $token->getAttributes()[$field]);
+            $payload[$field] = $this->serializeColumnValue($token->getAttributes()[$field]);
         }
 
         $payload['updated_at'] = Carbon::now();
@@ -155,12 +155,8 @@ class TokenPersistenceRawRepository
         DB::update("UPDATE `{$table}` SET {$assignments} WHERE `id` = ?", $values);
     }
 
-    private function serializeColumnValue(string $field, mixed $value): mixed
+    private function serializeColumnValue(mixed $value): mixed
     {
-        if (in_array($field, ['self_service_groups', 'token_properties', 'data'], true)) {
-            return $value === null ? null : json_encode($value);
-        }
-
         if ($value instanceof Carbon) {
             return $value->format('Y-m-d H:i:s');
         }

@@ -12,6 +12,7 @@
     <div class="error-content">
       @yield('message')
     </div>
+    @section('buttons')
     <div class="buttons">
         <div class="row">
             <div class="col">
@@ -22,6 +23,7 @@
             </div>
         </div>
     </div>
+    @show
 </div>
 @endsection
 
