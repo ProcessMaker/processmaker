@@ -203,6 +203,23 @@ class ProcessServerTest extends TestCase
         ])->assertHasErrors(['may only contain alphanumeric characters']);
     }
 
+    public function testCreateGroupEnforcesTheTwoFactorPolicy(): void
+    {
+        config(['password-policies.2fa_enabled' => true]);
+        ProcessServer::actingAs($this->user)->tool(CreateGroupTool::class, [
+            'name' => 'TwoFactorOnGroup',
+            'enabled_2fa' => false,
+        ])->assertOk();
+        $this->assertTrue((bool) Group::where('name', 'TwoFactorOnGroup')->value('enabled_2fa'));
+
+        config(['password-policies.2fa_enabled' => false]);
+        ProcessServer::actingAs($this->user)->tool(CreateGroupTool::class, [
+            'name' => 'TwoFactorOffGroup',
+            'enabled_2fa' => true,
+        ])->assertOk();
+        $this->assertFalse((bool) Group::where('name', 'TwoFactorOffGroup')->value('enabled_2fa'));
+    }
+
     public function testCreateGroupRequiresThePermission(): void
     {
         $this->initializePermissions();

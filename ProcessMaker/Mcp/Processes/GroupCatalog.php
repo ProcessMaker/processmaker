@@ -102,6 +102,10 @@ class GroupCatalog
 
         $group = new Group();
         $group->fill($data + ['status' => 'ACTIVE']);
+        // Same as Api\GroupController::store: never taken from tool arguments.
+        if (config('password-policies.2fa_enabled', false)) {
+            $group->enabled_2fa = true;
+        }
         $group->saveOrFail();
         GroupCreated::dispatch($group);
 
