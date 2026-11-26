@@ -100,7 +100,7 @@
         <button
           type="button"
           class="btn btn-secondary ml-3"
-          :disabled="! changed"
+            :disabled="! changed || ! isValid"
           @click="onSave"
         >
           {{ $t('Save') }}
@@ -154,11 +154,29 @@ export default {
       if (settingKey.startsWith("white_list.")) {
         return this.validateURL(this.transformed);
       }
+      if (this.minimumValue !== null) {
+        return Number(this.transformed) >= this.minimumValue;
+      }
       return true;
+    },
+    minimumValue() {
+      const minimum = Number(this.setting?.ui?.min);
+      return Number.isFinite(minimum) ? minimum : null;
+    },
+    isValid() {
+      if (this.transformed === "" || this.transformed === null) {
+        return !this.setting?.ui?.isNotEmpty && this.minimumValue === null;
+      }
+      return this.state;
     },
     invalidFeedback() {
       if (this.setting?.ui?.isNotEmpty && (this.transformed === "" || this.transformed === null)) {
         return this.$t("The current value is empty but a value is required. Please provide a valid value.");
+      }
+      if (this.minimumValue !== null && !this.state) {
+        return this.$t("The value must be at least {{minimum}} minutes.", {
+          minimum: this.minimumValue,
+        });
       }
       return "";
     },
@@ -189,6 +207,9 @@ export default {
     },
     onSave() {
       if (this.setting.ui?.isNotEmpty && (this.transformed === "" || this.transformed === null)) {
+        return;
+      }
+      if (!this.isValid) {
         return;
       }
       const settingKey = this.setting?.key ?? "";

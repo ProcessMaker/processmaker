@@ -107,4 +107,28 @@ class SettingSessionControlTest extends TestCase
         $this->assertDatabaseCount('security_logs', 1);
         $this->assertDatabaseHas('security_logs', ['event' => 'SettingsUpdated', 'changes->setting_id' => $sessionLifetime['id']]);
     }
+
+    public function testSessionLifetimeCannotBeShorterThanWarning()
+    {
+        config([
+            'session.expire_warning' => 180,
+            'session.expire_warning_buffer' => 60,
+        ]);
+        $this->upgrade();
+
+        $response = $this->apiCall('GET', route('api.settings.index', ['group' => 'Session Control']));
+        $sessionLifetime = collect($response['data'])->firstWhere('key', 'session.lifetime');
+
+        $this->assertEquals(4, $sessionLifetime['ui']['min']);
+
+        $data = array_merge($sessionLifetime, ['config' => 3]);
+        $response = $this->apiCall('PUT', route('api.settings.update', ['setting' => $sessionLifetime['id']]), $data);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('config');
+        $this->assertDatabaseHas('settings', [
+            'id' => $sessionLifetime['id'],
+            'config' => 120,
+        ]);
+    }
 }

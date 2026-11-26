@@ -1929,6 +1929,7 @@
   "Server": "Servidor",
   "Service Task": "Tarea de Servicio",
   "Session Inactivity": "Inactividad de Sesión",
+  "The value must be at least {{minimum}} minutes.": "El valor debe ser de al menos {{minimum}} minutos.",
   "Service": "Servicio",
   "Set as Default Flow": "Establecer como flujo predeterminado",
   "Set maximum run retry attempts in seconds. Leave empty to use data connector default. Set to 0 for no retry attempts.": "Establezca el máximo de intentos de reintentos en segundos. Deje en blanco para usar el valor predeterminado del conector de datos. Establezca en 0 para no hacer intentos de reintentos.",

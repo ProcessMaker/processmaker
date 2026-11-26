@@ -201,6 +201,17 @@ class SettingController extends Controller
         $response = $query->orderBy(DB::raw("CAST(ui->>'$.order' AS UNSIGNED)"), 'asc')->orderBy($orderBy, $orderDirection)
             ->paginate($request->input('per_page', 25));
 
+        $response->getCollection()->transform(function (Setting $setting) {
+            if ($setting->key === Setting::SESSION_LIFETIME_KEY) {
+                $setting->ui = (object) array_merge(
+                    (array) ($setting->ui ?? []),
+                    ['min' => Setting::minimumSessionLifetime()]
+                );
+            }
+
+            return $setting;
+        });
+
         return new ApiCollection($response);
     }
 
