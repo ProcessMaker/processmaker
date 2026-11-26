@@ -366,7 +366,7 @@ class UserController extends Controller
         $request->validate(User::rules());
 
         $user = new User();
-        $fields = $request->json()->all();
+        $fields = $this->withoutAuthenticatorEnrollment($request->json()->all());
         // Enable this parameter if the parameter is not sent
         $fields['email_task_notification'] = $request->input('email_task_notification', true);
 
@@ -513,7 +513,7 @@ class UserController extends Controller
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
-        $fields = $request->json()->all();
+        $fields = $this->withoutAuthenticatorEnrollment($request->json()->all());
         $isSelfServiceUpdate = $this->authorizeSelfServiceUpdate($authenticatedUser, $user, $fields);
         $rules = User::rules($user);
         if ($isSelfServiceUpdate) {
@@ -658,6 +658,24 @@ class UserController extends Controller
         }
 
         return true;
+    }
+
+    /**
+     * Drop authenticator enrollment from profile create/update payloads.
+     *
+     * The column is not mass assignable. Enrollment is recorded only after a
+     * verified authenticator code, and cleared only by the reset endpoint or
+     * a username change. Admin edit posts the full user snapshot, so a stale
+     * page must not be able to set or clear this lock.
+     *
+     * @param  array<string, mixed>  $fields
+     * @return array<string, mixed>
+     */
+    private function withoutAuthenticatorEnrollment(array $fields): array
+    {
+        unset($fields['auth_app_configured_at']);
+
+        return $fields;
     }
 
     /**
@@ -1164,5 +1182,29 @@ class UserController extends Controller
         RecommendationEngine::handleUserSettingChanges($user, $original);
 
         return response([], 204);
+    }
+
+    public function resetAuthApp(User $user)
+    {
+        if (!Auth::user()->can('edit', $user)) {
+            throw new AuthorizationException(__('Not authorized to update this user.'));
+        }
+
+        if (!$user->hasAuthAppConfigured()) {
+            return response([
+                'message' => __('Authenticator app is not configured for this user.'),
+            ], 422);
+        }
+
+        $original = $user->getOriginal();
+        $user->auth_app_configured_at = null;
+        $user->saveOrFail();
+
+        UserUpdated::dispatch($user, $user->getChanges(), $original);
+
+        return response([
+            'message' => __('Authenticator app reset successfully.'),
+            'auth_app_configured_at' => null,
+        ]);
     }
 }

@@ -66,6 +66,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->p
 
     // User Groups
     Route::put('users/{user}/groups', [UserController::class, 'updateGroups'])->name('users.groups.update')->middleware('can:edit-users');
+    Route::put('users/{user}/reset_auth_app', [UserController::class, 'resetAuthApp'])->name('users.reset_auth_app')->middleware('can:edit-users');
     // User personal access tokens
     Route::get('users/{user}/tokens', [UserTokenController::class, 'index'])->name('users.tokens.index'); // Permissions handled in the controller
     Route::get('users/{user}/tokens/{tokenId}', [UserTokenController::class, 'show'])->name('users.tokens.show'); // Permissions handled in the controller
