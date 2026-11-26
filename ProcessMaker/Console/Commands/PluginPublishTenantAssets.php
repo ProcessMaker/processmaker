@@ -4,68 +4,79 @@ namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
 use ProcessMaker\Managers\TenantPluginAssetPublisher;
+use ProcessMaker\Support\PluginVendorAssets;
+
 class PluginPublishTenantAssets extends Command
 {
     /**
      * @var string
      */
     protected $signature = 'plugin:publish-tenant-assets
-                            {pluginFolder? : Plugin directory name under storage/plugins (omit for all enabled plugins)}';
+                            {pluginFolder? : Plugin folder name under storage/plugins (omit for all installed plugins)}';
 
     /**
      * @var string
      */
-    protected $description = 'Copy plugin public assets into public/storage/tenant_{id}/vendor/... for the current tenant';
+    protected $description = 'Copy plugin public assets onto the current tenant public disk (storage/tenant_{id}/app/public/vendor/...)';
 
     public function handle(TenantPluginAssetPublisher $publisher): int
+    {
+        $tenantId = $this->resolveTenantContext();
+        if ($tenantId === null) {
+            return self::FAILURE;
+        }
+
+        $folder = $this->argument('pluginFolder');
+
+        if ($folder) {
+            return $this->publishSinglePlugin($publisher, (string) $folder, $tenantId);
+        }
+
+        return $this->publishAllPlugins($publisher, $tenantId);
+    }
+
+    private function resolveTenantContext(): ?int
     {
         if (!config('app.multitenancy')) {
             $this->error('Multitenancy is disabled. This command only applies when MULTITENANCY=true.');
 
-            return self::FAILURE;
+            return null;
         }
 
-        $tenant = app()->bound('currentTenant') ? app('currentTenant') : null;
-        if (!$tenant || !isset($tenant->id)) {
-            $this->error('This command must be run within a tenant context (TENANT=<id> or tenants:artisan).');
+        $tenantId = PluginVendorAssets::currentTenantId();
+        if ($tenantId === null) {
+            $this->error('No current tenant. Run with TENANT=<id> or through tenants:artisan.');
 
-            return self::FAILURE;
+            return null;
         }
 
-        $pluginFolder = $this->argument('pluginFolder');
+        return $tenantId;
+    }
 
-        if ($pluginFolder === null) {
-            $this->info('Publishing plugin assets for tenant ' . $tenant->id . '...');
-            $results = $publisher->publishAllInstalledPlugins((int) $tenant->id);
-
-            if ($results === []) {
-                $this->warn('No plugin directories found under ' . storage_path('plugins'));
-
-                return self::SUCCESS;
-            }
-
-            foreach ($results as $folder => $published) {
-                $this->line(
-                    $folder . ': ' . ($published ? 'published' : 'skipped (no public/)')
-                );
-            }
-
-            return self::SUCCESS;
-        }
-
-        $pluginPath = storage_path('plugins/' . $pluginFolder);
+    private function publishSinglePlugin(
+        TenantPluginAssetPublisher $publisher,
+        string $folder,
+        int $tenantId,
+    ): int {
+        $pluginPath = storage_path('plugins/' . $folder);
         if (!is_dir($pluginPath)) {
-            $this->error('Plugin not found: ' . $pluginPath);
+            $this->error("Plugin folder not found: {$pluginPath}");
 
             return self::FAILURE;
         }
 
-        $published = $publisher->publishPlugin($pluginPath, (int) $tenant->id);
+        $published = $publisher->publishPlugin($pluginPath, $tenantId);
+        $this->info($published
+            ? "Published {$folder} for tenant {$tenantId}."
+            : "Skipped {$folder}: no public directory.");
 
-        if ($published) {
-            $this->info('Published assets for plugin ' . $pluginFolder . ' (tenant ' . $tenant->id . ').');
-        } else {
-            $this->warn('Plugin has no public/ directory; nothing copied.');
+        return self::SUCCESS;
+    }
+
+    private function publishAllPlugins(TenantPluginAssetPublisher $publisher, int $tenantId): int
+    {
+        foreach ($publisher->publishAllInstalledPlugins($tenantId) as $name => $published) {
+            $this->line(($published ? 'Published ' : 'Skipped   ') . $name);
         }
 
         return self::SUCCESS;

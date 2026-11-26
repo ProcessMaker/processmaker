@@ -9,12 +9,18 @@ use Illuminate\Support\Facades\Log;
 use ProcessMaker\Support\PluginVendorAssets;
 use Throwable;
 
+/**
+ * Copies a plugin's public/ tree onto the tenant public disk:
+ * storage/tenant_{id}/app/public/vendor/processmaker/packages/{package}/
+ *
+ * This is the root Storage::disk('public') uses while that tenant is current, so
+ * storage/{path} serves the files at /storage/vendor/processmaker/packages/{package}/...
+ * The path is built from the tenant id, so it does not depend on Laravel's disk cache.
+ */
 class TenantPluginAssetPublisher
 {
     /**
-     * Copy a plugin's public/ tree to the current (or given) tenant public vendor path.
-     *
-     * @return bool True when assets were copied; false when skipped (no public dir).
+     * @return bool True when assets were copied; false when the plugin has no public directory.
      */
     public function publishPlugin(string $pluginPath, ?int $tenantId = null): bool
     {
@@ -31,9 +37,13 @@ class TenantPluginAssetPublisher
         }
 
         $packageName = PluginVendorAssets::packageNameFromPluginPath($pluginPath);
-        $destination = PluginVendorAssets::tenantPublicRoot($tenantId, $packageName);
+        $destination = PluginVendorAssets::tenantPackageRoot($tenantId, $packageName);
 
-        $this->copyPublicDirectory($source, $destination);
+        if (File::isDirectory($destination)) {
+            File::deleteDirectory($destination);
+        }
+        File::ensureDirectoryExists(dirname($destination));
+        File::copyDirectory($source, $destination);
 
         Log::info('Tenant plugin assets published', [
             'tenant_id' => $tenantId,
@@ -46,7 +56,7 @@ class TenantPluginAssetPublisher
     }
 
     /**
-     * @return array<string, bool> plugin folder name => published (true) or skipped (false)
+     * @return array<string, bool> plugin folder name => published (true) or skipped/failed (false)
      */
     public function publishAllInstalledPlugins(?int $tenantId = null): array
     {
@@ -83,7 +93,7 @@ class TenantPluginAssetPublisher
     {
         $tenantId = PluginVendorAssets::requireTenantId($tenantId);
         $packageName = PluginVendorAssets::packageNameFromPluginPath($pluginPath);
-        $destination = PluginVendorAssets::tenantPublicRoot($tenantId, $packageName);
+        $destination = PluginVendorAssets::tenantPackageRoot($tenantId, $packageName);
 
         if (!File::isDirectory($destination)) {
             return;
@@ -96,15 +106,5 @@ class TenantPluginAssetPublisher
             'package' => $packageName,
             'destination' => $destination,
         ]);
-    }
-
-    private function copyPublicDirectory(string $source, string $destination): void
-    {
-        if (File::isDirectory($destination)) {
-            File::deleteDirectory($destination);
-        }
-
-        File::ensureDirectoryExists(dirname($destination));
-        File::copyDirectory($source, $destination);
     }
 }

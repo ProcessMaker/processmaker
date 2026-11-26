@@ -5,7 +5,6 @@ namespace ProcessMaker\Traits;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\File;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ScriptBuilderStarting;
 use ProcessMaker\Managers\IndexManager;

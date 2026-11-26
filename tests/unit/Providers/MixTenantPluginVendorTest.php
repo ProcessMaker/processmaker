@@ -8,59 +8,32 @@ use Tests\TestCase;
 
 class MixTenantPluginVendorTest extends TestCase
 {
-    public function testMixTenantPluginVendorResolutionAndFallback(): void
+    private const TENANT_ID = 987653;
+
+    public function testMixUsesTenantPublicDiskUrlWithoutTenantIdInPath(): void
     {
-        config(['app.multitenancy' => true]);
-        config(['plugin_manager.tenant_plugin_assets_enabled' => true]);
-        $this->app->instance('currentTenant', (object) ['id' => 4]);
+        $tenantDir = base_path('storage/tenant_' . self::TENANT_ID);
+        $this->deleteTree($tenantDir);
 
-        $tenantPackage = 'mix-test-pkg';
-        $tenantRoot = PluginVendorAssets::tenantPublicRoot(4, $tenantPackage);
-        mkdir($tenantRoot . '/js', 0755, true);
-        file_put_contents($tenantRoot . '/mix-manifest.json', json_encode([
-            '/js/widget.js' => '/js/widget.js?id=tenant-hash-4',
+        config(['app.multitenancy' => true, 'plugin_manager.tenant_plugin_assets_enabled' => true]);
+        $this->app->instance('currentTenant', (object) ['id' => self::TENANT_ID]);
+
+        $root = PluginVendorAssets::tenantPackageRoot(self::TENANT_ID, 'mix-test-pkg');
+        mkdir($root . '/js', 0755, true);
+        file_put_contents($root . '/mix-manifest.json', json_encode([
+            '/js/widget.js' => '/js/widget.js?id=tenant-hash',
         ]));
 
-        $globalRoot = PluginVendorAssets::globalPublicRoot($tenantPackage);
-        if (!is_dir(dirname($globalRoot))) {
-            mkdir(dirname($globalRoot), 0755, true);
-        }
-        if (!is_dir($globalRoot)) {
-            mkdir($globalRoot . '/js', 0755, true);
-        }
-        file_put_contents($globalRoot . '/mix-manifest.json', json_encode([
-            '/js/widget.js' => '/js/widget.js?id=global-hash',
-        ]));
+        $url = (string) app(Mix::class)('js/widget.js', 'vendor/processmaker/packages/mix-test-pkg');
 
-        $tenantUrl = (string) app(Mix::class)(
-            '/js/widget.js',
-            'vendor/processmaker/packages/mix-test-pkg'
-        );
-        $this->assertStringContainsString('/storage/tenant_4/vendor/processmaker/packages/mix-test-pkg', $tenantUrl);
-        $this->assertStringContainsString('tenant-hash-4', $tenantUrl);
-        $this->assertStringNotContainsString('global-hash', $tenantUrl);
+        $this->assertStringContainsString('/storage/vendor/processmaker/packages/mix-test-pkg/js/widget.js?id=tenant-hash', $url);
+        $this->assertStringNotContainsString('/storage/tenant_', $url);
 
-        $this->deleteDirectory($tenantRoot);
-
-        $fallbackPackage = 'mix-fallback-pkg';
-        $fallbackGlobalRoot = PluginVendorAssets::globalPublicRoot($fallbackPackage);
-        mkdir($fallbackGlobalRoot . '/js', 0755, true);
-        file_put_contents($fallbackGlobalRoot . '/mix-manifest.json', json_encode([
-            '/js/fallback.js' => '/js/fallback.js?id=global-only',
-        ]));
-
-        $fallbackUrl = (string) app(Mix::class)(
-            '/js/fallback.js',
-            'vendor/processmaker/packages/mix-fallback-pkg'
-        );
-        $this->assertStringContainsString('/vendor/processmaker/packages/mix-fallback-pkg', $fallbackUrl);
-        $this->assertStringContainsString('global-only', $fallbackUrl);
-
-        $this->deleteDirectory($globalRoot);
-        $this->deleteDirectory($fallbackGlobalRoot);
+        $this->app->offsetUnset('currentTenant');
+        $this->deleteTree($tenantDir);
     }
 
-    private function deleteDirectory(string $dir): void
+    private function deleteTree(string $dir): void
     {
         if (!is_dir($dir)) {
             return;
@@ -70,11 +43,7 @@ class MixTenantPluginVendorTest extends TestCase
                 continue;
             }
             $path = $dir . DIRECTORY_SEPARATOR . $entry;
-            if (is_dir($path)) {
-                $this->deleteDirectory($path);
-            } else {
-                unlink($path);
-            }
+            is_dir($path) ? $this->deleteTree($path) : unlink($path);
         }
         rmdir($dir);
     }

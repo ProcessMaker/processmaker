@@ -101,7 +101,7 @@ class ScreenBuilderManager
                 continue;
             }
 
-            $packageName = PluginVendorAssets::packageNameFromPluginPath($pluginPath, $folderName);
+            $packageName = $this->resolvePluginPackageName($pluginPath, $folderName);
             $webPath = $this->publishedPluginScriptWebPath($packageName, $extensionsFile);
 
             if ($webPath !== null) {
@@ -146,6 +146,57 @@ class ScreenBuilderManager
     }
 
     /**
+     * Prefer the current tenant's copy on its public disk, else the global public/vendor copy.
+     */
+    private function publishedPluginScriptWebPath(string $packageName, string $extensionsFile): ?string
+    {
+        $relativeJs = '/js/' . $extensionsFile;
+
+        if (PluginVendorAssets::isEnabled()) {
+            $tenantId = PluginVendorAssets::currentTenantId();
+            if ($tenantId !== null && is_file(PluginVendorAssets::tenantPackageRoot($tenantId, $packageName) . $relativeJs)) {
+                return PluginVendorAssets::webPath($packageName, $relativeJs);
+            }
+        }
+
+        $globalWeb = '/vendor/processmaker/packages/' . $packageName . $relativeJs;
+
+        return file_exists(public_path(ltrim($globalWeb, '/'))) ? $globalWeb : null;
+    }
+
+    /**
+     * Map a script URL to its file: /storage/... lives on the tenant public disk, the rest under public/.
+     */
+    private function filesystemPathForWebScript(string $webScript): string
+    {
+        $resolved = PluginVendorAssets::filesystemPathForStorageUrl($webScript);
+        if ($resolved !== null) {
+            return $resolved;
+        }
+
+        return public_path(ltrim(explode('?', $webScript, 2)[0], '/'));
+    }
+
+    /**
+     * Resolve the web package folder name (e.g. package-plg) from a plugin directory.
+     */
+    private function resolvePluginPackageName(string $pluginPath, string $folderName): string
+    {
+        $packageName = $folderName;
+
+        $composerPath = $pluginPath . '/composer.json';
+        if (is_file($composerPath)) {
+            $data = json_decode((string) file_get_contents($composerPath), true);
+            $name = is_array($data) ? ($data['name'] ?? null) : null;
+            if (is_string($name) && str_contains($name, '/')) {
+                $packageName = substr($name, strrpos($name, '/') + 1);
+            }
+        }
+
+        return $packageName;
+    }
+
+    /**
      * Convert a filesystem path to a public-relative script path with a leading slash.
      */
     private function normalizePublicScriptPath(string $filesystemPath): ?string
@@ -155,20 +206,21 @@ class ScreenBuilderManager
             return null;
         }
 
-        if (str_starts_with($path, '/')) {
-            $publicRoot = str_replace('\\', '/', realpath(public_path()) ?: public_path());
-            if (str_starts_with($path, $publicRoot)) {
-                return '/' . ltrim(substr($path, strlen($publicRoot)), '/');
-            }
+        if (!str_starts_with($path, '/')) {
+            return '/' . ltrim($path, '/');
+        }
 
-            $baseRoot = str_replace('\\', '/', realpath(base_path()) ?: base_path());
-            if (str_starts_with($path, $baseRoot)) {
-                return '/' . ltrim(substr($path, strlen($baseRoot)), '/');
-            }
+        return $this->publicPathRelativeToRoot($path, public_path())
+            ?? $this->publicPathRelativeToRoot($path, base_path());
+    }
 
+    private function publicPathRelativeToRoot(string $absolutePath, string $root): ?string
+    {
+        $root = str_replace('\\', '/', realpath($root) ?: $root);
+        if (!str_starts_with($absolutePath, $root)) {
             return null;
         }
 
-        return '/' . ltrim($path, '/');
+        return '/' . ltrim(substr($absolutePath, strlen($root)), '/');
     }
 }

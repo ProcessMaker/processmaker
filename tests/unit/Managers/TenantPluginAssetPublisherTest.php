@@ -8,49 +8,44 @@ use Tests\TestCase;
 
 class TenantPluginAssetPublisherTest extends TestCase
 {
-    public function testTenantPluginAssetPublisherCopyRemoveAndSkip(): void
-    {
-        $tenantId = 98765;
-        $pluginDir = storage_path('plugins/tenant-assets-test-' . uniqid());
-        $publishedRoot = PluginVendorAssets::tenantPublicRoot($tenantId, 'test-tenant-pkg');
+    private const TENANT_ID = 987652;
 
+    public function testCopiesToTenantPublicDiskAndRemoves(): void
+    {
+        $tenantDir = base_path('storage/tenant_' . self::TENANT_ID);
+        $this->deleteTree($tenantDir);
+
+        $pluginDir = storage_path('plugins/tenant-assets-test-' . uniqid());
         mkdir($pluginDir, 0755, true);
-        file_put_contents($pluginDir . '/composer.json', json_encode([
-            'name' => 'processmaker/test-tenant-pkg',
-        ]));
+        file_put_contents($pluginDir . '/composer.json', json_encode(['name' => 'processmaker/test-tenant-pkg']));
 
         $publisher = new TenantPluginAssetPublisher();
+        $destination = PluginVendorAssets::tenantPackageRoot(self::TENANT_ID, 'test-tenant-pkg');
 
-        $this->assertFalse($publisher->publishPlugin($pluginDir, $tenantId));
-        $this->assertDirectoryDoesNotExist($publishedRoot);
+        $this->assertFalse($publisher->publishPlugin($pluginDir, self::TENANT_ID));
+        $this->assertDirectoryDoesNotExist($destination);
 
-        $publicDir = $pluginDir . '/public';
-        mkdir($publicDir . '/js', 0755, true);
-        file_put_contents($publicDir . '/js/app.js', 'console.log("tenant-pkg");');
-        file_put_contents($publicDir . '/mix-manifest.json', '{"\/js/app.js":"\/js/app.js?id=1"}');
+        mkdir($pluginDir . '/public/js', 0755, true);
+        file_put_contents($pluginDir . '/public/js/app.js', 'console.log("v1");');
+        file_put_contents($pluginDir . '/public/mix-manifest.json', '{"\/js\/app.js":"\/js\/app.js?id=1"}');
 
-        $this->assertTrue($publisher->publishPlugin($pluginDir, $tenantId));
-        $this->assertFileExists($publishedRoot . '/js/app.js');
-        $this->assertFileExists($publishedRoot . '/mix-manifest.json');
-        $this->assertSame(
-            'console.log("tenant-pkg");',
-            file_get_contents($publishedRoot . '/js/app.js')
-        );
+        $this->assertTrue($publisher->publishPlugin($pluginDir, self::TENANT_ID));
+        $this->assertSame('console.log("v1");', file_get_contents($destination . '/js/app.js'));
+        $this->assertFileExists($destination . '/mix-manifest.json');
+        $this->assertDirectoryDoesNotExist(public_path('vendor/processmaker/packages/test-tenant-pkg'));
 
-        file_put_contents($publicDir . '/js/app.js', 'console.log("updated");');
-        $this->assertTrue($publisher->publishPlugin($pluginDir, $tenantId));
-        $this->assertSame(
-            'console.log("updated");',
-            file_get_contents($publishedRoot . '/js/app.js')
-        );
+        file_put_contents($pluginDir . '/public/js/app.js', 'console.log("v2");');
+        $this->assertTrue($publisher->publishPlugin($pluginDir, self::TENANT_ID));
+        $this->assertSame('console.log("v2");', file_get_contents($destination . '/js/app.js'));
 
-        $publisher->removePublishedPlugin($pluginDir, $tenantId);
-        $this->assertDirectoryDoesNotExist($publishedRoot);
+        $publisher->removePublishedPlugin($pluginDir, self::TENANT_ID);
+        $this->assertDirectoryDoesNotExist($destination);
 
-        $this->deleteDirectory($pluginDir);
+        $this->deleteTree($pluginDir);
+        $this->deleteTree($tenantDir);
     }
 
-    private function deleteDirectory(string $dir): void
+    private function deleteTree(string $dir): void
     {
         if (!is_dir($dir)) {
             return;
@@ -60,11 +55,7 @@ class TenantPluginAssetPublisherTest extends TestCase
                 continue;
             }
             $path = $dir . DIRECTORY_SEPARATOR . $entry;
-            if (is_dir($path)) {
-                $this->deleteDirectory($path);
-            } else {
-                unlink($path);
-            }
+            is_dir($path) ? $this->deleteTree($path) : unlink($path);
         }
         rmdir($dir);
     }
