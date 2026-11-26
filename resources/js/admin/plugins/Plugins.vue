@@ -702,7 +702,10 @@ const startServerRestartPolling = () => {
   serverRestartAttempts = 0;
   serverRestartReady.value = false;
   serverRestartMessage.value = $t("Waiting for server restart...");
-  serverRestartTimer = setInterval(checkServerRestart, 3000);
+  serverRestartTimer = setTimeout(() => {
+    checkServerRestart();
+    serverRestartTimer = setInterval(checkServerRestart, 3000);
+  }, 4000);
 };
 
 const hidePluginModal = () => {

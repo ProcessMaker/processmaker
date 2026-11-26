@@ -289,8 +289,7 @@ class PluginRuntimeReload
 
     public function stateFile(): string
     {
-        $path = (string) config('plugin_manager.reload_state_file', '/tmp/processmaker-plugin-reload-version');
-        return $path;
+        return (string) config('plugin_manager.reload_state_file', '/tmp/processmaker-plugin-reload-version');
     }
 
     private function redisPrefix(): string
