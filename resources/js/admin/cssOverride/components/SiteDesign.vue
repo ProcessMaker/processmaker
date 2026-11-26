@@ -148,7 +148,7 @@
               <i class="fp-add-outlined"></i> {{ $t('Add to Bundle') }}
           </b-button>
           
-          <b-button variant="outline-secondary" class="ml-auto" @click="onClose">
+          <b-button variant="outline-secondary" class="ml-auto" :disabled="isLoading" @click="onClose">
               {{ $t('Cancel') }}
           </b-button>
           
@@ -474,12 +474,15 @@ export default {
     },
     onCreate(data) {
       this.isLoading = true;
+      this.$refs.modalLoading.show();
       ProcessMaker.apiClient.post('customize-ui', data, { timeout: 0 })
         .then(() => {
+          this.$refs.modalLoading.hide();
           ProcessMaker.alert(this.$t('The styles were recompiled.'), 'success');
           this.onClose();
         })
         .catch(error => {
+          this.$refs.modalLoading.hide();
           ProcessMaker.alert(
             _.get(error, 'response.data.message', this.$t('The given data was invalid.')),
             'danger'
@@ -493,15 +496,26 @@ export default {
         });
     },
     onUpdate(data) {
+      this.isLoading = true;
+      this.$refs.modalLoading.show();
       ProcessMaker.apiClient.put('customize-ui', data, { timeout: 0 })
         .then(() => {
+          this.$refs.modalLoading.hide();
           ProcessMaker.alert(this.$t('The styles were recompiled.'), 'success');
           this.onClose();
         })
         .catch(error => {
+          this.$refs.modalLoading.hide();
+          ProcessMaker.alert(
+            _.get(error, 'response.data.message', this.$t('The given data was invalid.')),
+            'danger'
+          );
           if (_.get(error, 'response.status') === 422) {
             this.errors = error.response.data.errors;
           }
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
     onAddToBundle(data) {

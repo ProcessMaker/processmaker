@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CompileUI implements ShouldQueue
 {
@@ -45,7 +46,8 @@ class CompileUI implements ShouldQueue
                 $this->runCompileUi();
             });
         } catch (LockTimeoutException) {
-            throw new \RuntimeException(
+            throw new HttpException(
+                503,
                 __('UI theme compilation is already in progress. Please try again in a few moments.')
             );
         }
