@@ -49,6 +49,17 @@ class DeployScript extends Controller
         $name = (string) $request->input('name');
         $isUpdate = Script::where('title', $name)->exists();
 
+        $rejection = $this->rejectDeployRequest($request, $name, $isUpdate);
+
+        return $rejection ?? $this->persistDeployedScript($request, $name);
+    }
+
+    /**
+     * Return the response that stops a deploy (version history unavailable,
+     * validation failure, or forbidden executor binding), or null to proceed.
+     */
+    private function rejectDeployRequest(Request $request, string $name, bool $isUpdate): ?JsonResponse
+    {
         if ($unavailable = $this->ensureDeployVersionHistoryAvailable($isUpdate)) {
             return $unavailable;
         }
@@ -73,11 +84,7 @@ class DeployScript extends Controller
             ], 422);
         }
 
-        if ($forbidden = $this->denyUnauthorizedExecutorBinding($request, $name)) {
-            return $forbidden;
-        }
-
-        return $this->persistDeployedScript($request, $name);
+        return $this->denyUnauthorizedExecutorBinding($request, $name);
     }
 
     /**
