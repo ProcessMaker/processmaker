@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Passport\HasApiTokens;
@@ -48,6 +49,12 @@ class User extends Authenticatable implements HasMedia
 
     // Session key to save request ids that the user started
     public const REQUESTS_SESSION_KEY = 'web-entry-request-ids';
+
+    public const SELF_SERVICE_GROUP_IDS_CACHE_PREFIX = 'self_service:user_group_ids:';
+
+    public const SELF_SERVICE_GROUP_IDS_GENERATION_PREFIX = 'self_service:user_group_ids_generation:';
+
+    public const SELF_SERVICE_GROUP_IDS_CACHE_TTL_MINUTES = 10;
 
     /**
      * The attributes that are mass assignable.
@@ -298,7 +305,17 @@ class User extends Authenticatable implements HasMedia
 
     public function groups()
     {
-        return $this->morphToMany('ProcessMaker\Models\Group', 'member', 'group_members');
+        return new Relations\UserGroups(
+            Group::query(),
+            $this,
+            'member',
+            'group_members',
+            'member_id',
+            'group_id',
+            $this->getKeyName(),
+            (new Group())->getKeyName(),
+            'groups'
+        );
     }
 
     public function projectMembers()
@@ -452,15 +469,13 @@ class User extends Authenticatable implements HasMedia
             return true;
         } elseif (array_key_exists('groups', $task->self_service_groups)) {
             return collect($task->self_service_groups['groups'])
-                ->intersect(
-                    $this->groups()->pluck('groups.id')
-                )->count() > 0;
+                ->intersect($this->selfServiceGroupIds())
+                ->count() > 0;
         } else {
             // For older processes
             return collect($task->self_service_groups)
-                ->intersect(
-                    $this->groups()->pluck('groups.id')
-                )->count() > 0;
+                ->intersect($this->selfServiceGroupIds())
+                ->count() > 0;
         }
     }
 
@@ -469,9 +484,49 @@ class User extends Authenticatable implements HasMedia
         $this->groups()->detach();
     }
 
+    /**
+     * Direct group IDs plus ancestor groups. Cached per user; skipped on inbox repeats.
+     */
+    public function selfServiceGroupIds()
+    {
+        $key = $this->selfServiceGroupIdsCacheKey();
+
+        return collect(Cache::remember($key, now()->addMinutes(self::SELF_SERVICE_GROUP_IDS_CACHE_TTL_MINUTES), function () {
+            $direct = $this->groups()->pluck('groups.id');
+            if ($direct->isEmpty()) {
+                return [];
+            }
+
+            return $direct->merge(Group::ancestorIdsFor($direct))->unique()->values()->all();
+        }));
+    }
+
+    /**
+     * Invalidate the cached self-service group ids of a user.
+     *
+     * Call this after the membership write has completed. Instead of forgetting the live key
+     * (which an in-flight Cache::remember that already read the old memberships could write
+     * back), publish a new per-user generation that is part of the cache key. A fill that
+     * started earlier keeps writing the key of the generation it captured, which new
+     * requests no longer read.
+     */
+    public static function flushSelfServiceGroupIdsCache(int $userId): void
+    {
+        Cache::forever(self::SELF_SERVICE_GROUP_IDS_GENERATION_PREFIX . $userId, (string) Str::uuid());
+    }
+
+    private function selfServiceGroupIdsCacheKey(): string
+    {
+        $generation = Cache::get(self::SELF_SERVICE_GROUP_IDS_GENERATION_PREFIX . $this->id, '0');
+
+        return self::SELF_SERVICE_GROUP_IDS_CACHE_PREFIX . $this->id
+            . ':' . Group::selfServiceHierarchyVersion()
+            . ':' . $generation;
+    }
+
     public function availableSelfServiceTasksQuery()
     {
-        $groupIds = $this->groups()->pluck('groups.id');
+        $groupIds = $this->selfServiceGroupIds();
 
         $taskQuery = ProcessRequestToken::select(['process_request_tokens.id'])
         ->where([
