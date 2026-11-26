@@ -10,6 +10,7 @@ use DOMXPath;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\User;
 
 /**
  * Read-only map of a process: its activities with the assets they reference
@@ -46,7 +47,7 @@ class ProcessInventory
     /**
      * @return array<string, mixed>
      */
-    public function build(Process $process, string $alternative, ?string $bpmn): array
+    public function build(Process $process, string $alternative, ?string $bpmn, ?User $viewer = null): array
     {
         $dom = new DOMDocument();
         if ($bpmn === null || $bpmn === '' || !@$dom->loadXML($bpmn)) {
@@ -58,7 +59,7 @@ class ProcessInventory
 
         $activities = $this->activities($xpath);
         $screens = $this->screens($activities);
-        $scripts = $this->scripts($activities);
+        $scripts = $this->scripts($activities, $viewer);
         $gateways = $this->gateways($xpath);
 
         return [
@@ -174,8 +175,14 @@ class ProcessInventory
      * @param array<string, array<string, mixed>> $activities
      * @return array<int, array<string, mixed>>
      */
-    private function scripts(array $activities): array
+    private function scripts(array $activities, ?User $viewer): array
     {
+        // Script metadata is gated by view-scripts on the scripts API. Without it
+        // (or without a known viewer), do not resolve or confirm any script id.
+        if ($viewer === null || !$viewer->can('view-scripts')) {
+            return [];
+        }
+
         $referencedBy = [];
         foreach ($activities as $activity) {
             if ($activity['script_id'] !== null) {

@@ -277,6 +277,39 @@ class ProcessServerTest extends TestCase
                 ->etc());
     }
 
+    public function testUpdateProcessStripsMarkupFromCaseTitleAndKeepsMustache(): void
+    {
+        $process = Process::factory()->create(['name' => 'Case Title Process']);
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'case_title' => '<img src=x onerror=alert(1)>Case #{{_request.case_number}}',
+        ])->assertOk();
+
+        $this->assertSame('Case #{{_request.case_number}}', $process->refresh()->case_title);
+    }
+
+    public function testInventoryHidesScriptsWithoutViewScriptsPermission(): void
+    {
+        $this->initializePermissions();
+        $screen = Screen::factory()->create(['title' => 'Inventory Form', 'type' => 'FORM', 'config' => []]);
+        $script = Script::factory()->create(['title' => 'Hidden Script', 'language' => 'php']);
+        $process = Process::factory()->create([
+            'name' => 'Inventory Process',
+            'bpmn' => $this->inventoryBpmn($screen->id, $script->id),
+        ]);
+        $member = User::factory()->create(['is_administrator' => false]);
+        $member->permissions()->attach(Permission::byName('view-processes'));
+
+        ProcessServer::actingAs($member)->tool(GetProcessInventoryTool::class, [
+            'id' => $process->id,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('scripts', [])
+                ->etc())
+            ->assertDontSee('Hidden Script');
+    }
+
     private function inventoryBpmn(int $screenId, int $scriptId): string
     {
         return <<<XML

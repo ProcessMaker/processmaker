@@ -18,6 +18,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\SanitizeHelper;
 use ProcessMaker\Validation\CategoryRule;
 
 class ProcessCatalog
@@ -120,7 +121,7 @@ class ProcessCatalog
         $detail = $this->find($user, $id, $alternative);
         $process = Process::query()->findOrFail($id);
 
-        return (new ProcessInventory())->build($process, $detail['alternative'] ?? 'A', $detail['bpmn'] ?? null);
+        return (new ProcessInventory())->build($process, $detail['alternative'] ?? 'A', $detail['bpmn'] ?? null, $user);
     }
 
     /**
@@ -151,6 +152,8 @@ class ProcessCatalog
             $this->assertBpmnAcceptable($validated['bpmn']);
             $validated['bpmn'] = BpmnDocument::replaceHtmlEntities($validated['bpmn']);
         }
+
+        $validated = $this->sanitizeCaseTitle($validated);
 
         $process = new Process();
         $process->fill($validated);
@@ -377,7 +380,7 @@ class ProcessCatalog
      */
     private function writable(array $input): array
     {
-        return array_intersect_key($input, array_flip([
+        return $this->sanitizeCaseTitle(array_intersect_key($input, array_flip([
             'name',
             'description',
             'status',
@@ -385,7 +388,24 @@ class ProcessCatalog
             'case_title',
             'manager_id',
             'bpmn',
-        ]));
+        ])));
+    }
+
+    /**
+     * Same as the HTTP process routes (SanitizeInput with case_title as a
+     * mustache field): strip HTML/PHP tags, keep mustache expressions. The title
+     * is later rendered with v-html in task and request lists.
+     *
+     * @param array<string, mixed> $attributes
+     * @return array<string, mixed>
+     */
+    private function sanitizeCaseTitle(array $attributes): array
+    {
+        if (isset($attributes['case_title']) && is_string($attributes['case_title'])) {
+            $attributes['case_title'] = SanitizeHelper::sanitize($attributes['case_title'], true, false);
+        }
+
+        return $attributes;
     }
 
     private function assertBpmnAcceptable(string $bpmn): void
