@@ -5,7 +5,6 @@ use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Http\Kernel as HttpKernelContract;
 use Illuminate\Foundation\Configuration\Middleware;
-use Laravel\Passport\Http\Middleware\CreateFreshApiToken;
 use ProcessMaker\Application;
 use ProcessMaker\Console\Kernel as ConsoleKernel;
 use ProcessMaker\Exception\Handler;
@@ -79,7 +78,7 @@ $app = Application::configure(basePath: realpath(__DIR__ . '/../'))
             ProcessMakerMiddleware\SetLocale::class,
             ProcessMakerMiddleware\GenerateMenus::class,
             ProcessMakerMiddleware\IgnoreMapFiles::class,
-            CreateFreshApiToken::class,
+            ProcessMakerMiddleware\CreateFreshApiToken::class,
         ]);
 
         // API middleware group
