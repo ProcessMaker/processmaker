@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Process;
 use Mockery;
 use ProcessMaker\Events\PluginLog;
 use ProcessMaker\Managers\PluginManager;
+use ProcessMaker\Services\PluginGitService;
+use ProcessMaker\Services\PluginRuntimeService;
 use ProcessMaker\Services\PluginRuntimeReload;
 use RuntimeException;
 use Tests\TestCase;
@@ -471,8 +473,8 @@ class PluginManagerTest extends TestCase
         config(['app.multitenancy' => true]);
         $this->app->instance('currentTenant', (object) ['id' => 7]);
 
-        $method = new \ReflectionMethod(PluginManager::class, 'artisanEnvironment');
-        $environment = $method->invoke(new PluginManager());
+        $method = new \ReflectionMethod(PluginRuntimeService::class, 'environment');
+        $environment = $method->invoke(app(PluginRuntimeService::class));
 
         $this->assertSame(['TENANT' => '7'], $environment);
     }
@@ -589,8 +591,8 @@ class PluginManagerTest extends TestCase
         ]);
         Event::fake([PluginLog::class]);
 
-        $method = new \ReflectionMethod(PluginManager::class, 'runCommand');
-        $method->invoke(new PluginManager(), 'route:cache', 'test-plugin', 1);
+        $method = new \ReflectionMethod(PluginRuntimeService::class, 'command');
+        $method->invoke(app(PluginRuntimeService::class), 'route:cache', 'test-plugin', 1);
 
         Event::assertDispatchedTimes(PluginLog::class, 1);
         Event::assertDispatched(PluginLog::class, function (PluginLog $event) {
@@ -601,16 +603,16 @@ class PluginManagerTest extends TestCase
     public function testStripEmbeddedCredentialsFromHttpUrlRemovesTokenUserinfo()
     {
         $manager = new PluginManager();
-        $method = new \ReflectionMethod($manager, 'stripEmbeddedCredentialsFromHttpUrl');
+        $method = new \ReflectionMethod(PluginGitService::class, 'stripCredentials');
         $method->setAccessible(true);
 
         $this->assertSame(
             'https://github.com/org/repo.git',
-            $method->invoke($manager, 'https://ghp_xxx@github.com/org/repo.git')
+            $method->invoke(app(PluginGitService::class), 'https://ghp_xxx@github.com/org/repo.git')
         );
         $this->assertSame(
             'https://github.com/org/repo.git',
-            $method->invoke($manager, 'https://user:secret@github.com/org/repo.git')
+            $method->invoke(app(PluginGitService::class), 'https://user:secret@github.com/org/repo.git')
         );
     }
 
@@ -635,13 +637,10 @@ class PluginManagerTest extends TestCase
         ]);
 
         $manager = new PluginManager();
-        $method = new \ReflectionMethod($manager, 'cloneRepository');
-        $method->setAccessible(true);
-
         $authUrl = 'https://ghp_xxx@github.com/org/repo.git';
         $canonical = 'https://github.com/org/repo.git';
 
-        $method->invoke($manager, $authUrl, $dest, 'repo', null, $canonical);
+        app(PluginGitService::class)->clone($authUrl, $dest, 'repo', null, $canonical, app(\ProcessMaker\Services\PluginLogService::class));
 
         Process::assertRan(fn ($process) => is_array($process->command)
             && $process->command === ['git', 'clone', $authUrl, $dest]);
