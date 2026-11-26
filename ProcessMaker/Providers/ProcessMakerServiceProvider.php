@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
@@ -32,6 +33,7 @@ use OpenApi\Analysers\AttributeAnnotationFactory;
 use OpenApi\Analysers\DocBlockAnnotationFactory;
 use OpenApi\Analysers\ReflectionAnalyser;
 use ProcessMaker\Cache\Settings\SettingCacheManager;
+use ProcessMaker\Cache\Settings\SettingMemoryCache;
 use ProcessMaker\Console\Commands\HorizonListen;
 use ProcessMaker\Console\Migration\ExtendedMigrateCommand;
 use ProcessMaker\Contracts\ConditionalRedirectServiceInterface;
@@ -117,6 +119,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // Register Octane listeners if Octane is enabled
         $this->registerOctaneListeners();
+
+        // Re-check settings L1 epoch at the start of each queued job
+        $this->registerSettingsCacheJobListeners();
 
         // Hook after service providers boot
         self::$bootTime = (microtime(true) - self::$bootStart) * 1000; // Convert to milliseconds
@@ -604,6 +609,17 @@ class ProcessMakerServiceProvider extends ServiceProvider
         }
 
         Event::listen(RequestTerminated::class, ResetRequestState::class);
+    }
+
+    /**
+     * Reset settings L1 epoch sync scope at the start of each queued job so
+     * Horizon/queue:work workers re-check Redis instead of serving a sticky map.
+     */
+    private function registerSettingsCacheJobListeners(): void
+    {
+        Queue::before(function () {
+            SettingMemoryCache::beginRequest();
+        });
     }
 
     /**

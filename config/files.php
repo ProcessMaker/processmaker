@@ -1,5 +1,38 @@
 <?php
 
+$parseCommaSeparatedExtensions = static function (string $envKey, array $default): array {
+    $value = env($envKey);
+
+    if (!is_string($value) || trim($value) === '') {
+        return $default;
+    }
+
+    return array_values(array_filter(array_map(
+        static fn (string $extension) => strtolower(trim($extension)),
+        explode(',', $value)
+    )));
+};
+
+$defaultAllowedExtensions = [
+    // Documents
+    'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+    'txt', 'csv',
+
+    // Images
+    'jpg', 'jpeg', 'png', 'gif', 'svg',
+
+    // Audio
+    'mp3',
+
+    // Video
+    'mp4', 'webm',
+];
+
+$defaultDangerousExtensions = [
+    'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'lzma',
+    'cab', 'ar', 'iso', 'dmg', 'pkg', 'deb', 'rpm',
+];
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -19,22 +52,13 @@ return [
     | List of file extensions that are allowed to be uploaded.
     | Only files with these extensions will be accepted.
     | Archive formats (.zip, .rar, .tar, .7z) are explicitly NOT allowed for security.
+    | Override with comma-separated ALLOWED_EXTENSIONS in .env (optional).
     |
     */
-    'allowed_extensions' => [
-        // Documents
-        'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
-        'txt', 'csv',
-
-        // Images
-        'jpg', 'jpeg', 'png', 'gif', 'svg',
-
-        // Audio
-        'mp3',
-
-        // Video
-        'mp4', 'webm',
-    ],
+    'allowed_extensions' => $parseCommaSeparatedExtensions(
+        'ALLOWED_EXTENSIONS',
+        $defaultAllowedExtensions
+    ),
     /*
     |--------------------------------------------------------------------------
     | Extension to MIME Type Mapping
@@ -116,12 +140,13 @@ return [
     | Archive formats (.zip, .rar, .tar, .7z, .gz, etc.) are explicitly
     | NOT allowed for security reasons. These file types can contain
     | malicious content and are blocked by default.
+    | Override with comma-separated DANGEROUS_EXTENSIONS in .env (optional).
     |
     */
-    'dangerous_extensions' => [
-        'zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'lzma',
-        'cab', 'ar', 'iso', 'dmg', 'pkg', 'deb', 'rpm',
-    ],
+    'dangerous_extensions' => $parseCommaSeparatedExtensions(
+        'DANGEROUS_EXTENSIONS',
+        $defaultDangerousExtensions
+    ),
 
     /*
     |--------------------------------------------------------------------------

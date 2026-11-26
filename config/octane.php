@@ -22,6 +22,9 @@ use Laravel\Octane\Listeners\FlushUploadedFiles;
 use Laravel\Octane\Listeners\ReportException;
 use Laravel\Octane\Listeners\StopWorkerIfNecessary;
 use Laravel\Octane\Octane;
+use ProcessMaker\Models\AnonymousUser;
+
+$multitenancyEnabled = filter_var(env('MULTITENANCY', false), FILTER_VALIDATE_BOOL);
 
 return [
 
@@ -132,7 +135,11 @@ return [
 
     'warm' => [
         ...Octane::defaultServicesToWarm(),
-        ProcessMaker\Models\AnonymousUser::class,
+        // AnonymousUser is tenant-scoped; warming it at worker boot queries the
+        // default connection before any tenant is resolved (breaks multitenancy).
+        ...($multitenancyEnabled ? [] : [
+            AnonymousUser::class,
+        ]),
         ProcessMaker\ImportExport\Extension::class,
         ProcessMaker\ImportExport\SignalHelper::class,
         ProcessMaker\Managers\MenuManager::class,
@@ -157,6 +164,9 @@ return [
         ProcessMaker\Managers\ModelerManager::class,
         ProcessMaker\Managers\ScreenBuilderManager::class,
         Lavary\Menu\Menu::class,
+        ...($multitenancyEnabled ? [
+            AnonymousUser::class,
+        ] : []),
     ],
 
     /*

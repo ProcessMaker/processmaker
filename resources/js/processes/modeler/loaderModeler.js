@@ -1,9 +1,11 @@
 import { setupMain } from "../../next/setupMain";
 import monaco from "../../next/monaco";
 import modeler from "../../next/modeler";
+import "../../next/libraries/vueFormElements";
+import "../../next/libraries/modelerInspector";
 import * as ScreenBuilder from "@processmaker/screen-builder";
 import * as ModelerLib from "@processmaker/modeler";
-import VueFormElements from "@processmaker/vue-form-elements";
+import VueFormElementsPlugin from "@processmaker/vue-form-elements";
 
 import("@processmaker/screen-builder/dist/vue-form-builder.css");
 import("@processmaker/vue-form-elements/dist/vue-form-elements.css");
@@ -17,7 +19,7 @@ window.ScreenBuilder = ScreenBuilder;
 // and Vue throws "Cannot add property _Ctor" if it is registered as a component.
 window.Modeler = ModelerLib.default ?? { ...ModelerLib };
 
-window.Vue.use(VueFormElements);
+window.Vue.use(VueFormElementsPlugin.default ?? VueFormElementsPlugin);
 window.Vue.use(ScreenBuilder.default);
 
 window.ProcessMaker.packages = window.temporal?.packages || [];

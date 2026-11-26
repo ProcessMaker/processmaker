@@ -3,6 +3,7 @@
 namespace ProcessMaker\Traits;
 
 use Facades\ProcessMaker\Helpers\CachedSchema;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use ProcessMaker\Models\Process;
@@ -57,75 +58,81 @@ trait HideSystemResources
         }
     }
 
-    public function scopeNonSystem($query)
+    public function scopeNonSystem($query, $optimized = false)
+    {
+        return $this->applyNonSystemScope($query, $optimized);
+    }
+
+    private function applyNonSystemScope($query, $optimized = false)
     {
         if (substr(static::class, -8) === 'Category') {
             return $query->where('is_system', false);
-        } elseif (static::class === Process::class) {
-            return $query
-                ->where('is_template', false)
-                ->when(CachedSchema::hasColumn('processes', 'asset_type'), function ($query) {
+        }
+
+        $templatedModels = [
+            Process::class => 'processes',
+            Screen::class => 'screens',
+            Script::class => 'scripts',
+            DataSource::class => 'data_sources',
+        ];
+        if (isset($templatedModels[static::class])) {
+            return $this->scopeNonSystemTemplatedAsset($query, $templatedModels[static::class]);
+        }
+
+        $excludeSystemCategories = fn ($categoryQuery) => $categoryQuery->where('is_system', true);
+
+        return match (static::class) {
+            ProcessRequest::class => $query->whereNotIn(
+                'process_id',
+                Process::withTrashed()->system()->pluck('id')
+            ),
+            User::class, ScriptExecutor::class => $query->where('is_system', false),
+            ProcessRequestToken::class => $this->scopeNonSystemProcessRequestToken($query, $optimized),
+            ProcessTemplates::class => $query->where('process_templates.is_system', false)
+                ->when(CachedSchema::hasColumn('process_templates', 'asset_type'), function ($query) {
                     return $query->whereNull('asset_type');
-                })
-                ->whereDoesntHave('categories', function ($query) {
-                    $query->where('is_system', true);
-                });
-        } elseif (static::class === Screen::class) {
-            return $query
-                ->where('is_template', false)
-                ->when(CachedSchema::hasColumn('screens', 'asset_type'), function ($query) {
+                }),
+            'ProcessMaker\Plugins\Collections\Models\Collection' => $query->whereNull('collections.asset_type'),
+            ScreenTemplates::class => $query->where('screen_templates.is_system', false)
+                ->when(CachedSchema::hasColumn('screen_templates', 'asset_type'), function ($query) {
                     return $query->whereNull('asset_type');
-                })
-                ->whereDoesntHave('categories', function ($query) {
-                    $query->where('is_system', true);
-                });
-        } elseif (static::class === Script::class) {
-            return $query
-                ->where('is_template', false)
-                ->when(CachedSchema::hasColumn('scripts', 'asset_type'), function ($query) {
-                    return $query->whereNull('asset_type');
-                })
-                ->whereDoesntHave('categories', function ($query) {
-                    $query->where('is_system', true);
-                });
-        } elseif (static::class === DataSource::class) {
-            return $query
-                ->where('is_template', false)
-                ->when(CachedSchema::hasColumn('data_sources', 'asset_type'), function ($query) {
-                    return $query->whereNull('asset_type');
-                })
-                ->whereDoesntHave('categories', function ($query) {
-                    $query->where('is_system', true);
-                });
-        } elseif (static::class == ProcessRequest::class) {
-            // ProcessRequests must be filtered this way since
-            // they could be in a separate database
-            $systemProcessIds = Process::withTrashed()->system()->pluck('id');
-            $query->whereNotIn('process_id', $systemProcessIds);
-        } elseif (static::class == User::class) {
-            return $query->where('is_system', false);
-        } elseif (static::class === ProcessRequestToken::class) {
+                }),
+            default => $query->whereDoesntHave('categories', $excludeSystemCategories),
+        };
+    }
+
+    private function scopeNonSystemTemplatedAsset($query, string $tableName)
+    {
+        return $query
+            ->where('is_template', false)
+            ->when(CachedSchema::hasColumn($tableName, 'asset_type'), function ($query) {
+                return $query->whereNull('asset_type');
+            })
+            ->whereDoesntHave('categories', function ($query) {
+                $query->where('is_system', true);
+            });
+    }
+
+    private function scopeNonSystemProcessRequestToken($query, bool $optimized)
+    {
+        // Direct EXISTS avoids Process global scopes (e.g. published/process_versions).
+        if (!$optimized) {
             return $query->whereHas('process.categories', function ($query) {
                 $query->where('is_system', false);
             });
-        } elseif (static::class === ProcessTemplates::class) {
-            return $query->where('process_templates.is_system', false)
-                ->when(CachedSchema::hasColumn('process_templates', 'asset_type'), function ($query) {
-                    return $query->whereNull('asset_type');
-                });
-        } elseif (static::class === ScriptExecutor::class) {
-            return $query->where('is_system', false);
-        } elseif (static::class === 'ProcessMaker\Plugins\Collections\Models\Collection') {
-            return $query->whereNull('collections.asset_type');
-        } elseif (static::class === ScreenTemplates::class) {
-            return $query->where('screen_templates.is_system', false)
-                ->when(CachedSchema::hasColumn('screen_templates', 'asset_type'), function ($query) {
-                    return $query->whereNull('asset_type');
-                });
-        } else {
-            return $query->whereDoesntHave('categories', function ($query) {
-                $query->where('is_system', true);
-            });
         }
+
+        return $query->whereExists(function ($sub) {
+            $sub->select(DB::raw(1))
+                ->from('processes')
+                ->join('category_assignments', function ($join) {
+                    $join->on('category_assignments.assignable_id', '=', 'processes.id')
+                        ->where('category_assignments.assignable_type', '=', Process::class);
+                })
+                ->join('process_categories', 'process_categories.id', '=', 'category_assignments.category_id')
+                ->whereColumn('processes.id', 'process_request_tokens.process_id')
+                ->whereNull('processes.deleted_at')
+                ->where('process_categories.is_system', false);
+        });
     }
 }

@@ -469,8 +469,10 @@
 @endsection
 
 @section('js')
+  @include('shared.monaco')
   @vite(['resources/js/requests/loaderRequestsShow.js'])
   @vite(['resources/js/processes/modeler/initialLoad.js'])
+  @vite(['resources/js/requests/show.js'])
 
   @foreach($managerModelerScripts as $params)
     <script defer

@@ -5,11 +5,14 @@ namespace Tests\Feature\Api;
 use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Jobs\TestScript;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
@@ -423,6 +426,63 @@ class ScriptsTest extends TestCase
     }
 
     /**
+     * A user with only view-scripts must not be able to run arbitrary code through preview (FOUR-34242)
+     */
+    public function testPreviewScriptIsDeniedWithoutEditScriptsPermission()
+    {
+        Bus::fake([TestScript::class]);
+        $script = $this->getScript('php');
+        $this->actAsUserWithPermissions(['view-scripts']);
+
+        $response = $this->apiCall('POST', route('api.scripts.preview', $script->id), [
+            'data' => '{}',
+            'code' => '<?php return ["response"=>1];',
+            'nonce' => '123abc',
+        ]);
+
+        $response->assertStatus(403);
+        Bus::assertNotDispatched(TestScript::class);
+    }
+
+    /**
+     * A user with edit-scripts can still run preview from the script editor
+     */
+    public function testPreviewScriptIsAllowedWithEditScriptsPermission()
+    {
+        Bus::fake([TestScript::class]);
+        $script = $this->getScript('php');
+        $this->actAsUserWithPermissions(['view-scripts', 'edit-scripts']);
+
+        $response = $this->apiCall('POST', route('api.scripts.preview', $script->id), [
+            'data' => '{}',
+            'code' => '<?php return ["response"=>1];',
+            'nonce' => '123abc',
+        ]);
+
+        $response->assertStatus(200);
+        Bus::assertDispatched(TestScript::class);
+    }
+
+    /**
+     * Replace the default administrator test user with a non-admin user that has only the given permissions
+     */
+    private function actAsUserWithPermissions(array $permissions): void
+    {
+        // Seeds permissions, boots AuthServiceProvider and registers the named gates (defineGates)
+        $this->initializePermissions();
+
+        // Make sure a denied request is caused by the missing permission and not by an undefined gate
+        foreach ($permissions as $permission) {
+            $this->assertTrue(Gate::has($permission), "Gate {$permission} is not defined");
+        }
+
+        $this->user = User::factory()->create(['is_administrator' => false]);
+        foreach ($permissions as $permission) {
+            $this->user->giveDirectPermission($permission);
+        }
+    }
+
+    /**
      * Delete script in process
      */
     public function testDeleteScript()
@@ -673,5 +733,91 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('POST', route('api.scripts.close', ['script' => $script->id]));
         $response->assertStatus(204);
         $this->assertTrue($script->versions()->draft()->doesntExist());
+    }
+
+    public function testUpdateScriptConfigurationPreservesDraft()
+    {
+        $user = User::factory()->create(['is_administrator' => true]);
+        $category = ScriptCategory::factory()->create();
+        $newCategory = ScriptCategory::factory()->create();
+        $publishedCode = '<?php return [];';
+        $draftCode = '<?php return ["draft" => true];';
+
+        $script = Script::factory()->create([
+            'code' => $publishedCode,
+            'script_category_id' => $category->id,
+            'timeout' => 60,
+        ]);
+
+        $response = $this->apiCall('PUT', route('api.scripts.draft', ['script' => $script->id]), [
+            'title' => $script->title,
+            'language' => $script->language,
+            'description' => $script->description,
+            'code' => $draftCode,
+            'run_as_user_id' => $user->id,
+            'script_category_id' => $script->script_category_id,
+        ]);
+        $response->assertStatus(204);
+
+        $publishedVersionCount = $script->versions()->published()->count();
+
+        $response = $this->apiCall('PUT', route('api.scripts.update', ['script' => $script->id]), [
+            'title' => 'Updated Script Title',
+            'language' => $script->language,
+            'description' => $script->description,
+            'run_as_user_id' => $user->id,
+            'script_category_id' => $newCategory->id,
+            'script_executor_id' => $script->script_executor_id,
+            'timeout' => 60,
+        ]);
+        $response->assertStatus(204);
+
+        $script->refresh();
+        $draft = $script->versions()->draft()->first();
+
+        $this->assertNotNull($draft);
+        $this->assertEquals($draftCode, $draft->code);
+        $this->assertEquals('Updated Script Title', $script->title);
+        $this->assertEquals('Updated Script Title', $draft->title);
+        $this->assertEquals($newCategory->id, (int) $script->script_category_id);
+        $this->assertEquals($publishedCode, $script->code);
+        $this->assertEquals($publishedVersionCount, $script->versions()->published()->count());
+    }
+
+    public function testUpdateScriptWithCodeDeletesDraft()
+    {
+        $faker = Faker::create();
+        $user = User::factory()->create(['is_administrator' => true]);
+        $publishedCode = '<?php return [];';
+        $draftCode = '<?php return ["draft" => true];';
+        $publishedCodeAfterSave = $faker->sentence(3);
+
+        $script = Script::factory()->create([
+            'code' => $publishedCode,
+        ]);
+
+        $response = $this->apiCall('PUT', route('api.scripts.draft', ['script' => $script->id]), [
+            'title' => $script->title,
+            'language' => $script->language,
+            'description' => $script->description,
+            'code' => $draftCode,
+            'run_as_user_id' => $user->id,
+            'script_category_id' => $script->script_category_id,
+        ]);
+        $response->assertStatus(204);
+
+        $response = $this->apiCall('PUT', route('api.scripts.update', ['script' => $script->id]), [
+            'title' => $script->title,
+            'language' => $script->language,
+            'description' => $script->description,
+            'code' => $publishedCodeAfterSave,
+            'run_as_user_id' => $user->id,
+            'script_category_id' => $script->script_category_id,
+        ]);
+        $response->assertStatus(204);
+
+        $script->refresh();
+        $this->assertTrue($script->versions()->draft()->doesntExist());
+        $this->assertEquals($publishedCodeAfterSave, $script->code);
     }
 }

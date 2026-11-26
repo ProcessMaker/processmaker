@@ -6,10 +6,14 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
+use ProcessMaker\Exception\UnableToResolveAbeProcessModelException;
+use ProcessMaker\Helpers\AbeRecipientSignature;
 use ProcessMaker\Jobs\CaseUpdate;
 use ProcessMaker\Mail\TaskActionByEmail;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\FeelExpressionEvaluator;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
@@ -174,7 +178,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
         $token->updateTokenProperties();
         $token->getInstance()->updateCatchEvents();
-        $token->saveOrFail();
+        $this->saveToken($token);
         $token->setId($token->getKey());
         $request = $token->getInstance();
         $request->last_stage_id = $token->stage_id;
@@ -184,10 +188,7 @@ class TokenRepository implements TokenRepositoryInterface
 
         CaseUpdate::dispatchSync($request, $token);
 
-        if (!is_null($user)) {
-            // Review if the task has enable the action by email
-            $this->validateAndSendActionByEmail($activity, $token, $user->email);
-        }
+        $this->validateAndSendActionByEmail($activity, $token, $user);
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
 
@@ -196,46 +197,272 @@ class TokenRepository implements TokenRepositoryInterface
      *
      * @param ActivityInterface $activity
      * @param TokenInterface $token
-     * @param string $to
+     * @param User|null $user
      *
      * @return void
      */
-    private function validateAndSendActionByEmail(ActivityInterface $activity, TokenInterface $token, string $to)
+    private function validateAndSendActionByEmail(ActivityInterface $activity, TokenInterface $token, ?User $user)
     {
         try {
             $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
             Log::Info('Activity isActionsByEmail: ' . $isActionsByEmail);
-            // If the actionByEmail is enable
-            if ($isActionsByEmail === 'true' && !empty($to)) {
-                $configEmail = json_decode($activity->getProperty('configEmail'), true);
-                if (!empty($configEmail)) {
-                    Log::info('Activity configEmail: ', $configEmail);
-                    $abeRequestToken = new ProcessAbeRequestToken();
-                    $requireLogin = ($configEmail['requireLogin']) ? 1 : 0;
-                    $screenCompleted = !empty($configEmail['screenCompleteRef'])
-                        ? $configEmail['screenCompleteRef']
-                        : null;
-                    $tokenAbe = $abeRequestToken->updateOrCreate([
-                        'process_request_id' => $token->process_request_id ?? null,
-                        'process_request_token_id' => $token->getKey() ?? null,
-                        'require_login' => $requireLogin,
-                        'completed_screen_id' => $screenCompleted,
-                    ]);
-                    $data = $token->getInstance()->getDataStore()->getData();
-                    // Set custom variables defined in the link
-                    $data['abe_uri'] = config('app.url');
-                    $data['token_abe'] = $tokenAbe->uuid;
-
-                    // Send Email
-                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, $data);
-                }
+            if ($isActionsByEmail !== 'true') {
+                return;
             }
+
+            $recipients = $this->resolveAbeRecipients($token, $user);
+            if ($recipients === []) {
+                return;
+            }
+
+            $configEmail = json_decode($activity->getProperty('configEmail'), true);
+            if (empty($configEmail)) {
+                return;
+            }
+
+            Log::info('Activity configEmail: ', $configEmail);
+            $this->sendAbeEmailsForRecipients($token, $recipients, $configEmail);
         } catch (\Exception $e) {
             // Catch and log the error
             Log::error('Failed to validate and send action by email', [
                 'error' => $e->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * @param  array<int, array{email:string,user_id:int,groups:array}>  $recipients
+     */
+    private function sendAbeEmailsForRecipients(
+        TokenInterface $token,
+        array $recipients,
+        array $configEmail
+    ): void {
+        $abeRequestToken = new ProcessAbeRequestToken();
+        $requireLogin = !empty($configEmail['requireLogin']) ? 1 : 0;
+        $screenCompleted = !empty($configEmail['screenCompleteRef'])
+            ? $configEmail['screenCompleteRef']
+            : null;
+        $tokenAbe = $abeRequestToken->updateOrCreate([
+            'process_request_id' => $token->process_request_id ?? null,
+            'process_request_token_id' => $token->getKey() ?? null,
+            'require_login' => $requireLogin,
+            'completed_screen_id' => $screenCompleted,
+        ]);
+        $baseData = $token->getInstance()->getDataStore()->getData();
+        $baseData['abe_uri'] = config('app.url');
+        $baseData['token_abe'] = $tokenAbe->uuid;
+
+        $mailer = new TaskActionByEmail();
+        if (empty($configEmail['trackResponder'])) {
+            $to = implode(', ', array_column($recipients, 'email'));
+            $mailer->sendAbeEmail($configEmail, $to, $baseData);
+
+            return;
+        }
+
+        $staggerSeconds = max(0, (int) config('app.abe_email_stagger_seconds', 1));
+        foreach ($recipients as $index => $recipient) {
+            $signedQuery = AbeRecipientSignature::queryString(
+                $tokenAbe->uuid,
+                $recipient['email'],
+                $recipient['user_id'],
+                $recipient['groups']
+            );
+            $mailer->sendAbeEmail(
+                $configEmail,
+                $recipient['email'],
+                $baseData,
+                $signedQuery,
+                $index * $staggerSeconds
+            );
+        }
+    }
+
+    /**
+     * Resolve ABE recipients as one personalized entry per unique email.
+     * Users in multiple assigned groups are collapsed into one entry with
+     * groups recorded as [{id,name}]. When two users share an email, the
+     * first resolved user wins (one signature / one email).
+     *
+     * @return array<int, array{email:string,user_id:int,groups:array}>
+     */
+    private function resolveAbeRecipients(TokenInterface $token, ?User $user): array
+    {
+        if ($user && $user->email) {
+            return [[
+                'email' => $user->email,
+                'user_id' => (int) $user->id,
+                'groups' => [],
+            ]];
+        }
+
+        return $this->resolveAbeSelfServiceRecipients($token);
+    }
+
+    /**
+     * @return array<int, array{email:string,user_id:int,groups:array}>
+     */
+    private function resolveAbeSelfServiceRecipients(TokenInterface $token): array
+    {
+        if (!$token->is_self_service || !is_array($token->self_service_groups)) {
+            return [];
+        }
+
+        $assignedUserIds = array_map('intval', array_filter(
+            $token->self_service_groups['users'] ?? [],
+            fn ($id) => is_numeric($id) && (int) $id > 0
+        ));
+        $groupIds = array_values(array_unique(array_map(
+            'intval',
+            array_filter(
+                $token->self_service_groups['groups'] ?? [],
+                fn ($id) => $id !== '' && $id !== null && is_numeric($id)
+            )
+        )));
+
+        $processModel = $this->processModelForAbeToken($token);
+        $groupsById = $groupIds === []
+            ? collect()
+            : Group::query()->whereIn('id', $groupIds)->get(['id', 'name'])->keyBy('id');
+
+        $groupMembership = $this->abeGroupMembershipsByUserId($processModel, $groupIds, $groupsById);
+        $allUserIds = array_values(array_unique(array_merge(
+            $assignedUserIds,
+            $groupMembership['groupUserIds']
+        )));
+
+        return $this->abeRecipientsFromAssignees($allUserIds, $groupMembership['groupsByUserId']);
+    }
+
+    /**
+     * @param  \Illuminate\Support\Collection<int, Group>  $groupsById
+     * @return array{groupsByUserId: array<int, array<int, array{id:int, name:string}>>, groupUserIds: array<int>}
+     */
+    private function abeGroupMembershipsByUserId(
+        Process $processModel,
+        array $groupIds,
+        $groupsById
+    ): array {
+        $groupsByUserId = [];
+        $groupUserIds = [];
+        foreach ($groupIds as $groupId) {
+            $membersForGroup = [];
+            $processModel->getConsolidatedUsers($groupId, $membersForGroup);
+            $group = $groupsById->get($groupId);
+            foreach ($membersForGroup as $memberId) {
+                $memberId = (int) $memberId;
+                $groupUserIds[] = $memberId;
+                if ($group) {
+                    $groupsByUserId[$memberId][$groupId] = [
+                        'id' => (int) $group->id,
+                        'name' => (string) $group->name,
+                    ];
+                }
+            }
+        }
+
+        return [
+            'groupsByUserId' => $groupsByUserId,
+            'groupUserIds' => $groupUserIds,
+        ];
+    }
+
+    /**
+     * @param  array<int>  $allUserIds
+     * @param  array<int, array<int, array{id:int, name:string}>>  $groupsByUserId
+     * @return array<int, array{email:string,user_id:int,groups:array}>
+     */
+    private function abeRecipientsFromAssignees(array $allUserIds, array $groupsByUserId): array
+    {
+        if ($allUserIds === []) {
+            return [];
+        }
+
+        $users = User::query()
+            ->whereIn('id', $allUserIds)
+            ->whereNotIn('status', Process::NOT_ASSIGNABLE_USER_STATUS)
+            ->whereNotNull('email')
+            ->where('email', '!=', '')
+            ->orderBy('id')
+            ->get()
+            ->keyBy('id');
+
+        $recipients = [];
+        $seenEmails = [];
+        foreach ($users as $userId => $recipientUser) {
+            $emailKey = strtolower(trim((string) $recipientUser->email));
+            if ($emailKey === '' || isset($seenEmails[$emailKey])) {
+                continue;
+            }
+            $seenEmails[$emailKey] = true;
+
+            $recipients[] = [
+                'email' => $recipientUser->email,
+                'user_id' => (int) $recipientUser->id,
+                'groups' => array_values($groupsByUserId[(int) $userId] ?? []),
+            ];
+        }
+
+        return $recipients;
+    }
+
+    /**
+     * Resolve the Process model used for consolidated group membership lookups.
+     */
+    private function processModelForAbeToken(TokenInterface $token): Process
+    {
+        $fromInstance = $this->abeProcessModelFromTokenInstance($token);
+        if ($fromInstance instanceof Process) {
+            return $fromInstance;
+        }
+
+        $fromTokenAttribute = $this->abeProcessModelFromTokenAttribute($token);
+        if ($fromTokenAttribute instanceof Process) {
+            return $fromTokenAttribute;
+        }
+
+        throw new UnableToResolveAbeProcessModelException();
+    }
+
+    private function abeProcessModelFromTokenInstance(TokenInterface $token): ?Process
+    {
+        if (!method_exists($token, 'getInstance')) {
+            return null;
+        }
+
+        $instance = $token->getInstance();
+        if (!$instance || !method_exists($instance, 'getProcess')) {
+            return null;
+        }
+
+        $process = $instance->getProcess();
+        if (!$process || !method_exists($process, 'getOwnerDocument')) {
+            return null;
+        }
+
+        $document = $process->getOwnerDocument();
+        if (!$document || !method_exists($document, 'getModel')) {
+            return null;
+        }
+
+        $model = $document->getModel();
+
+        return $model instanceof Process ? $model : null;
+    }
+
+    private function abeProcessModelFromTokenAttribute(TokenInterface $token): ?Process
+    {
+        if (!method_exists($token, 'getAttribute')) {
+            return null;
+        }
+
+        $processId = $token->getAttribute('process_id');
+        if (!$processId) {
+            return null;
+        }
+
+        return Process::findOrFail($processId);
     }
 
     /**
@@ -357,7 +584,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->process_request_id = $token->getInstance()->getKey();
         $token->completed_at = Carbon::now();
         $token->updateTokenProperties();
-        $token->save();
+        $this->saveToken($token, 'completed');
         $token->setId($token->getKey());
 
         $this->updateCaseStartedTask($token);
@@ -391,7 +618,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->process_request_id = $token->getInstance()->getKey();
         $token->data = $token->getInstance()->getDataStore()->getData();
         $token->updateTokenProperties();
-        $token->save();
+        $this->saveToken($token, 'closed');
         $token->setId($token->getKey());
     }
 
@@ -718,5 +945,27 @@ class TokenRepository implements TokenRepositoryInterface
         $caseTaskRepo = new CaseTaskRepository($token->getInstance()->case_number, $token);
         $caseTaskRepo->updateCaseStartedTaskStatus();
         $caseTaskRepo->updateCaseParticipatedTaskStatus();
+    }
+
+    private function tokenPersistenceUsesRawSql(): bool
+    {
+        return (bool) config('app.token_persistence_raw_enabled', false);
+    }
+
+    private function saveToken(TokenInterface $token, string $context = 'activated'): void
+    {
+        if (!$this->tokenPersistenceUsesRawSql() || !$token instanceof ProcessRequestToken) {
+            $context === 'activated' ? $token->saveOrFail() : $token->save();
+
+            return;
+        }
+
+        $repository = app(TokenPersistenceRawRepository::class);
+
+        match ($context) {
+            'completed' => $repository->saveCompletedToken($token),
+            'closed' => $repository->saveClosedToken($token),
+            default => $repository->saveActivatedToken($token),
+        };
     }
 }

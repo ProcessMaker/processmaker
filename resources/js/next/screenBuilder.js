@@ -1,6 +1,7 @@
 import {
-  getGlobalVariable, setGlobalVariable, getGlobalPMVariable, setGlobalPMVariable,
+  getGlobalVariable, setGlobalVariable, getGlobalPMVariable,
 } from "./globalVariables";
+import initializeScreenCacheFromMeta from "./initializeScreenCacheFromMeta";
 
 const addScriptsToDOM = async function (scripts) {
   for (const script of scripts) {
@@ -26,24 +27,8 @@ export default () => {
       import("@processmaker/screen-builder").then((ScreenBuilder) => {
         const apiClient = getGlobalPMVariable("apiClient");
 
-        const { initializeScreenCache } = ScreenBuilder;
-        // Configuration Global object used by ScreenBuilder
-        // @link https://processmaker.atlassian.net/browse/FOUR-6833 Cache configuration
-        const screenCacheEnabled = document.head.querySelector("meta[name=\"screen-cache-enabled\"]")?.content ?? "false";
-        const screenCacheTimeout = document.head.querySelector("meta[name=\"screen-cache-timeout\"]")?.content ?? "5000";
-        const screenSecureHandlerToggleVisible = document.head.querySelector("meta[name='screen-secure-handler-toggle-visible']");
-        const screenMergeDraftOnRestore = document.head.querySelector("meta[name='screen-merge-draft-on-restore']")?.content ?? "true";
-        const screen = {
-          cacheEnabled: screenCacheEnabled === "true",
-          cacheTimeout: Number(screenCacheTimeout),
-          secureHandlerToggleVisible: !!Number(screenSecureHandlerToggleVisible?.content),
-          mergeDraftOnRestore: screenMergeDraftOnRestore === "true",
-        };
-
         setGlobalVariable("ScreenBuilder", ScreenBuilder);
-        setGlobalPMVariable("screen", screen);
-        // Initialize screen-builder cache
-        initializeScreenCache(apiClient, screen);// TODO: Its a bad practice to use the apiClient here
+        initializeScreenCacheFromMeta(apiClient);
         if (screenBuilderScripts) {
           addScriptsToDOM(screenBuilderScripts).then(() => {
             // The order of the scripts is important, the screenBuilderScripts must be loaded before the ScreenBuilder.default

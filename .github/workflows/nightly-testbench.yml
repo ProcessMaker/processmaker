@@ -1,0 +1,37 @@
+name: Nightly Testbench
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # midnight UTC
+  workflow_dispatch:
+    inputs:
+      skip_build:
+        description: Skip Docker image build and reuse Harbor image for this branch
+        required: false
+        type: boolean
+        default: false
+      mode:
+        description: Run testbench after deploy, or only delete and redeploy instances
+        required: true
+        type: choice
+        default: Run Now
+        options:
+          - Run Now
+          - Redeploy Only
+      package_branch:
+        description: Override ProcessMaker branch (defaults to Use workflow from / this ref)
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  run:
+    name: Run nightly testbench
+    uses: processmaker/.github/.github/workflows/nightly-testbench.yml@main
+    secrets: inherit
+    with:
+      skip_build: ${{ inputs.skip_build == true }}
+      redeploy_only: ${{ inputs.mode == 'Redeploy Only' }}
+      # Prefer explicit input; otherwise the branch selected as "Use workflow from"
+      # (github.ref_name). Reusable workflow still defaults to develop if empty.
+      package_branch: ${{ inputs.package_branch || github.ref_name }}

@@ -6,3 +6,5 @@ import { setupMain } from "../next/setupMain";
 setupMain();
 screenBuilder();
 monaco();
+
+window.ProcessMaker.taskDraftsEnabled = window.temporal.taskDraftsEnabled;

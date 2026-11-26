@@ -8,11 +8,6 @@ export default {
       reassignUsers: [],
     };
   },
-  computed: {
-    currentTaskUserId() {
-      return this.task?.user_id ?? this.task?.user?.id;
-    }
-  },
   methods: {
     setAllowReassignment() {
       if (!this.task?.id) {
@@ -28,8 +23,7 @@ export default {
         const response = await getReassignUsersApi(
           filter,
           this.task?.id,
-          this.task?.request_data,
-          this.currentTaskUserId
+          this.task?.request_data
         );
 
         this.reassignUsers = [];

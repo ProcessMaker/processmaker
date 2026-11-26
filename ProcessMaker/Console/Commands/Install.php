@@ -346,14 +346,14 @@ class Install extends Command
             if (!$firstname) {
                 $firstname = 'Admin';
             }
-            $validator = $this->validateField('firstname', $firstname, ['max:50']);
+            $validator = $this->validateField('firstname', $firstname, ['max:255']);
         } while ($validator->fails());
         do {
             $lastname = $this->anticipateOptional('last-name', 'Enter the last name of the admin user', ['User'], 'User');
             if (!$lastname) {
                 $lastname = 'User';
             }
-            $validator = $this->validateField('lastname', $lastname, ['max:50']);
+            $validator = $this->validateField('lastname', $lastname, ['max:255']);
         } while ($validator->fails());
         // Set the default admin properties for UserSeeder
         UserSeeder::$INSTALLER_ADMIN_USERNAME = $username;

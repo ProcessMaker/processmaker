@@ -3,12 +3,22 @@
 namespace Tests\Feature;
 
 use Illuminate\Routing\Router;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class RouteTest extends TestCase
 {
     use RequestHelper;
+
+    public function testLoginDoesNotAllowOptions()
+    {
+        $response = $this->options('/login');
+
+        $response->assertStatus(Response::HTTP_METHOD_NOT_ALLOWED);
+        $response->assertHeader('Allow', 'GET, HEAD, POST');
+        $response->assertContent('');
+    }
 
     /**
      * This this does some basic checks to make sure we converted routes

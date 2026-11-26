@@ -16,13 +16,7 @@
     <div class="auth-card-header">
       <h1 class="auth-card-title">{{ __('Please change your account password') }}</h1>
     </div>
-    <div class="alert alert-primary mb-3">{{ __('Password Requirements') }}:
-      <ul class="mb-0">
-        <li>{{ __('Minimum of 8 characters in length') }}</li>
-        <li>{{ __('Contains an uppercase letter') }}</li>
-        <li>{{ __('Contains a number or symbol') }}</li>
-      </ul>
-    </div>
+    @include('auth.partials.password-requirements')
     @if (session()->has('timeout'))
     <div class="alert alert-danger mb-3">{{ __("Your account has been timed out for security.") }}</div>
     @endif
@@ -128,11 +122,7 @@ window.addEventListener('load', () => {
   });
 });
 </script>
-@foreach(GlobalScripts::getScripts() as $script)
-  @if (strpos($script, '/vendor/processmaker/packages/package-dynamic-ui/js/global.js') !== 0)
-    <script src="{{ $script }}" defer></script>
-  @endif
-@endforeach
+@include('auth.partials.deferred-global-scripts')
 <script>
   window.ProcessMaker = window.ProcessMaker || {};
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());

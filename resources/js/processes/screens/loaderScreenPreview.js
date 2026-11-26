@@ -1,8 +1,11 @@
 import * as ScreenBuilder from "@processmaker/screen-builder";
 import VueFormElements from "@processmaker/vue-form-elements";
+import initializeScreenCacheFromMeta from "../../next/initializeScreenCacheFromMeta";
 import { setupMain } from "../../next/setupMain";
 
 setupMain();
+initializeScreenCacheFromMeta();
+
 window.ScreenBuilder = ScreenBuilder;
 window.VueFormElements = VueFormElements;
 window.Vue.use(ScreenBuilder.default);

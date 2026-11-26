@@ -46,6 +46,9 @@
     {{-- Register FORM controls before loaderScreen dispatches app-bootstrapped --}}
     @vite(['resources/js/processes/screen-builder/loaderScreen.js'])
     <script>
+        window.Processmaker.user = @json($currentUser);
+    </script>
+    <script>
       // Register EventBus listeners after setupMain() fires 'app-bootstrapped'
       window.addEventListener('app-bootstrapped', function () {
         window.ProcessMaker.EventBus.$on("screen-builder-init", (builder) => {

@@ -281,6 +281,7 @@ export default defineConfig(({ mode }) => {
           "resources/js/requests/loaderRequestsPreview.js",
           "resources/js/requests/mobile.js",
           "resources/js/requests/index.js",
+          "resources/js/requests/show.js",
 
           "resources/js/notifications/index.js",
 
@@ -392,20 +393,6 @@ export default defineConfig(({ mode }) => {
       outDir: "public/build",
       emptyOutDir: true,
       manifest: "manifest.json",
-      rollupOptions: {
-        treeshake: {
-          moduleSideEffects: (id) => /\.(css|scss|sass)(\?|$)/.test(id)
-            || id.includes("bootstrap-globals")
-            || id.includes("libraries/lodash")
-            || id.includes("libraries/modelerInspector")
-            || id.includes("libraries/sharedComponents")
-            || id.includes("libraries/vueFormElements")
-            || id.includes("libraries/processesComponents")
-            || id.includes("libraries/processesCatalogueComponents")
-            || id.includes("libraries/scriptsComponents")
-            || id.includes("libraries/screensComponents"),
-        },
-      },
     },
     server: {
       host: "127.0.0.1",
