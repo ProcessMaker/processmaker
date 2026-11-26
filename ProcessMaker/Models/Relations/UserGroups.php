@@ -15,9 +15,9 @@ class UserGroups extends MorphToMany
         return $result;
     }
 
-    public function detach($ids = null, $touch = true, $pivotAttributes = [])
+    public function detach($ids = null, $touch = true)
     {
-        $result = parent::detach($ids, $touch, $pivotAttributes);
+        $result = parent::detach($ids, $touch);
         $this->flushSelfServiceGroupCache();
 
         return $result;
