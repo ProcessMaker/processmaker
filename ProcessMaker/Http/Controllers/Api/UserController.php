@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
@@ -508,6 +509,70 @@ class UserController extends Controller
      */
     public function update(User $user, Request $request)
     {
+        $fields = $this->prepareUpdateFields($user, $request);
+        $original = $user->getOriginal();
+        $isLdapUser = isset($user->meta?->authenticationType)
+            && $user->meta->authenticationType === 'ldap';
+        $user->fill($fields);
+        $contactError = $this->validateContactUpdate($user, $fields, $original['email'], $isLdapUser);
+        if ($contactError !== null) {
+            return $contactError;
+        }
+
+        if (Auth::user()->is_administrator && $request->has('is_administrator')) {
+            // user must be an admin to make another user an admin
+            $user->is_administrator = $request->get('is_administrator');
+        }
+
+        if (empty($fields['meta'])) {
+            $user->meta = null;
+        }
+
+        try {
+            $user->saveOrFail();
+        } catch (\Exception $e) {
+            $slackExceptionClass = 'ProcessMaker\Packages\Connectors\Slack\Exceptions\SlackConfigurationException';
+
+            if (class_exists($slackExceptionClass) && $e instanceof $slackExceptionClass) {
+                return response([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            throw $e;
+        }
+
+        return $this->completeUpdate($user, $request, $original);
+    }
+
+    private function completeUpdate(User $user, Request $request, array $original): Response
+    {
+        $changes = $user->getChanges();
+
+        //Call new Event to store User Changes into LOG
+        UserUpdated::dispatch($user, $changes, $original);
+        try {
+            if ($request->has('avatar')) {
+                $this->uploadAvatar($user, $request);
+            }
+        } catch (\Exception $e) {
+            return response([
+                'message' => 'Error uploading avatar',
+                'errors' => [
+                    'avatar' => [
+                        $e->getMessage(),
+                    ],
+                ],
+            ], 422);
+        }
+
+        RecommendationEngine::handleUserSettingChanges($user, $original);
+
+        return response([], 204);
+    }
+
+    private function prepareUpdateFields(User $user, Request $request): array
+    {
         $authenticatedUser = Auth::user();
         if (!$authenticatedUser->can('edit', $user)) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
@@ -534,101 +599,58 @@ class UserController extends Controller
             // Remove login error message related to password expired if exists
             session()->forget('login-error');
         }
-        $original = $user->getOriginal();
-        $isLdapUser = isset($user->meta?->authenticationType)
-            && $user->meta->authenticationType === 'ldap';
-        $user->fill($fields);
+
+        return $fields;
+    }
+
+    private function validateContactUpdate(User $user, array $fields, ?string $originalEmail, bool $isLdapUser): ?Response
+    {
         if (array_key_exists('cell', $fields)) {
             $response = $this->validateCellPhoneNumber($user, $fields['cell']);
             if ($response) {
                 return $response;
             }
         }
-        if ($fields['email'] !== $original['email']) {
-            $ssoUser = $isLdapUser;
-            if (class_exists(SsoUser::class)) {
-                // Check if the user is an SSO user (including SAML)
-                $ssoUser = $ssoUser || SsoUser::where('user_id', $user->id)->exists();
-            }
-            if ($ssoUser) {
-                return response([
-                    'message' => __(
-                        "The email can't be edited. This action is only available for SSO-synced users."
-                    ),
-                    'errors' => [
-                        'email' => [
-                            __(
-                                "The email can't be edited. This action is only available for SSO-synced users."
-                            ),
-                        ],
-                    ],
-                ], 422);
-            }
-            if (!isset($fields['valpassword'])) {
-                return response([
-                    'message' => __(
-                        'A valid authentication is required for for update the email.'
-                    ),
-                    'errors' => [
-                        'email' => [
-                            __(
-                                'The password is required.'
-                            ),
-                        ],
-                    ],
-                ], 422);
-            } else {
-                $response = $this->validateBeforeChange(Auth::user(), $fields['valpassword']);
-                if ($response) {
-                    return $response;
-                }
-            }
-        }
-        if (Auth::user()->is_administrator && $request->has('is_administrator')) {
-            // user must be an admin to make another user an admin
-            $user->is_administrator = $request->get('is_administrator');
+
+        if ($fields['email'] === $originalEmail) {
+            return null;
         }
 
-        if (empty($fields['meta'])) {
-            $user->meta = null;
-        }
+        return $this->validateEmailChange($user, $fields['valpassword'] ?? null, $isLdapUser);
+    }
 
-        try {
-            $user->saveOrFail();
-        } catch (\Exception $e) {
-            $slackExceptionClass = 'ProcessMaker\Packages\Connectors\Slack\Exceptions\SlackConfigurationException';
-
-            if (class_exists($slackExceptionClass) && $e instanceof $slackExceptionClass) {
-                return response([
-                    'message' => $e->getMessage(),
-                ], 422);
-            }
-
-            throw $e;
-        }
-
-        $changes = $user->getChanges();
-
-        //Call new Event to store User Changes into LOG
-        UserUpdated::dispatch($user, $changes, $original);
-        try {
-            if ($request->has('avatar')) {
-                $this->uploadAvatar($user, $request);
-            }
-        } catch (\Exception $e) {
+    private function validateEmailChange(User $user, mixed $confirmationPassword, bool $isLdapUser): ?Response
+    {
+        $ssoUser = $isLdapUser || (class_exists(SsoUser::class) && SsoUser::where('user_id', $user->id)->exists());
+        if ($ssoUser) {
             return response([
-                'message' => 'Error uploading avatar',
+                'message' => __(
+                    "The email can't be edited. This action is only available for SSO-synced users."
+                ),
                 'errors' => [
-                    'avatar' => [
-                        $e->getMessage(),
+                    'email' => [
+                        __(
+                            "The email can't be edited. This action is only available for SSO-synced users."
+                        ),
                     ],
                 ],
             ], 422);
         }
 
-        RecommendationEngine::handleUserSettingChanges($user, $original);
+        if ($confirmationPassword === null) {
+            return response([
+                'message' => __(
+                    'A valid authentication is required for for update the email.'
+                ),
+                'errors' => [
+                    'email' => [
+                        __('The password is required.'),
+                    ],
+                ],
+            ], 422);
+        }
 
-        return response([], 204);
+        return $this->validateBeforeChange(Auth::user(), $confirmationPassword) ?: null;
     }
 
     /**
