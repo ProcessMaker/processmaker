@@ -209,6 +209,12 @@ class PluginManager
         $this->markNewInstallForRollback($pluginPath);
         $this->cloneRepository($authenticatedRepoUrl, $pluginPath, $repoName, $userId, $repoUrl);
 
+        // An empty remote has no branch or tag to check out: report that instead of a git checkout error.
+        if (($branch || $tag) && $this->isEmptyGitRepository($pluginPath)) {
+            $this->logError(self::EMPTY_REPOSITORY_MESSAGE, $repoName, $userId);
+            throw PluginInstallException::emptyRepository();
+        }
+
         if ($branch) {
             $this->logRunning("Checking out branch: {$branch}", $repoName, $userId);
             $this->checkoutBranch($pluginPath, $branch, $repoName, $userId);
@@ -1032,7 +1038,7 @@ class PluginManager
         if (!file_exists($composerJsonPath)) {
             if ($this->isEmptyGitRepository($pluginPath) || $this->hasOnlyPlaceholderFiles($pluginPath)) {
                 $this->logError(self::EMPTY_REPOSITORY_MESSAGE, $repoName, $userId);
-                throw new RuntimeException(self::EMPTY_REPOSITORY_MESSAGE);
+                throw PluginInstallException::emptyRepository();
             }
 
             $this->logError('composer.json not found in plugin: ' . $pluginPath, $repoName, $userId);

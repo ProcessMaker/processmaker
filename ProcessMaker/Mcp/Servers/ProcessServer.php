@@ -12,8 +12,10 @@ use Laravel\Mcp\Server\ServerContext;
 use ProcessMaker\Mcp\McpGuidance;
 use ProcessMaker\Mcp\Tools\GetMcpGuidanceTool;
 use ProcessMaker\Mcp\Tools\GetMcpSkillTool;
+use ProcessMaker\Mcp\Tools\Processes\CreateGroupTool;
 use ProcessMaker\Mcp\Tools\Processes\CreateProcessTool;
 use ProcessMaker\Mcp\Tools\Processes\EnableProcessAlternativeBTool;
+use ProcessMaker\Mcp\Tools\Processes\GetProcessInventoryTool;
 use ProcessMaker\Mcp\Tools\Processes\GetProcessTool;
 use ProcessMaker\Mcp\Tools\Processes\ListGroupsTool;
 use ProcessMaker\Mcp\Tools\Processes\ListProcessesTool;
@@ -43,6 +45,8 @@ For MCP create-process/update-process use numeric pm:screenRef / pm:scriptRef (l
 Alternative B (A/B testing): call `enable-process-alternative-b` (or `update-process` with `create_alternative_b: true`) before editing with `alternative: "B"`. BPMN updates write the draft for the chosen alternative (same as PUT /processes/{id}/draft).
 For BPMN structure, node settings, and package connectors (email, PDF, Slack, FlowGenie, Decision Task, UiPath, DocuSign, IDP, Actions By Email, Data Connector), follow the matching `pm4-*` skill from the ProcessMaker Skills repository (`npx skills add processmaker/skills`, start with `pm4-process`). Do not invent `implementation` strings.
 For FlowGenie Service Tasks: create/configure the asset via FlowGenies MCP (`create-flow-genie`) first, then set numeric `flow_genie_id` in pm:config.
+Call get-process-inventory to review an existing process: it returns activities, screens (id, title, fields), scripts and gateway variables without the BPMN or one read per asset.
+list-groups rows carry same_name_count; when above 1 pick by id, or create the group once with create-group.
 Call validate-process before create/update when unsure.
 update-process changes only the fields you send.
 MARKDOWN)]
@@ -57,8 +61,10 @@ class ProcessServer extends Server
         PlanProcessTool::class,
         ListUsersTool::class,
         ListGroupsTool::class,
+        CreateGroupTool::class,
         ListProcessesTool::class,
         GetProcessTool::class,
+        GetProcessInventoryTool::class,
         CreateProcessTool::class,
         UpdateProcessTool::class,
         EnableProcessAlternativeBTool::class,

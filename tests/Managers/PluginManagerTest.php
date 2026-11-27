@@ -77,6 +77,7 @@ class PluginManagerTest extends TestCase
                 $this->pluginsDir . '/plugin-two',
                 $this->pluginsDir . '/valid-plugin',
                 $this->pluginsDir . '/_hidden-plugin',
+                $this->pluginsDir . '/clone-origin-test',
             ];
         }
 

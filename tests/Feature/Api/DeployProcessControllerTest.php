@@ -139,6 +139,95 @@ class DeployProcessControllerTest extends TestCase
         $this->assertStringContainsString('${script:restore-script}', $response->json('bpmn'));
     }
 
+    public function testDeployAlternativeBWritesDraftAndKeepsLiveProcess(): void
+    {
+        $this->requireAbTesting();
+        $name = 'alt-b-draft-process';
+        $screen = Screen::factory()->create(['title' => 'alt-b-screen']);
+
+        $this->apiCall('POST', self::DEPLOY_ENDPOINT, [
+            'name' => $name,
+            'bpmn' => $this->sampleBpmn('', ''),
+        ])->assertOk();
+        $process = Process::where('name', $name)->firstOrFail();
+        $liveBpmn = $process->bpmn;
+
+        $this->apiCall('POST', self::DEPLOY_ENDPOINT, [
+            'name' => $name,
+            'alternative' => 'B',
+            'bpmn' => $this->sampleBpmn('${screen:alt-b-screen}', ''),
+        ])
+            ->assertOk()
+            ->assertJson(['success' => true, 'action' => 'draft', 'alternative' => 'B']);
+
+        $this->assertSame($liveBpmn, $process->refresh()->bpmn, 'Alternative A must not change.');
+        $draft = $process->versions()->where('draft', true)->where('alternative', 'B')->firstOrFail();
+        $this->assertStringContainsString('pm:screenRef="' . $screen->id . '"', $draft->bpmn);
+    }
+
+    public function testDeployAlternativeBPublishLinksVersionToAbRecord(): void
+    {
+        $this->requireAbTesting();
+        $name = 'alt-b-publish-process';
+
+        $this->apiCall('POST', self::DEPLOY_ENDPOINT, [
+            'name' => $name,
+            'bpmn' => $this->sampleBpmn('', ''),
+        ])->assertOk();
+        $process = Process::where('name', $name)->firstOrFail();
+        $liveBpmn = $process->bpmn;
+
+        $response = $this->apiCall('POST', self::DEPLOY_ENDPOINT, [
+            'name' => $name,
+            'alternative' => 'B',
+            'publish' => true,
+            'bpmn' => str_replace('Task_1', 'Task_B', $this->sampleBpmn('', '')),
+        ])->assertOk()->assertJson(['action' => 'published', 'alternative' => 'B']);
+
+        $this->assertSame($liveBpmn, $process->refresh()->bpmn, 'Alternative A must not change.');
+        $version = ProcessVersion::findOrFail($response->json('process_version_id'));
+        $this->assertSame('B', $version->alternative);
+        $this->assertFalse((bool) $version->draft);
+        $this->assertStringContainsString('Task_B', $version->bpmn);
+
+        $alternativeModel = 'ProcessMaker\Package\PackageABTesting\Models\Alternative';
+        $record = $alternativeModel::where('process_id', $process->id)->firstOrFail();
+        $this->assertSame($version->id, (int) $record->process_version_b_id);
+    }
+
+    public function testDeployAlternativeBRequiresExistingProcess(): void
+    {
+        $this->requireAbTesting();
+
+        $this->apiCall('POST', self::DEPLOY_ENDPOINT, [
+            'name' => 'alt-b-missing-process',
+            'alternative' => 'B',
+            'bpmn' => $this->sampleBpmn('', ''),
+        ])
+            ->assertStatus(422)
+            ->assertJsonPath('success', false);
+
+        $this->assertNull(Process::where('name', 'alt-b-missing-process')->first());
+    }
+
+    public function testDeployRejectsUnknownAlternative(): void
+    {
+        $this->apiCall('POST', self::DEPLOY_ENDPOINT, [
+            'name' => 'alt-unknown-process',
+            'alternative' => 'C',
+            'bpmn' => $this->sampleBpmn('', ''),
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['alternative']);
+    }
+
+    private function requireAbTesting(): void
+    {
+        if (!class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative')) {
+            $this->markTestSkipped('package-ab-testing is not installed.');
+        }
+    }
+
     private function sampleBpmn(string $screenReference, string $scriptReference): string
     {
         return <<<XML

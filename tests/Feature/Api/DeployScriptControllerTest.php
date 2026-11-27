@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\ScriptVersion;
@@ -239,6 +240,194 @@ class DeployScriptControllerTest extends TestCase
         $script = Script::where('title', 'new-php-script')->first();
         $this->assertSame($executor->id, $script->script_executor_id);
         $this->assertSame('Merged migration script.', $script->description);
+    }
+
+    public function testDeployScriptCreatesWithRequestedExecutorId(): void
+    {
+        $first = $this->phpExecutor('First PHP Executor');
+        $second = $this->phpExecutor('Second PHP Executor');
+        $this->assertNotSame($first->id, $second->id);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-by-id-script',
+            'script_executor_id' => $second->id,
+        ])->assertOk()->assertJson(['action' => 'created']);
+
+        $this->assertSame($second->id, Script::where('title', 'executor-by-id-script')->value('script_executor_id'));
+    }
+
+    public function testDeployScriptCreatesWithRequestedExecutorTitle(): void
+    {
+        $this->phpExecutor('First PHP Executor');
+        $target = $this->phpExecutor('Target PHP Executor');
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-by-title-script',
+            'script_executor_title' => 'Target PHP Executor',
+        ])->assertOk();
+
+        $this->assertSame($target->id, Script::where('title', 'executor-by-title-script')->value('script_executor_id'));
+    }
+
+    public function testDeployScriptUpdateCanMoveScriptToRequestedExecutor(): void
+    {
+        $this->phpExecutor('First PHP Executor');
+        $target = $this->phpExecutor('Target PHP Executor');
+        $script = Script::factory()->create(['title' => 'executor-update-script', 'language' => 'php']);
+        $this->assertNotSame($target->id, $script->script_executor_id);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-update-script',
+            'script_executor_id' => $target->id,
+            'version_name' => 'Move to the plugin executor',
+        ])->assertOk()->assertJson(['action' => 'updated']);
+
+        $this->assertSame($target->id, $script->refresh()->script_executor_id);
+    }
+
+    public function testDeployScriptUpdateKeepsExecutorWhenNoneIsRequested(): void
+    {
+        $this->phpExecutor('First PHP Executor');
+        $target = $this->phpExecutor('Target PHP Executor');
+        $script = Script::factory()->create([
+            'title' => 'executor-kept-script',
+            'language' => 'php',
+            'script_executor_id' => $target->id,
+        ]);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [1];',
+            'name' => 'executor-kept-script',
+            'version_name' => 'Change the code only',
+        ])->assertOk();
+
+        $this->assertSame($target->id, $script->refresh()->script_executor_id);
+    }
+
+    public function testDeployScriptRejectsUnknownExecutor(): void
+    {
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-unknown-script',
+            'script_executor_id' => 999999,
+        ])
+            ->assertStatus(422)
+            ->assertJson(['success' => false])
+            ->assertJsonValidationErrors(['script_executor_id']);
+
+        $this->assertNull(Script::where('title', 'executor-unknown-script')->first());
+    }
+
+    public function testDeployScriptRejectsExecutorOfAnotherLanguage(): void
+    {
+        $lua = ScriptExecutor::factory()->create(['language' => 'lua', 'title' => 'Lua Executor']);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-wrong-language-script',
+            'script_executor_title' => $lua->title,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['script_executor_title']);
+
+        $this->assertNull(Script::where('title', 'executor-wrong-language-script')->first());
+    }
+
+    public function testNonAdminWithoutEditScriptsCannotChooseExecutor(): void
+    {
+        $default = $this->phpExecutor('Default PHP Executor');
+        $this->actAsNonAdmin([]);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-forbidden-create',
+            'script_executor_id' => $default->id,
+        ])->assertStatus(403)->assertJson(['success' => false]);
+
+        $this->assertNull(Script::where('title', 'executor-forbidden-create')->first());
+    }
+
+    public function testNonAdminCannotMoveScriptToNonDefaultExecutor(): void
+    {
+        $this->phpExecutor('Default PHP Executor');
+        $admin = $this->phpExecutor('Admin PHP Executor');
+        $script = Script::factory()->create(['title' => 'executor-forbidden-update', 'language' => 'php']);
+        $before = $script->script_executor_id;
+        $this->actAsNonAdmin(['edit-scripts']);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-forbidden-update',
+            'script_executor_id' => $admin->id,
+            'version_name' => 'Move to the admin executor',
+        ])->assertStatus(403)->assertJson(['success' => false]);
+
+        $this->assertSame($before, $script->refresh()->script_executor_id);
+    }
+
+    public function testNonAdminCannotUseCustomExecutor(): void
+    {
+        $default = $this->phpExecutor('Default PHP Executor');
+        $default->update(['type' => 'custom']);
+        $this->actAsNonAdmin(['edit-scripts']);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-forbidden-custom',
+            'script_executor_id' => $default->id,
+        ])->assertStatus(403);
+
+        $this->assertNull(Script::where('title', 'executor-forbidden-custom')->first());
+    }
+
+    public function testNonAdminWithEditScriptsCanUseDefaultExecutor(): void
+    {
+        $default = ScriptExecutor::query()->where('language', 'php')->orderBy('id')->first()
+            ?? $this->phpExecutor('Default PHP Executor');
+        $this->actAsNonAdmin(['edit-scripts']);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-allowed-default',
+            'script_executor_id' => $default->id,
+        ])->assertOk()->assertJson(['action' => 'created']);
+
+        $this->assertSame($default->id, Script::where('title', 'executor-allowed-default')->value('script_executor_id'));
+    }
+
+    public function testNonAdminWithoutExecutorKeepsCurrentBehavior(): void
+    {
+        $this->ensureExecutor();
+        $this->actAsNonAdmin([]);
+
+        $this->apiCall('POST', self::API_ENDPOINT, [
+            'code' => '<?php return [];',
+            'name' => 'executor-none-requested',
+        ])->assertOk()->assertJson(['action' => 'created']);
+    }
+
+    /**
+     * Make the authenticated user a regular user holding only the given permissions.
+     */
+    private function actAsNonAdmin(array $permissions): void
+    {
+        $this->user->is_administrator = false;
+        $this->user->save();
+        $this->initializePermissions();
+
+        foreach ($permissions as $permission) {
+            $this->user->permissions()->attach(Permission::byName($permission)->id);
+        }
+        $this->user->refresh();
+        $this->flushSession();
+    }
+
+    private function phpExecutor(string $title): ScriptExecutor
+    {
+        return ScriptExecutor::factory()->create(['language' => 'php', 'title' => $title]);
     }
 
     private function ensureExecutor(): ScriptExecutor

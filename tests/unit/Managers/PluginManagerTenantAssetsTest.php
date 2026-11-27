@@ -27,7 +27,7 @@ class PluginManagerTenantAssetsTest extends TestCase
         $publish = new ReflectionMethod($manager, 'publishTenantPluginAssetsIfApplicable');
         $publish->invoke($manager, $pluginDir, 'tenant-assets-plugin', null);
 
-        $published = PluginVendorAssets::tenantPublicRoot(6, 'tenant-assets-plugin') . '/js/app.js';
+        $published = PluginVendorAssets::tenantPackageRoot(6, 'tenant-assets-plugin') . '/js/app.js';
         $this->assertFileExists($published);
 
         $remove = new ReflectionMethod($manager, 'removeTenantPluginAssetsIfApplicable');
@@ -43,7 +43,7 @@ class PluginManagerTenantAssetsTest extends TestCase
         file_put_contents($offDir . '/public/js/app.js', '// noop');
         $publish->invoke($manager, $offDir, 'off-tenant-plugin', null);
         $this->assertFileDoesNotExist(
-            PluginVendorAssets::tenantPublicRoot(6, 'off-tenant-plugin') . '/js/app.js'
+            PluginVendorAssets::tenantPackageRoot(6, 'off-tenant-plugin') . '/js/app.js'
         );
 
         $this->deleteDirectory($pluginDir);

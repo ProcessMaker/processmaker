@@ -143,7 +143,6 @@ class ScreenBuilderManagerTest extends TestCase
         $managerTenant->addPackageScripts('FORM');
         $tenantScripts = $managerTenant->getScripts();
         $tenantWebPath = PluginVendorAssets::webPath(
-            7,
             $tenantPackage,
             '/js/screen-builder-form-components.js'
         );
@@ -158,13 +157,13 @@ class ScreenBuilderManagerTest extends TestCase
 
     private function touchTenantPublicAsset(int $tenantId, string $packageName, string $fileName): string
     {
-        $dir = PluginVendorAssets::tenantPublicRoot($tenantId, $packageName) . '/js';
+        $dir = PluginVendorAssets::tenantPackageRoot($tenantId, $packageName) . '/js';
         if (!is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
         $path = $dir . '/' . $fileName;
         file_put_contents($path, '// tenant test asset');
-        $this->tenantPublicAssetPaths[] = PluginVendorAssets::tenantPublicRoot($tenantId, $packageName);
+        $this->tenantPublicAssetPaths[] = PluginVendorAssets::tenantPackageRoot($tenantId, $packageName);
 
         return $path;
     }

@@ -18,6 +18,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\SanitizeHelper;
 use ProcessMaker\Validation\CategoryRule;
 
 class ProcessCatalog
@@ -35,8 +36,10 @@ class ProcessCatalog
      */
     private const ORDER_COLUMNS = ['name', 'status', 'updated_at', 'created_at', 'id'];
 
-    public function __construct(private readonly ProcessBpmnValidator $validator)
-    {
+    public function __construct(
+        private readonly ProcessBpmnValidator $validator,
+        private readonly ProcessNotificationSettings $notificationSettings,
+    ) {
     }
 
     public function actor(?Authenticatable $user): User
@@ -108,6 +111,20 @@ class ProcessCatalog
     }
 
     /**
+     * Map of a process: activities with assets (ids and titles), screens and their fields,
+     * scripts, gateways with the variables they read. Same visibility rules as find().
+     *
+     * @return array<string, mixed>
+     */
+    public function inventory(User $user, int $id, string $alternative = 'A'): array
+    {
+        $detail = $this->find($user, $id, $alternative);
+        $process = Process::query()->findOrFail($id);
+
+        return (new ProcessInventory())->build($process, $detail['alternative'] ?? 'A', $detail['bpmn'] ?? null, $user);
+    }
+
+    /**
      * Enable Alternative B for a process (clone draft A → B).
      *
      * @return array<string, mixed>
@@ -135,6 +152,8 @@ class ProcessCatalog
             $this->assertBpmnAcceptable($validated['bpmn']);
             $validated['bpmn'] = BpmnDocument::replaceHtmlEntities($validated['bpmn']);
         }
+
+        $validated = $this->sanitizeCaseTitle($validated);
 
         $process = new Process();
         $process->fill($validated);
@@ -182,10 +201,15 @@ class ProcessCatalog
         }
 
         $attributes = $this->writable($validated);
-        if ($attributes === []) {
+        $notifications = $validated['notifications'] ?? null;
+        if ($attributes === [] && $notifications === null) {
             throw ValidationException::withMessages([
-                'process' => 'Provide at least one field to update: name, description, status, process_category_id, or bpmn.',
+                'process' => 'Provide at least one field to update: name, description, status, process_category_id, '
+                    . 'case_title, manager_id, notifications, or bpmn.',
             ]);
+        }
+        if (is_array($notifications)) {
+            $this->notificationSettings->assertKnown($notifications);
         }
 
         if (isset($attributes['bpmn'])) {
@@ -208,6 +232,11 @@ class ProcessCatalog
             $this->persistLiveMetadata($process, array_diff_key($attributes, ['bpmn' => true]), $user);
         } else {
             $this->persistLiveMetadata($process, $attributes, $user);
+        }
+
+        if (is_array($notifications)) {
+            $this->notificationSettings->apply($process, $notifications);
+            $this->forgetProjectAssetCache($user);
         }
 
         return $this->detail($process->refresh(), $alternative);
@@ -304,6 +333,31 @@ class ProcessCatalog
             $rules['bpmn'] = 'nullable|string';
         }
 
+        return array_merge($rules, $this->settingsRules($input));
+    }
+
+    /**
+     * Process-level settings. They apply to the live process, so Alternative A
+     * and B share them, and saving them does not publish a version.
+     *
+     * @param array<string, mixed> $input
+     * @return array<string, mixed>
+     */
+    private function settingsRules(array $input): array
+    {
+        $rules = [];
+        if (array_key_exists('case_title', $input)) {
+            $rules['case_title'] = 'nullable|string|max:200';
+        }
+        if (array_key_exists('manager_id', $input)) {
+            $rules['manager_id'] = 'array|max:10';
+            $rules['manager_id.*'] = 'integer|min:1|exists:users,id';
+        }
+        if (array_key_exists('notifications', $input)) {
+            $rules['notifications'] = 'array';
+            $rules['notifications.*'] = 'array';
+        }
+
         return $rules;
     }
 
@@ -326,13 +380,32 @@ class ProcessCatalog
      */
     private function writable(array $input): array
     {
-        return array_intersect_key($input, array_flip([
+        return $this->sanitizeCaseTitle(array_intersect_key($input, array_flip([
             'name',
             'description',
             'status',
             'process_category_id',
+            'case_title',
+            'manager_id',
             'bpmn',
-        ]));
+        ])));
+    }
+
+    /**
+     * Same as the HTTP process routes (SanitizeInput with case_title as a
+     * mustache field): strip HTML/PHP tags, keep mustache expressions. The title
+     * is later rendered with v-html in task and request lists.
+     *
+     * @param array<string, mixed> $attributes
+     * @return array<string, mixed>
+     */
+    private function sanitizeCaseTitle(array $attributes): array
+    {
+        if (isset($attributes['case_title']) && is_string($attributes['case_title'])) {
+            $attributes['case_title'] = SanitizeHelper::sanitize($attributes['case_title'], true, false);
+        }
+
+        return $attributes;
     }
 
     private function assertBpmnAcceptable(string $bpmn): void
@@ -420,6 +493,9 @@ class ProcessCatalog
 
         return [
             ...$this->summary($process),
+            'case_title' => $process->case_title,
+            'manager_id' => $process->manager_id,
+            'notifications' => (array) $process->notifications,
             'alternative' => $alternative,
             'alternatives' => $this->alternativesMeta($process),
             'bpmn' => $bpmn,

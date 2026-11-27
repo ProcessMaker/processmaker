@@ -186,13 +186,21 @@ class ScreenCatalog
 
         $config = $validated['config'] ?? null;
         $type = $validated['type'] ?? null;
-        if (($config === null || $config === []) && isset($validated['id'])) {
+        $editsNativeScreen = false;
+        if (isset($validated['id'])) {
             $screen = Screen::query()->findOrFail((int) $validated['id']);
-            $config = is_array($screen->config) ? $screen->config : [];
+            $editsNativeScreen = !$this->usesVueEditor(is_array($screen->config) ? $screen->config : []);
+            if ($config === null || $config === []) {
+                $config = is_array($screen->config) ? $screen->config : [];
+            }
             $type = $type ?? $screen->type;
         }
 
-        return $this->validator->validate(is_array($config) ? $config : null, is_string($type) ? $type : null);
+        return $this->validator->validate(
+            is_array($config) ? $config : null,
+            is_string($type) ? $type : null,
+            $editsNativeScreen,
+        );
     }
 
     /**
@@ -506,6 +514,14 @@ class ScreenCatalog
         $admin = User::query()->where('is_administrator', true)->orderBy('id')->first();
 
         return $admin instanceof User ? $admin : null;
+    }
+
+    /**
+     * @param array<int, mixed> $config
+     */
+    private function usesVueEditor(array $config): bool
+    {
+        return str_contains((string) json_encode($config), '"VueComponentRenderTemplate"');
     }
 
     private function forgetProjectAssetCache(User $user): void

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Exception;
 
+use ProcessMaker\Managers\PluginManager;
 use RuntimeException;
 
 class PluginInstallException extends RuntimeException
@@ -44,5 +45,10 @@ class PluginInstallException extends RuntimeException
     public static function failedToCopyFile(string $srcPath, string $destPath): self
     {
         return new self("Failed to copy file: {$srcPath} to {$destPath}");
+    }
+
+    public static function emptyRepository(): self
+    {
+        return new self(PluginManager::EMPTY_REPOSITORY_MESSAGE);
     }
 }

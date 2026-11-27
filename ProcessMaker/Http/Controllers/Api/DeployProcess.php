@@ -9,11 +9,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use ProcessMaker\Exception\MissingBpmnReferenceException;
 use ProcessMaker\Http\Controllers\Api\Concerns\AppliesDeployVersionName;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Services\DeployCategoryResolver;
+use ProcessMaker\Services\DeployProcessAlternativeB;
 use ProcessMaker\Services\ProcessBpmnReferenceService;
 use Throwable;
 
@@ -34,6 +36,7 @@ class DeployProcess extends Controller
     public function __construct(
         private readonly ProcessBpmnReferenceService $references,
         private readonly DeployCategoryResolver $categories,
+        private readonly DeployProcessAlternativeB $alternativeB,
     ) {
     }
 
@@ -41,8 +44,10 @@ class DeployProcess extends Controller
     {
         $name = (string) $request->input('name');
         $isUpdate = Process::where('name', $name)->exists();
+        // Alternative B writes drafts or B versions, not asset version history.
+        $needsVersionName = $isUpdate && !$this->targetsAlternativeB($request);
 
-        if ($unavailable = $this->ensureDeployVersionHistoryAvailable($isUpdate)) {
+        if ($unavailable = $this->ensureDeployVersionHistoryAvailable($needsVersionName)) {
             return $unavailable;
         }
 
@@ -53,7 +58,9 @@ class DeployProcess extends Controller
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string|max:65535',
                 'process_category_name' => 'nullable|string|max:255',
-            ], $isUpdate),
+                'alternative' => 'nullable|in:A,B',
+                'publish' => 'nullable|boolean',
+            ], $needsVersionName),
         );
 
         if ($validator->fails()) {
@@ -69,27 +76,57 @@ class DeployProcess extends Controller
     private function saveDeployedProcess(Request $request): JsonResponse
     {
         try {
-            $bpmn = $this->references->resolveNamedReferences($request->input('bpmn'));
-            $xmlErrors = $this->validateXml($bpmn);
-            if ($xmlErrors !== []) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid BPMN XML.',
-                    'errors' => ['bpmn' => $xmlErrors],
-                ], 422);
-            }
-
-            [$process, $created] = $this->upsertProcessByName($request, $bpmn);
-
-            return response()->json([
-                'success' => true,
-                'action' => $created ? 'created' : 'updated',
-                'process_id' => $process->id,
-                'name' => $process->name,
-            ]);
+            return $this->deployFromRequest($request);
         } catch (Throwable $exception) {
             return $this->deployProcessFailureResponse($exception);
         }
+    }
+
+    private function deployFromRequest(Request $request): JsonResponse
+    {
+        $bpmn = $this->references->resolveNamedReferences($request->input('bpmn'));
+        $xmlErrors = $this->validateXml($bpmn);
+        if ($xmlErrors !== []) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid BPMN XML.',
+                'errors' => ['bpmn' => $xmlErrors],
+            ], 422);
+        }
+
+        if ($this->targetsAlternativeB($request)) {
+            return $this->saveDeployedAlternativeB($request, $bpmn);
+        }
+
+        [$process, $created] = $this->upsertProcessByName($request, $bpmn);
+
+        return response()->json([
+            'success' => true,
+            'action' => $created ? 'created' : 'updated',
+            'process_id' => $process->id,
+            'name' => $process->name,
+        ]);
+    }
+
+    private function targetsAlternativeB(Request $request): bool
+    {
+        return $request->input('alternative') === 'B';
+    }
+
+    private function saveDeployedAlternativeB(Request $request, string $bpmn): JsonResponse
+    {
+        $process = Process::where('name', $request->input('name'))->first();
+        $publish = $request->boolean('publish');
+        $result = $this->alternativeB->deploy($process, $bpmn, $publish);
+
+        return response()->json([
+            'success' => true,
+            'action' => $publish ? 'published' : 'draft',
+            'alternative' => 'B',
+            'process_id' => $process->id,
+            'name' => $process->name,
+            'process_version_id' => $result['version_id'],
+        ]);
     }
 
     /**
@@ -144,6 +181,14 @@ class DeployProcess extends Controller
 
     private function deployProcessFailureResponse(Throwable $exception): JsonResponse
     {
+        if ($exception instanceof ValidationException) {
+            return response()->json([
+                'success' => false,
+                'message' => collect($exception->errors())->flatten()->first(),
+                'errors' => $exception->errors(),
+            ], 422);
+        }
+
         if ($exception instanceof MissingBpmnReferenceException) {
             return response()->json([
                 'success' => false,

@@ -11,8 +11,10 @@ use ProcessMaker\Mcp\Resources\McpSkillResource;
 use ProcessMaker\Mcp\Servers\ProcessServer;
 use ProcessMaker\Mcp\Tools\GetMcpGuidanceTool;
 use ProcessMaker\Mcp\Tools\GetMcpSkillTool;
+use ProcessMaker\Mcp\Tools\Processes\CreateGroupTool;
 use ProcessMaker\Mcp\Tools\Processes\CreateProcessTool;
 use ProcessMaker\Mcp\Tools\Processes\EnableProcessAlternativeBTool;
+use ProcessMaker\Mcp\Tools\Processes\GetProcessInventoryTool;
 use ProcessMaker\Mcp\Tools\Processes\GetProcessTool;
 use ProcessMaker\Mcp\Tools\Processes\ListGroupsTool;
 use ProcessMaker\Mcp\Tools\Processes\ListProcessesTool;
@@ -24,6 +26,9 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessVersion;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -146,6 +151,191 @@ class ProcessServerTest extends TestCase
                 ->where('data.0.id', $group->id)
                 ->where('data.0.name', 'PTO Approvers')
                 ->etc());
+    }
+
+    public function testListGroupsFindsExactNameAndReportsMembersAndDuplicates(): void
+    {
+        $group = Group::factory()->create(['name' => 'Requesters Exact', 'status' => 'ACTIVE']);
+        Group::factory()->create(['name' => 'Requesters Exact Plus', 'status' => 'ACTIVE']);
+        $group->groupMembers()->create([
+            'member_id' => $this->user->id,
+            'member_type' => User::class,
+        ]);
+
+        ProcessServer::actingAs($this->user)->tool(ListGroupsTool::class, [
+            'filter' => 'Requesters Exact',
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->has('data', 2)
+                ->etc());
+
+        ProcessServer::actingAs($this->user)->tool(ListGroupsTool::class, [
+            'name' => 'requesters exact',
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->has('data', 1)
+                ->where('data.0.id', $group->id)
+                ->where('data.0.members_count', 1)
+                ->where('data.0.same_name_count', 1)
+                ->etc());
+    }
+
+    public function testCreateGroupCreatesAnActiveGroupAndRejectsDuplicates(): void
+    {
+        ProcessServer::actingAs($this->user)->tool(CreateGroupTool::class, [
+            'name' => 'Deal Closing Legal',
+            'description' => 'Legal sign-off',
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('name', 'Deal Closing Legal')
+                ->where('status', 'ACTIVE')
+                ->where('members_count', 0)
+                ->etc());
+
+        $this->assertSame(1, Group::where('name', 'Deal Closing Legal')->count());
+
+        ProcessServer::actingAs($this->user)->tool(CreateGroupTool::class, [
+            'name' => 'Deal Closing Legal',
+        ])->assertHasErrors(['has already been taken']);
+
+        ProcessServer::actingAs($this->user)->tool(CreateGroupTool::class, [
+            'name' => 'Bad_Name!',
+        ])->assertHasErrors(['may only contain alphanumeric characters']);
+    }
+
+    public function testCreateGroupEnforcesTheTwoFactorPolicy(): void
+    {
+        config(['password-policies.2fa_enabled' => true]);
+        ProcessServer::actingAs($this->user)->tool(CreateGroupTool::class, [
+            'name' => 'TwoFactorOnGroup',
+            'enabled_2fa' => false,
+        ])->assertOk();
+        $this->assertTrue((bool) Group::where('name', 'TwoFactorOnGroup')->value('enabled_2fa'));
+
+        config(['password-policies.2fa_enabled' => false]);
+        ProcessServer::actingAs($this->user)->tool(CreateGroupTool::class, [
+            'name' => 'TwoFactorOffGroup',
+            'enabled_2fa' => true,
+        ])->assertOk();
+        $this->assertFalse((bool) Group::where('name', 'TwoFactorOffGroup')->value('enabled_2fa'));
+    }
+
+    public function testCreateGroupRequiresThePermission(): void
+    {
+        $this->initializePermissions();
+        $member = User::factory()->create(['is_administrator' => false]);
+        $member->permissions()->attach(Permission::byName('create-processes'));
+
+        ProcessServer::actingAs($member)->tool(CreateGroupTool::class, [
+            'name' => 'Not Allowed Group',
+        ])->assertHasErrors(['create-groups']);
+
+        $this->assertSame(0, Group::where('name', 'Not Allowed Group')->count());
+    }
+
+    public function testProcessInventoryMapsAssetsFieldsAndGatewayVariables(): void
+    {
+        $screen = Screen::factory()->create([
+            'title' => 'Inventory Form',
+            'type' => 'FORM',
+            'config' => [[
+                'name' => 'Page',
+                'items' => [
+                    ['component' => 'FormInput', 'config' => ['name' => 'DC_FLAG']],
+                    ['component' => 'FormButton', 'config' => ['name' => 'submit']],
+                    ['component' => 'FormMultiColumn', 'config' => [], 'items' => [
+                        [['component' => 'FormTextArea', 'config' => ['name' => 'DC_NOTES']]],
+                        [],
+                    ]],
+                ],
+            ]],
+        ]);
+        $script = Script::factory()->create(['title' => 'Inventory Script', 'language' => 'php']);
+
+        $bpmn = $this->inventoryBpmn($screen->id, $script->id);
+        $process = Process::factory()->create(['name' => 'Inventory Process', 'bpmn' => $bpmn]);
+
+        ProcessServer::actingAs($this->user)->tool(GetProcessInventoryTool::class, [
+            'id' => $process->id,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('process.id', $process->id)
+                ->where('counts.activities', 2)
+                ->where('counts.gateways', 1)
+                ->where('counts.sequence_flows', 3)
+                ->where('screens.0.title', 'Inventory Form')
+                ->where('screens.0.controls', 4)
+                ->where('screens.0.fields', ['DC_FLAG', 'DC_NOTES'])
+                ->where('scripts.0.title', 'Inventory Script')
+                ->where('activities.0.screen_title', 'Inventory Form')
+                ->where('activities.1.script_title', 'Inventory Script')
+                ->where('gateways.0.variables', ['DC_FLAG', 'DC_MISSING'])
+                ->where('variables.DC_FLAG.written_by_screens', [$screen->id])
+                ->where('variables.DC_MISSING.written_by_screens', [])
+                ->where('variables.DC_MISSING.read_by_gateways', ['gate_1'])
+                ->has('warnings', 1)
+                ->etc());
+    }
+
+    public function testUpdateProcessStripsMarkupFromCaseTitleAndKeepsMustache(): void
+    {
+        $process = Process::factory()->create(['name' => 'Case Title Process']);
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'case_title' => '<img src=x onerror=alert(1)>Case #{{_request.case_number}}',
+        ])->assertOk();
+
+        $this->assertSame('Case #{{_request.case_number}}', $process->refresh()->case_title);
+    }
+
+    public function testInventoryHidesScriptsWithoutViewScriptsPermission(): void
+    {
+        $this->initializePermissions();
+        $screen = Screen::factory()->create(['title' => 'Inventory Form', 'type' => 'FORM', 'config' => []]);
+        $script = Script::factory()->create(['title' => 'Hidden Script', 'language' => 'php']);
+        $process = Process::factory()->create([
+            'name' => 'Inventory Process',
+            'bpmn' => $this->inventoryBpmn($screen->id, $script->id),
+        ]);
+        $member = User::factory()->create(['is_administrator' => false]);
+        $member->permissions()->attach(Permission::byName('view-processes'));
+
+        ProcessServer::actingAs($member)->tool(GetProcessInventoryTool::class, [
+            'id' => $process->id,
+        ])->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('scripts', [])
+                ->etc())
+            ->assertDontSee('Hidden Script');
+    }
+
+    private function inventoryBpmn(int $screenId, int $scriptId): string
+    {
+        return <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd"
+    id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="true">
+    <bpmn:startEvent id="start_1"><bpmn:outgoing>flow_1</bpmn:outgoing></bpmn:startEvent>
+    <bpmn:task id="task_1" name="Fill" pm:screenRef="{$screenId}">
+      <bpmn:incoming>flow_1</bpmn:incoming><bpmn:outgoing>flow_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="gate_1" name="Route" default="flow_3">
+      <bpmn:incoming>flow_2</bpmn:incoming><bpmn:outgoing>flow_3</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:scriptTask id="script_1" name="Run" pm:scriptRef="{$scriptId}">
+      <bpmn:incoming>flow_3</bpmn:incoming>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="flow_1" sourceRef="start_1" targetRef="task_1"/>
+    <bpmn:sequenceFlow id="flow_2" sourceRef="task_1" targetRef="gate_1"/>
+    <bpmn:sequenceFlow id="flow_3" sourceRef="gate_1" targetRef="script_1">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">DC_FLAG == 'YES' &amp;&amp; DC_MISSING != ''</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+  </bpmn:process>
+</bpmn:definitions>
+XML;
     }
 
     public function testValidateProcessReportsMissingScreenRef(): void
@@ -296,6 +486,101 @@ XML;
         $draft = $process->getDraftVersion('A');
         $this->assertNotNull($draft);
         $this->assertStringContainsString('UnpublishedDraft', (string) $draft->bpmn);
+    }
+
+    public function testUpdateProcessSavesCaseTitleManagersAndNotificationsWithoutPublishing(): void
+    {
+        $publishedBpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
+        $process = Process::factory()->create(['name' => 'Settings Process', 'bpmn' => $publishedBpmn]);
+        $manager = User::factory()->create();
+        $versionsBefore = ProcessVersion::where('process_id', $process->id)->count();
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'case_title' => '{{customer}} request',
+            'manager_id' => [$manager->id],
+            'notifications' => ['requester' => ['started' => true, 'error' => true]],
+        ])->assertOk()
+            ->assertHasNoErrors()
+            ->assertStructuredContent(fn (AssertableJson $json) => $json
+                ->where('case_title', '{{customer}} request')
+                ->where('manager_id', [$manager->id])
+                ->where('notifications.requester.started', true)
+                ->where('notifications.requester.completed', false)
+                ->etc());
+
+        $process->refresh();
+        $this->assertSame('{{customer}} request', $process->case_title);
+        $this->assertSame([$manager->id], array_map('intval', $process->manager_id));
+        $this->assertTrue($process->notifications->requester['started']);
+        $this->assertTrue($process->notifications->requester['error']);
+        $this->assertFalse($process->notifications->assignee['started']);
+        $this->assertSame($publishedBpmn, $process->bpmn);
+        $this->assertSame($versionsBefore, ProcessVersion::where('process_id', $process->id)->count());
+        $this->assertSame($this->user->id, (int) $process->updated_by);
+    }
+
+    public function testNotificationUpdateOnlyChangesTheSentPairs(): void
+    {
+        $process = Process::factory()->create([
+            'name' => 'Notification Pairs',
+            'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn'),
+        ]);
+        $tool = fn (array $notifications) => ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'notifications' => $notifications,
+        ]);
+
+        $tool(['requester' => ['started' => true], 'assignee' => ['completed' => true]])->assertOk();
+        $tool(['requester' => ['started' => false], 'manager' => ['error' => true]])->assertOk();
+
+        $notifications = $process->refresh()->notifications;
+        $this->assertFalse($notifications->requester['started']);
+        $this->assertTrue($notifications->assignee['completed']);
+        $this->assertTrue($notifications->manager['error']);
+    }
+
+    public function testUpdateProcessRejectsUnknownNotificationKeysAndManagers(): void
+    {
+        $process = Process::factory()->create([
+            'name' => 'Rejected Settings',
+            'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn'),
+        ]);
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'notifications' => ['requestr' => ['started' => true]],
+        ])->assertHasErrors(['Unknown notifiable type "requestr"']);
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'notifications' => ['requester' => ['finished' => true]],
+        ])->assertHasErrors(['Unknown notification type "finished"']);
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'manager_id' => [99999999],
+        ])->assertHasErrors(['The selected Manager_id.0 is invalid.']);
+
+        $this->assertSame(0, $process->refresh()->notification_settings()->count());
+    }
+
+    public function testUpdateProcessClearsManagersWithAnEmptyArray(): void
+    {
+        $manager = User::factory()->create();
+        $process = Process::factory()->create([
+            'name' => 'Clear Managers',
+            'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn'),
+        ]);
+        $process->manager_id = [$manager->id];
+        $process->saveOrFail();
+
+        ProcessServer::actingAs($this->user)->tool(UpdateProcessTool::class, [
+            'id' => $process->id,
+            'manager_id' => [],
+        ])->assertOk()->assertHasNoErrors();
+
+        $this->assertSame([], $process->refresh()->manager_id);
     }
 
     public function testCombinedBpmnAndMetadataUpdatePersistsLiveMetadata(): void

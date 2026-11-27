@@ -18,7 +18,7 @@ use ProcessMaker\Mcp\Processes\ProcessCatalog;
 
 #[Name('list-groups')]
 #[Title('List Groups')]
-#[Description('Lists ProcessMaker groups for Form Task user_group assignment (pm:assignedGroups). Filter by name or description. Defaults to ACTIVE groups. Use while planning process assignees.')]
+#[Description('Lists ProcessMaker groups for Form Task user_group assignment (pm:assignedGroups). Filter by name or description, or pass `name` for an exact match. Each row has members_count and same_name_count (above 1 means the name is ambiguous: pick by id). Defaults to ACTIVE groups. Use while planning process assignees.')]
 #[IsReadOnly]
 #[IsIdempotent]
 class ListGroupsTool extends ProcessTool
@@ -41,6 +41,7 @@ class ListGroupsTool extends ProcessTool
     {
         return [
             'filter' => $schema->string()->description('Search name or description.'),
+            'name' => $schema->string()->description('Exact group name (case-insensitive).'),
             'status' => $schema->string()->description('ACTIVE or INACTIVE (default ACTIVE).'),
             'page' => $schema->integer()->description('Page number (default 1).'),
             'per_page' => $schema->integer()->description('Results per page (max 50).'),

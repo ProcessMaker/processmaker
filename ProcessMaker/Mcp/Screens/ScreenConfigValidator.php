@@ -21,21 +21,26 @@ final class ScreenConfigValidator
         'FormHtmlViewer',
     ];
 
+    /** A native FORM with at most this many controls is not worth a Vue rewrite. */
+    private const SMALL_NATIVE_SCREEN_MAX_CONTROLS = 5;
+
     /**
      * @param array<int, mixed>|null $config
-     * @return array{ok: bool, errors: list<array{path: ?string, code: string, message: string}>, warnings: list<array{path: ?string, code: string, message: string}>}
+     * @param bool $editsNativeScreen True when the config updates a stored screen that has no Vue component.
+     * @return array{ok: bool, errors: list<array{path: ?string, code: string, message: string}>, warnings: list<array{path: ?string, code: string, message: string}>, info: list<array{path: ?string, code: string, message: string}>}
      */
-    public function validate(?array $config, ?string $type = null): array
+    public function validate(?array $config, ?string $type = null, bool $editsNativeScreen = false): array
     {
         $errors = [];
         $warnings = [];
+        $info = [];
 
         if ($config === null) {
-            return $this->result($errors, $warnings);
+            return $this->result($errors, $warnings, $info);
         }
 
         $hasVueEditor = false;
-        $hasNativeFields = false;
+        $nativeControls = 0;
 
         foreach ($config as $pageIndex => $page) {
             if (!is_array($page)) {
@@ -55,19 +60,15 @@ final class ScreenConfigValidator
                 $errors,
                 $warnings,
                 $hasVueEditor,
-                $hasNativeFields,
+                $nativeControls,
             );
         }
 
-        if ($type === 'FORM' && $hasNativeFields && !$hasVueEditor) {
-            $warnings[] = $this->issue(
-                null,
-                'prefer_vue_component_editor',
-                'FORM screens should use VueComponentRenderTemplate as the main UI (see the pm4-screen skill). Native FormSelectList/FormInput layouts are fragile and often miss required options.',
-            );
+        if ($type === 'FORM' && $nativeControls > 0 && !$hasVueEditor) {
+            $this->addNativeFormNotice($nativeControls, $editsNativeScreen, $warnings, $info);
         }
 
-        return $this->result($errors, $warnings);
+        return $this->result($errors, $warnings, $info);
     }
 
     /**
@@ -81,7 +82,7 @@ final class ScreenConfigValidator
         array &$errors,
         array &$warnings,
         bool &$hasVueEditor,
-        bool &$hasNativeFields,
+        int &$nativeControls,
     ): void {
         foreach ($items as $index => $item) {
             if (!is_array($item)) {
@@ -95,7 +96,7 @@ final class ScreenConfigValidator
                 $hasVueEditor = true;
                 $this->validateVueEditor($item, $itemPath, $errors, $warnings);
             } elseif (in_array($component, self::NATIVE_FIELD_COMPONENTS, true)) {
-                $hasNativeFields = true;
+                $nativeControls++;
             }
 
             if ($component === 'FormSelectList') {
@@ -113,7 +114,7 @@ final class ScreenConfigValidator
                         $errors,
                         $warnings,
                         $hasVueEditor,
-                        $hasNativeFields,
+                        $nativeControls,
                     );
                 }
             }
@@ -238,16 +239,54 @@ final class ScreenConfigValidator
     }
 
     /**
+     * New or large native FORM screens get a warning (the pm4-screen skill expects Vue). Editing a stored
+     * native screen, or a small native FORM, is legitimate, so those only get an informational note.
+     *
+     * @param list<array{path: ?string, code: string, message: string}> $warnings
+     * @param list<array{path: ?string, code: string, message: string}> $info
+     */
+    private function addNativeFormNotice(int $nativeControls, bool $editsNativeScreen, array &$warnings, array &$info): void
+    {
+        if ($editsNativeScreen) {
+            $info[] = $this->issue(
+                null,
+                'native_screen_edit',
+                'This edits a stored screen that is already native, so keeping it native is fine. A Vue rewrite is a separate refactor of the whole screen (see the pm4-screen skill).',
+            );
+
+            return;
+        }
+
+        if ($nativeControls <= self::SMALL_NATIVE_SCREEN_MAX_CONTROLS) {
+            $info[] = $this->issue(
+                null,
+                'native_small_screen',
+                sprintf('Small native FORM (%d controls). Vue is optional at this size; check that every select has options.', $nativeControls),
+            );
+
+            return;
+        }
+
+        $warnings[] = $this->issue(
+            null,
+            'prefer_vue_component_editor',
+            'FORM screens should use VueComponentRenderTemplate as the main UI (see the pm4-screen skill). Native FormSelectList/FormInput layouts are fragile and often miss required options.',
+        );
+    }
+
+    /**
      * @param list<array{path: ?string, code: string, message: string}> $errors
      * @param list<array{path: ?string, code: string, message: string}> $warnings
-     * @return array{ok: bool, errors: list<array{path: ?string, code: string, message: string}>, warnings: list<array{path: ?string, code: string, message: string}>}
+     * @param list<array{path: ?string, code: string, message: string}> $info
+     * @return array{ok: bool, errors: list<array{path: ?string, code: string, message: string}>, warnings: list<array{path: ?string, code: string, message: string}>, info: list<array{path: ?string, code: string, message: string}>}
      */
-    private function result(array $errors, array $warnings): array
+    private function result(array $errors, array $warnings, array $info = []): array
     {
         return [
             'ok' => $errors === [],
             'errors' => $errors,
             'warnings' => $warnings,
+            'info' => $info,
         ];
     }
 }

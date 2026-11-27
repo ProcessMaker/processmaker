@@ -151,47 +151,13 @@
                 :class="getError('url') ? 'tw-border-red-500' : ''"
                 :placeholder="$t('https://github.com/org/plugin.git')"
               />
-              <button
-                type="button"
-                class="tw-shrink-0 tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-300 tw-bg-white tw-px-3 tw-text-gray-500 hover:tw-bg-gray-50 tw-transition-colors"
-                :aria-pressed="showGitCredentials ? 'true' : 'false'"
-                :aria-label="$t('Credentials')"
-                @click="showGitCredentials = !showGitCredentials"
-              >
-                <span v-b-tooltip.hover.bottom :title="$t('Credentials')" class="tw-inline-flex">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="1em"
-                    height="1em"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <g
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    >
-                      <path
-                        d="M16.5 10V6.5C16.5 4.01472 14.4853 2 12 2C9.51472 2 7.5 4.01472 7.5 6.5M4 13V19C4 20.6569 5.34315 22 7 22H17C18.6569 22 20 20.6569 20 19V13C20 11.3431 18.6569 10 17 10H7C5.34315 10 4 11.3431 4 13Z"
-                      />
-                      <path
-                        fill="currentColor"
-                        d="M13.5 16C13.5 16.8284 12.8284 17.5 12 17.5C11.1716 17.5 10.5 16.8284 10.5 16C10.5 15.1716 11.1716 14.5 12 14.5C12.8284 14.5 13.5 15.1716 13.5 16Z"
-                        stroke="none"
-                      />
-                    </g>
-                  </svg>
-                </span>
-              </button>
             </div>
             <small v-if="getError('url')" class="tw-text-red-500 tw-text-sm tw-mt-1 tw-block">
               {{ getError("url") }}
             </small>
           </div>
 
-          <b-collapse v-model="showGitCredentials" class="tw-mb-3">
+          <div class="tw-mb-3">
             <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-3 tw-rounded-xl tw-border tw-border-gray-200 tw-bg-gray-50 tw-p-3">
               <div>
                 <label for="plugin-git-username" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
@@ -248,7 +214,7 @@
                 )
               }}
             </small>
-          </b-collapse>
+          </div>
 
           <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-3 tw-mb-3">
             <div>
@@ -744,7 +710,6 @@ const plugin = reactive({
   gitToken: "",
 });
 
-const showGitCredentials = ref(false);
 const showMcpPrompt = ref(false);
 const MCP_PROFILES = [
   { value: "pm4", label: "PM4 only" },
@@ -1633,7 +1598,6 @@ const resetValues = () => {
     gitUsername: "",
     gitToken: "",
   });
-  showGitCredentials.value = false;
   delete plugin.description;
   errors.value = {
     url: null,

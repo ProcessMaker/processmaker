@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Http\Controllers\Api\Concerns\AppliesDeployVersionName;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Models\User;
 use ProcessMaker\Services\DeployCategoryResolver;
 use ProcessMaker\Services\ScriptExecutorResolver;
 
@@ -47,6 +49,17 @@ class DeployScript extends Controller
         $name = (string) $request->input('name');
         $isUpdate = Script::where('title', $name)->exists();
 
+        $rejection = $this->rejectDeployRequest($request, $name, $isUpdate);
+
+        return $rejection ?? $this->persistDeployedScript($request, $name);
+    }
+
+    /**
+     * Return the response that stops a deploy (version history unavailable,
+     * validation failure, or forbidden executor binding), or null to proceed.
+     */
+    private function rejectDeployRequest(Request $request, string $name, bool $isUpdate): ?JsonResponse
+    {
         if ($unavailable = $this->ensureDeployVersionHistoryAvailable($isUpdate)) {
             return $unavailable;
         }
@@ -58,8 +71,11 @@ class DeployScript extends Controller
                 'name' => 'required|string',
                 'description' => 'nullable|string|max:65535',
                 'script_category_name' => 'nullable|string|max:255',
+                'script_executor_id' => 'nullable|integer',
+                'script_executor_title' => 'nullable|string|max:255',
             ], $isUpdate),
         );
+        $validator->after(fn ($validator) => $this->validateRequestedExecutor($request, $validator));
 
         if ($validator->fails()) {
             return response()->json([
@@ -68,7 +84,89 @@ class DeployScript extends Controller
             ], 422);
         }
 
-        return $this->persistDeployedScript($request, $name);
+        return $this->denyUnauthorizedExecutorBinding($request, $name);
+    }
+
+    /**
+     * Binding a script to an executor needs the same rights as the regular script
+     * routes: edit-scripts, and an administrator for any executor other than the
+     * default one (or any custom executor). Requests that name no executor, and
+     * requests that keep the executor a script already has, are not restricted.
+     */
+    private function denyUnauthorizedExecutorBinding(Request $request, string $name): ?JsonResponse
+    {
+        $requested = $this->requestedExecutor($request);
+        $message = $requested === null
+            ? null
+            : $this->executorBindingDenialMessage($request->user(), $requested, $name);
+
+        if ($message === null) {
+            return null;
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+        ], 403);
+    }
+
+    /**
+     * Return why the user may not bind the script to the requested executor,
+     * or null when the binding is allowed.
+     */
+    private function executorBindingDenialMessage(User $user, ScriptExecutor $requested, string $name): ?string
+    {
+        if ($user->is_administrator || $this->keepsCurrentExecutor($name, $requested)) {
+            return null;
+        }
+
+        if (!$user->can('edit-scripts')) {
+            return 'You are not allowed to choose a script executor.';
+        }
+
+        return $this->executors->isDefaultForNonAdmins($requested)
+            ? null
+            : 'Only administrators can use this script executor.';
+    }
+
+    private function keepsCurrentExecutor(string $name, ScriptExecutor $requested): bool
+    {
+        $current = Script::where('title', $name)->value('script_executor_id');
+
+        return $current !== null && (int) $current === $requested->id;
+    }
+
+    private function requestedExecutor(Request $request): ?ScriptExecutor
+    {
+        $id = $request->input('script_executor_id');
+
+        return $this->executors->findRequested(
+            $id === null || $id === '' ? null : (int) $id,
+            $request->input('script_executor_title'),
+        );
+    }
+
+    private function validateRequestedExecutor(Request $request, \Illuminate\Validation\Validator $validator): void
+    {
+        $field = $request->filled('script_executor_id') ? 'script_executor_id' : 'script_executor_title';
+        if (!$request->filled($field)) {
+            return;
+        }
+
+        $executor = $this->requestedExecutor($request);
+        if ($executor === null) {
+            $validator->errors()->add($field, 'The selected script executor does not exist.');
+
+            return;
+        }
+        if ($executor->language !== ScriptExecutorResolver::DEPLOY_LANGUAGE) {
+            $validator->errors()->add($field, sprintf(
+                'Script executor "%s" runs %s; deploy-script needs a %s executor.',
+                $executor->title,
+                $executor->language,
+                ScriptExecutorResolver::DEPLOY_LANGUAGE,
+            ));
+        }
     }
 
     private function persistDeployedScript(Request $request, string $name): JsonResponse
@@ -76,9 +174,10 @@ class DeployScript extends Controller
         $code = $request->input('code');
         $script = Script::where('title', $name)->first();
         $created = $script === null;
+        $requestedExecutor = $this->requestedExecutor($request);
 
         if ($created) {
-            $executor = $this->executors->resolveForNewScript();
+            $executor = $requestedExecutor ?? $this->executors->resolveForNewScript();
             if ($executor === null) {
                 return response()->json([
                     'success' => false,
@@ -95,6 +194,11 @@ class DeployScript extends Controller
             $script->timeout = self::DEFAULT_TIMEOUT;
             $script->retry_attempts = self::DEFAULT_RETRY_ATTEMPTS;
             $script->retry_wait_time = self::DEFAULT_RETRY_WAIT_TIME;
+        }
+
+        if (!$created && $requestedExecutor !== null) {
+            $script->script_executor_id = $requestedExecutor->id;
+            $script->language = $requestedExecutor->language;
         }
 
         if (!$created && $request->has('description')) {
