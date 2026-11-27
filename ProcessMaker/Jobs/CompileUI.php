@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
+use ProcessMaker\Exception\CompileSassException;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -61,9 +62,30 @@ class CompileUI implements ShouldQueue
         $this->backupVariablesScss();
         try {
             $this->compileSass($this->user_id);
+            $this->syncMixManifestCache();
         } finally {
             $this->restoreVariablesScss();
         }
+    }
+
+    private function syncMixManifestCache(): void
+    {
+        $manifestPath = public_path('mix-manifest.json');
+        if (!is_readable($manifestPath)) {
+            Cache::forget('mix-manifest');
+
+            return;
+        }
+
+        $manifest = json_decode(file_get_contents($manifestPath), true);
+        if ($manifest === null) {
+            Cache::forget('mix-manifest');
+
+            return;
+        }
+
+        Cache::forget('mix-manifest');
+        Cache::put('mix-manifest', $manifest, now()->addHours(24));
     }
 
     /**
@@ -151,7 +173,7 @@ class CompileUI implements ShouldQueue
                 if (File::exists(app()->resourcePath('sass/tenant_' . $tenantId . '/_' . $file . '.scss'))) {
                     $modifiedVariablesScss = str_replace('@import \'' . $file . '\';', '@import \'tenant_' . $tenantId . '/' . $file . '\';', $variablesScss);
                     if ($modifiedVariablesScss === $variablesScss) {
-                        throw new \Exception('Could not find parts to modify. Did the _variables.scss file get corrupted?');
+                        throw new CompileSassException('Could not find parts to modify. Did the _variables.scss file get corrupted?');
                     }
                     $variablesScss = $modifiedVariablesScss;
                 }
@@ -243,13 +265,14 @@ class CompileUI implements ShouldQueue
 
         $encodedManifest = json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         file_put_contents($manifestFile, $encodedManifest);
-
-        // Cache the updated manifest
-        Cache::put('mix-manifest', $manifest, now()->addHours(24));
     }
 
     private function run(CompileSass $compileSass)
     {
-        return $compileSass->handle();
+        try {
+            return $compileSass->handle();
+        } catch (CompileSassException $e) {
+            throw new HttpException(500, $e->getMessage(), $e);
+        }
     }
 }

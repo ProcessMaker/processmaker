@@ -6,11 +6,11 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
-use ProcessMaker\Jobs\CompileSass;
 use ProcessMaker\Jobs\CompileUI;
 use ProcessMaker\Models\Setting;
 
@@ -94,12 +94,8 @@ class CssOverrideController extends Controller
 
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
-        $setting->saveOrFail();
 
-        $this->setLoginFooter($request);
-        $this->setAltText($request);
-
-        CompileUI::dispatchSync($request->user('api')->id);
+        $this->saveSettingsAndCompileUi($request, $setting);
 
         // Register the Event
         CustomizeUiUpdated::dispatch([], [], $reset);
@@ -146,7 +142,6 @@ class CssOverrideController extends Controller
         $request->request->add(['config' => $this->formatConfig($request)]);
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
-        $setting->saveOrFail();
 
         if ($request->has('fileLogin') && $request->input('fileLogin')) {
             $this->uploadFile($setting->refresh(), $request, 'fileLogin', Setting::COLLECTION_CSS_LOGO, Setting::DISK_CSS);
@@ -165,12 +160,21 @@ class CssOverrideController extends Controller
             Cache::forget('css-favicon');
         }
 
-        $this->setLoginFooter($request);
-        $this->setAltText($request);
-
-        CompileUI::dispatchSync($request->user('api')->id);
+        $this->saveSettingsAndCompileUi($request, $setting);
 
         return response([], 204);
+    }
+
+    private function saveSettingsAndCompileUi(Request $request, Setting $setting): void
+    {
+        DB::transaction(function () use ($request, $setting) {
+            $setting->saveOrFail();
+
+            $this->setLoginFooter($request);
+            $this->setAltText($request);
+
+            CompileUI::dispatchSync($request->user('api')->id);
+        });
     }
 
     /**

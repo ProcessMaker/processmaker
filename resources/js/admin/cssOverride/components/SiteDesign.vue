@@ -425,7 +425,7 @@ export default {
       });
     },
     onClose() {
-      window.location.href = '/admin/customize-ui';
+      window.location.href = `/admin/customize-ui?compiled=${Date.now()}`;
     },
     onSubmit() {
       this.resetErrors();
