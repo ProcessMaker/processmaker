@@ -10,6 +10,7 @@ use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use ProcessMaker\Events\PluginLog;
 use ProcessMaker\Managers\PluginManager;
+use ProcessMaker\Services\PluginLogService;
 use Throwable;
 
 class InstallPlugin implements ShouldQueue
@@ -85,6 +86,6 @@ class InstallPlugin implements ShouldQueue
      */
     private function publicErrorMessage(Throwable $exception): string
     {
-        return PluginManager::redactHttpUserInfoFromString($exception->getMessage());
+        return PluginLogService::redactHttpUserInfoFromString($exception->getMessage());
     }
 }

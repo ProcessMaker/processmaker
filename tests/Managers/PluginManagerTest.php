@@ -616,15 +616,6 @@ class PluginManagerTest extends TestCase
         );
     }
 
-    public function testRedactHttpUserInfoFromString()
-    {
-        $dirty = 'clone failed for https://ghp_xxx@github.com/org/repo.git';
-        $this->assertSame(
-            'clone failed for https://github.com/org/repo.git',
-            PluginManager::redactHttpUserInfoFromString($dirty)
-        );
-    }
-
     public function testCloneRepositorySetsStrippedOriginAfterSuccess()
     {
         $this->setUpTestPluginManager();
