@@ -110,36 +110,6 @@ class ScreenBuilderManager
         }
     }
 
-    /**
-     * Prefer tenant-published plugin assets when available, else global public/vendor.
-     */
-    private function publishedPluginScriptWebPath(string $packageName, string $extensionsFile): ?string
-    {
-        $relativeJs = '/js/' . $extensionsFile;
-
-        if (PluginVendorAssets::isEnabled()) {
-            $tenantId = PluginVendorAssets::currentTenantId();
-            $tenantFile = PluginVendorAssets::tenantPublicRoot($tenantId, $packageName) . $relativeJs;
-            if (is_file($tenantFile)) {
-                return PluginVendorAssets::webPath($tenantId, $packageName, $relativeJs);
-            }
-        }
-
-        $globalWeb = '/vendor/processmaker/packages/' . $packageName . $relativeJs;
-        if (is_file(public_path(ltrim($globalWeb, '/')))) {
-            return $globalWeb;
-        }
-
-        return null;
-    }
-
-    private function filesystemPathForWebScript(string $webScript): string
-    {
-        $pathOnly = explode('?', $webScript, 2)[0];
-
-        return public_path(ltrim($pathOnly, '/'));
-    }
-
     private function screenBuilderExtensionsFile(string $type): string
     {
         return 'screen-builder-' . strtolower($type) . '-components.js';
