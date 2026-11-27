@@ -41,7 +41,7 @@ class ImportController extends Controller
             return response()->json(['error' => $e->getMessage()], 400);
         }
 
-        $options = new Options([]);
+        $options = new Options([], $request->user()?->id);
         $importer = new Importer($payload, $options);
 
         $manifest = $importer->previewImport();
@@ -80,7 +80,10 @@ class ImportController extends Controller
             return response()->json(['error' => $e->getMessage()], 400);
         }
 
-        $options = new Options(json_decode(file_get_contents(utf8_decode($request->file('options'))), true));
+        $options = new Options(
+            json_decode(file_get_contents(utf8_decode($request->file('options'))), true),
+            $request->user()?->id
+        );
         $importer = new Importer($payload, $options);
         $manifest = $importer->doImport();
 

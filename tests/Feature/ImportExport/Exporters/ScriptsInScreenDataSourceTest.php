@@ -4,9 +4,9 @@ namespace Tests\Feature\ImportExport\Exporters;
 
 use ProcessMaker\Assets\DataSourcesInScreen;
 use ProcessMaker\Assets\ScriptsInScreen;
+use ProcessMaker\Jobs\ExportScreen;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Jobs\ExportScreen;
 use Tests\TestCase;
 
 class ScriptsInScreenDataSourceTest extends TestCase
@@ -101,7 +101,7 @@ class ScriptsInScreenDataSourceTest extends TestCase
 
         $exportJob = new ExportScreen($screen);
         $exportJob->handle();
-        
+
         // Access private package property via reflection
         $reflection = new \ReflectionClass($exportJob);
         // package is protected in ExportProcess

@@ -22,7 +22,7 @@ class FixBpmnSchemaServiceTest extends TestCase
     {
         $bpmn = file_get_contents(
             __DIR__ .
-                "/../../../../Fixtures/process_data_input_without_targetref.bpmn"
+                '/../../../../Fixtures/process_data_input_without_targetref.bpmn'
         );
 
         $document = new BpmnDocument();
@@ -30,7 +30,7 @@ class FixBpmnSchemaServiceTest extends TestCase
 
         $this->expectException(Exception::class);
         $validation = $document->validateBPMNSchema(
-            public_path("definitions/ProcessMaker.xsd")
+            public_path('definitions/ProcessMaker.xsd')
         );
     }
 
@@ -43,7 +43,7 @@ class FixBpmnSchemaServiceTest extends TestCase
     {
         $bpmn = file_get_contents(
             __DIR__ .
-                "/../../../../Fixtures/process_data_input_without_targetref.bpmn"
+                '/../../../../Fixtures/process_data_input_without_targetref.bpmn'
         );
 
         $fixBpmnSchemaService = app(FixBpmnSchemaService::class);
@@ -52,7 +52,7 @@ class FixBpmnSchemaServiceTest extends TestCase
         $document = new BpmnDocument();
         $document->loadXML($bpmn);
         $validation = $document->validateBPMNSchema(
-            public_path("definitions/ProcessMaker.xsd")
+            public_path('definitions/ProcessMaker.xsd')
         );
 
         $this->assertTrue($validation);
@@ -67,7 +67,7 @@ class FixBpmnSchemaServiceTest extends TestCase
     {
         $bpmn = file_get_contents(
             __DIR__ .
-                "/../../../../Fixtures/process_data_input_generated_in_pm4.bpmn"
+                '/../../../../Fixtures/process_data_input_generated_in_pm4.bpmn'
         );
 
         $fixBpmnSchemaService = app(FixBpmnSchemaService::class);
@@ -76,7 +76,7 @@ class FixBpmnSchemaServiceTest extends TestCase
         $document = new BpmnDocument();
         $document->loadXML($bpmn);
         $validation = $document->validateBPMNSchema(
-            public_path("definitions/ProcessMaker.xsd")
+            public_path('definitions/ProcessMaker.xsd')
         );
 
         $this->assertTrue($validation);

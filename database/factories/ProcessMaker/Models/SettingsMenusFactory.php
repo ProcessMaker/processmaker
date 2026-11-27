@@ -22,10 +22,11 @@ class SettingsMenusFactory extends Factory
             'Log-In & Auth',
             'User Settings',
         ]);
+
         return [
             'menu_group' => $menus,
             'menu_group_order' => 1,
-            'ui' => json_encode(["icon" => "envelope-open-text"]),
+            'ui' => json_encode(['icon' => 'envelope-open-text']),
         ];
     }
 }

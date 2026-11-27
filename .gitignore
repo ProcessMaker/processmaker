@@ -58,3 +58,4 @@ storage/transitions
 **/caddy
 frankenphp
 frankenphp-worker.php
+Caddyfile.edge

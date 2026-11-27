@@ -1,0 +1,129 @@
+specId: admin-plugins
+kind: screen
+title: Admin plugins screen
+description: >-
+  Admin UI to list plugins and start queued install, uninstall, and toggle
+  operations with live PluginLog output.
+config:
+  permission: manage-plugins
+  installFields:
+    - url
+    - branch
+    - tag
+  progressComponent: PluginOutput
+dependsOn:
+  - plugin-manager
+requirements:
+  - id: FR-001
+    requirementType: Functional
+    title: Restrict screen to manage-plugins operators
+    statement: >-
+      The screen must only be available to authenticated operators who have the
+      manage-plugins permission.
+    priority: Critical
+    status: Draft
+    tags: [plugins, authz]
+    dependencies:
+      - plugin-manager#FR-001
+    acceptanceCriteria:
+      - given: An authenticated operator without manage-plugins permission
+        when: The operator opens the admin plugins route
+        then: Access is denied
+      - given: An authenticated operator with manage-plugins permission
+        when: The operator opens the admin plugins route
+        then: The plugins list screen is shown
+    traceability:
+      testCases: []
+
+  - id: FR-002
+    requirementType: Functional
+    title: List plugins in a searchable table
+    statement: >-
+      The screen must show installed plugins from the plugin-manager list,
+      including enabled state, and support client search and pagination.
+    priority: High
+    status: Draft
+    tags: [plugins, list, ui]
+    dependencies:
+      - plugin-manager#FR-008
+    acceptanceCriteria:
+      - given: The plugin-manager list returns enabled and disabled plugins
+        when: The screen finishes loading
+        then: Each plugin appears with name and enabled state
+      - given: The operator enters a search filter
+        when: The filter is applied
+        then: The table shows only matching plugin rows
+    traceability:
+      testCases: []
+
+  - id: FR-003
+    requirementType: Functional
+    title: Start queued install and keep modal open for progress
+    statement: >-
+      When the operator submits the install form, the screen must call the
+      install API, treat a queued acknowledgment as success for dispatch, keep
+      the modal open, and rely on PluginLog events for completion instead of
+      reloading on the HTTP response alone.
+    priority: Critical
+    status: Draft
+    tags: [plugins, install, ui, progress]
+    dependencies:
+      - plugin-manager#FR-001
+      - plugin-manager#FR-005
+    acceptanceCriteria:
+      - given: The operator fills a valid repository URL and submits install
+        when: The API returns a queued acknowledgment
+        then: The modal stays open and PluginOutput shows progress from PluginLog events
+      - given: A PluginLog done event arrives for a successful install
+        when: The screen handles the event
+        then: The operator is informed of success and may close or refresh the list
+      - given: A PluginLog error event arrives during install
+        when: The screen handles the event
+        then: The error is visible in the output panel and the list is not treated as successfully updated
+    traceability:
+      testCases: []
+
+  - id: FR-004
+    requirementType: Functional
+    title: Trigger queued uninstall and toggle from row actions
+    statement: >-
+      Row actions must call uninstall and toggle APIs that enqueue work, then
+      refresh or reload after a successful completion signal rather than
+      assuming the HTTP acknowledgment finished the mutation.
+    priority: High
+    status: Draft
+    tags: [plugins, uninstall, toggle, ui]
+    dependencies:
+      - plugin-manager#FR-003
+      - plugin-manager#FR-004
+    acceptanceCriteria:
+      - given: The operator confirms delete on a plugin row
+        when: The uninstall API returns queued acknowledgment
+        then: The UI waits for completion feedback before treating the plugin as removed
+      - given: The operator clicks toggle on a plugin row
+        when: The toggle API returns queued acknowledgment
+        then: The UI waits for completion feedback before showing the new enabled state as final
+    traceability:
+      testCases: []
+
+  - id: NFR-001
+    requirementType: NonFunctional
+    title: Install UI must not use the short default API timeout as completion
+    statement: >-
+      The install flow must not interpret the default short API client timeout
+      as install failure when the server has already queued the job; completion
+      is determined by PluginLog events.
+    priority: Critical
+    status: Draft
+    category: Usability
+    tags: [plugins, timeout, ui]
+    metrics:
+      - name: install_completion_signal
+        operator: "="
+        value: PluginLog
+        unit: event
+    verificationMethod: Demonstration
+    acceptanceCriteria:
+      - given: Composer install takes longer than the default API client timeout
+        when: The operator has submitted install and the job was queued
+        then: The UI continues showing progress from PluginLog instead of marking install failed solely due to the HTTP client timeout

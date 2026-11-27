@@ -2,9 +2,9 @@
 
 namespace ProcessMaker\Assets;
 
+use Illuminate\Support\Arr;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Screen;
-use Illuminate\Support\Arr;
 
 class DataSourcesInScreen
 {

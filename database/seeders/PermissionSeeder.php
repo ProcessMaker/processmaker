@@ -66,6 +66,7 @@ class PermissionSeeder extends Seeder
             'delete-scripts',
             'edit-scripts',
             'view-scripts',
+            'run-in-process-modules',
             'create-script-categories',
             'delete-script-categories',
             'edit-script-categories',
@@ -113,6 +114,14 @@ class PermissionSeeder extends Seeder
             'view-signals',
             'edit-signals',
             'delete-signals',
+        ],
+        'Plugins' => [
+            'manage-plugins',
+            'create-plugins',
+            'view-plugins',
+            'install-plugins',
+            'uninstall-plugins',
+            'toggle-plugins',
         ],
     ];
 

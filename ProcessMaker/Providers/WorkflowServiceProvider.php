@@ -5,12 +5,12 @@ namespace ProcessMaker\Providers;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Mustache_Engine;
 use Mustache_LambdaHelper;
+use ProcessMaker\Assets\DataSourcesInProcess;
+use ProcessMaker\Assets\DataSourcesInScreen;
 use ProcessMaker\Assets\ScreensInProcess;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\Assets\ScriptsInProcess;
 use ProcessMaker\Assets\ScriptsInScreen;
-use ProcessMaker\Assets\DataSourcesInScreen;
-use ProcessMaker\Assets\DataSourcesInProcess;
 use ProcessMaker\Bpmn\MustacheOptions;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\TimerExpressionInterface;
@@ -38,6 +38,9 @@ use ProcessMaker\Nayra\MessageBrokers\Service as ServiceFactory;
 use ProcessMaker\Nayra\MessageBrokers\ServiceInterface;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Repositories\DefinitionsRepository;
+use ProcessMaker\ScriptRuntime\ScriptModuleRegistry;
+use ProcessMaker\ScriptRuntime\ScriptRuntime;
+use ProcessMaker\ServiceTaskImplementations\CoreServiceTask;
 use ProcessMaker\WebServices\Contracts\SoapClientInterface;
 use ProcessMaker\WebServices\NativeSoapClient;
 use ProcessMaker\WebServices\SoapConfigBuilder;
@@ -239,6 +242,25 @@ class WorkflowServiceProvider extends ServiceProvider
             return ServiceFactory::create();
         });
 
+        $this->app->singleton(ScriptModuleRegistry::class);
+        $this->app->singleton(ScriptRuntime::class, function ($app) {
+            return new ScriptRuntime($app->make(ScriptModuleRegistry::class));
+        });
+        $this->app->alias(ScriptRuntime::class, 'script.runtime');
+
         parent::register();
+    }
+
+    /**
+     * Bootstrap workflow services.
+     */
+    public function boot(): void
+    {
+        parent::boot();
+
+        WorkflowManagerFacade::registerServiceImplementation(
+            CoreServiceTask::IMPLEMENTATION,
+            CoreServiceTask::class
+        );
     }
 }

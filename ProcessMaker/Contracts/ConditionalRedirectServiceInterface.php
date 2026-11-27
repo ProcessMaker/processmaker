@@ -6,7 +6,6 @@ use ProcessMaker\Models\ProcessRequestToken;
 
 /**
  * @see \ProcessMaker\Services\ConditionalRedirectService
- * @package ProcessMaker\Contracts
  */
 interface ConditionalRedirectServiceInterface
 {

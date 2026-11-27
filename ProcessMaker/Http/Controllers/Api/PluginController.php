@@ -1,0 +1,110 @@
+<?php
+
+namespace ProcessMaker\Http\Controllers\Api;
+
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Jobs\InstallPlugin;
+use ProcessMaker\Jobs\ReinstallPlugin;
+use ProcessMaker\Jobs\TogglePlugin;
+use ProcessMaker\Jobs\UninstallPlugin;
+use ProcessMaker\Managers\PluginManager;
+
+class PluginController extends Controller
+{
+    public function __construct(private PluginManager $manager)
+    {
+    }
+
+    public function index(): JsonResponse
+    {
+        $plugins = $this->manager->list();
+
+        return response()->json(['data' => $plugins]);
+    }
+
+    public function install(Request $request): JsonResponse
+    {
+        $maxZipKilobytes = (int) config('plugin_manager.zip_max_kilobytes', 51200);
+
+        $request->validate([
+            'url' => 'required_without:zip|nullable|string' . (config('app.env') === 'production' ? '|starts_with:https://' : ''),
+            'zip' => "required_without:url|nullable|file|mimes:zip|max:{$maxZipKilobytes}",
+            'branch' => 'prohibits:tag|nullable|string',
+            'tag' => 'prohibits:branch|nullable|string',
+            'git_username' => 'nullable|string|max:255',
+            'git_token' => 'nullable|string|max:4096',
+        ]);
+
+        $userId = $request->user()->id;
+
+        if ($request->hasFile('zip')) {
+            $tmpPath = $request->file('zip')->store('plugin-uploads', 'local');
+            $fullPath = storage_path('app/' . $tmpPath);
+
+            InstallPlugin::dispatch(
+                userId: $userId,
+                zipPath: $fullPath,
+            );
+        } else {
+            InstallPlugin::dispatch(
+                userId: $userId,
+                url: $request->input('url'),
+                branch: $request->input('branch'),
+                tag: $request->input('tag'),
+                gitUsername: $request->input('git_username'),
+                gitToken: $request->input('git_token'),
+            );
+        }
+
+        return response()->json([
+            'queued' => true,
+            'message' => 'Plugin installation queued',
+        ]);
+    }
+
+    public function reinstall(string $name, Request $request): JsonResponse
+    {
+        $request->validate([
+            'branch' => 'prohibits:tag|nullable|string',
+            'tag' => 'prohibits:branch|nullable|string',
+            'git_username' => 'nullable|string|max:255',
+            'git_token' => 'nullable|string|max:4096',
+        ]);
+
+        ReinstallPlugin::dispatch(
+            $name,
+            $request->user()->id,
+            $request->input('branch'),
+            $request->input('tag'),
+            $request->input('git_username'),
+            $request->input('git_token'),
+        );
+
+        return response()->json([
+            'queued' => true,
+            'message' => 'Plugin reinstall queued',
+        ]);
+    }
+
+    public function destroy(string $name, Request $request): JsonResponse
+    {
+        UninstallPlugin::dispatch($name, $request->user()->id);
+
+        return response()->json([
+            'queued' => true,
+            'message' => 'Plugin uninstallation queued',
+        ]);
+    }
+
+    public function toggle(string $name, Request $request): JsonResponse
+    {
+        TogglePlugin::dispatch($name, $request->user()->id);
+
+        return response()->json([
+            'queued' => true,
+            'message' => 'Plugin toggle queued',
+        ]);
+    }
+}
