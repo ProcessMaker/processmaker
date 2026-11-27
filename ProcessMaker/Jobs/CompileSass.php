@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
+use ProcessMaker\Exception\CompileSassException;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\SassCompiledNotification;
 
@@ -43,14 +44,14 @@ class CompileSass implements ShouldQueue
     /**
      * Execute compile docker sass
      *
-     * @throws \Exception
+     * @throws CompileSassException
      */
     public function handle()
     {
         chdir(app()->basePath());
         $node = config('app.node_bin_path', '/usr/bin/node');
         if (!is_executable($node)) {
-            throw new \Exception("Node binary not found or not executable: {$node}");
+            throw new CompileSassException("Node binary not found or not executable: {$node}");
         }
         $this->runCmd(escapeshellarg($node) . ' node_modules/sass/sass.js --no-source-map --quiet '
             . $this->properties['origin'] . ' ' . $this->properties['target']);
@@ -71,7 +72,7 @@ class CompileSass implements ShouldQueue
     /**
      * @param $cmd
      * @return string
-     * @throws \Exception
+     * @throws CompileSassException
      */
     private function runCmd($cmd)
     {
@@ -80,7 +81,7 @@ class CompileSass implements ShouldQueue
         $output = implode("\n", $output);
         if ($returnVal) {
             Log::info("Cmd returned: $returnVal " . $output);
-            throw new \Exception("Cmd returned: $returnVal " . $output);
+            throw new CompileSassException("Cmd returned: $returnVal " . $output);
         }
         Log::info('Returned' . $output);
 
