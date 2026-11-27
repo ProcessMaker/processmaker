@@ -281,6 +281,7 @@ export default defineConfig(({ mode }) => {
           "resources/js/requests/loaderRequestsPreview.js",
           "resources/js/requests/mobile.js",
           "resources/js/requests/index.js",
+          "resources/js/requests/show.js",
 
           "resources/js/notifications/index.js",
 

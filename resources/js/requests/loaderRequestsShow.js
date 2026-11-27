@@ -19,5 +19,3 @@ window.Vue.use(ScreenBuilder.default);
 
 window.ProcessMaker.packages = window.temporal?.packages || [];
 window.packages = window.ProcessMaker.packages;
-
-await import("./show");
