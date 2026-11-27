@@ -18,7 +18,7 @@ class PluginServiceProviderTraitModelerTest extends TestCase
         $this->app->instance('currentTenant', (object) ['id' => 8]);
 
         $package = 'modeler-trait-pkg-' . uniqid();
-        $tenantRoot = PluginVendorAssets::tenantPublicRoot(8, $package);
+        $tenantRoot = PluginVendorAssets::tenantPackageRoot(8, $package);
         mkdir($tenantRoot . '/js', 0755, true);
         file_put_contents($tenantRoot . '/mix-manifest.json', json_encode([
             '/js/modeler-schema-profile.js' => '/js/modeler-schema-profile.js?id=trait-test',
@@ -44,7 +44,7 @@ class PluginServiceProviderTraitModelerTest extends TestCase
         $scripts = $manager->getScriptWithParams();
         $found = false;
         foreach ($scripts as $script) {
-            if (str_contains($script['src'], '/storage/tenant_8/vendor/processmaker/packages/' . $package)) {
+            if (str_contains($script['src'], '/storage/vendor/processmaker/packages/' . $package)) {
                 $found = true;
                 break;
             }

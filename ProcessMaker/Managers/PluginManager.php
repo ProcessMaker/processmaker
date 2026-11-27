@@ -209,6 +209,12 @@ class PluginManager
         $this->markNewInstallForRollback($pluginPath);
         $this->cloneRepository($authenticatedRepoUrl, $pluginPath, $repoName, $userId, $repoUrl);
 
+        // An empty remote has no branch or tag to check out: report that instead of a git checkout error.
+        if (($branch || $tag) && $this->isEmptyGitRepository($pluginPath)) {
+            $this->logError(self::EMPTY_REPOSITORY_MESSAGE, $repoName, $userId);
+            throw new RuntimeException(self::EMPTY_REPOSITORY_MESSAGE);
+        }
+
         if ($branch) {
             $this->logRunning("Checking out branch: {$branch}", $repoName, $userId);
             $this->checkoutBranch($pluginPath, $branch, $repoName, $userId);

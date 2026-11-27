@@ -73,6 +73,8 @@ class PluginsTest extends TestCase
 
     public function testInstallRejectsNonHttpsUrl(): void
     {
+        // The https-only rule is enforced in production only.
+        config(['app.env' => 'production']);
         Bus::fake([InstallPlugin::class]);
 
         $response = $this->apiCall('POST', '/plugins/install', [
