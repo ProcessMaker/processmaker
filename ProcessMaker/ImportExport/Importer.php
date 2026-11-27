@@ -49,26 +49,7 @@ class Importer
         DB::transaction(function () use ($existingAssetInDatabase, $importingFromTemplate) {
             // First, we save the model so we have IDs set for all assets
             Schema::disableForeignKeyConstraints();
-
-            $count = count(Arr::where($this->manifest->all(), fn ($exporter) => $exporter->mode !== 'discard'));
-            $this->logger->log("Importing {$count} assets");
-            foreach ($this->manifest->all() as $uuid => $exporter) {
-                $this->logger->setStatus('saving', $uuid);
-                \Log::info('Importing ' . get_class($exporter->model), ['mode' => $exporter->mode]);
-                if ($exporter->mode !== 'discard') {
-                    $this->logger->log('Importing ' . get_class($exporter->model));
-                    if ($exporter->disableEventsWhenImporting) {
-                        $exporter->model->saveQuietly();
-                    } else {
-                        // Set script_id to null before saving data source scripts to prevent conflicts during postImport process.
-                        if (get_class($exporter->model) === 'ProcessMaker\Packages\Connectors\DataSources\Models\Script') {
-                            $exporter->model->script_id = null;
-                        }
-                        $exporter->model->save();
-                    }
-                    $exporter->log('newId', $exporter->model->id);
-                }
-            }
+            $this->saveAssets();
             Schema::enableForeignKeyConstraints();
 
             // Now, run the import method in each Exporter class
@@ -89,6 +70,29 @@ class Importer
         $this->logger->log('Done Importing', ['processId' => $newProcessId, 'message' => self::getMessages()]);
 
         return $manifest;
+    }
+
+    private function saveAssets(): void
+    {
+        $count = count(Arr::where($this->manifest->all(), fn ($exporter) => $exporter->mode !== 'discard'));
+        $this->logger->log("Importing {$count} assets");
+        foreach ($this->manifest->all() as $uuid => $exporter) {
+            $this->logger->setStatus('saving', $uuid);
+            \Log::info('Importing ' . get_class($exporter->model), ['mode' => $exporter->mode]);
+            if ($exporter->mode !== 'discard') {
+                $this->logger->log('Importing ' . get_class($exporter->model));
+                if ($exporter->disableEventsWhenImporting) {
+                    $exporter->model->saveQuietly();
+                } else {
+                    // Set script_id to null before saving data source scripts to prevent conflicts during postImport process.
+                    if (get_class($exporter->model) === 'ProcessMaker\Packages\Connectors\DataSources\Models\Script') {
+                        $exporter->model->script_id = null;
+                    }
+                    $exporter->model->save();
+                }
+                $exporter->log('newId', $exporter->model->id);
+            }
+        }
     }
 
     public static function getMessages()
