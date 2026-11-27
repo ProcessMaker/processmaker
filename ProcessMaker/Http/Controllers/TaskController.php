@@ -455,9 +455,9 @@ class TaskController extends Controller
     /**
      * Merge a parked ABE click query back onto the request when the signature is missing.
      *
-     * Only restore onto the short post-login intended URL (no action params). A fresh
-     * Approve/Reject click already carries varName/varValue and must not be overwritten
-     * by an older parked query from a leftover abe_click_ticket cookie.
+     * Only restore onto the short post-login intended URL (no action params). If either
+     * varName or varValue is present — even empty or non-string — skip restore and let
+     * validation own the values so a leftover ticket cannot overwrite a fresh click.
      */
     private function restoreAbeClickQuery(HttpRequest $request, ProcessAbeRequestToken $abe): void
     {
@@ -465,8 +465,7 @@ class TaskController extends Controller
             return;
         }
 
-        if ((string) $request->query('varName', '') !== ''
-            && (string) $request->query('varValue', '') !== '') {
+        if ($request->query->has('varName') || $request->query->has('varValue')) {
             return;
         }
 

@@ -403,4 +403,48 @@ class TaskControllerTest extends TestCase
         $request = ProcessRequest::findOrFail($abe->process_request_id);
         $this->assertSame('no', $request->data['res'] ?? null);
     }
+
+    /**
+     * Presence of either action param skips restore so validation owns the values:
+     * partial queries and array-valued params must 422, not revive a parked click or 500.
+     */
+    public function testPartialOrInvalidActionParamsSkipAbeClickRestoreAndReturnValidationError(): void
+    {
+        $process = Process::factory()->create([
+            'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/action_by_email_process_require_login.bpmn'),
+        ]);
+        Screen::factory()->create();
+
+        $this->apiCall('POST', route('api.process_events.trigger', [$process->id, 'event' => 'node_1']), []);
+        $abe = ProcessAbeRequestToken::firstOrFail();
+        $anonymous = User::where('username', AnonymousUser::ANONYMOUS_USERNAME)->firstOrFail();
+
+        $park = $this->actingAs($anonymous, 'web')
+            ->get('tasks/update_variable/' . $abe->uuid . '?varName=res&varValue=yes');
+        $park->assertRedirect('login');
+        $ticket = $park->getCookie(TaskController::ABE_CLICK_TICKET_COOKIE, false)->getValue();
+        $this->assertTrue(Cache::has('abe_click:' . $ticket));
+
+        $user = User::factory()->create(['status' => 'ACTIVE']);
+
+        // Partial query: varName present without varValue must not restore the parked Approve.
+        $partial = $this->actingAs($user, 'web')
+            ->withUnencryptedCookie(TaskController::ABE_CLICK_TICKET_COOKIE, $ticket)
+            ->getJson('tasks/update_variable/' . $abe->uuid . '?varName=res');
+        $partial->assertStatus(422);
+        $partial->assertJsonValidationErrors(['varValue']);
+        $partial->assertJsonMissing(['message' => 'Error updating variable']);
+        $this->assertTrue(Cache::has('abe_click:' . $ticket));
+        $this->assertSame(0, (int) ProcessAbeRequestToken::findOrFail($abe->id)->is_answered);
+
+        // Array-valued varName must 422 from the string rule, not HTTP 500 from a cast.
+        $arrayParam = $this->actingAs($user, 'web')
+            ->withUnencryptedCookie(TaskController::ABE_CLICK_TICKET_COOKIE, $ticket)
+            ->getJson('tasks/update_variable/' . $abe->uuid . '?varName[]=res&varValue=no');
+        $arrayParam->assertStatus(422);
+        $arrayParam->assertJsonValidationErrors(['varName']);
+        $arrayParam->assertJsonMissing(['message' => 'Error updating variable']);
+        $this->assertTrue(Cache::has('abe_click:' . $ticket));
+        $this->assertSame(0, (int) ProcessAbeRequestToken::findOrFail($abe->id)->is_answered);
+    }
 }
