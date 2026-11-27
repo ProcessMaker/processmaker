@@ -148,7 +148,7 @@
               <i class="fp-add-outlined"></i> {{ $t('Add to Bundle') }}
           </b-button>
           
-          <b-button variant="outline-secondary" class="ml-auto" @click="onClose">
+          <b-button variant="outline-secondary" class="ml-auto" :disabled="isLoading" @click="onClose">
               {{ $t('Cancel') }}
           </b-button>
           
@@ -388,16 +388,6 @@ export default {
     }
   },
   mounted() {
-    let userID = document.head.querySelector('meta[name="user-id"]');
-    window.Echo.private(
-      `ProcessMaker.Models.User.${userID.content}`
-    ).notification(response => {
-      if (response.type == "ProcessMaker\\Notifications\\SassCompiledNotification") {
-        ProcessMaker.alert(this.$t('The styles were recompiled.'), 'success');
-        this.onClose();
-      }
-    });
-
     this.loginFooter = _.get(window.loginFooterSetting, 'config.html', '');
     this.altText = window.altTextSetting;
   },
@@ -435,7 +425,7 @@ export default {
       });
     },
     onClose() {
-      window.location.href = '/admin/customize-ui';
+      window.location.href = `/admin/customize-ui?compiled=${Date.now()}`;
     },
     onSubmit() {
       this.resetErrors();
@@ -484,16 +474,20 @@ export default {
     },
     onCreate(data) {
       this.isLoading = true;
-      ProcessMaker.apiClient.post('customize-ui', data)
-        .then(response => {
-          this.$refs.modalLoading.show();
+      this.$refs.modalLoading.show();
+      ProcessMaker.apiClient.post('customize-ui', data, { timeout: 0 })
+        .then(() => {
+          this.$refs.modalLoading.hide();
+          ProcessMaker.alert(this.$t('The styles were recompiled.'), 'success');
+          this.onClose();
         })
         .catch(error => {
+          this.$refs.modalLoading.hide();
           ProcessMaker.alert(
             _.get(error, 'response.data.message', this.$t('The given data was invalid.')),
             'danger'
           );
-          if (error.response.status && error.response.status === 422) {
+          if (_.get(error, 'response.status') === 422) {
             this.errors = error.response.data.errors;
           }
         })
@@ -502,14 +496,26 @@ export default {
         });
     },
     onUpdate(data) {
-      ProcessMaker.apiClient.put('customize-ui', data)
-        .then(response => {
-          this.$refs.modalLoading.show();
+      this.isLoading = true;
+      this.$refs.modalLoading.show();
+      ProcessMaker.apiClient.put('customize-ui', data, { timeout: 0 })
+        .then(() => {
+          this.$refs.modalLoading.hide();
+          ProcessMaker.alert(this.$t('The styles were recompiled.'), 'success');
+          this.onClose();
         })
         .catch(error => {
-          if (error.response.status && error.response.status === 422) {
+          this.$refs.modalLoading.hide();
+          ProcessMaker.alert(
+            _.get(error, 'response.data.message', this.$t('The given data was invalid.')),
+            'danger'
+          );
+          if (_.get(error, 'response.status') === 422) {
             this.errors = error.response.data.errors;
           }
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
     onAddToBundle(data) {

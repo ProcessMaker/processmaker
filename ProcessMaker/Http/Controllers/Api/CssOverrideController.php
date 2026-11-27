@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\File;
 use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
-use ProcessMaker\Jobs\CompileSass;
 use ProcessMaker\Jobs\CompileUI;
 use ProcessMaker\Models\Setting;
 
@@ -94,12 +93,8 @@ class CssOverrideController extends Controller
 
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
-        $setting->saveOrFail();
 
-        $this->setLoginFooter($request);
-        $this->setAltText($request);
-
-        CompileUI::dispatch($request->user('api')->id);
+        $this->saveSettingsAndCompileUi($request, $setting);
 
         // Register the Event
         CustomizeUiUpdated::dispatch([], [], $reset);
@@ -146,7 +141,6 @@ class CssOverrideController extends Controller
         $request->request->add(['config' => $this->formatConfig($request)]);
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
-        $setting->saveOrFail();
 
         if ($request->has('fileLogin') && $request->input('fileLogin')) {
             $this->uploadFile($setting->refresh(), $request, 'fileLogin', Setting::COLLECTION_CSS_LOGO, Setting::DISK_CSS);
@@ -165,12 +159,19 @@ class CssOverrideController extends Controller
             Cache::forget('css-favicon');
         }
 
+        $this->saveSettingsAndCompileUi($request, $setting);
+
+        return response([], 204);
+    }
+
+    private function saveSettingsAndCompileUi(Request $request, Setting $setting): void
+    {
+        $setting->saveOrFail();
+
         $this->setLoginFooter($request);
         $this->setAltText($request);
 
-        CompileUI::dispatch($request->user('api')->id);
-
-        return response([], 204);
+        CompileUI::dispatchSync($request->user('api')->id);
     }
 
     /**

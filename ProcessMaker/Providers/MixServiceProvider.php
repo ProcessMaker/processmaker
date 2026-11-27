@@ -33,20 +33,14 @@ class MixServiceProvider extends ServiceProvider
                         return parent::__invoke($path, $manifestDirectory);
                     }
 
-                    // Try to get manifest from cache first
-                    $manifest = Cache::get('mix-manifest');
-
-                    // If not in cache, read from file and cache it
-                    if (is_null($manifest)) {
-                        $manifestPath = public_path('mix-manifest.json');
-                        if (!file_exists($manifestPath)) {
-                            return parent::__invoke($path, $manifestDirectory);
-                        }
-
+                    $manifestPath = public_path('mix-manifest.json');
+                    $manifest = null;
+                    if (file_exists($manifestPath)) {
                         $manifest = json_decode(file_get_contents($manifestPath), true);
-                        if ($manifest !== null) {
-                            Cache::put('mix-manifest', $manifest, now()->addHours(24));
-                        }
+                    }
+
+                    if ($manifest === null) {
+                        $manifest = Cache::get('mix-manifest');
                     }
 
                     if ($manifest === null) {
