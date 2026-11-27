@@ -6,7 +6,6 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Http\Controllers\Controller;
@@ -167,14 +166,12 @@ class CssOverrideController extends Controller
 
     private function saveSettingsAndCompileUi(Request $request, Setting $setting): void
     {
-        DB::transaction(function () use ($request, $setting) {
-            $setting->saveOrFail();
+        $setting->saveOrFail();
 
-            $this->setLoginFooter($request);
-            $this->setAltText($request);
+        $this->setLoginFooter($request);
+        $this->setAltText($request);
 
-            CompileUI::dispatchSync($request->user('api')->id);
-        });
+        CompileUI::dispatchSync($request->user('api')->id);
     }
 
     /**
