@@ -11,6 +11,7 @@ use ProcessMaker\Exception\PluginToggleException;
 use ProcessMaker\Models\Plugin;
 use ProcessMaker\Services\PluginFilesystemService;
 use ProcessMaker\Services\PluginGitService;
+use ProcessMaker\Services\PluginGitUpdateOptions;
 use ProcessMaker\Services\PluginLogService;
 use ProcessMaker\Services\PluginRuntimeService;
 use ProcessMaker\Services\PluginSetupService;
@@ -82,7 +83,18 @@ class PluginManager
         $canonical = $this->git->stripCredentials(Plugin::fromPath($path)->getUrl());
         $ref = $tag ?? $branch ?? 'current branch';
         $this->log->running("Starting reinstall of plugin: {$pluginName} on {$ref}", $pluginName, $userId);
-        $this->git->update($path, $pluginName, $tag !== null ? null : $branch, $tag, $userId, $canonical, $this->git->prepareUrl($canonical, $gitUsername, $gitToken), $this->log);
+        $this->git->update(
+            $path,
+            $pluginName,
+            $userId,
+            $this->log,
+            new PluginGitUpdateOptions(
+                $tag !== null ? null : $branch,
+                $tag,
+                $canonical,
+                $this->git->prepareUrl($canonical, $gitUsername, $gitToken),
+            ),
+        );
         $this->setup->finish($path, $pluginName, $userId);
         $this->log->done('Plugin reinstalled successfully', $pluginName, $userId);
     }
@@ -176,6 +188,7 @@ class PluginManager
                 $json = $plugin->getComposerJson();
                 $result[] = ['name' => ltrim($folder, '_'), 'url' => $this->git->stripCredentials($plugin->getUrl()), 'folder' => $folder, 'description' => $plugin->getDescription() ?? 'No description', 'version' => $json['version'] ?? null, 'branch' => $plugin->getReference(), 'source' => $plugin->isGitRepository() ? 'git' : 'filesystem', 'enabled' => str_starts_with($folder, '_') ? 'Disabled' : 'Enabled'];
             } catch (\Exception) {
+                continue;
             }
         }
         return $result;
@@ -204,7 +217,13 @@ class PluginManager
         $authenticated = $this->git->prepareUrl($url, $username, $token);
         $this->log->running("Starting installation of plugin: {$name}", $name, $userId);
         if (is_dir($path)) {
-            $this->git->update($path, $name, $branch, $tag, $userId, $url, $authenticated, $this->log);
+            $this->git->update(
+                $path,
+                $name,
+                $userId,
+                $this->log,
+                new PluginGitUpdateOptions($branch, $tag, $url, $authenticated),
+            );
         } else {
             $this->markForRollback($path);
             $this->log->running('Cloning repository...', $name, $userId);
@@ -218,8 +237,12 @@ class PluginManager
     private function installedPath(string $name): string
     {
         $base = storage_path('plugins');
-        if (is_dir("{$base}/_{$name}") || is_link("{$base}/_{$name}")) return "{$base}/_{$name}";
-        if (is_dir("{$base}/{$name}") || is_link("{$base}/{$name}")) return "{$base}/{$name}";
+        if (is_dir("{$base}/_{$name}") || is_link("{$base}/_{$name}")) {
+            return "{$base}/_{$name}";
+        }
+        if (is_dir("{$base}/{$name}") || is_link("{$base}/{$name}")) {
+            return "{$base}/{$name}";
+        }
         throw PluginNotFoundException::forPlugin($name);
     }
 
@@ -230,23 +253,36 @@ class PluginManager
 
     private function copyIntoStorage(string $source, string $destination, string $name, ?int $userId): void
     {
-        is_dir(storage_path('plugins')) || mkdir(storage_path('plugins'), 0755, true);
+        if (!is_dir(storage_path('plugins'))) {
+            mkdir(storage_path('plugins'), 0755, true);
+        }
         $this->markForRollback($destination);
-        if (is_link($destination)) unlink($destination);
-        elseif (is_dir($destination)) $this->filesystem->deleteDirectory($destination, $name, $userId, $this->log);
+        if (is_link($destination)) {
+            unlink($destination);
+        } elseif (is_dir($destination)) {
+            $this->filesystem->deleteDirectory($destination, $name, $userId, $this->log);
+        }
         $this->log->running('Copying plugin from local path...', $name, $userId);
         $this->filesystem->copyDirectory($source, $destination, $name, $userId, $this->log);
     }
 
     private function markForRollback(string $path): void
     {
-        if (!is_dir($path) && !is_link($path)) $this->incompleteInstallPath = $path;
+        if (!is_dir($path) && !is_link($path)) {
+            $this->incompleteInstallPath = $path;
+        }
     }
 
     private function removeAssets(string $path, string $name, ?int $userId): void
     {
-        if (!\ProcessMaker\Support\PluginVendorAssets::isEnabled()) return;
-        try { app(TenantPluginAssetPublisher::class)->removePublishedPlugin($path); }
-        catch (Throwable $exception) { $this->log->error('Could not remove tenant plugin assets: ' . $exception->getMessage(), $name, $userId); }
+        if (!\ProcessMaker\Support\PluginVendorAssets::isEnabled()) {
+            return;
+        }
+
+        try {
+            app(TenantPluginAssetPublisher::class)->removePublishedPlugin($path);
+        } catch (Throwable $exception) {
+            $this->log->error('Could not remove tenant plugin assets: ' . $exception->getMessage(), $name, $userId);
+        }
     }
 }

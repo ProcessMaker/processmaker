@@ -28,20 +28,13 @@ class PluginGitService
         if (!str_starts_with($url, self::HTTPS_PREFIX)) {
             return $url;
         }
-        if (($username !== null && trim($username) !== '') || ($token !== null && $token !== '')) {
-            $parts = parse_url($url);
-            if ($parts !== false && isset($parts['scheme'], $parts['host'])) {
-                $user = rawurlencode((string) $username);
-                $pass = $token !== null && $token !== '' ? rawurlencode($token) : '';
-                return $this->formatUrl($parts, $pass !== '' ? "{$user}:{$pass}@" : "{$user}@");
-            }
-        }
-        $envToken = env('GITHUB_TOKEN');
-        if ($envToken && str_starts_with($url, 'https://github.com/')) {
-            return str_replace('https://github.com/', self::HTTPS_PREFIX . "{$envToken}@github.com/", $url);
+
+        $explicitCredentialsUrl = $this->withExplicitCredentials($url, $username, $token);
+        if ($explicitCredentialsUrl !== null) {
+            return $explicitCredentialsUrl;
         }
 
-        return $url;
+        return $this->withGithubToken($url);
     }
 
     public function stripCredentials(string $url): string
@@ -81,30 +74,47 @@ class PluginGitService
         return $process->successful() && $branch !== '' && $branch !== 'HEAD' ? $branch : null;
     }
 
-    public function update(string $path, string $name, ?string $branch, ?string $tag, ?int $userId, ?string $canonical, ?string $authenticated, PluginLogService $log): void
+    public function update(
+        string $path,
+        string $name,
+        ?int $userId,
+        PluginLogService $log,
+        PluginGitUpdateOptions $options,
+    ): void
     {
         $log->running('Plugin directory exists, fetching from remote...', $name, $userId);
-        $restore = $canonical !== null ? $this->stripCredentials($canonical) : null;
+        $restore = $options->canonicalUrl !== null ? $this->stripCredentials($options->canonicalUrl) : null;
         $previous = Process::path($path)->timeout(60)->run(['git', 'remote', 'get-url', 'origin']);
         $previousUrl = $previous->successful() ? trim($previous->output()) : '';
-        $temporaryAuth = $authenticated !== null && $restore !== null && str_starts_with($authenticated, self::HTTPS_PREFIX);
+        $temporaryAuth = $options->authenticatedUrl !== null
+            && $restore !== null
+            && str_starts_with($options->authenticatedUrl, self::HTTPS_PREFIX);
         if ($temporaryAuth) {
-            Process::path($path)->timeout(60)->run(['git', 'remote', 'set-url', 'origin', $authenticated]);
+            Process::path($path)->timeout(60)->run([
+                'git',
+                'remote',
+                'set-url',
+                'origin',
+                $options->authenticatedUrl,
+            ]);
         }
         try {
             $this->fetch($path, $name, $userId, $log);
-            if ($tag !== null) {
-                $log->running("Checking out tag: {$tag}", $name, $userId);
-                $this->checkoutTag($path, $tag, $name, $userId, $log);
+            if ($options->tag !== null) {
+                $log->running("Checking out tag: {$options->tag}", $name, $userId);
+                $this->checkoutTag($path, $options->tag, $name, $userId, $log);
                 return;
             }
-            $branch ??= $this->defaultBranch($path, $name, $userId, $log);
+            $branch = $options->branch ?? $this->defaultBranch($path, $name, $userId, $log);
             $log->running("Checking out branch: {$branch}", $name, $userId);
             $this->checkoutBranch($path, $branch, $name, $userId, $log);
             $log->running("Pulling latest changes for branch {$branch}...", $name, $userId);
             $this->pull($path, $name, $userId, $branch, $log);
         } finally {
-            $clean = $restore ?: ($previousUrl !== '' ? $this->stripCredentials($previousUrl) : '');
+            $clean = $restore ?: '';
+            if ($clean === '' && $previousUrl !== '') {
+                $clean = $this->stripCredentials($previousUrl);
+            }
             if ($clean !== '' && is_dir($path . '/.git')) {
                 Process::path($path)->timeout(60)->run(['git', 'remote', 'set-url', 'origin', $clean]);
             }
@@ -165,5 +175,34 @@ class PluginGitService
             . ($parts['path'] ?? '')
             . (isset($parts['query']) ? '?' . $parts['query'] : '')
             . (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
+    }
+
+    private function withExplicitCredentials(string $url, ?string $username, ?string $token): ?string
+    {
+        $hasCredentials = ($username !== null && trim($username) !== '')
+            || ($token !== null && $token !== '');
+        if (!$hasCredentials) {
+            return null;
+        }
+
+        $parts = parse_url($url);
+        if ($parts === false || !isset($parts['scheme'], $parts['host'])) {
+            return null;
+        }
+
+        $user = rawurlencode((string) $username);
+        $pass = $token !== null && $token !== '' ? rawurlencode($token) : '';
+
+        return $this->formatUrl($parts, $pass !== '' ? "{$user}:{$pass}@" : "{$user}@");
+    }
+
+    private function withGithubToken(string $url): string
+    {
+        $token = env('GITHUB_TOKEN');
+        if (!$token || !str_starts_with($url, 'https://github.com/')) {
+            return $url;
+        }
+
+        return str_replace('https://github.com/', self::HTTPS_PREFIX . "{$token}@github.com/", $url);
     }
 }
