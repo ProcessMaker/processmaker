@@ -315,4 +315,137 @@ class TaskControllerTest extends TestCase
         $response->assertJsonValidationErrors(['varName', 'varValue']);
         $response->assertJsonMissing(['message' => 'Error updating variable']);
     }
+
+    /**
+     * A leftover abe_click_ticket for ABE token A must not be consumed when hitting
+     * update_variable for ABE token B (unsigned / no abe_sig).
+     */
+    public function testAbeClickTicketCacheSurvivesUuidMismatch(): void
+    {
+        $bpmn = file_get_contents(__DIR__ . '/../Fixtures/action_by_email_process_require_login.bpmn');
+        Screen::factory()->create();
+
+        $processA = Process::factory()->create(['bpmn' => $bpmn]);
+        $this->apiCall('POST', route('api.process_events.trigger', [$processA->id, 'event' => 'node_1']), []);
+        $abeA = ProcessAbeRequestToken::orderByDesc('id')->firstOrFail();
+
+        $processB = Process::factory()->create(['bpmn' => $bpmn]);
+        $this->apiCall('POST', route('api.process_events.trigger', [$processB->id, 'event' => 'node_1']), []);
+        $abeB = ProcessAbeRequestToken::orderByDesc('id')->firstOrFail();
+        $this->assertNotSame($abeA->uuid, $abeB->uuid);
+
+        $anonymous = User::where('username', AnonymousUser::ANONYMOUS_USERNAME)->firstOrFail();
+        $parkUrl = 'tasks/update_variable/' . $abeA->uuid . '?varName=res&varValue=yes';
+        $redirect = $this->actingAs($anonymous, 'web')->get($parkUrl);
+        $redirect->assertRedirect('login');
+        $ticket = $redirect->getCookie(TaskController::ABE_CLICK_TICKET_COOKIE, false)->getValue();
+        $this->assertTrue(Cache::has('abe_click:' . $ticket));
+
+        // Short intended URL for a different ABE token (no query) must not consume token A's park.
+        $user = User::factory()->create(['status' => 'ACTIVE']);
+        $this->actingAs($user, 'web')
+            ->withUnencryptedCookie(TaskController::ABE_CLICK_TICKET_COOKIE, $ticket)
+            ->getJson('tasks/update_variable/' . $abeB->uuid)
+            ->assertStatus(422);
+
+        $this->assertTrue(Cache::has('abe_click:' . $ticket));
+        $pending = Cache::get('abe_click:' . $ticket);
+        $this->assertSame($abeA->uuid, $pending['abe_uuid'] ?? null);
+        $this->assertSame('yes', $pending['query']['varValue'] ?? null);
+
+        // Matching short URL still restores the parked Approve.
+        $response = $this->actingAs($user, 'web')
+            ->withUnencryptedCookie(TaskController::ABE_CLICK_TICKET_COOKIE, $ticket)
+            ->get('tasks/update_variable/' . $abeA->uuid);
+        $response->assertStatus(200);
+
+        $request = ProcessRequest::findOrFail($abeA->process_request_id);
+        $this->assertSame('yes', $request->data['res'] ?? null);
+        $this->assertFalse(Cache::has('abe_click:' . $ticket));
+    }
+
+    /**
+     * With Require Login and tracking off, a second click must park the later
+     * action (Reject), not revive the first click's parked Approve via the cookie.
+     */
+    public function testLaterAbeClickWithRequireLoginParksLatestAction(): void
+    {
+        $process = Process::factory()->create([
+            'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/action_by_email_process_require_login.bpmn'),
+        ]);
+        Screen::factory()->create();
+
+        $this->apiCall('POST', route('api.process_events.trigger', [$process->id, 'event' => 'node_1']), []);
+        $abe = ProcessAbeRequestToken::firstOrFail();
+        $anonymous = User::where('username', AnonymousUser::ANONYMOUS_USERNAME)->firstOrFail();
+
+        $first = $this->actingAs($anonymous, 'web')
+            ->get('tasks/update_variable/' . $abe->uuid . '?varName=res&varValue=yes');
+        $first->assertRedirect('login');
+        $firstTicket = $first->getCookie(TaskController::ABE_CLICK_TICKET_COOKIE, false)->getValue();
+
+        $second = $this->actingAs($anonymous, 'web')
+            ->withUnencryptedCookie(TaskController::ABE_CLICK_TICKET_COOKIE, $firstTicket)
+            ->get('tasks/update_variable/' . $abe->uuid . '?varName=res&varValue=no');
+        $second->assertRedirect('login');
+        $secondTicket = $second->getCookie(TaskController::ABE_CLICK_TICKET_COOKIE, false)->getValue();
+        $this->assertNotSame($firstTicket, $secondTicket);
+
+        $pending = Cache::get('abe_click:' . $secondTicket);
+        $this->assertIsArray($pending);
+        $this->assertSame('no', $pending['query']['varValue'] ?? null);
+
+        $user = User::factory()->create(['status' => 'ACTIVE']);
+        $response = $this->actingAs($user, 'web')
+            ->withUnencryptedCookie(TaskController::ABE_CLICK_TICKET_COOKIE, $secondTicket)
+            ->get('tasks/update_variable/' . $abe->uuid);
+        $response->assertStatus(200);
+
+        $request = ProcessRequest::findOrFail($abe->process_request_id);
+        $this->assertSame('no', $request->data['res'] ?? null);
+    }
+
+    /**
+     * Presence of either action param skips restore so validation owns the values:
+     * partial queries and array-valued params must 422, not revive a parked click or 500.
+     */
+    public function testPartialOrInvalidActionParamsSkipAbeClickRestoreAndReturnValidationError(): void
+    {
+        $process = Process::factory()->create([
+            'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/action_by_email_process_require_login.bpmn'),
+        ]);
+        Screen::factory()->create();
+
+        $this->apiCall('POST', route('api.process_events.trigger', [$process->id, 'event' => 'node_1']), []);
+        $abe = ProcessAbeRequestToken::firstOrFail();
+        $anonymous = User::where('username', AnonymousUser::ANONYMOUS_USERNAME)->firstOrFail();
+
+        $park = $this->actingAs($anonymous, 'web')
+            ->get('tasks/update_variable/' . $abe->uuid . '?varName=res&varValue=yes');
+        $park->assertRedirect('login');
+        $ticket = $park->getCookie(TaskController::ABE_CLICK_TICKET_COOKIE, false)->getValue();
+        $this->assertTrue(Cache::has('abe_click:' . $ticket));
+
+        $user = User::factory()->create(['status' => 'ACTIVE']);
+
+        // Partial query: varName present without varValue must not restore the parked Approve.
+        $partial = $this->actingAs($user, 'web')
+            ->withUnencryptedCookie(TaskController::ABE_CLICK_TICKET_COOKIE, $ticket)
+            ->getJson('tasks/update_variable/' . $abe->uuid . '?varName=res');
+        $partial->assertStatus(422);
+        $partial->assertJsonValidationErrors(['varValue']);
+        $partial->assertJsonMissing(['message' => 'Error updating variable']);
+        $this->assertTrue(Cache::has('abe_click:' . $ticket));
+        $this->assertSame(0, (int) ProcessAbeRequestToken::findOrFail($abe->id)->is_answered);
+
+        // Array-valued varName must 422 from the string rule, not HTTP 500 from a cast.
+        $arrayParam = $this->actingAs($user, 'web')
+            ->withUnencryptedCookie(TaskController::ABE_CLICK_TICKET_COOKIE, $ticket)
+            ->getJson('tasks/update_variable/' . $abe->uuid . '?varName[]=res&varValue=no');
+        $arrayParam->assertStatus(422);
+        $arrayParam->assertJsonValidationErrors(['varName']);
+        $arrayParam->assertJsonMissing(['message' => 'Error updating variable']);
+        $this->assertTrue(Cache::has('abe_click:' . $ticket));
+        $this->assertSame(0, (int) ProcessAbeRequestToken::findOrFail($abe->id)->is_answered);
+    }
 }
