@@ -212,7 +212,7 @@ class PluginManager
         // An empty remote has no branch or tag to check out: report that instead of a git checkout error.
         if (($branch || $tag) && $this->isEmptyGitRepository($pluginPath)) {
             $this->logError(self::EMPTY_REPOSITORY_MESSAGE, $repoName, $userId);
-            throw new RuntimeException(self::EMPTY_REPOSITORY_MESSAGE);
+            throw PluginInstallException::emptyRepository();
         }
 
         if ($branch) {
@@ -1038,7 +1038,7 @@ class PluginManager
         if (!file_exists($composerJsonPath)) {
             if ($this->isEmptyGitRepository($pluginPath) || $this->hasOnlyPlaceholderFiles($pluginPath)) {
                 $this->logError(self::EMPTY_REPOSITORY_MESSAGE, $repoName, $userId);
-                throw new RuntimeException(self::EMPTY_REPOSITORY_MESSAGE);
+                throw PluginInstallException::emptyRepository();
             }
 
             $this->logError('composer.json not found in plugin: ' . $pluginPath, $repoName, $userId);
