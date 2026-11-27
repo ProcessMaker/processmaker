@@ -5,13 +5,13 @@ namespace ProcessMaker\Traits;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\File;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ScriptBuilderStarting;
 use ProcessMaker\Managers\IndexManager;
 use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Managers\PackageManager;
 use ProcessMaker\Providers\ProcessMakerServiceProvider;
+use ProcessMaker\Support\PluginVendorAssets;
 
 /**
  * Add functionality to control a PM plug-in
@@ -97,7 +97,7 @@ trait PluginServiceProviderTrait
     public function modelerStarting(ModelerStarting $event)
     {
         foreach ($this->modelerScripts as $path => $config) {
-            if (File::exists(public_path() . '/' . $config['script_src'])) {
+            if (PluginVendorAssets::publishedVendorPackageIsAvailable($config['script_src'])) {
                 $event->manager->addScript(mix($path, $config['script_src']), $config['script_params']);
             }
         }
@@ -224,7 +224,7 @@ trait PluginServiceProviderTrait
     public function scriptBuilderStarting(ScriptBuilderStarting $event)
     {
         foreach ($this->scriptBuilderScripts as $path => $public) {
-            if (File::exists(public_path() . '/' . $public)) {
+            if (PluginVendorAssets::publishedVendorPackageIsAvailable($public)) {
                 $event->manager->addScript(mix($path, $public));
             }
         }
