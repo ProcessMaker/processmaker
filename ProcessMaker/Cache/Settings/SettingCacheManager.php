@@ -15,6 +15,11 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
 
     const DEFAULT_CACHE_PREFIX = 'settings:';
 
+    /**
+     * Envelope marker so cached null is distinguishable from a Laravel cache miss.
+     */
+    private const ENVELOPE_FLAG = '__pm_setting';
+
     protected CacheManager $manager;
 
     protected Repository $cacheManager;
@@ -27,8 +32,6 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
 
     /**
      * Determine and set the cache driver to use.
-     *
-     * @param CacheManager $cacheManager
      *
      * @return void
      */
@@ -44,14 +47,10 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     }
 
     /**
-     * Create a cache key for a screen
+     * Create a cache key for a setting.
      *
-     * @param int $processId Process ID
-     * @param int $processVersionId Process Version ID
-     * @param string $language Language code
-     * @param int $screenId Screen ID
-     * @param int $screenVersionId Screen Version ID
-     * @return string The generated cache key
+     * @param array $params
+     * @return string
      */
     public function createKey(array $params): string
     {
@@ -88,7 +87,169 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        return $this->cacheManager->get($key, $default);
+        SettingMemoryCache::syncEpoch();
+
+        $value = $default;
+
+        if (!SettingMemoryCache::isEpochUnreliable()) {
+            if (SettingMemoryCache::exists($key)) {
+                $value = SettingMemoryCache::get($key);
+            } else {
+                $entry = $this->readStoreEntry($key);
+                if ($entry['hit']) {
+                    SettingMemoryCache::put($key, $entry['value']);
+                    $value = $entry['value'];
+                }
+            }
+        }
+
+        return $value;
+    }
+
+    /**
+     * Resolve a setting from L1, then Redis, then the loader (typically DB).
+     *
+     * @param string $key
+     * @param callable $loader
+     *
+     * @return mixed
+     */
+    public function resolve(string $key, callable $loader): mixed
+    {
+        SettingMemoryCache::syncEpoch();
+
+        // Freshness oracle unavailable: fail closed to DB, do not trust L1/L2.
+        if (SettingMemoryCache::isEpochUnreliable()) {
+            return $loader();
+        }
+
+        if (SettingMemoryCache::exists($key)) {
+            return SettingMemoryCache::get($key);
+        }
+
+        return $this->resolveCacheMiss($key, $loader);
+    }
+
+    /**
+     * Resolve after an L1 miss: Redis hit, or load + publish with epoch fencing.
+     */
+    private function resolveCacheMiss(string $key, callable $loader): mixed
+    {
+        $epochAtStart = SettingMemoryCache::localEpoch();
+        $entry = $this->readStoreEntry($key);
+
+        if ($entry['hit']) {
+            SettingMemoryCache::put($key, $entry['value']);
+
+            return $entry['value'];
+        }
+
+        $value = $this->loadAndPublish($key, $loader, $epochAtStart);
+        SettingMemoryCache::put($key, $value);
+
+        return $value;
+    }
+
+    /**
+     * Load from the callback and write to Redis unless another worker published first.
+     *
+     * Envelopes are stamped with a per-key generation. Readers reject envelopes
+     * whose generation no longer matches, so a stale resolve PUT that races past
+     * the epoch check cannot stick after set()/invalidate()/delete advances the key.
+     */
+    private function loadAndPublish(string $key, callable $loader, ?int $epochAtStart): mixed
+    {
+        $versionAtStart = SettingCacheVersion::get($key);
+        $value = $loader();
+
+        // If another worker published a committed value while we loaded, do not
+        // overwrite Redis with a possibly pre-commit row.
+        SettingMemoryCache::forceResyncEpoch();
+        if (!SettingMemoryCache::isEpochUnreliable()) {
+            $preWrite = $this->resolvePreWriteRace(
+                $key,
+                $loader,
+                $value,
+                $epochAtStart,
+                $versionAtStart
+            );
+            $value = $preWrite['value'];
+
+            if (!$preWrite['done']) {
+                $versionAtStart = $preWrite['version'];
+                $epochAtWrite = SettingMemoryCache::localEpoch();
+                $this->writeStoreEntry($key, $value, null, $versionAtStart);
+
+                // Close the gap between the pre-write fence and the Redis PUT.
+                SettingMemoryCache::forceResyncEpoch();
+                if (!SettingMemoryCache::isEpochUnreliable()) {
+                    $value = $this->reconcileAfterWrite(
+                        $key,
+                        $loader,
+                        $value,
+                        $epochAtWrite,
+                        $versionAtStart
+                    );
+                }
+            }
+        }
+
+        return $value;
+    }
+
+    /**
+     * Prefer an already-published Redis value when epoch/version moved during load.
+     *
+     * @return array{done: bool, value: mixed, version?: int|null}
+     */
+    private function resolvePreWriteRace(
+        string $key,
+        callable $loader,
+        mixed $value,
+        ?int $epochAtStart,
+        ?int $versionAtStart
+    ): array {
+        if (SettingMemoryCache::localEpoch() === $epochAtStart
+            && SettingCacheVersion::get($key) === $versionAtStart) {
+            return ['done' => false, 'value' => $value, 'version' => $versionAtStart];
+        }
+
+        $entry = $this->readStoreEntry($key);
+        if ($entry['hit']) {
+            return ['done' => true, 'value' => $entry['value']];
+        }
+
+        return [
+            'done' => false,
+            'value' => $loader(),
+            'version' => SettingCacheVersion::get($key),
+        ];
+    }
+
+    /**
+     * Re-read or reload if epoch/version moved between the write fence and Redis PUT.
+     */
+    private function reconcileAfterWrite(
+        string $key,
+        callable $loader,
+        mixed $value,
+        ?int $epochAtWrite,
+        ?int $versionAtStart
+    ): mixed {
+        if (SettingMemoryCache::localEpoch() === $epochAtWrite
+            && SettingCacheVersion::get($key) === $versionAtStart) {
+            return $value;
+        }
+
+        $entry = $this->readStoreEntry($key);
+        if ($entry['hit']) {
+            return $entry['value'];
+        }
+
+        $value = $loader();
+        $this->writeStoreEntry($key, $value, null, SettingCacheVersion::get($key));
+
+        return $value;
     }
 
     /**
@@ -125,7 +286,11 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     }
 
     /**
-     * Store a value in the settings cache.
+     * Store a committed setting value, then publish a new epoch so other workers refresh L1.
+     *
+     * The per-key generation is advanced before the Redis write so the envelope is
+     * stamped with the new version. Concurrent resolve() fills stamped with the
+     * previous generation are ignored by readers.
      *
      * @param string $key
      * @param mixed $value
@@ -135,7 +300,15 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
     {
-        return $this->cacheManager->put($key, $value, $ttl);
+        $version = SettingCacheVersion::increment($key);
+        $result = $this->writeStoreEntry($key, $value, $ttl, $version);
+
+        if ($result) {
+            SettingMemoryCache::bumpEpoch();
+            SettingMemoryCache::put($key, $value);
+        }
+
+        return $result;
     }
 
     /**
@@ -147,7 +320,12 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function delete(string $key): bool
     {
-        return $this->cacheManager->forget($key);
+        SettingCacheVersion::increment($key);
+        $result = $this->cacheManager->forget($key);
+        SettingMemoryCache::forget($key);
+        SettingMemoryCache::bumpEpoch();
+
+        return $result;
     }
 
     /**
@@ -157,7 +335,10 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function clear(): bool
     {
-        return $this->cacheManager->clear();
+        $result = $this->cacheManager->clear();
+        SettingMemoryCache::bumpEpochAfterStoreCleared();
+
+        return $result;
     }
 
     /**
@@ -181,6 +362,8 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
             if (!empty($matchedKeys)) {
                 Redis::connection($defaultDriver)->del($matchedKeys);
             }
+
+            SettingMemoryCache::bumpEpoch();
         } catch (\Exception $e) {
             Log::error('SettingCacheException' . $e->getMessage());
 
@@ -197,7 +380,17 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
      */
     public function has(string $key): bool
     {
-        return $this->keyExists($key);
+        SettingMemoryCache::syncEpoch();
+
+        if (SettingMemoryCache::isEpochUnreliable()) {
+            return false;
+        }
+
+        if (SettingMemoryCache::exists($key)) {
+            return true;
+        }
+
+        return $this->readStoreEntry($key)['hit'];
     }
 
     /**
@@ -213,22 +406,100 @@ class SettingCacheManager extends CacheManagerBase implements CacheInterface
     }
 
     /**
-     * Invalidate a value in the settings cache.
+     * Drop a settings cache key from Redis/L1.
      *
-     * @param string $key
+     * By default does NOT bump the shared epoch — that must happen after the
+     * committed value is published via set()/saved()/delete. Pass
+     * bump_epoch=true for hard invalidations (e.g. deleted settings).
+     *
+     * @param array $params
      *
      * @return void
      */
     public function invalidate($params): void
     {
         try {
-            //extract the params from the array
             $key = $params['key'];
+            $bumpEpoch = (bool) ($params['bump_epoch'] ?? false);
+
+            // Advance the per-key generation before dropping the payload so any
+            // in-flight resolve() fill stamped with the prior generation is ignored.
+            SettingCacheVersion::increment($key);
             $this->cacheManager->forget($key);
+            SettingMemoryCache::forget($key);
+
+            if ($bumpEpoch) {
+                SettingMemoryCache::bumpEpoch();
+            }
         } catch (\Exception $e) {
             Log::error($e->getMessage());
 
             throw new SettingCacheException('Failed to invalidate cache KEY:' . $key);
         }
+    }
+
+    /**
+     * Publish a new shared epoch without changing Redis setting payloads.
+     */
+    public function publishEpoch(): void
+    {
+        SettingMemoryCache::bumpEpoch();
+    }
+
+    /**
+     * Expose the underlying cache store (used for tests).
+     */
+    public function store(): Repository
+    {
+        return $this->cacheManager;
+    }
+
+    /**
+     * @return array{hit: bool, value: mixed}
+     */
+    private function readStoreEntry(string $key): array
+    {
+        $sentinel = SettingMemoryCache::sentinel();
+        $stored = $this->cacheManager->get($key, $sentinel);
+        $entry = ['hit' => false, 'value' => null];
+
+        if ($stored !== $sentinel
+            && is_array($stored)
+            && ($stored[self::ENVELOPE_FLAG] ?? false) === true
+            && $this->envelopeVersionIsCurrent($key, $stored)) {
+            // Legacy unwrapped values and stale generations fall through as misses
+            // so the next resolve() republishes a versioned envelope.
+            $entry = ['hit' => true, 'value' => $stored['v']];
+        }
+
+        return $entry;
+    }
+
+    /**
+     * Accept envelopes stamped with the current per-key generation only.
+     * Missing version (pre-versioning writes) is treated as stale.
+     */
+    private function envelopeVersionIsCurrent(string $key, array $envelope): bool
+    {
+        if (!array_key_exists('g', $envelope) || $envelope['g'] === null) {
+            return false;
+        }
+
+        return (int) $envelope['g'] === SettingCacheVersion::get($key);
+    }
+
+    private function writeStoreEntry(
+        string $key,
+        mixed $value,
+        null|int|\DateInterval $ttl = null,
+        ?int $generation = null
+    ): bool {
+        $envelope = [
+            self::ENVELOPE_FLAG => true,
+            'v' => $value,
+            'g' => $generation ?? SettingCacheVersion::get($key),
+        ];
+
+        return $this->cacheManager->put($key, $envelope, $ttl);
     }
 }
