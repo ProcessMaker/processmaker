@@ -439,15 +439,11 @@ export default {
             const successMessage = this.$t('Process was successfully imported');
 
             if (data.message && data.message.type === "warning" && data.message.serviceTasksNames.length) {
-                const message = data.message;
-                let taskList = "";
-
-                message.serviceTasksNames.forEach(taskName => {
-                    taskList = taskList + `<p><b>${taskName}<b></p>`;
-                });
-
-                let messageHtml = "<p>The following tasks in the process are configured to an email server that does not exist in this environment. The tasks have been <b>reconfigured to use the default server.</b></p>";
-                messageHtml = messageHtml + taskList;
+                const taskList = data.message.serviceTasksNames
+                    .map(taskName => `<p><b>${_.escape(taskName)}</b></p>`)
+                    .join("");
+                const warning = this.$t("The following tasks were reconfigured to use the Default Email Server in this environment.");
+                const messageHtml = `<p>${warning}</p>${taskList}`;
 
                 ProcessMaker.messageModal(
                     this.$t("Warning"),
