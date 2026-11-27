@@ -48,7 +48,11 @@ class CompileSass implements ShouldQueue
     public function handle()
     {
         chdir(app()->basePath());
-        $this->runCmd('node_modules/sass/sass.js --no-source-map --quiet '
+        $node = config('app.node_bin_path', '/usr/bin/node');
+        if (!is_executable($node)) {
+            throw new \Exception("Node binary not found or not executable: {$node}");
+        }
+        $this->runCmd(escapeshellarg($node) . ' node_modules/sass/sass.js --no-source-map --quiet '
             . $this->properties['origin'] . ' ' . $this->properties['target']);
 
         if (Str::contains($this->properties['tag'], 'app')) {
