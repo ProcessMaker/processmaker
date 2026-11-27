@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
@@ -508,79 +509,16 @@ class UserController extends Controller
      */
     public function update(User $user, Request $request)
     {
-        $authenticatedUser = Auth::user();
-        if (!$authenticatedUser->can('edit', $user)) {
-            throw new AuthorizationException(__('Not authorized to update this user.'));
-        }
-
-        $fields = $request->json()->all();
-        $isSelfServiceUpdate = $this->authorizeSelfServiceUpdate($authenticatedUser, $user, $fields);
-        $rules = User::rules($user);
-        if ($isSelfServiceUpdate) {
-            $rules['meta'] = ['sometimes', 'array'];
-            $rules['meta.disableRecommendations'] = ['sometimes', 'boolean'];
-        }
-        $request->validate($rules);
-        if ($isSelfServiceUpdate) {
-            $fields = $this->normalizeSelfServiceMeta($user, $fields);
-        }
-        if (isset($fields['password'])) {
-            $fields['password'] = Hash::make($fields['password']);
-            $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
-
-            // Remove login error message related to password expired if exists
-            session()->forget('login-error');
-        }
+        $fields = $this->prepareUpdateFields($user, $request);
         $original = $user->getOriginal();
         $isLdapUser = isset($user->meta?->authenticationType)
             && $user->meta->authenticationType === 'ldap';
         $user->fill($fields);
-        if (array_key_exists('cell', $fields)) {
-            $response = $this->validateCellPhoneNumber($user, $fields['cell']);
-            if ($response) {
-                return $response;
-            }
+        $contactError = $this->validateContactUpdate($user, $fields, $original['email'], $isLdapUser);
+        if ($contactError !== null) {
+            return $contactError;
         }
-        if ($fields['email'] !== $original['email']) {
-            $ssoUser = $isLdapUser;
-            if (class_exists(SsoUser::class)) {
-                // Check if the user is an SSO user (including SAML)
-                $ssoUser = $ssoUser || SsoUser::where('user_id', $user->id)->exists();
-            }
-            if ($ssoUser) {
-                return response([
-                    'message' => __(
-                        "The email can't be edited. This action is only available for SSO-synced users."
-                    ),
-                    'errors' => [
-                        'email' => [
-                            __(
-                                "The email can't be edited. This action is only available for SSO-synced users."
-                            ),
-                        ],
-                    ],
-                ], 422);
-            }
-            if (!isset($fields['valpassword'])) {
-                return response([
-                    'message' => __(
-                        'A valid authentication is required for for update the email.'
-                    ),
-                    'errors' => [
-                        'email' => [
-                            __(
-                                'The password is required.'
-                            ),
-                        ],
-                    ],
-                ], 422);
-            } else {
-                $response = $this->validateBeforeChange(Auth::user(), $fields['valpassword']);
-                if ($response) {
-                    return $response;
-                }
-            }
-        }
+
         if (Auth::user()->is_administrator && $request->has('is_administrator')) {
             // user must be an admin to make another user an admin
             $user->is_administrator = $request->get('is_administrator');
@@ -604,6 +542,11 @@ class UserController extends Controller
             throw $e;
         }
 
+        return $this->completeUpdate($user, $request, $original);
+    }
+
+    private function completeUpdate(User $user, Request $request, array $original): Response
+    {
         $changes = $user->getChanges();
 
         //Call new Event to store User Changes into LOG
@@ -626,6 +569,88 @@ class UserController extends Controller
         RecommendationEngine::handleUserSettingChanges($user, $original);
 
         return response([], 204);
+    }
+
+    private function prepareUpdateFields(User $user, Request $request): array
+    {
+        $authenticatedUser = Auth::user();
+        if (!$authenticatedUser->can('edit', $user)) {
+            throw new AuthorizationException(__('Not authorized to update this user.'));
+        }
+
+        $fields = $request->json()->all();
+        $isSelfServiceUpdate = $this->authorizeSelfServiceUpdate($authenticatedUser, $user, $fields);
+        $isProfileFormUpdate = $authenticatedUser->id === $user->id
+            && $request->header('X-ProcessMaker-Profile-Update') === '1';
+        $mergeProfileMeta = $isSelfServiceUpdate || $isProfileFormUpdate;
+        $rules = User::rules($user);
+        if ($mergeProfileMeta) {
+            $rules['meta'] = ['sometimes', 'array:disableRecommendations'];
+            $rules['meta.disableRecommendations'] = ['sometimes', 'boolean'];
+        }
+        $request->validate($rules);
+        if ($mergeProfileMeta) {
+            $fields = $this->mergeProfileMeta($user, $fields);
+        }
+        if (isset($fields['password'])) {
+            $fields['password'] = Hash::make($fields['password']);
+            $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
+
+            // Remove login error message related to password expired if exists
+            session()->forget('login-error');
+        }
+
+        return $fields;
+    }
+
+    private function validateContactUpdate(User $user, array $fields, ?string $originalEmail, bool $isLdapUser): ?Response
+    {
+        if (array_key_exists('cell', $fields)) {
+            $response = $this->validateCellPhoneNumber($user, $fields['cell']);
+            if ($response) {
+                return $response;
+            }
+        }
+
+        if ($fields['email'] === $originalEmail) {
+            return null;
+        }
+
+        return $this->validateEmailChange($user, $fields['valpassword'] ?? null, $isLdapUser);
+    }
+
+    private function validateEmailChange(User $user, mixed $confirmationPassword, bool $isLdapUser): ?Response
+    {
+        $ssoUser = $isLdapUser || (class_exists(SsoUser::class) && SsoUser::where('user_id', $user->id)->exists());
+        if ($ssoUser) {
+            return response([
+                'message' => __(
+                    "The email can't be edited. This action is only available for SSO-synced users."
+                ),
+                'errors' => [
+                    'email' => [
+                        __(
+                            "The email can't be edited. This action is only available for SSO-synced users."
+                        ),
+                    ],
+                ],
+            ], 422);
+        }
+
+        if ($confirmationPassword === null) {
+            return response([
+                'message' => __(
+                    'A valid authentication is required for for update the email.'
+                ),
+                'errors' => [
+                    'email' => [
+                        __('The password is required.'),
+                    ],
+                ],
+            ], 422);
+        }
+
+        return $this->validateBeforeChange(Auth::user(), $confirmationPassword) ?: null;
     }
 
     /**
@@ -661,9 +686,9 @@ class UserController extends Controller
     }
 
     /**
-     * Merge self-service metadata into the persisted server-managed values.
+     * Merge profile preferences into the persisted server-managed values.
      */
-    private function normalizeSelfServiceMeta(User $user, array $fields): array
+    private function mergeProfileMeta(User $user, array $fields): array
     {
         $meta = (array) $user->meta;
         if (
