@@ -3,6 +3,7 @@
 namespace ProcessMaker\Multitenancy\Broadcasting;
 
 use Illuminate\Broadcasting\BroadcastManager;
+use Illuminate\Contracts\Redis\Factory as Redis;
 
 class TenantAwareBroadcastManager extends BroadcastManager
 {
@@ -15,5 +16,14 @@ class TenantAwareBroadcastManager extends BroadcastManager
     protected function createPusherDriver(array $config)
     {
         return new TenantAwarePusherBroadcaster($this->pusher($config), $config['jsonp'] ?? false);
+    }
+
+    public function createRedisDriver($config)
+    {
+        return new TenantAwareRedisBroadcaster(
+            $this->app->make(Redis::class),
+            $config['connection'] ?? 'default',
+            $this->tenantId
+        );
     }
 }
