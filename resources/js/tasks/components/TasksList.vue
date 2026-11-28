@@ -109,7 +109,7 @@
               <div
                 :id="`element-${rowIndex}-${colIndex}`"
                 :class="{ 'pm-table-truncate': header.truncate }"
-                :style="{ maxWidth: header.width + 'px' }"
+                :style="{ maxWidth: header.width + 'px', display: 'inline-block', verticalAlign: 'middle' }"
               >
                 <span
                   v-html="sanitize(getNestedPropertyValue(row, header))"
@@ -169,7 +169,7 @@
                   <div
                     :id="`element-${rowIndex}-${colIndex}`"
                     :class="{ 'pm-table-truncate': header.truncate }"
-                    :style="{ maxWidth: header.width + 'px' }"
+                    :style="{ maxWidth: header.width + 'px', display: 'inline-block', verticalAlign: 'middle' }"
                   >
                     {{ getNestedPropertyValue(row, header) }}
                     <b-tooltip
@@ -216,7 +216,6 @@
       />
     </div>
     <tasks-preview
-      v-if="!verifyURL('saved-searches')"
       ref="preview"
       :tooltip-button="tooltipFromButton"
       @mark-selected-row="markSelectedRow"
@@ -356,14 +355,14 @@ export default {
           title: this.$t("Open Case"),
           click: this.redirectToRequest,
           imgSrc: "/img/smartinbox-images/open-case.svg",
-          show: !this.verifyURL("saved-searches") || true,
+          show: true,
         },
         {
           id: "openTaskButton",
           title: this.$t("Open Task"),
           click: this.redirectToTask,
           icon: "fas fa-external-link-alt",
-          show: !this.verifyURL("saved-searches") || true,
+          show: true,
         },
       ],
       actions: [
@@ -551,7 +550,7 @@ export default {
       return link;
     },
     previewTasks(info, size = null, fromButton = null) {
-      if (!info || !this.$refs.preview) {
+      if (!info || !this.$refs.preview || !this.shouldShowPreviewButton(info)) {
         return;
       }
       this.tooltipFromButton = fromButton;
@@ -590,10 +589,7 @@ export default {
         label = this.$t("Completed");
       }
 
-      return `
-        <span class="badge badge-${color} status-${color}">
-          ${label}
-        </span>`;
+      return `<span class="badge badge-${color} status-${color}">${label}</span>`;
     },
     formatDueDate(date) {
       return date === null ? "-" : moment(date).format("MM/DD/YY HH:mm");
@@ -753,13 +749,16 @@ export default {
       this.sortOrder[0].sortField = by;
       this.sortOrder[0].direction = direction;
     },
-    verifyURL(string) {
-      const currentUrl = window.location.href;
-      let isInUrl = currentUrl.includes(string);
-      if (this.processesIManage) {
-        isInUrl = false;
+    /**
+     * Preview is available for active/self-service tasks (including on saved searches).
+     * Completed tasks are excluded on normal task lists, but Quick Fill / Inbox Rules
+     * intentionally preview completed tasks (fromButton: previewTask|fullTask|inboxRules).
+     */
+    shouldShowPreviewButton(row) {
+      if (["previewTask", "fullTask", "inboxRules"].includes(this.fromButton)) {
+        return true;
       }
-      return isInUrl;
+      return row?.task_status !== "CLOSED";
     },
     /**
      * Hide Preview for completed tasks (API status CLOSED) and on normal saved searches.

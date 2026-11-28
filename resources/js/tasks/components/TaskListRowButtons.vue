@@ -96,6 +96,7 @@
     position: relative;
     display: inline-block;
     height: 30px;
+    vertical-align: middle;
   }
   .task-vertical-separator {
     display: inline;
