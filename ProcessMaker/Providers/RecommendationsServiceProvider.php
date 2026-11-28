@@ -29,7 +29,7 @@ class RecommendationsServiceProvider extends ServiceProvider
 
             // Dispatch the job to the low-priority queue
             if (RecommendationEngine::shouldGenerateFor($processRequestToken->user)) {
-                GenerateUserRecommendations::dispatch($processRequestToken->user_id)->onQueue('low');
+                GenerateUserRecommendations::dispatch($processRequestToken->user_id);
             }
         });
     }
