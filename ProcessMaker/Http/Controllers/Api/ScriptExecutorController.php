@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use ProcessMaker\Enums\ScriptExecutorType;
@@ -124,7 +125,15 @@ class ScriptExecutorController extends Controller
             ScriptExecutorCreated::dispatch($scriptExecutor->getAttributes());
             BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
         } else {
-            $service->createCustomExecutor($scriptExecutor);
+            try {
+                $service->createCustomExecutor($scriptExecutor);
+            } catch (RequestException $e) {
+                // The remote executor was rejected, so keeping the local record would leave
+                // an executor that can never be built.
+                $scriptExecutor->delete();
+
+                $this->throwMicroserviceError($e);
+            }
         }
 
         return ['status' => 'started', 'uuid' => $scriptExecutor->uuid, 'id' => $scriptExecutor->id];
@@ -189,7 +198,11 @@ class ScriptExecutorController extends Controller
         );
 
         if (config('script-runner-microservice.enabled') && $scriptExecutor->type == ScriptExecutorType::Custom) {
-            $service->updateCustomExecutor($scriptExecutor);
+            try {
+                $service->updateCustomExecutor($scriptExecutor);
+            } catch (RequestException $e) {
+                $this->throwMicroserviceError($e);
+            }
         } else {
             if (!empty($scriptExecutor->getChanges())) {
                 ScriptExecutorUpdated::dispatch($scriptExecutor->id, $original, $scriptExecutor->getChanges());
@@ -272,6 +285,28 @@ class ScriptExecutorController extends Controller
         }
 
         return ['status' => 'done'];
+    }
+
+    /**
+     * Report a script microservice rejection on the form, since the build itself
+     * is only reported over the websocket channel.
+     *
+     * @param RequestException $e Failed script microservice response
+     *
+     * @return never
+     *
+     * @throws ValidationException|RequestException
+     */
+    private function throwMicroserviceError(RequestException $e): never
+    {
+        if (!$e->response->clientError()) {
+            throw $e;
+        }
+
+        $detail = $e->response->json('detail');
+        $message = is_string($detail) && $detail !== '' ? $detail : $e->getMessage();
+
+        throw ValidationException::withMessages(['language' => [$message]]);
     }
 
     private function checkAuth($request)
