@@ -449,9 +449,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize', 'manager')->p
         Route::get('devlink/{devLink}', [DevLinkController::class, 'show'])->name('devlink.show');
     });
 
-    // Slack Connector Validation
-    Route::post('connector-slack/validate-token', [ProcessMaker\Packages\Connectors\Slack\Controllers\SlackController::class, 'validateToken'])->name('connector-slack.validate-token');
-
     // Cases Retention
     Route::get('cases-retention/logs/export', [CasesRetentionController::class, 'queueExportCsv'])->name('cases-retention.logs.export');
     Route::get('cases-retention/logs', [CasesRetentionController::class, 'logs'])->name('cases-retention.logs');
