@@ -3,7 +3,7 @@
     <div class="tw-w-full">
       <InputLeading
         v-model="model"
-        placeholder="Search here"
+        :placeholder="$t('Search here')"
         data-test="search-cases-list"
         @change="onChange"
         @keypress="onKeypress" />
