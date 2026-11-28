@@ -199,6 +199,7 @@
         } else {
           filter.filters = [this.userIdFilter()];
         }
+
         return filter;
       },
       userIdFilter() {
@@ -230,23 +231,24 @@
       loadSavedSearch() {
         this.ready = false;
         return ProcessMaker.apiClient.get("saved-searches/" + this.savedSearchId)
-                .then(response => {
-                  this.savedSearch = response.data;
+          .then(response => {
+            this.savedSearch = response.data;
 
-                  if (this.columns.length === 0) {
-                    const cols = response.data._adjusted_columns?.filter(this.columnFilter);
-                    this.columns = _.cloneDeep(cols);
-                    this.defaultColumns = _.cloneDeep(cols);
-                  }
+            if (this.columns.length === 0) {
+              const cols = response.data._adjusted_columns?.filter(this.columnFilter);
+              this.columns = _.cloneDeep(cols);
+              this.defaultColumns = _.cloneDeep(cols);
+            }
+          
+            const advancedFilter = response.data.advanced_filter ?? this.defaultSavedSearchFilters();
+            const processedFilter = this.addRequiredSavedSearchFilters(advancedFilter);
+            
+            // saves the original filter and current filter
+            this.originalSavedSearchAdvancedFilter = _.cloneDeep(processedFilter);
+            this.savedSearchAdvancedFilter = processedFilter;
 
-                  if (this.savedSearchAdvancedFilter === null) {
-                    const advancedFilter = response.data.advanced_filter ?? this.defaultSavedSearchFilters();
-                    this.savedSearchAdvancedFilter = this.addRequiredSavedSearchFilters(advancedFilter);
-                    this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
-                  }
-
-                  this.ready = true;
-                });
+            this.ready = true;
+          });
       },
       // Only used when creating inbox rules.
       // Existing inbox rules always have a saved search.
