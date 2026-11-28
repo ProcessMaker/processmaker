@@ -65,6 +65,8 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapWebRoutes();
 
         $this->mapEngineRoutes();
+
+        $this->mapAiRoutes();
     }
 
     /**
@@ -114,5 +116,12 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::middleware('engine')
             ->group(base_path('routes/engine.php'));
+    }
+
+    protected function mapAiRoutes()
+    {
+        if (file_exists(base_path('routes/ai.php'))) {
+            require base_path('routes/ai.php');
+        }
     }
 }
